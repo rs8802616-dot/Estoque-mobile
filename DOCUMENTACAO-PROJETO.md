@@ -1,0 +1,293 @@
+# 📖 Documentação Geral do Projeto: Estoque Mobile Multi-Supermercado
+
+> **AVISO IMPORTANTE PARA A IA (ASSISTENTE):**  
+> Antes de executar **qualquer nova alteração ou implementação solicitada pelo usuário**, você **DEVE OBRIGATORIAMENTE LER ESTE ARQUIVO** (`DOCUMENTACAO-PROJETO.md`) para compreender o estado real do projeto, sua arquitetura, regras de segurança e padrões técnicos.  
+> Após concluir cada alteração solicitada pelo usuário, você **DEVE ATUALIZAR ESTE ARQUIVO** na seção de **Histórico de Alterações (Changelog)** e demais seções pertinentes antes de finalizar a resposta.
+
+---
+
+## 1. Visão Geral do Sistema
+
+O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/Mobile-First e Desktop) para gestão completa de supermercados e redes varejistas. O sistema opera com arquitetura multi-supermercado (multi-tenant), permitindo gerenciar diferentes lojas, estoques independentes por loja, catálogo unificado de produtos por código de barras, ponto de venda (PDV / Frente de Caixa), controle de validade por lotes, crediário/fiado (clientes devedores), fechamento de caixa e auditoria.
+
+### Principais Recursos
+- **Gestão de Estoque Multi-Loja:** Isolamento de estoque por loja (`lojaId`), controle de lotes, datas de validade, custos, preços de venda e alertas automáticos de vencimento próximo.
+- **Catálogo Global de Produtos:** Catálogo compartilhado de produtos baseado em código de barras (EAN/GTIN) e etiquetas de balança (peso/preço).
+- **Frente de Caixa (PDV):** Registro rápido de vendas com leitor de código de barras (câmera e leitor físico/USB), cálculo de troco, descontos, formas de pagamento (Dinheiro, PIX, Cartão de Crédito/Débito, Fiado) e impressão/emissão de cupom não-fiscal.
+- **Caderneta de Clientes Devedores (Fiado):** Controle de clientes fiado, limites de crédito, histórico de compras, amortizações e pagamentos parciais.
+- **Gestão de Operadores e Caixas:** Abertura, suprimento, sangria e fechamento de turnos de caixa com conferência cega e relatórios.
+- **Alertas de Validade e Reposição:** Notificações em tela e integração para alertas via WhatsApp.
+- **Leitor de Código de Barras e Balança (Autoatendimento / PDV Físico):** Suporte tanto a câmera quanto a leitores físicos USB/Bluetooth/Mesa (modo Keyboard Wedge). Ao bipar produtos com o leitor:
+  - Se for o mesmo produto bipado repetidas vezes, o sistema incrementa a quantidade automaticamente (+1 un a cada bipe) e recalcula o subtotal;
+  - Se forem produtos diferentes, cada um é adicionado sequencialmente ao carrinho;
+  - Suporta etiquetas de balança (padrão 2xxxx) decodificando peso/preço instantaneamente;
+  - Não requer foco prévio em campo de digitação (captura global com proteção anti-duplicação de rajadas).
+- **Operação Offline-First:** Persistência local e reconciliação automática com Firebase Firestore.
+
+---
+
+## 2. Arquitetura e Stack Tecnológica
+
+| Componente | Tecnologia | Detalhes |
+|---|---|---|
+| **Frontend** | React 18 + TypeScript + Vite | Interface responsiva mobile e desktop |
+| **Estilização** | Tailwind CSS | Layout sem dependência de CSS externo |
+| **Ícones** | Lucide React | Biblioteca padrão de ícones SVG |
+| **Animações** | Motion (`motion/react`) | Transições de tela suaves |
+| **Banco de Dados** | Google Cloud Firebase Firestore | Sincronização em tempo real multi-tenant |
+| **Persistência de Imagens** | IndexedDB (`mercado_midia_offline_db`) | Armazenamento de fotos em Base64 com cache síncrono em memória (`imageIndexedDB.ts`) |
+| **Persistência de Estado** | LocalStorage Seguro (`safeStorage.ts`) | Higienização de dados para evitar estouro da cota de 5MB |
+| **Backend/Servidor** | Node.js + Express (`server.ts`) | Porta 3000 obrigatória, modo Vite middleware em dev e static em prod |
+
+---
+
+## 3. Estrutura de Arquivos e Diretórios
+
+```
+├── .env.example                # Variáveis de ambiente declaradas
+├── AGENTS.md                   # Instruções persistentes do agente de IA
+├── DOCUMENTACAO-PROJETO.md     # Esta documentação viva do projeto
+├── firestore.rules             # Regras de segurança do Cloud Firestore
+├── firebase-blueprint.json     # Esquema blueprint do Firestore
+├── metadata.json               # Configurações de permissões e metadados da aplicação
+├── package.json                # Dependências e scripts de inicialização
+├── server.ts                   # Servidor Express com integração Vite
+├── src/
+│   ├── App.tsx                 # Componente principal, telas, PDV, roteamento e estado central
+│   ├── index.css               # Estilização global com Tailwind CSS
+│   ├── main.tsx                # Ponto de entrada do React
+│   ├── types.ts                # Definições de tipos e interfaces TypeScript
+│   ├── components/             # Modais e componentes da interface
+│   │   ├── AlertasWhatsAppModal.tsx
+│   │   ├── AlterarCredenciaisDonoModal.tsx
+│   │   ├── CarrinhoVendaModal.tsx
+│   │   ├── CentroNotificacoesModal.tsx
+│   │   ├── ConsultaProdutosModal.tsx
+│   │   ├── CupomVendaModal.tsx
+│   │   ├── EtiquetasModal.tsx
+│   │   ├── GestaoCaixaModal.tsx
+│   │   ├── GestaoDevedoresModal.tsx
+│   │   ├── GraficosVendasModal.tsx
+│   │   ├── ManualUsuarioModal.tsx
+│   │   ├── RelatorioVendasModal.tsx
+│   │   ├── TelaLogin.tsx
+│   │   └── TermoConcordanciaModal.tsx
+│   └── lib/                    # Utilitários e serviços de infraestrutura
+│       ├── balancaUtils.ts     # Decodificador de códigos de barras de balança
+│       ├── barcodeScanner.ts   # Utilitários para escaneamento de código de barras
+│       ├── exportUtils.ts      # Exportação de relatórios (CSV, Excel)
+│       ├── firebase.ts         # Inicialização do Firebase e Firestore
+│       ├── firestoreSync.ts    # Sincronização em tempo real com Firestore
+│       ├── imageCompressor.ts  # Compressão inteligente de imagens para economia de dados
+│       ├── imageIndexedDB.ts   # Armazenamento persistente no IndexedDB com cache em memória
+│       ├── offlineSync.ts      # Fila de sincronização para operações offline
+│       ├── safeStorage.ts      # Wrapper seguro para LocalStorage (proteção contra cota 5MB)
+│       ├── screenWakeLock.ts   # Manter tela ativa durante operação de caixa
+│       ├── sessionManager.ts   # Controle de sessões ativas
+│       └── soundUtils.ts       # Efeitos sonoros para bipes de leitor e ações
+```
+
+---
+
+## 4. Regras Críticas de Segurança e Dados
+
+1. **Credenciais Master Bloqueadas no Cliente (`firestore.rules`):**
+   - Coleções `usuarios_master` e `config_sistema` devem ter sempre `allow read, write: if false;`. Nenhuma leitura ou escrita de credenciais master pode ocorrer diretamente pelo cliente.
+2. **Segurança de Mídia e Fotos de Produtos:**
+   - O `localStorage` tem limite estrito de **5MB**. Imagens em Base64 nunca devem ser gravadas diretamente no `localStorage`.
+   - As imagens devem ser gravadas no **IndexedDB** via `salvarImagemIndexedDB` e carregadas no cache de memória instantâneo através de `obterFotoCache`.
+   - Na reconciliação de dados em `subscribeEstoque` e `subscribeCatalogo`, fotos locais e fotos do IndexedDB nunca devem ser sobrescritas por strings vazias caso a nuvem envie documentos sem a propriedade `foto`/`imagem`.
+3. **Isolamento Multi-Tenant:**
+   - Toda operação de estoque, venda, caixa ou cliente deve respeitar rigorosamente o `lojaId` do supermercado atualmente ativo.
+
+---
+
+## 5. Histórico de Alterações (Changelog)
+
+### [2026-10-21 - Atualização 6]
+- **Ajustes de Acesso ao Cardápio do Cliente e Alinhamento Visual Idêntico ao AtendeJá:**
+  - **Correção no Cardápio do Cliente (`CardapioClienteDeliveryModal.tsx`):**
+    - Ajustado o `zIndex` para prioridade absoluta (`10000000`), evitando que a `TelaLogin` (`zIndex: 999999`) sobrepusesse o cardápio.
+    - Implementado carregamento automático com fallback de produtos de bebidas geladas e conveniência (`BEBIDAS_FALLBACK`), garantindo que o cardápio nunca fique em branco mesmo com estoque novo.
+    - Adicionado suporte a abertura direta via URL com parâmetros: `http://localhost:3000/?delivery=true` ou `#cardapio`.
+    - Adicionado botão de destaque direto na `TelaLogin.tsx` ("🛵 Ver Cardápio & Fazer Pedido (Cliente)") para que consumidores finais acessem sem exigir login de funcionário.
+  - **Área de Pedidos da Loja Idêntica ao AtendeJá (`GestaoDeliveryModal.tsx`):**
+    - Pílulas de filtro de status idênticas às do AtendeJá: `TODOS`, `🔴 NOVOS` (com indicador pulsante e contagem), `🟠 EM PREPARO` (ícone `Flame`), `🟣 A CAMINHO` (ícone `Bike`) e `🟢 ENTREGUES`.
+    - Barra de pesquisa rápida integrada (cliente, endereço, fone e número do pedido).
+    - Botão de compartilhamento rápido com cópia do link do cardápio (`Copiar Link Cardápio`).
+    - Cards dos pedidos com bordas coloridas destacando o estado do pedido (Novo: borda 2px vermelha com ring de pulso; Em Preparo: borda 2px âmbar; A Caminho: borda 2px roxa; Entregue: borda 2px verde).
+    - Bloco de informações do cliente com telefone linkado direto para WhatsApp e endereço com marcador vermelho.
+    - Modal de impressão de comanda de separação e botões de ação de fluxo rápido alinhados com o padrão AtendeJá.
+
+### [2026-10-21 - Atualização 5]
+- **Implementação do Módulo de Delivery (Estilo Zé Delivery) e Central Unificada de Relatórios:**
+  - **Solicitação do Usuário:** Transformar o aplicativo para funcionar com as funcionalidades completas de delivery do Zé Delivery, unificar todos os relatórios espalhados em um único local centralizado e garantir operação 100% autônoma via LocalStorage (offline-first).
+  - **Módulo de Delivery (Estilo Zé Delivery):**
+    - `src/components/GestaoDeliveryModal.tsx`: Painel de despacho da loja parceira com Kanban de pedidos em tempo real (Novos Pedidos 🟡, Em Separação 🔵, A Caminho 🟣, Entregues 🟢, Cancelados 🔴).
+    - **Alarme Sonoro Contínuo:** Sistema dispara campainha sonoro automática (`tocarAlertaNovoPedidoDelivery`) via Web Audio API sempre que chegam novos pedidos pendentes.
+    - **Baixa Automática no Estoque:** Ao aceitar o pedido, o sistema baixa as quantidades do estoque físico da loja e registra automaticamente a venda no histórico e no caixa do turno.
+    - **Despacho para Motoboy via WhatsApp:** Botão com rota direta no Google Maps/Waze, telefone e endereço do cliente prontos para envio.
+    - **Confirmação Segura com PIN:** Validação de código PIN de 4 dígitos informado pelo cliente no ato da entrega para liberação e finalização do pedido.
+    - `src/components/CardapioClienteDeliveryModal.tsx`: Web App do consumidor estilo Zé Delivery com:
+      - Verificação obrigatória de maioridade (+18 anos para bebidas alcoólicas);
+      - Definição de endereço e geolocalização com cálculo de taxa de entrega;
+      - Vitrine de bebidas geladas (cervejas trincando de gelada, destilados, vinhos, refrigerantes, gelo e carvão);
+      - Checkout com PIX (chave/copia e cola), Cartão na entrega ou Dinheiro com troco;
+      - Tela de rastreio ao vivo exibindo o PIN de 4 dígitos.
+  - **Central Única de Relatórios & Lucro Real (`src/components/CentralRelatoriosModal.tsx`):**
+    - Unificação de todos os relatórios em um único Hub inteligente de 4 abas:
+      1. *📊 Faturamento & Lucro Real:* Dashboard de KPIs (Faturamento Bruto, CMV, Só Lucro Real com margens, Vendas Balcão vs Delivery), Gráfico de evolução diária de lucro e Gráfico de formas de pagamento.
+      2. *🧾 Histórico de Vendas & Cupons:* Filtros avançados por data, operador, status, tipo (Balcão ou Delivery), busca instantânea, detalhamento de custo e lucro por item, reimpressão de cupom, estorno com devolução ao estoque e exportação CSV.
+      3. *📦 Posição de Estoque & Validades:* Capital imobilizado a preço de custo, potencial de venda, lucro projetado, filtros de validades (vencidos, 7 dias, 15 dias, 30 dias) e itens críticos.
+      4. *🛵 Inteligência Zé Delivery:* Métricas de delivery, arrecadação de taxas de entrega, ticket médio, bairros que mais pedem e produtos campeões de delivery.
+  - **Persistência 100% LocalStorage:**
+    - Operação de pedidos, configurações de delivery, estoque e vendas persistidos via LocalStorage (`pedidos_delivery_${lojaId}`, `config_delivery_${lojaId}`, `vendas_${lojaId}`), funcionando com velocidade máxima mesmo sem Firebase ativo.
+
+
+### [2026-10-18 - Atualização 4]
+- **Confirmação e Diretrizes de Operação Plug-and-Play do Leitor Físico:**
+  - **Dúvida Operacional do Usuário:** Se basta plugar o leitor de código de barras no computador/terminal para que ele comece a funcionar imediatamente.
+  - **Validação Técnica (`src/App.tsx`):**
+    - Confirmado que os leitores operam em modo padrão de fábrica *HID Keyboard Wedge* (Emulação de Teclado USB/Bluetooth).
+    - O sistema possui captura global automática via evento de janela (`keydown`), sem necessidade de instalação de drivers, softwares terceiros ou de clicar manualmente em nenhum campo de texto.
+    - Únicos pré-requisitos para operação imediata:
+      1. Conectar via USB ou parear Bluetooth (o sistema operacional reconhece como dispositivo de entrada padrão).
+      2. O turno do caixa estar aberto no sistema.
+      3. O produto possuir o código EAN/balança cadastrado.
+
+### [2026-10-18 - Atualização 3]
+- **Documentação e Validação da Operação de Leitor de Código de Barras Físico / Autoatendimento:**
+  - **Dúvida Operacional do Usuário:** Como o leitor de autoatendimento/totem se comporta ao bipar múltiplos produtos e se o sistema contabiliza corretamente as quantidades.
+  - **Comportamento Validado no Código (`src/App.tsx` e `src/components/CarrinhoVendaModal.tsx`):**
+    - **Produtos Diferentes:** Cada bipe adiciona uma nova linha independente no carrinho.
+    - **Mesmo Produto em Múltiplas Unidades:** Cada bipe sucessivo soma automaticamente `+1` na quantidade do item já existente no carrinho e atualiza o subtotal instantaneamente.
+    - **Integração Keyboard Wedge (USB/Bluetooth):** O leitor físico funciona globalmente via ouvinte de eventos `keydown` com detecção de rajada rápida (< 85ms) e enter automático, sem exigir clique prévio em nenhum input.
+    - **Inteligência FEFO e Lotes:** Se a quantidade bipada ultrapassar o saldo do lote com validade mais próxima, o sistema puxa automaticamente os próximos lotes com estoque da loja.
+
+### [2026-10-22 - Atualização 6]
+- **Padronização Visual 100% Idêntica ao PDV no Cardápio do Cliente:**
+  - **Adoção Direta dos Componentes e Classes do PDV (`CustomerDeliveryView.tsx`):**
+    - Grade estruturada com `className="grid-produtos"` idêntica à Frente de Caixa (`repeat(auto-fill, minmax(215px, 1fr))` a `minmax(250px, 1fr)`), preenchendo 100% da largura da tela perfeitamente.
+    - Card construído exatamente com as classes e regras do PDV:
+      - `card-produto` com fundo branco, cantos arredondados (`rounded-xl`), borda suave e sombra sutil.
+      - `foto-produto` com proporção 4:3, fundo suave `#f8fafc`, borda inferior e imagem centralizada em `object-fit: contain`.
+      - Badge laranja `🍢 Adega` no topo esquerdo para produtos de produção contínua/internos.
+      - Badge verde `🛒 X no carrinho` no topo direito ao adicionar o produto.
+      - `info-card` com `nome-prod` (duas linhas máx), `Cód: ...` (com tag `Interno` se aplicável) e linha de `Estoque Total: X un` (ou `♾️ Produção Contínua (Balcão)`).
+      - Preço em destaque escuro/negrito (`R$ XX.XX`) e botão idêntico ao PDV: `🛒 + Carrinho` azul claro (`#e0f2fe`) com ícone de carrinho ou seletor de quantidade `[-] Qtd [+]` quando já adicionado.
+
+### [2026-10-22 - Atualização 5]
+- **Remoção de Categorias, Barra de Pesquisa Moderna e Expansão 100% Full-Width do Cardápio:**
+  - **Remoção das Categorias no Cardápio (`CustomerDeliveryView.tsx`):**
+    - Removida completamente a fileira horizontal de botões circulares com caixas e emojis de categorias (`CATEGORIAS:`).
+    - O catálogo agora exibe imediatamente todos os produtos cadastrados da loja, sem filtros manuais forçados.
+  - **Barra de Pesquisa Moderna e Elegante:**
+    - Substituída a barra de pesquisa crua e fina por uma barra de busca moderna no estilo Zé Delivery / iFood.
+    - Possui cantos arredondados suaves (`rounded-2xl`), ícone de busca estilizado em vermelho, foco com anel suave (`ring-2 ring-red-500/20`), badge dinâmico com contagem de produtos encontrados (`X itens`) e botão de limpeza instantânea (`✕`).
+  - **Layout 100% Expansivo sem Limitação de Largura (Widescreen / Monitores Desktop):**
+    - Removidas todas as limitações artificiais de `max-w-7xl` ou `max-w-[1600px]`.
+    - O cabeçalho, a barra de busca, os cards da loja e a grade de produtos ocupam **100% da largura da tela** (`w-full`), eliminando por completo o espaço cinza vazio na lateral direita do monitor.
+    - Grade ultra-responsiva com até 8 colunas fluidas (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 min-[1900px]:grid-cols-8`).
+
+### [2026-10-22 - Atualização 4]
+- **Ajuste de Imagens (object-contain) e Layout Expansivo no Cardápio do Cliente:**
+  - **Ajuste de Proporção das Imagens dos Produtos (`CustomerDeliveryView.tsx` e `CardapioClienteDeliveryModal.tsx`):**
+    - Substituído `object-cover` por `object-contain` com padding interno (`p-2 sm:p-2.5`) e fundo harmonizado (`bg-white dark:bg-stone-900`), exatamente como configurado na área do PDV (`.foto-produto img { object-fit: contain; }`).
+    - Garrafas, latas e embalagens verticais (ex: Bacardí, Skyy Vodka, Campari, Coca-Cola, DuCoco) agora aparecem **completas, inteiras e sem cortes** no topo ou na base.
+  - **Layout Expansivo e Responsivo (Desktop / Telas Grandes):**
+    - Removido o limite estreito de `max-w-5xl` (1024px) que deixava grandes faixas vazias nas laterais em monitores desktop.
+    - O container agora se expande fluidamente até `max-w-7xl 2xl:max-w-[1600px]`, preenchendo a tela de forma equilibrada.
+    - O grid de produtos foi expandido de 4 colunas fixas para até 7 colunas fluidas (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 lg:gap-4.5`), aproveitando o espaço da tela igual ao PDV.
+
+### [2026-10-22 - Atualização 3]
+- **Isolamento Total do Cardápio do Cliente e Remoção de Acesso Administrativo e Banners:**
+  - **Remoção de Acesso Administrativo no Cardápio (`CustomerDeliveryView.tsx`):**
+    - Removido o botão de cadeado (`Lock` / `onTrocarParaFuncionario`) do cardápio do cliente.
+    - O link do cliente (`?loja=<slug>`) agora é 100% restrito ao consumidor final, sem qualquer atalho, botão ou link para o painel de funcionários/administração.
+  - **Remoção do Banner de Promoção Superior (`CustomerDeliveryView.tsx`):**
+    - Removida a seção superior de "Oferta em Destaque / Oferta do Dia", permitindo que o cliente veja diretamente as categorias e o catálogo de produtos limpo e organizado.
+  - **Roteamento Exclusivo e Isolado em Tela Cheia (`App.tsx`):**
+    - Ao abrir `http://localhost:3000/?loja=<slug>`, a visualização do cardápio é renderizada isolada em tela cheia, sem modais ou tela de login por trás.
+  - **Coluna de Delivery Integrada ao Caixa (`CaixaDeliveryPanel.tsx`):**
+    - Coluna de delivery idêntica ao AtendeJá embutida na tela do Caixa com filtros de status (`Todos`, `🔴 Novos`, `Preparo`, `A Caminho`), botão de copiar link da loja, despacho no WhatsApp do motoboy com link de rota do Google Maps, validação de entrega por PIN de 4 dígitos e baixa no estoque via FEFO.
+
+### [2026-10-22 - Atualização 2]
+- **Renderização Exclusiva do CustomerDeliveryView e Coluna CaixaView do AtendeJá:**
+  - **Acesso ao Link (`/?loja=` ou `/?delivery=true`):**
+    - Implementada a renderização exclusiva de `CustomerDeliveryView.tsx` em tela cheia idêntica ao AtendeJá (`if (publicLojaSlugAtivo && !painelParamAtivo) return <CustomerDeliveryView ... />`).
+    - Nenhuma tela de login, modal sobreposto ou interface antiga de supermercado é renderizada por trás.
+    - Possui o cabeçalho slim com logo, nome da loja, status 'Loja Aberta', botão 'Meus Pedidos', atalho do carrinho, alternador claro/escuro e botão de acesso da equipe.
+    - Banner promocional da oferta do dia, botões circulares de categorias, grid com fotos reais, gaveta modal de carrinho com cálculo de bairros (`taxas_bairro`), PIN de 4 dígitos e link direto de envio no WhatsApp da loja.
+  - **Coluna de Delivery Integrada ao Caixa (`CaixaDeliveryPanel.tsx`):**
+    - Inserida a coluna fixa de delivery no Caixa/PDV idêntica ao `CaixaView.tsx` do AtendeJá.
+    - Cards com bordas coloridas por status (`Novos`, `Preparo`, `A Caminho`, `Entregue`).
+    - Botão de confirmação de pedido com baixa automática no estoque físico por FEFO.
+    - Botão de despacho com mensagem WhatsApp e rota no Google Maps para o motoboy.
+    - Modal de conferência e validação do código PIN de 4 dígitos.
+    - Botão no cabeçalho do Caixa para fixar/ocultar o painel lateral de delivery a qualquer momento.
+
+### [2026-10-22]
+- **Módulo de Delivery Idêntico ao AtendeJá com Roteamento por Loja e Segurança:**
+  - **Link Exclusivo por Loja (`/?loja=<slug_ou_id>`):**
+    - Quando um cliente acessa o link da loja via navegador (ex: `http://localhost:3000/?loja=loja_matriz_01` ou `?delivery=true`), o sistema identifica a loja automaticamente e abre diretamente o **Cardápio Digital do Cliente** (`CardapioClienteDeliveryModal.tsx`), **sem exibir a tela de login de funcionários**.
+    - No cabeçalho do cardápio foi inserido o botão discreto `🔐 Acesso Equipe`, permitindo que funcionários e operadores de caixa transitem para a tela de login do PDV quando desejarem.
+    - Na tela de login de funcionários (`TelaLogin.tsx`), foi adicionado o botão `🛵 Ver Cardápio & Fazer Pedido (Cliente)` para testes imediatos.
+    - No painel da loja (`GestaoDeliveryModal.tsx`), o botão `Copiar Link Cardápio` copia automaticamente a URL parametrizada com o slug e nome da loja.
+  - **Cardápio do Cliente com Recursos do AtendeJá (`CardapioClienteDeliveryModal.tsx`):**
+    - **Seletor de Bairro com Taxa Dinâmica (`taxas_bairro`):** Suporte à seleção de bairros cadastrados na loja (Centro, Jardim América, Vila Nova, Bela Vista, Consolação, etc.) com recálculo automático da taxa de entrega em tempo real.
+    - **Seletor de Modalidade:** Alternância entre `🛵 Receber em Casa (Delivery)` e `🛍️ Retirar no Balcão (Grátis)`.
+    - **Carrinho e Checkout Completo:** Persistência de perfil do cliente (`localStorage`), formas de pagamento (PIX com chave da loja e botão copiar, Cartão de Crédito/Débito, Dinheiro com troco).
+    - **Segurança com PIN de 4 Dígitos:** Geração automática de código PIN exclusivo para o cliente fornecer ao motoboy no ato da entrega.
+    - **Envio Direto no WhatsApp da Loja:** Botão instantâneo para o cliente enviar o comprovante com os itens, endereço e PIN diretamente para o WhatsApp do estabelecimento.
+    - **Histórico "Meus Pedidos":** Aba para o cliente consultar seus pedidos recentes e seus respectivos PINs de segurança.
+  - **Painel de Pedidos da Loja & Motoboy (`GestaoDeliveryModal.tsx`):**
+    - Abas com contador e status dinâmicos (`TODOS`, `🔴 NOVOS` com animação de pulso, `🔥 EM PREPARO`, `🛵 A CAMINHO`, `✓ ENTREGUES`).
+    - Alerta sonoro contínuo com Web Audio API enquanto houver novos pedidos pendentes.
+    - Baixa automática no estoque físico e lotes da loja via FEFO ao aceitar o pedido.
+    - Botão `Despachar Motoboy` com link pré-formatado para o WhatsApp do entregador contendo endereço completo e rota do Google Maps (`https://www.google.com/maps/search/?api=1&query=...`).
+    - Validação de entrega segura por PIN de 4 dígitos.
+    - Impressão térmica de comandas para o balcão.
+
+### [2026-10-18 - Atualização 2]
+- **Card do Valor Vendido Retirando o Custo (Mantendo Só com o Lucro) em Gráficos & Inteligência:**
+  - **Problema Solucionado:** No modal de Gráficos e Inteligência (`GraficosVendasModal.tsx`), o lojista não tinha acesso ao card de valor vendido retirando o valor de custo e mantendo o valor das vendas só com o lucro, tanto na aba de Faturamento quanto na aba de Visão Geral do Estoque.
+  - **Card Master em Destaque:** Adicionado banner principal no topo com gradiente verde esmeralda destacando o **Lucro Real das Vendas (Só o Lucro)** (`R$ lucroRealFaturado`), com badges comparativos: `💵 Valor Total Vendido`, `🏷️ (-) Custo Retirado` e `📦 Volume de Itens Faturados`.
+  - **Aba de Faturamento & Lucro Real:**
+    - Atualizada a navegação para `📊 Faturamento & Lucro Real`.
+    - Inseridos 4 cards de KPIs: *Vendas Concluídas & Volume*, *Receita Bruta (Vendas)*, *Custo dos Produtos (CMV)* e *💰 Só com o Lucro (Valor Vendido - Custo)*.
+    - Gráfico Recharts atualizado com seletor de métricas: `💰 Lucro Real & Faturamento`, `💵 Só o Lucro` e `📊 Só Faturamento Bruto`, com visualização de lucro em verde e faturamento em azul, além de tooltips detalhados.
+  - **Aba Visão Geral do Estoque (`estoque_chart`):**
+    - Inserido o card de *💰 Vendas Realizadas (Só com o Lucro)* detalhando Total Vendido, Custo Retirado e Ganho Líquido.
+    - Na seção de *Produtos de Balcão & Adega*, adicionados o custo estimado e o valor faturado *Só Lucro Balcão*.
+  - **Alinhamento de Nomenclatura no Relatório de Vendas (`RelatorioVendasModal.tsx`):**
+    - Título do card ajustado para `💰 Só com o Lucro` e subtítulo explicitando `Valor vendido retirando o custo (só o lucro)`.
+
+### [2026-10-18]
+- **Exibição do Faturamento Real do Lojista (Lucro Líquido vs Receita Bruta vs CMV):**
+  - **Problema Solucionado:** O relatório de vendas apresentava como "Faturamento Líquido" apenas a soma da receita bruta vendida no caixa (ex: refrigerante vendido por R$ 12,00 sem abater o custo de R$ 8,00), impedindo o lojista de saber quanto ele realmente lucrou e a quantidade total física de mercadorias faturadas.
+  - **Relatório Geral de Vendas (`RelatorioVendasModal.tsx`):**
+    - **KPIs Principais Reformulados:**
+      1. *Total de Vendas & Volume:* Exibe total de vendas concluídas e quantidade total de unidades físicas vendidas (`totalItensVendidos`).
+      2. *Receita Bruta (Vendas):* Exibe o total movimentado no caixa (ex: R$ 12,00).
+      3. *Custo das Mercadorias (CMV):* Exibe o custo total de aquisição dos itens vendidos (ex: R$ 8,00).
+      4. *💰 Faturou Realmente (Lucro Líquido):* Card destacado com gradiente esmeralda exibindo o ganho real do comerciante (Venda - Custo = R$ 4,00) junto da margem percentual média de lucro (`+33.3%`).
+    - **Card Individual de Cada Venda:** Agora detalha no cabeçalho o Valor Total Vendido, o Custo Total dos produtos e a tag destacada com o valor que o lojista realmente faturou de lucro e margem.
+    - **Itens Detalhados da Venda:** Na visualização expandida de cada venda, cada produto exibe: Preço de Venda Unitário e Subtotal, Preço de Custo Unitário e Custo Total, e o Lucro Líquido Real faturado especificamente naquele item com sua margem individual.
+    - **Cálculo com Fallback Resiliente:** Função `obterCustoItem` busca o preço de custo no registro da venda ou faz fallback no estoque da loja por código/lote caso seja uma venda legada.
+  - **Exportação CSV (`exportUtils.ts`):** Adicionadas colunas de `Qtd Total Itens`, `Custo Total Itens (R$)`, `Lucro Real Faturado (R$)`, `Margem Lucro (%)` e detalhamento de custo e lucro por produto no CSV baixado.
+  - **Conexão no App (`App.tsx`):** Passagem da prop `estoque` para o `RelatorioVendasModal` para resolução de custos retroativos.
+
+### [2026-09-10]
+- **Criação da Documentação Oficial:** Criação do arquivo `DOCUMENTACAO-PROJETO.md` e configuração das instruções no `AGENTS.md` para garantir consulta prévia e atualização contínua em todos os ciclos de desenvolvimento.
+
+### [2026-09-05]
+- **Resolução do Problema de Fotos dos Produtos:**
+  - Diagnóstico: Identificado que o erro de permissão no Firestore e o limite de 5MB do `localStorage` causavam o esvaziamento das fotos na reconciliação de estado.
+  - Implementado cache em memória síncrono no `imageIndexedDB.ts` (`obterFotoCache`, `subscreverCacheImagens`).
+  - Atualizada a função `obterFotoProduto` em `src/App.tsx` para consultar prioritariamente o cache persistente do IndexedDB.
+  - Ajustadas as regras de segurança no `firestore.rules` para permitir operações normais de supermercado sem requerer autenticação Firebase Auth bloqueante, mantendo `usuarios_master` e `config_sistema` estritamente inacessíveis.
+  - Adicionada gravação imediata no IndexedDB ao cadastrar ou editar produtos tanto no catálogo global quanto no estoque de loja.
+
+### [Anterior]
+- **Segurança e Regras do Firestore:** Reformulação de `firestore.rules` seguindo o princípio do menor privilégio.
+- **Remoção de Chaves Hardcoded:** Limpeza de credenciais no `firestoreSync.ts`.

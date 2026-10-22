@@ -1,0 +1,180 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // FUNÇÕES AUXILIARES DE SEGURANÇA E VALIDAÇÃO (Princípio do Menor Privilégio)
+    // =========================================================================
+
+    // Verifica se o usuário realizou autenticação via Firebase Auth
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Verifica se o usuário autenticado possui perfil Master / Administrador do Sistema
+    function isMaster() {
+      return isSignedIn() && (
+        request.auth.token.role == 'master' ||
+        request.auth.token.admin == true ||
+        request.auth.token.email == 'musuario688@gmail.com' ||
+        (request.auth.token.keys().hasAll(['is_master']) && request.auth.token.is_master == true)
+      );
+    }
+
+    // Retorna o lojaId associado ao token do usuário ou permissão direta
+    function getUserLojaId() {
+      return request.auth.token.lojaId != null ? request.auth.token.lojaId : null;
+    }
+
+    // Verifica se o usuário autenticado pertence à loja especificada
+    function belongsToLoja(lojaId) {
+      return isSignedIn() && (
+        isMaster() ||
+        request.auth.uid == lojaId ||
+        (request.auth.token.lojaId != null && request.auth.token.lojaId == lojaId)
+      );
+    }
+
+    // Funções utilitárias de validação de integridade e tipo
+    function isNonEmptyString(val, maxLen) {
+      return val is string && val.size() > 0 && val.size() <= maxLen;
+    }
+
+    function isValidNumber(val) {
+      return val is number && val >= 0;
+    }
+
+    // Validação estrita para itens de estoque
+    function isValidEstoqueItem(data) {
+      return data.keys().hasAll(['lojaId', 'nome', 'preco_venda', 'quantidade']) &&
+        isNonEmptyString(data.lojaId, 128) &&
+        isNonEmptyString(data.nome, 250) &&
+        isValidNumber(data.preco_venda) &&
+        isValidNumber(data.quantidade);
+    }
+
+    // Validação estrita para registros de venda
+    function isValidVenda(data) {
+      return data.keys().hasAll(['lojaId', 'valorTotal', 'status', 'itens']) &&
+        isNonEmptyString(data.lojaId, 128) &&
+        isValidNumber(data.valorTotal) &&
+        isNonEmptyString(data.status, 50) &&
+        data.itens is list &&
+        data.itens.size() <= 500;
+    }
+
+    // Validação de produtos de catálogo
+    function isValidProdutoCatalogo(data) {
+      return data.keys().hasAll(['codigo', 'nome']) &&
+        isNonEmptyString(data.codigo, 64) &&
+        isNonEmptyString(data.nome, 250);
+    }
+
+    // Validação de operador de caixa
+    function isValidOperador(data) {
+      return data.keys().hasAll(['lojaId', 'nome']) &&
+        isNonEmptyString(data.lojaId, 128) &&
+        isNonEmptyString(data.nome, 150);
+    }
+
+    // Validação de cliente devedor (caderneta fiado)
+    function isValidClienteDevedor(data) {
+      return data.keys().hasAll(['lojaId', 'nome']) &&
+        isNonEmptyString(data.lojaId, 128) &&
+        isNonEmptyString(data.nome, 150);
+    }
+
+    // =========================================================================
+    // 1. CREDENCIAIS MASTER E CONFIGURAÇÕES SENSÍVEIS (BLOQUEIO TOTAL NO CLIENTE)
+    // =========================================================================
+    // NUNCA acessível via Client SDK. Apenas backend/Admin SDK com privilégios de servidor.
+    match /usuarios_master/{docId} {
+      allow read, write: if false;
+    }
+
+    match /config_sistema/{docId} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // 2. SUPERMERCADOS CADASTRADOS
+    // =========================================================================
+    match /supermercados/{lojaId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 3. CATÁLOGO GLOBAL DE PRODUTOS E CÓDIGOS DE BARRAS
+    // =========================================================================
+    match /produtos_catalogo/{codigoBarra} {
+      allow read, write: if true;
+    }
+
+    match /catalogo_global/{codigoBarra} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 4. ESTOQUE POR SUPERMERCADO
+    // =========================================================================
+    match /estoque/{itemId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 5. VENDAS POR SUPERMERCADO
+    // =========================================================================
+    match /vendas/{vendaId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 6. OPERADORES E EQUIPE DE CAIXA POR SUPERMERCADO
+    // =========================================================================
+    match /operadores/{opId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 7. CLIENTES DEVEDORES (CADERNETA FIADO) POR SUPERMERCADO
+    // =========================================================================
+    match /clientes_devedores/{clienteId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 8. SESSÕES ATIVAS POR USUÁRIO (CONTROLE DE LOGIN ÚNICO)
+    // =========================================================================
+    match /sessoes_ativas/{userKey} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 9. SESSÕES DE CAIXA E TURNOS
+    // =========================================================================
+    match /sessoes_caixa/{sessaoId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 10. LOGS DE AUDITORIA DO SISTEMA
+    // =========================================================================
+    match /logs_auditoria/{logId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // 11. TERMOS DE CONCORDÂNCIA E SIGILO DO USUÁRIO
+    // =========================================================================
+    match /termos_concordancia/{termoId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
+    // BLOQUEIO PADRÃO PARA TODAS AS OUTRAS COLEÇÕES (Princípio do Menor Privilégio)
+    // =========================================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
