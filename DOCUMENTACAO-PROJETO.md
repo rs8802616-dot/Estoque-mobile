@@ -164,6 +164,20 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - **Integração Keyboard Wedge (USB/Bluetooth):** O leitor físico funciona globalmente via ouvinte de eventos `keydown` com detecção de rajada rápida (< 85ms) e enter automático, sem exigir clique prévio em nenhum input.
     - **Inteligência FEFO e Lotes:** Se a quantidade bipada ultrapassar o saldo do lote com validade mais próxima, o sistema puxa automaticamente os próximos lotes com estoque da loja.
 
+### [2026-10-22 - Atualização 8]
+- **Design do Painel de Delivery Idêntico ao AtendeJá (`CaixaDeliveryPanel.tsx`):**
+  - **Container Mint:** Fundo `#f0fdf4` com borda arredondada `rounded-3xl` e contorno verde menta `#a7f3d0`.
+  - **Cabeçalho:** Ícone da moto em caixa arredondada `#a7f3d0/80`, título `🛵 DELIVERY` com contador circular, subtítulo `Entrega motoboy no endereço` e botão `Cardápio`.
+  - **Filtros de Status:** Abas `Ativos (X)` (verde escuro), `● Novos (X)` (vermelho suave com pulso), `Preparo (X)` (âmbar suave) e `A Caminho 🛵` (borda verde menta).
+  - **Barra de Pesquisa:** Input oval com borda menta e busca por cliente, rua, telefone e número do pedido.
+  - **Card de Pedido:**
+    - Borda roxa vibrante `#a855f7` quando em trânsito (A Caminho) e bordas coloridas dinâmicas para novos e preparo.
+    - Badges `🛵 DELIVERY` e `🛵 A CAMINHO` em verde escuro `#047857`.
+    - Dados do cliente: nome, telefone, endereço com bairro, forma de pagamento, data e hora com badge `ANTERIOR` ou `HOJE`.
+    - Lista de itens e subtotais.
+    - Caixa de **TOTAL** em verde menta (`bg-[#d1fae5]/80` com `(+R$ X,XX taxa)`).
+    - Botão de impressão comanda `🖨️`, botão roxo `🛵 Link Motoboy` (despacho WhatsApp com rota Google Maps) e botão verde `✓ Confirmar Entrega` com modal de validação de PIN de 4 dígitos.
+
 ### [2026-10-22 - Atualização 7]
 - **Publicação do Projeto no GitHub:**
   - Repositório criado e sincronizado com sucesso: `https://github.com/rs8802616-dot/Estoque-mobile`.
