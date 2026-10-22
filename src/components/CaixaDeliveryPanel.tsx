@@ -14,9 +14,10 @@ import {
   Receipt,
   User,
   AlertCircle,
+  X,
 } from 'lucide-react';
 import { PedidoDelivery, StatusPedidoDelivery, Supermercado } from '../types';
-import { formatCurrency, formatTime } from '../utils/formatters';
+import { formatCurrency } from '../utils/formatters';
 
 interface CaixaDeliveryPanelProps {
   pedidos: PedidoDelivery[];
@@ -35,16 +36,16 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   onAbrirCardapioCliente,
   onImprimirComanda,
 }) => {
-  const [deliveryFilter, setDeliveryFilter] = useState<'todos' | 'novo' | 'em_preparo' | 'a_caminho' | 'entregue'>('todos');
+  const [deliveryFilter, setDeliveryFilter] = useState<'ativos' | 'novo' | 'em_preparo' | 'a_caminho' | 'todos'>('ativos');
   const [deliverySearch, setDeliverySearch] = useState<string>('');
   const [copiedDeliveryLink, setCopiedDeliveryLink] = useState(false);
 
-  // PIN validation modal state
+  // Modal de validação de PIN de 4 dígitos
   const [validandoPinPedido, setValidandoPinPedido] = useState<PedidoDelivery | null>(null);
   const [pinDigitado, setPinDigitado] = useState('');
   const [erroPin, setErroPin] = useState('');
 
-  // Copy Link (AtendeJá)
+  // Copiar link do cardápio digital
   const handleCopyDeliveryLink = () => {
     const slug = loja?.slug || loja?.id || 'loja_matriz_01';
     let url = `${window.location.origin}/?loja=${slug}`;
@@ -55,9 +56,11 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
     setTimeout(() => setCopiedDeliveryLink(false), 2500);
   };
 
-  // WhatsApp motoboy dispatch with Google Maps route (AtendeJá)
+  // Despacho no WhatsApp do motoboy com link de rota do Google Maps
   const handleDespacharMotoboy = (pedido: PedidoDelivery) => {
-    onAtualizarStatus(pedido.id, 'saiu_para_entrega');
+    if (pedido.status === 'pendente' || pedido.status === 'em_separacao') {
+      onAtualizarStatus(pedido.id, 'saiu_para_entrega');
+    }
 
     const end = pedido.enderecoEntrega;
     const enderecoCompleto = `${end.logradouro}, ${end.numero}${end.complemento ? ' - ' + end.complemento : ''}, ${end.bairro}, ${end.cidade}`;
@@ -72,18 +75,18 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       `📱 *WhatsApp:* ${pedido.cliente.telefone}\n` +
       `📍 *Endereço:* ${enderecoCompleto}\n` +
       (end.referencia ? `🏷️ *Ref:* ${end.referencia}\n` : '') +
-      `🗺️ *Rota Maps:* ${linkMaps}\n\n` +
+      `🗺️ *Rota Google Maps:* ${linkMaps}\n\n` +
       `📦 *Itens a Entregar:*\n${listaItens}\n\n` +
       `💳 *Forma de Pgto:* ${pedido.formaPagamento.toUpperCase()}\n` +
       (pedido.trocoPara ? `💵 *Troco para:* R$ ${pedido.trocoPara.toFixed(2)}\n` : '') +
       `💰 *Total a Cobrar:* R$ ${pedido.valorTotal.toFixed(2)}\n` +
-      `🔐 *PIN de Confirmação:* O cliente fornecerá o PIN de 4 dígitos na entrega.`;
+      `🔐 *PIN de Confirmação:* O cliente fornecerá o PIN de 4 dígitos no ato da entrega.`;
 
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
   };
 
-  // Validate PIN Submit
+  // Confirmação de PIN
   const handleValidarPinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validandoPinPedido) return;
@@ -94,11 +97,15 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       setPinDigitado('');
       setErroPin('');
     } else {
-      setErroPin('PIN incorreto! Confirme os 4 dígitos com o cliente ou motoboy.');
+      setErroPin('PIN incorreto! Solicite os 4 dígitos ao cliente ou entregador.');
     }
   };
 
-  // Delivery Counts (AtendeJá)
+  // Contadores de pedidos
+  const countAtivosDelivery = useMemo(() => {
+    return pedidos.filter((p) => p.status !== 'entregue' && p.status !== 'cancelado').length;
+  }, [pedidos]);
+
   const countNovosDelivery = useMemo(() => {
     return pedidos.filter((p) => p.status === 'pendente').length;
   }, [pedidos]);
@@ -111,56 +118,71 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
     return pedidos.filter((p) => p.status === 'saiu_para_entrega').length;
   }, [pedidos]);
 
-  // Filtered Orders
+  // Lista filtrada de pedidos
   const filteredOrders = useMemo(() => {
     return pedidos
       .filter((p) => {
+        if (deliveryFilter === 'ativos') return p.status !== 'entregue' && p.status !== 'cancelado';
         if (deliveryFilter === 'novo') return p.status === 'pendente';
         if (deliveryFilter === 'em_preparo') return p.status === 'em_separacao';
         if (deliveryFilter === 'a_caminho') return p.status === 'saiu_para_entrega';
-        if (deliveryFilter === 'entregue') return p.status === 'entregue';
         return true;
       })
       .filter((p) => {
         if (!deliverySearch.trim()) return true;
         const q = deliverySearch.toLowerCase();
-        const nome = (p.cliente.nome || '').toLowerCase();
-        const fone = (p.cliente.telefone || '').toLowerCase();
-        const rua = (p.enderecoEntrega.logradouro || '').toLowerCase();
-        const bairro = (p.enderecoEntrega.bairro || '').toLowerCase();
+        const nome = (p.cliente?.nome || '').toLowerCase();
+        const fone = (p.cliente?.telefone || '').toLowerCase();
+        const rua = (p.enderecoEntrega?.logradouro || '').toLowerCase();
+        const bairro = (p.enderecoEntrega?.bairro || '').toLowerCase();
         const id = p.numeroPedido.toString();
         return nome.includes(q) || fone.includes(q) || rua.includes(q) || bairro.includes(q) || id.includes(q);
       })
       .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   }, [pedidos, deliveryFilter, deliverySearch]);
 
+  const hojeFormatado = useMemo(() => {
+    const agora = new Date();
+    const y = agora.getFullYear();
+    const m = String(agora.getMonth() + 1).padStart(2, '0');
+    const d = String(agora.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }, []);
+
   return (
-    <div className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-2xl shadow-xs p-3.5 space-y-3 flex-1 flex flex-col text-stone-900 dark:text-slate-100">
-      {/* Header da Coluna */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="p-1.5 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-lg">
-            <Bike className="w-4 h-4" />
-          </span>
-          <h2 className="text-xs font-bold uppercase tracking-wider">
-            Delivery / Pedidos de Casa
-          </h2>
+    <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3.5 flex-1 flex flex-col text-stone-900">
+      {/* 1. Header do Painel de Delivery */}
+      <div className="flex items-center justify-between gap-2 pb-1 border-b border-[#a7f3d0]/60">
+        <div className="flex items-center gap-2.5">
+          <div className="w-10 h-10 rounded-2xl bg-[#a7f3d0]/80 text-[#047857] flex items-center justify-center border border-[#6ee7b7]/60 shadow-xs shrink-0">
+            <Bike className="w-5 h-5 text-[#047857]" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-black text-stone-900 tracking-tight flex items-center gap-1">
+                <span>🛵</span>
+                <span>DELIVERY</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-[#d1fae5] text-[#065f46] text-xs font-bold border border-[#a7f3d0]">
+                {countAtivosDelivery}
+              </span>
+            </div>
+            <p className="text-[11px] text-[#065f46] font-medium leading-none truncate">
+              Entrega motoboy no endereço
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* Botão Copiar Link Cardápio */}
           <button
             type="button"
             onClick={handleCopyDeliveryLink}
-            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition flex items-center gap-1 cursor-pointer shadow-xs ${
-              copiedDeliveryLink
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-stone-100 hover:bg-stone-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-stone-700 dark:text-slate-300 border-stone-200 dark:border-slate-700'
-            }`}
-            title="Copiar link do cardápio online com marca e logo da loja para enviar no WhatsApp"
+            className="px-3 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs font-bold shadow-xs transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+            title="Copiar link do cardápio digital para o cliente"
           >
-            <Share2 className="w-3 h-3 text-amber-500" />
-            <span>{copiedDeliveryLink ? 'Copiado!' : 'Link Cardápio'}</span>
+            <Share2 className="w-3.5 h-3.5 text-stone-700" />
+            <span>{copiedDeliveryLink ? 'Copiado!' : 'Cardápio'}</span>
           </button>
 
           {/* Botão Abrir Cardápio */}
@@ -168,92 +190,102 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             <button
               type="button"
               onClick={onAbrirCardapioCliente}
-              className="p-1.5 bg-stone-100 hover:bg-stone-200 dark:bg-slate-800 text-stone-700 dark:text-slate-300 border border-stone-200 dark:border-slate-700 rounded-lg text-[10px] cursor-pointer"
+              className="p-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 text-xs shadow-xs transition cursor-pointer"
               title="Abrir Cardápio do Cliente no navegador"
             >
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </button>
-          )}
-
-          {countNovosDelivery > 0 && (
-            <span className="px-2 py-0.5 text-[10px] font-black uppercase bg-red-600 text-white rounded-full animate-pulse shadow-xs">
-              {countNovosDelivery} {countNovosDelivery === 1 ? 'novo' : 'novos'}
-            </span>
           )}
         </div>
       </div>
 
-      {/* Status Chips (Exatamente como no AtendeJá) */}
-      <div className="flex flex-wrap items-center gap-1 text-[11px] font-bold">
+      {/* 2. Filtros de Status */}
+      <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+        {/* Ativos */}
         <button
           type="button"
-          onClick={() => setDeliveryFilter('todos')}
-          className={`px-2.5 py-1 rounded-lg border transition cursor-pointer ${
-            deliveryFilter === 'todos'
-              ? 'bg-stone-900 dark:bg-slate-800 text-white border-stone-900 dark:border-slate-700 shadow-2xs'
-              : 'bg-stone-50 dark:bg-slate-950 text-stone-600 dark:text-slate-400 border-stone-200 dark:border-slate-800 hover:bg-stone-100 dark:hover:bg-slate-900'
+          onClick={() => setDeliveryFilter('ativos')}
+          className={`px-3 py-1.5 rounded-xl transition cursor-pointer ${
+            deliveryFilter === 'ativos'
+              ? 'bg-[#047857] text-white shadow-xs'
+              : 'bg-white border border-[#a7f3d0] text-[#047857] hover:bg-emerald-50/60'
           }`}
         >
-          Todos ({pedidos.length})
+          Ativos ({countAtivosDelivery})
         </button>
 
+        {/* Novos */}
         <button
           type="button"
           onClick={() => setDeliveryFilter('novo')}
-          className={`px-2.5 py-1 rounded-lg border transition flex items-center gap-1 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer ${
             deliveryFilter === 'novo'
-              ? 'bg-red-600 text-white border-red-700 shadow-2xs'
-              : 'bg-red-50 dark:bg-slate-950 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50 hover:bg-red-100/70'
+              ? 'bg-red-600 text-white shadow-xs'
+              : 'bg-[#fef2f2] border border-[#fecaca] text-[#b91c1c] hover:bg-red-100/70'
           }`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span className={`w-2 h-2 rounded-full bg-red-500 ${countNovosDelivery > 0 ? 'animate-pulse' : ''}`} />
           Novos ({countNovosDelivery})
         </button>
 
+        {/* Preparo */}
         <button
           type="button"
           onClick={() => setDeliveryFilter('em_preparo')}
-          className={`px-2.5 py-1 rounded-lg border transition cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl transition cursor-pointer ${
             deliveryFilter === 'em_preparo'
-              ? 'bg-amber-500 text-white border-amber-600 shadow-2xs'
-              : 'bg-amber-50 dark:bg-slate-950 text-amber-800 dark:text-amber-400 border-amber-200 dark:border-amber-900/50 hover:bg-amber-100/70'
+              ? 'bg-amber-500 text-white shadow-xs'
+              : 'bg-[#fffbeb] border border-[#fde68a] text-[#b45309] hover:bg-amber-100/70'
           }`}
         >
-          Preparo ({countPreparoDelivery})
+          Preparo {countPreparoDelivery > 0 ? `(${countPreparoDelivery})` : ''}
         </button>
 
+        {/* A Caminho */}
         <button
           type="button"
           onClick={() => setDeliveryFilter('a_caminho')}
-          className={`px-2.5 py-1 rounded-lg border transition cursor-pointer ${
+          className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 ${
             deliveryFilter === 'a_caminho'
-              ? 'bg-purple-600 text-white border-purple-700 shadow-2xs'
-              : 'bg-purple-50 dark:bg-slate-950 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-900/50 hover:bg-purple-100/70'
+              ? 'bg-[#9333ea] text-white shadow-xs'
+              : 'bg-white border border-[#a7f3d0] text-[#047857] hover:bg-emerald-50/60'
           }`}
         >
-          A Caminho ({countACaminhoDelivery})
+          <span>A Caminho 🛵</span>
+          {countACaminhoDelivery > 0 && <span>({countACaminhoDelivery})</span>}
         </button>
       </div>
 
-      {/* Quick Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 dark:text-slate-500" />
+      {/* 3. Barra de Pesquisa Rápida */}
+      <div className="relative w-full">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
         <input
           type="text"
           value={deliverySearch}
           onChange={(e) => setDeliverySearch(e.target.value)}
           placeholder="Buscar cliente, rua, fone..."
-          className="w-full pl-8 pr-3 py-2 text-xs bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-800 rounded-xl text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-slate-500 focus:outline-none transition"
+          className="w-full pl-9 pr-8 py-2 bg-white border border-[#a7f3d0] rounded-full text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#047857]/30 shadow-2xs transition"
         />
+        {deliverySearch && (
+          <button
+            type="button"
+            onClick={() => setDeliverySearch('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 text-xs"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
-      {/* Delivery Orders List */}
-      <div className="space-y-2.5 max-h-[68vh] overflow-y-auto pr-1 flex-1">
+      {/* 4. Lista de Cards de Pedidos */}
+      <div className="space-y-3 max-h-[68vh] overflow-y-auto pr-1 flex-1">
         {filteredOrders.length === 0 ? (
-          <div className="py-10 text-center text-stone-400 dark:text-slate-500 text-xs space-y-1.5">
-            <Bike className="w-8 h-8 mx-auto opacity-40 text-purple-400" />
-            <p className="font-semibold text-stone-600 dark:text-slate-400">Nenhum pedido de delivery encontrado.</p>
-            <p className="text-[11px]">Novos pedidos de clientes aparecerão aqui automaticamente.</p>
+          <div className="py-12 text-center text-[#065f46]/70 text-xs space-y-2 bg-white/70 rounded-2xl border border-dashed border-[#a7f3d0]">
+            <Bike className="w-10 h-10 mx-auto text-[#047857]/50" />
+            <p className="font-bold text-stone-700">Nenhum pedido encontrado nesta aba.</p>
+            <p className="text-[11px] text-stone-500">
+              Novos pedidos feitos no cardápio do cliente tocarão alerta e aparecerão aqui em tempo real.
+            </p>
           </div>
         ) : (
           filteredOrders.map((order) => {
@@ -263,159 +295,174 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             const isEntregue = order.status === 'entregue';
             const isDelivery = order.tipo_pedido !== 'retirada';
 
-            const endereco = `${order.enderecoEntrega.logradouro}, ${order.enderecoEntrega.numero} (${order.enderecoEntrega.bairro})`;
-            const telefone = order.cliente.telefone;
+            // Formatação de data e verificação se é anterior ou hoje
+            const partesData = (order.data || '').split('-');
+            const dataFormatada = partesData.length === 3 ? `${partesData[2]}/${partesData[1]}/${partesData[0]}` : order.data;
+            const isAnterior = order.data && order.data < hojeFormatado;
+
+            const enderecoCompleto = `${order.enderecoEntrega.logradouro}, ${order.enderecoEntrega.numero}${
+              order.enderecoEntrega.complemento ? ' ' + order.enderecoEntrega.complemento : ''
+            }`;
+            const bairroTexto = order.enderecoEntrega.bairro ? `(Bairro: ${order.enderecoEntrega.bairro})` : '';
+
+            // Borda colorida idêntica à imagem
+            const borderCardClass = isACaminho
+              ? 'border-2 border-[#a855f7]'
+              : isNovo
+              ? 'border-2 border-red-500 ring-2 ring-red-500/20'
+              : isPreparo
+              ? 'border-2 border-amber-400'
+              : 'border border-stone-200';
 
             return (
               <div
                 key={order.id}
-                className={`p-3 rounded-xl border text-xs transition shadow-2xs space-y-2 relative ${
-                  isNovo
-                    ? 'bg-red-50/50 dark:bg-slate-950 border-2 border-red-500 ring-2 ring-red-500/20'
-                    : isPreparo
-                    ? 'bg-amber-50/40 dark:bg-slate-950 border-2 border-amber-400/90'
-                    : isACaminho
-                    ? 'bg-purple-50/30 dark:bg-slate-950 border-2 border-purple-500'
-                    : 'bg-stone-50/70 dark:bg-slate-950 border border-stone-200 dark:border-slate-800'
-                }`}
+                className={`bg-white rounded-2xl p-3.5 sm:p-4 text-xs transition shadow-xs space-y-2.5 relative ${borderCardClass}`}
               >
-                {/* Card Header */}
-                <div className="flex items-center justify-between gap-1">
+                {/* Cabeçalho do Card */}
+                <div className="flex items-center justify-between gap-1.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono font-bold text-stone-900 dark:text-white">
+                    <span className="font-black text-sm text-stone-900 font-mono">
                       #{order.numeroPedido}
                     </span>
-                    {isDelivery ? (
-                      <span className="px-1.5 py-0.5 text-[9px] font-black uppercase bg-purple-600 text-white rounded">
-                        DELIVERY 🛵
-                      </span>
-                    ) : (
-                      <span className="px-1.5 py-0.5 text-[9px] font-black uppercase bg-amber-600 text-white rounded">
-                        RETIRADA 🛍️
-                      </span>
-                    )}
+                    <span className="bg-[#047857] text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                      <Bike className="w-3 h-3" />
+                      <span>{isDelivery ? 'DELIVERY' : 'RETIRADA'}</span>
+                    </span>
                   </div>
 
-                  {/* Status Badge */}
+                  {/* Tag de Status no Topo Direito */}
                   {isNovo && (
-                    <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-red-600 text-white rounded-md animate-pulse">
+                    <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1 animate-pulse">
                       ● NOVO
                     </span>
                   )}
                   {isPreparo && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase bg-amber-500 text-white rounded-md flex items-center gap-1">
-                      <Flame className="w-2.5 h-2.5" /> PREPARO
+                    <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                      <Flame className="w-3 h-3" />
+                      <span>EM PREPARO</span>
                     </span>
                   )}
                   {isACaminho && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase bg-purple-600 text-white rounded-md flex items-center gap-1">
-                      <Bike className="w-2.5 h-2.5" /> A CAMINHO
+                    <span className="bg-[#047857] text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                      <Bike className="w-3 h-3" />
+                      <span>A CAMINHO</span>
                     </span>
                   )}
                   {isEntregue && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase bg-stone-700 text-stone-300 rounded-md">
-                      ENTREGUE
+                    <span className="bg-stone-700 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                      ✓ ENTREGUE
                     </span>
                   )}
                 </div>
 
-                {/* Customer Info */}
-                <div className="space-y-0.5 text-[11px] leading-tight">
-                  <div className="font-bold text-stone-900 dark:text-white flex items-center gap-1">
-                    <User className="w-3 h-3 text-emerald-500" />
-                    <span className="truncate">{order.cliente.nome || 'Cliente'}</span>
+                {/* Dados do Cliente e Entrega */}
+                <div className="space-y-1 text-xs text-stone-700">
+                  <div className="font-extrabold text-sm text-stone-900 flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-stone-700" />
+                    <span>{order.cliente.nome || 'Cliente'}</span>
                   </div>
-                  {telefone && (
-                    <div className="text-stone-500 dark:text-slate-400 flex items-center gap-1">
-                      <Phone className="w-2.5 h-2.5" />
-                      <span>{telefone}</span>
+
+                  {order.cliente.telefone && (
+                    <div className="text-stone-500 font-mono flex items-center gap-1.5">
+                      <Phone className="w-3 h-3" />
+                      <span>{order.cliente.telefone}</span>
                     </div>
                   )}
+
                   {isDelivery && (
-                    <div className="text-stone-700 dark:text-slate-300 flex items-start gap-1">
-                      <MapPin className="w-2.5 h-2.5 text-red-500 shrink-0 mt-0.5" />
-                      <span className="text-[10px] leading-tight font-medium truncate">{endereco}</span>
+                    <div className="text-stone-700 flex items-start gap-1.5 leading-tight">
+                      <MapPin className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
+                      <span>
+                        {enderecoCompleto} {bairroTexto}
+                      </span>
                     </div>
                   )}
-                  <div className="text-[10px] text-stone-400 font-mono pt-0.5 flex items-center gap-1">
-                    <Clock className="w-2.5 h-2.5" />
-                    <span>{order.hora}</span>
+
+                  <div className="font-semibold text-stone-800 flex items-center gap-1.5">
+                    <span>💰</span>
+                    <span>Pgto: <strong className="uppercase">{order.formaPagamento}</strong></span>
+                    {order.trocoPara && order.formaPagamento === 'dinheiro' && (
+                      <span className="text-amber-700 text-[11px] font-bold">
+                        (Troco p/ R$ {order.trocoPara.toFixed(2)})
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-stone-400 text-[11px] font-mono flex items-center gap-1.5 pt-0.5">
+                    <Clock className="w-3 h-3 text-stone-400" />
+                    <span>{dataFormatada} às {order.hora}</span>
+                    {isAnterior ? (
+                      <span className="bg-[#fef3c7] text-[#92400e] text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wide">
+                        ANTERIOR
+                      </span>
+                    ) : (
+                      <span className="bg-[#dcfce7] text-[#166534] text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wide">
+                        HOJE
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* Items mini list */}
-                <div className="pt-1.5 border-t border-stone-200 dark:border-slate-800 space-y-1">
+                {/* Divisor */}
+                <div className="border-t border-[#a7f3d0]/60 my-1" />
+
+                {/* Lista de Itens do Pedido */}
+                <div className="space-y-1 text-xs">
                   {order.itens.map((it, idx) => (
-                    <div key={idx} className="flex justify-between items-baseline text-[11px]">
-                      <span className="truncate text-stone-800 dark:text-slate-200">
+                    <div key={idx} className="flex justify-between items-baseline">
+                      <span className="text-stone-800 font-medium">
                         {it.quantidade}x {it.nome}
                       </span>
-                      <span className="font-mono text-stone-600 dark:text-slate-400 text-[10px] ml-1">
+                      <span className="font-mono font-bold text-stone-900 ml-2">
                         {formatCurrency(it.subtotal)}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* Total & Action Buttons */}
-                <div className="pt-1.5 border-t border-stone-200 dark:border-slate-800 flex items-center justify-between gap-1">
-                  <span className="font-mono font-bold text-xs text-amber-600 dark:text-amber-400">
-                    {formatCurrency(order.valorTotal)}
-                  </span>
+                {/* Barra Inferior com Box TOTAL e Botões de Ação */}
+                <div className="pt-2 border-t border-[#a7f3d0]/60 flex items-center justify-between gap-2 flex-wrap">
+                  {/* Caixa TOTAL estilo Mint */}
+                  <div className="bg-[#d1fae5]/80 border border-[#6ee7b7] rounded-xl px-2.5 py-1.5 flex flex-col justify-center min-w-[105px]">
+                    <span className="text-[9px] font-extrabold text-[#065f46] tracking-wider uppercase leading-none">
+                      TOTAL
+                    </span>
+                    <span className="text-base font-black text-stone-900 font-mono tracking-tight leading-tight mt-0.5">
+                      {formatCurrency(order.valorTotal)}
+                    </span>
+                    <span className="text-[10px] text-[#065f46] font-medium leading-none mt-0.5">
+                      {order.taxaEntrega > 0 ? `(+${formatCurrency(order.taxaEntrega)} taxa)` : 'Taxa Grátis'}
+                    </span>
+                  </div>
 
-                  <div className="flex items-center gap-1">
-                    {/* Imprimir Comanda */}
+                  {/* Botões de Ação da Direita */}
+                  <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+                    {/* Botão Imprimir */}
                     {onImprimirComanda && (
                       <button
                         type="button"
                         onClick={() => onImprimirComanda(order)}
-                        className="p-1.5 bg-stone-100 hover:bg-stone-200 dark:bg-slate-800 text-stone-700 dark:text-slate-200 rounded-lg text-xs transition cursor-pointer"
+                        className="w-9 h-9 rounded-xl border border-[#6ee7b7] bg-white hover:bg-emerald-50 text-[#047857] flex items-center justify-center shadow-xs transition cursor-pointer"
                         title="Imprimir comanda térmica"
                       >
-                        <Printer className="w-3.5 h-3.5 text-amber-500" />
+                        <Printer className="w-4 h-4 text-[#047857]" />
                       </button>
                     )}
 
-                    {/* Botão Confirmar Pedido */}
-                    {isNovo && (
-                      <button
-                        type="button"
-                        onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
-                        className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition cursor-pointer shadow-2xs active:scale-95"
-                        title="Aceitar pedido e dar baixa automática no estoque"
-                      >
-                        <Check className="w-3 h-3 text-amber-300" />
-                        <span>Confirmar</span>
-                      </button>
-                    )}
+                    {/* Botão Roxo: Link Motoboy */}
+                    <button
+                      type="button"
+                      onClick={() => handleDespacharMotoboy(order)}
+                      className="px-3.5 py-2.5 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95 whitespace-nowrap"
+                      title="Enviar dados, itens e rota do Google Maps para o motoboy via WhatsApp"
+                    >
+                      <Bike className="w-4 h-4" />
+                      <span>Link Motoboy</span>
+                    </button>
 
-                    {/* Botão Despachar Motoboy */}
-                    {isPreparo && isDelivery && (
-                      <button
-                        type="button"
-                        onClick={() => handleDespacharMotoboy(order)}
-                        className="px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition cursor-pointer shadow-2xs active:scale-95"
-                        title="Despachar para o motoboy com rota no Google Maps via WhatsApp"
-                      >
-                        <Bike className="w-3 h-3" />
-                        <span>Despachar</span>
-                      </button>
-                    )}
-
-                    {/* Botão Concluir Retirada */}
-                    {isPreparo && !isDelivery && (
-                      <button
-                        type="button"
-                        onClick={() => onAtualizarStatus(order.id, 'entregue')}
-                        className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition cursor-pointer shadow-2xs active:scale-95"
-                      >
-                        <Check className="w-3 h-3" />
-                        <span>Entregue</span>
-                      </button>
-                    )}
-
-                    {/* Botão Validar PIN (A Caminho) */}
-                    {isACaminho && (
+                    {/* Botão Verde de Confirmação */}
+                    {isACaminho ? (
                       <button
                         type="button"
                         onClick={() => {
@@ -423,12 +470,36 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                           setPinDigitado('');
                           setErroPin('');
                         }}
-                        className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 transition cursor-pointer shadow-2xs active:scale-95"
-                        title="Confirmar entrega digitando o PIN de 4 dígitos"
+                        className="px-3.5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95 whitespace-nowrap"
+                        title="Confirmar entrega com PIN de 4 dígitos do cliente"
                       >
-                        <KeyRound className="w-3 h-3" />
-                        <span>Validar PIN</span>
+                        <Check className="w-4 h-4 stroke-[3]" />
+                        <span>Confirmar Entrega</span>
                       </button>
+                    ) : isNovo ? (
+                      <button
+                        type="button"
+                        onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
+                        className="px-3.5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95 whitespace-nowrap"
+                        title="Aceitar pedido e iniciar separação com baixa FEFO"
+                      >
+                        <Check className="w-4 h-4 stroke-[3]" />
+                        <span>Aceitar Pedido</span>
+                      </button>
+                    ) : isPreparo ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDespacharMotoboy(order)}
+                        className="px-3.5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95 whitespace-nowrap"
+                        title="Despachar entrega para o motoboy"
+                      >
+                        <Check className="w-4 h-4 stroke-[3]" />
+                        <span>Despachar</span>
+                      </button>
+                    ) : (
+                      <span className="px-3 py-2 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-xl">
+                        ✓ Entregue
+                      </span>
                     )}
                   </div>
                 </div>
@@ -438,25 +509,27 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         )}
       </div>
 
-      {/* Modal de Validação de PIN */}
+      {/* Modal de Validação de PIN de 4 Dígitos */}
       {validandoPinPedido && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl text-white">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+          <div className="bg-white border border-stone-200 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl text-stone-900">
+            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
               <div className="flex items-center gap-2">
-                <KeyRound className="w-5 h-5 text-amber-400" />
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <KeyRound className="w-4 h-4" />
+                </div>
                 <h3 className="text-sm font-bold">Validar PIN da Entrega</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setValidandoPinPedido(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-stone-400 hover:text-stone-700"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-stone-600">
               Digite o código PIN de 4 dígitos fornecido pelo cliente <strong>{validandoPinPedido.cliente.nome}</strong> (Pedido #{validandoPinPedido.numeroPedido}):
             </p>
 
@@ -468,28 +541,28 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                 value={pinDigitado}
                 onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, ''))}
                 placeholder="Ex: 4891"
-                className="w-full text-center tracking-widest text-2xl font-mono font-black p-3 rounded-xl bg-slate-950 border border-slate-700 text-amber-400 focus:outline-none focus:border-amber-500"
+                className="w-full text-center tracking-widest text-3xl font-mono font-black p-3 rounded-2xl bg-stone-50 border-2 border-emerald-500 text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               />
 
               {erroPin && (
-                <div className="p-2 rounded-lg bg-red-900/40 border border-red-500/50 text-red-300 text-xs flex items-center gap-1.5">
+                <div className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs flex items-center gap-1.5">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>{erroPin}</span>
                 </div>
               )}
 
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setValidandoPinPedido(null)}
-                  className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-300"
+                  className="flex-1 py-2.5 rounded-xl border border-stone-300 text-stone-700 text-xs font-bold hover:bg-stone-50 transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={pinDigitado.length < 4}
-                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 rounded-xl text-xs font-bold text-white shadow"
+                  className="flex-1 py-2.5 bg-[#059669] hover:bg-[#047857] disabled:opacity-40 rounded-xl text-xs font-bold text-white shadow transition cursor-pointer"
                 >
                   Confirmar Entrega
                 </button>
