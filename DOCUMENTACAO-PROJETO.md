@@ -164,6 +164,11 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - **Integração Keyboard Wedge (USB/Bluetooth):** O leitor físico funciona globalmente via ouvinte de eventos `keydown` com detecção de rajada rápida (< 85ms) e enter automático, sem exigir clique prévio em nenhum input.
     - **Inteligência FEFO e Lotes:** Se a quantidade bipada ultrapassar o saldo do lote com validade mais próxima, o sistema puxa automaticamente os próximos lotes com estoque da loja.
 
+### [2026-10-22 - Atualização 7]
+- **Publicação do Projeto no GitHub:**
+  - Repositório criado e sincronizado com sucesso: `https://github.com/rs8802616-dot/Estoque-mobile`.
+  - Todos os 54 arquivos de código-fonte, módulos de delivery, PDV, regras do Firestore e documentação foram enviados para a branch principal `main`.
+
 ### [2026-10-22 - Atualização 6]
 - **Padronização Visual 100% Idêntica ao PDV no Cardápio do Cliente:**
   - **Adoção Direta dos Componentes e Classes do PDV (`CustomerDeliveryView.tsx`):**
