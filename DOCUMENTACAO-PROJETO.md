@@ -267,6 +267,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Validação de entrega segura por PIN de 4 dígitos.
     - Impressão térmica de comandas para o balcão.
 
+### [2026-10-22]
+- **Reformulação e Correção de Layout do Painel Delivery no PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
+  - **Problema Solucionado:** O painel lateral de delivery no Caixa/PDV apresentava sobreposição de ícone de lupa com texto no campo de busca, botões cortados/vazando para fora do card (`TOTAL`, `🖨️`, `Link Motoboy`, `Aceitar Pedido`), e largura da coluna lateral restrita (`390px`) que comprimia as informações visuais.
+  - **Design Fiel e Harmonioso:**
+    - Recriado o layout em container verde-menta `#f0fdf4` com cantos arredondados (`rounded-3xl`) e bordas suaves `#a7f3d0`.
+    - Ícone de busca devidamente separado do texto com `pl-10 pr-8` e botão de limpar busca `✕`.
+    - Cabeçalho limpo com botão destacado `Cardápio` com ícone de compartilhamento.
+    - Status de pedidos em pills organizadas: `Ativos`, `● Novos`, `Preparo`, `A Caminho 🛵`.
+    - Fluxo de botões inteligente por status: pedidos novos exibem apenas `[🖨️ Imprimir]` e `[✓ Aceitar Pedido]`; pedidos em preparo e a caminho exibem `[🛵 Link Motoboy]` e `[✓ Confirmar Entrega]`, eliminando 100% dos transbordamentos e quebras de linha defeituosas.
+    - Largura da coluna no grid do PDV expandida de `390px` para `440px` no `App.tsx`.
+
 ### [2026-10-18 - Atualização 2]
 - **Card do Valor Vendido Retirando o Custo (Mantendo Só com o Lucro) em Gráficos & Inteligência:**
   - **Problema Solucionado:** No modal de Gráficos e Inteligência (`GraficosVendasModal.tsx`), o lojista não tinha acesso ao card de valor vendido retirando o valor de custo e mantendo o valor das vendas só com o lucro, tanto na aba de Faturamento quanto na aba de Visão Geral do Estoque.
