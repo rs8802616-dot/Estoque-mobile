@@ -144,33 +144,69 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     }
   }, [bairroSelecionadoId, listaBairros]);
 
-  // Agrupa produtos por código de barras (igual ao PDV) somando quantidades de lotes
+  // Agrupa produtos por código de barras e nome normalizado (nunca duplica por lote diferente) e oculta esgotados
   const estoqueAgrupado = useMemo(() => {
-    const mapa = new Map<string, ItemEstoque>();
+    const mapaPorCodigo = new Map<string, ItemEstoque>();
+    const mapaNomeParaChave = new Map<string, string>();
+    const hojeIso = new Date().toISOString().slice(0, 10);
+
     estoque.forEach((p) => {
-      const cod = p.codigo || '';
-      const nomeResolvido = obterNomeProduto ? obterNomeProduto(cod, p.nome) : p.nome;
-      const fotoResolvida = obterFotoProduto ? obterFotoProduto(cod, p.foto) : p.foto;
-      const existente = mapa.get(cod);
+      if (!p) return;
+      const codLimpo = String(p.codigo || p.codigo_barras || '').trim();
+      const nomeResolvido = (obterNomeProduto ? obterNomeProduto(codLimpo, p.nome) : p.nome || '').trim();
+      const fotoResolvida = (obterFotoProduto ? obterFotoProduto(codLimpo, p.foto) : p.foto || '').trim();
+      const nomeChave = nomeResolvido.toLowerCase();
+
+      const isIlimitado = Boolean(p.estoqueIlimitado || p.tipoCadastro === 'interno');
+      // Se o lote estiver vencido (e não for produção contínua/ilimitado), não soma como saldo disponível para o cliente
+      const loteVencido = !isIlimitado && p.validade && p.validade < hojeIso;
+      const qtdValidaLote = loteVencido ? 0 : Math.max(0, Number(p.quantidade) || 0);
+
+      // Determina chave única (une lotes de mesmo código ou de mesmo nome exato)
+      let chave = codLimpo || nomeChave;
+      if (!chave) return;
+      if (!mapaPorCodigo.has(chave) && nomeChave && mapaNomeParaChave.has(nomeChave)) {
+        chave = mapaNomeParaChave.get(nomeChave)!;
+      }
+
+      const existente = mapaPorCodigo.get(chave);
       if (!existente) {
-        mapa.set(cod, {
+        mapaPorCodigo.set(chave, {
           ...p,
+          codigo: codLimpo || p.codigo,
           nome: nomeResolvido || p.nome,
           foto: fotoResolvida || p.foto,
-          quantidade: Number(p.quantidade) || 0,
+          quantidade: isIlimitado ? 99999 : qtdValidaLote,
+          estoqueIlimitado: isIlimitado,
         });
+        if (nomeChave) {
+          mapaNomeParaChave.set(nomeChave, chave);
+        }
       } else {
-        mapa.set(cod, {
+        const ilimitadoCombinado = Boolean(existente.estoqueIlimitado || isIlimitado);
+        mapaPorCodigo.set(chave, {
           ...existente,
           nome: existente.nome || nomeResolvido,
           foto: existente.foto || fotoResolvida,
-          quantidade: (Number(existente.quantidade) || 0) + (Number(p.quantidade) || 0),
+          preco_venda: Number(existente.preco_venda) > 0 ? existente.preco_venda : p.preco_venda,
+          quantidade: ilimitadoCombinado
+            ? 99999
+            : (Number(existente.quantidade) || 0) + qtdValidaLote,
+          estoqueIlimitado: ilimitadoCombinado,
+          tipoCadastro: ilimitadoCombinado ? 'interno' : existente.tipoCadastro,
         });
       }
     });
-    return Array.from(mapa.values()).sort((a, b) =>
-      (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base', numeric: true })
-    );
+
+    // Filtra produtos esgotados (saldo <= 0) para que NUNCA apareçam para o cliente no cardápio
+    return Array.from(mapaPorCodigo.values())
+      .filter((item) => {
+        const isIlimitado = Boolean(item.estoqueIlimitado || item.tipoCadastro === 'interno');
+        return isIlimitado || (Number(item.quantidade) || 0) > 0;
+      })
+      .sort((a, b) =>
+        (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base', numeric: true })
+      );
   }, [estoque, obterFotoProduto, obterNomeProduto]);
 
   // Categorias únicas baseadas no estoque real
@@ -221,10 +257,18 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     });
   }, [estoqueAgrupado, busca, categoriaSelecionada]);
 
-  // Adicionar ao carrinho
+  // Adicionar ao carrinho respeitando o estoque disponível somado dos lotes
   const adicionarAoCarrinho = (item: ItemEstoque) => {
+    const isIlimitado = Boolean(item.estoqueIlimitado || item.tipoCadastro === 'interno');
+    const maxDisponivel = isIlimitado ? 99999 : (Number(item.quantidade) || 0);
+    if (maxDisponivel <= 0) return;
+
     setCarrinho((prev) => {
       const atual = prev[item.codigo]?.qtd || 0;
+      if (!isIlimitado && atual >= maxDisponivel) {
+        alert(`⚠️ Quantidade máxima disponível em estoque atingida (${maxDisponivel} un).`);
+        return prev;
+      }
       return {
         ...prev,
         [item.codigo]: { item, qtd: atual + 1 },

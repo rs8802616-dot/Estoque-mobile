@@ -4922,20 +4922,47 @@ export default function App() {
     const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
     if (!pedidoAlvo) return;
 
-    // Se o pedido está sendo aceito (passando de pendente para em_separacao), baixa o estoque da loja!
+    // Se o pedido está sendo aceito (passando de pendente para em_separacao), baixa o estoque da loja em ordem FEFO (vencimento mais próximo primeiro)
     if (pedidoAlvo.status === 'pendente' && novoStatus === 'em_separacao') {
-      const novoEstoque = [...estoque];
+      let novoEstoque = [...estoque];
 
       pedidoAlvo.itens.forEach((it) => {
-        const idx = novoEstoque.findIndex(
-          (e) => e.codigo === it.codigo && (!it.lote || e.lote === it.lote)
-        );
-        if (idx !== -1 && !novoEstoque[idx].estoqueIlimitado) {
-          const saldo = Math.max(0, novoEstoque[idx].quantidade - it.quantidade);
-          novoEstoque[idx] = { ...novoEstoque[idx], quantidade: saldo };
-          salvarItemEstoqueFirestore(novoEstoque[idx], storeId);
+        const codAlvo = String(it.codigo || '').trim();
+        let qtdRestanteAbater = Number(it.quantidade) || 0;
+        if (qtdRestanteAbater <= 0) return;
+
+        // Localiza lotes correspondentes ordenados pela validade mais próxima (FEFO)
+        const indicesLotes = novoEstoque
+          .map((e, idx) => ({ e, idx }))
+          .filter(({ e }) => String(e.codigo || '').trim() === codAlvo)
+          .sort((a, b) => (a.e.validade || '9999-12-31').localeCompare(b.e.validade || '9999-12-31'));
+
+        for (const { e, idx } of indicesLotes) {
+          if (qtdRestanteAbater <= 0) break;
+          if (e.estoqueIlimitado || e.tipoCadastro === 'interno') {
+            qtdRestanteAbater = 0;
+            break;
+          }
+          const disponivelLote = Math.max(0, Number(e.quantidade) || 0);
+          if (disponivelLote <= 0) continue;
+
+          const abaterDesteLote = Math.min(disponivelLote, qtdRestanteAbater);
+          const novoSaldoLote = disponivelLote - abaterDesteLote;
+          qtdRestanteAbater -= abaterDesteLote;
+
+          novoEstoque[idx] = { ...novoEstoque[idx], quantidade: novoSaldoLote };
+          if (novoSaldoLote <= 0) {
+            excluirItemEstoqueFirestore(e.codigo, e.validade, e.lote, storeId).catch(() => {});
+          } else {
+            salvarItemEstoqueFirestore(novoEstoque[idx], storeId).catch(() => {});
+          }
         }
       });
+
+      // Remove do array em memória os lotes controlados que zeraram
+      novoEstoque = novoEstoque.filter(
+        (e) => e.estoqueIlimitado || e.tipoCadastro === 'interno' || (Number(e.quantidade) || 0) > 0
+      );
 
       setEstoque(novoEstoque);
       safeLocalStorageSet(`estoque_${storeId}`, JSON.stringify(novoEstoque));
@@ -5275,14 +5302,15 @@ export default function App() {
   > = {};
 
   estoqueFiltrado.forEach((p) => {
-    const nomeFinal = obterNomeProduto(p.codigo, p.nome);
-    const fotoFinal = obterFotoProduto(p.codigo, p.foto);
-    const catRel = catalogoGlobal.find((c) => c.codigo === p.codigo);
+    const codLimpo = String(p.codigo || p.codigo_barras || '').trim() || p.codigo;
+    const nomeFinal = obterNomeProduto(codLimpo, p.nome);
+    const fotoFinal = obterFotoProduto(codLimpo, p.foto);
+    const catRel = catalogoGlobal.find((c) => String(c.codigo || '').trim() === codLimpo);
     const categoriaFinal = catRel?.categoria || p.categoria;
 
-    if (!agrupados[p.codigo]) {
-      agrupados[p.codigo] = {
-        codigo: p.codigo,
+    if (!agrupados[codLimpo]) {
+      agrupados[codLimpo] = {
+        codigo: codLimpo,
         nome: nomeFinal,
         foto: fotoFinal,
         preco_venda: p.preco_venda,
@@ -5292,11 +5320,11 @@ export default function App() {
         estoqueIlimitado: p.estoqueIlimitado,
         categoria: categoriaFinal,
       };
-    } else if (agrupados[p.codigo].nome !== nomeFinal && nomeFinal) {
-      agrupados[p.codigo].nome = nomeFinal;
+    } else if (agrupados[codLimpo].nome !== nomeFinal && nomeFinal) {
+      agrupados[codLimpo].nome = nomeFinal;
     }
-    agrupados[p.codigo].qtdTotal += p.quantidade;
-    agrupados[p.codigo].lotes.push({ validade: p.validade, qtd: p.quantidade, lote: p.lote });
+    agrupados[codLimpo].qtdTotal += p.quantidade;
+    agrupados[codLimpo].lotes.push({ validade: p.validade, qtd: p.quantidade, lote: p.lote });
   });
 
   const listaAgrupada = Object.values(agrupados).sort((a, b) => {
