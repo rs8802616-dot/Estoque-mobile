@@ -230,6 +230,19 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Coluna de Delivery Integrada ao Caixa (`CaixaDeliveryPanel.tsx`):**
     - Coluna de delivery idêntica ao AtendeJá embutida na tela do Caixa com filtros de status (`Todos`, `🔴 Novos`, `Preparo`, `A Caminho`), botão de copiar link da loja, despacho no WhatsApp do motoboy com link de rota do Google Maps, validação de entrega por PIN de 4 dígitos e baixa no estoque via FEFO.
 
+### [2026-10-22 - Atualização 3]
+- **Cardápio do Cliente no Formato Exato do PDV, Correção de Autofill e Central de Relatórios:**
+  - **Cardápio do Cliente (`CardapioClienteDeliveryModal.tsx`):**
+    - Eliminado o antigo formato escuro com bloqueio de 18+ e categorias hardcoded de bebidas.
+    - Implementado visual claro, expansivo e moderno idêntico ao PDV: cards com foto, nome, código/categoria, destaque de preço em verde esmeralda e stepper de quantidade `[ - ] {qtd} [ + ]`.
+    - Filtros de categorias dinâmicos derivados do estoque real da loja (`📦 Todos`, `🍢 Balcão & Adega`, `🏷️ Industrial / EAN` e categorias de produtos).
+    - Barra flutuante de checkout no rodapé com cálculo dinâmico de bairros e opções de Delivery e Retirada.
+  - **Bloqueio de Autofill do Navegador na Busca (`CaixaDeliveryPanel.tsx`):**
+    - Adicionado `autoComplete="new-password"` e normalização inteligente na busca de pedidos, impedindo que o navegador injete automaticamente o login (`rodrigo.souza`) e oculte pedidos ativos.
+  - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
+    - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
+    - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
 ### [2026-10-22 - Atualização 2]
 - **Renderização Exclusiva do CustomerDeliveryView e Coluna CaixaView do AtendeJá:**
   - **Acesso ao Link (`/?loja=` ou `/?delivery=true`):**
@@ -244,6 +257,19 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Botão de despacho com mensagem WhatsApp e rota no Google Maps para o motoboy.
     - Modal de conferência e validação do código PIN de 4 dígitos.
     - Botão no cabeçalho do Caixa para fixar/ocultar o painel lateral de delivery a qualquer momento.
+
+### [2026-10-22 - Atualização 3]
+- **Cardápio do Cliente no Formato Exato do PDV, Correção de Autofill e Central de Relatórios:**
+  - **Cardápio do Cliente (`CardapioClienteDeliveryModal.tsx`):**
+    - Eliminado o antigo formato escuro com bloqueio de 18+ e categorias hardcoded de bebidas.
+    - Implementado visual claro, expansivo e moderno idêntico ao PDV: cards com foto, nome, código/categoria, destaque de preço em verde esmeralda e stepper de quantidade `[ - ] {qtd} [ + ]`.
+    - Filtros de categorias dinâmicos derivados do estoque real da loja (`📦 Todos`, `🍢 Balcão & Adega`, `🏷️ Industrial / EAN` e categorias de produtos).
+    - Barra flutuante de checkout no rodapé com cálculo dinâmico de bairros e opções de Delivery e Retirada.
+  - **Bloqueio de Autofill do Navegador na Busca (`CaixaDeliveryPanel.tsx`):**
+    - Adicionado `autoComplete="new-password"` e normalização inteligente na busca de pedidos, impedindo que o navegador injete automaticamente o login (`rodrigo.souza`) e oculte pedidos ativos.
+  - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
+    - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
+    - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
 ### [2026-10-22 - Atualização 2]
 - **Fidelidade Visual Total ao Modelo AtendeJá no Painel de Delivery do PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
@@ -272,6 +298,19 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Botão `Despachar Motoboy` com link pré-formatado para o WhatsApp do entregador contendo endereço completo e rota do Google Maps (`https://www.google.com/maps/search/?api=1&query=...`).
     - Validação de entrega segura por PIN de 4 dígitos.
     - Impressão térmica de comandas para o balcão.
+
+### [2026-10-22 - Atualização 3]
+- **Cardápio do Cliente no Formato Exato do PDV, Correção de Autofill e Central de Relatórios:**
+  - **Cardápio do Cliente (`CardapioClienteDeliveryModal.tsx`):**
+    - Eliminado o antigo formato escuro com bloqueio de 18+ e categorias hardcoded de bebidas.
+    - Implementado visual claro, expansivo e moderno idêntico ao PDV: cards com foto, nome, código/categoria, destaque de preço em verde esmeralda e stepper de quantidade `[ - ] {qtd} [ + ]`.
+    - Filtros de categorias dinâmicos derivados do estoque real da loja (`📦 Todos`, `🍢 Balcão & Adega`, `🏷️ Industrial / EAN` e categorias de produtos).
+    - Barra flutuante de checkout no rodapé com cálculo dinâmico de bairros e opções de Delivery e Retirada.
+  - **Bloqueio de Autofill do Navegador na Busca (`CaixaDeliveryPanel.tsx`):**
+    - Adicionado `autoComplete="new-password"` e normalização inteligente na busca de pedidos, impedindo que o navegador injete automaticamente o login (`rodrigo.souza`) e oculte pedidos ativos.
+  - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
+    - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
+    - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
 ### [2026-10-22 - Atualização 2]
 - **Fidelidade Visual Total ao Modelo AtendeJá no Painel de Delivery do PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**

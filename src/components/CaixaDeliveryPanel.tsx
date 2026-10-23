@@ -128,13 +128,24 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       })
       .filter((p) => {
         if (!deliverySearch.trim()) return true;
-        const q = deliverySearch.toLowerCase();
+        const q = deliverySearch.toLowerCase().trim();
+        const qNormalized = q.replace(/[.\-_]/g, ' ');
         const nome = (p.cliente?.nome || '').toLowerCase();
-        const fone = (p.cliente?.telefone || '').toLowerCase();
+        const nomeNormalized = nome.replace(/[.\-_]/g, ' ');
+        const fone = (p.cliente?.telefone || '').replace(/\D/g, '');
+        const qDigits = q.replace(/\D/g, '');
         const rua = (p.enderecoEntrega?.logradouro || '').toLowerCase();
         const bairro = (p.enderecoEntrega?.bairro || '').toLowerCase();
         const id = p.numeroPedido.toString();
-        return nome.includes(q) || fone.includes(q) || rua.includes(q) || bairro.includes(q) || id.includes(q);
+
+        return (
+          nome.includes(q) ||
+          nomeNormalized.includes(qNormalized) ||
+          (qDigits.length > 2 && fone.includes(qDigits)) ||
+          rua.includes(q) ||
+          bairro.includes(q) ||
+          id.includes(q)
+        );
       })
       .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   }, [pedidos, deliveryFilter, deliverySearch]);
@@ -248,7 +259,15 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
           <Search className="w-4 h-4" />
         </div>
         <input
-          type="text"
+          type="search"
+          name="busca_delivery_pedidos_input"
+          id="busca_delivery_pedidos_input"
+          autoComplete="new-password"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
+          data-lpignore="true"
+          data-form-type="other"
           value={deliverySearch}
           onChange={(e) => setDeliverySearch(e.target.value)}
           placeholder="Buscar cliente, rua, fone..."

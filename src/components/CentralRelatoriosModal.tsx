@@ -74,6 +74,12 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 }) => {
   const [abaAtiva, setAbaAtiva] = useState<'faturamento' | 'vendas' | 'estoque' | 'delivery'>(abaInicial);
 
+  useEffect(() => {
+    if (abaInicial) {
+      setAbaAtiva(abaInicial);
+    }
+  }, [abaInicial, visivel]);
+
   // Filtros gerais de período
   const [periodoFiltro, setPeriodoFiltro] = useState<'hoje' | '7dias' | '30dias' | 'mes' | 'todos'>('mes');
   const [origemFiltro, setOrigemFiltro] = useState<'todos' | 'balcao' | 'delivery'>('todos');

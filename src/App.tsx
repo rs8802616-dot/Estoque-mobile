@@ -5721,7 +5721,7 @@ export default function App() {
             </div>
           )}
 
-          {/* MÓDULO ZÉ DELIVERY */}
+          {/* MÓDULO DELIVERY */}
           <div
             className="sidebar-item"
             style={{
@@ -5735,11 +5735,12 @@ export default function App() {
               justifyContent: 'space-between',
             }}
             onClick={() => {
+              setColunaDeliveryFixaVisivel(true);
               abrirGestaoDelivery();
               fecharMenu();
             }}
           >
-            <span>🛵 Painel Delivery (Zé Delivery)</span>
+            <span>🛵 Painel Delivery</span>
             {pedidosDelivery.filter((p) => p.status === 'pendente').length > 0 && (
               <span
                 style={{
@@ -5770,7 +5771,7 @@ export default function App() {
               fecharMenu();
             }}
           >
-            🛍️ Ver Cardápio do Cliente (Bebidas Geladas)
+            🛍️ Ver Cardápio do Cliente
           </div>
 
           {/* CENTRAL ÚNICA DE RELATÓRIOS & LUCRO REAL */}
