@@ -104,6 +104,16 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-23 - Atualização 8]
+- **Organização do Menu Lateral em 5 Grupos Retráteis (Acordeão) (`src/App.tsx`):**
+  - Substituída a listagem extensa de 15+ botões soltos no menu lateral (`.sidebar-menu`) por **5 grupos expansíveis (acordeão)** com memória do último grupo aberto no `localStorage` (`menu_grupo_aberto`):
+    1. **💰 Caixa & Vendas:** Gestão de Caixa (Abertura, Sangria & Turno), Área de Devedores / Fiado e Histórico de Vendas & Cupons (com selos de status `🟢 Aberto` / `🔴 Fechado` e contador de fiado visíveis no cabeçalho mesmo fechado).
+    2. **📦 Estoque & Produtos:** Adicionar Item em Estoque, Posição de Estoque & Validades, Imprimir Etiquetas de Prateleira, Catálogo Global e Cadastro no Banco Master (exclusivo Dona do App).
+    3. **🛵 Delivery:** Painel Delivery (com selo vermelho `NOVO` no cabeçalho do grupo e no item), Ver Cardápio do Cliente e botão rápido `🔗 Copiar Link do Cardápio`.
+    4. **📊 Relatórios:** Central de Relatórios & Lucro Real (Hub Unificado de 4 abas) e Gráficos de Lucro & Faturamento.
+    5. **⚙️ Configurações & Equipe:** Cadastrar Caixas & Permissões, Cadastrar / Gerenciar Lojas, Alterar Login / Senha (Dono do App), Alertas WhatsApp, Manual de Instruções e Termo de Sigilo & Concordância.
+  - Mantido o isolamento de permissões por operador e loja: se o operador não tiver acesso a nenhum item de um grupo, o grupo inteiro fica oculto.
+
 ### [2026-10-22 - Atualização 7]
 - **Correção Estrutural de CSS (Tailwind CSS v4), Painel Delivery Estilo AtendeJá, Cardápio Unificado com PDV e Correção dos Relatórios do Menu Lateral:**
   - **Correção Global de Espaçamento/Padding (`src/index.css`):**

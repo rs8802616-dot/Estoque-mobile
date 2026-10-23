@@ -328,6 +328,24 @@ export default function App() {
   // UI Search & Navigation States
   const [busca, setBusca] = useState<string>('');
   const [menuAtivo, setMenuAtivo] = useState<boolean>(false);
+  const [grupoMenuAberto, setGrupoMenuAberto] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('menu_grupo_aberto') || 'caixa';
+    } catch {
+      return 'caixa';
+    }
+  });
+  const [linkCardapioCopiadoMenu, setLinkCardapioCopiadoMenu] = useState<boolean>(false);
+
+  const alternarGrupoMenu = (grupo: string) => {
+    setGrupoMenuAberto((prev) => {
+      const proximo = prev === grupo ? null : grupo;
+      try {
+        localStorage.setItem('menu_grupo_aberto', proximo || '');
+      } catch {}
+      return proximo;
+    });
+  };
 
   // Scanner States (Câmera & Leitor Físico USB/Bluetooth)
   const [leitorAtivo, setLeitorAtivo] = useState<boolean>(false);
@@ -5714,252 +5732,494 @@ export default function App() {
           </button>
         </div>
         <div className="sidebar-menu">
-          {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
-            <div
-              className="sidebar-item"
-              style={{ fontWeight: 600, background: '#e0f2fe', color: '#0369a1', borderRadius: '6px' }}
-              onClick={() => {
-                setModalCaixaVisivel(true);
-                fecharMenu();
-              }}
-            >
-              💵 Gestão de Caixa (Abertura, Sangria & Turno) {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '🔴 Fechado' : '🟢 Aberto'}
-            </div>
-          )}
-
-          {temPermissaoOperador('gerenciar_devedores', 'devedores') && (
-            <div
-              className="sidebar-item"
-              style={{ fontWeight: 600, background: '#fef2f2', color: '#991b1b', borderRadius: '6px' }}
-              onClick={() => {
-                setModalDevedoresVisivel(true);
-                fecharMenu();
-              }}
-            >
-              💳 Área de Devedores / Fiado ({clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length} com saldo devedor)
-            </div>
-          )}
-
-          {temPermissaoOperador('imprimir_etiquetas', 'etiquetas') && (
-            <div
-              className="sidebar-item"
-              onClick={() => {
-                setModalEtiquetasVisivel(true);
-                fecharMenu();
-              }}
-            >
-              🏷️ Imprimir Etiquetas de Prateleira
-            </div>
-          )}
-
-          {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
-            <div
-              className="sidebar-item"
-              style={{ fontWeight: 700, background: '#dcfce7', color: '#15803d', border: '1px solid #86efac' }}
-              onClick={() => {
-                abrirCadastro('estoque');
-                fecharMenu();
-              }}
-            >
-              ➕ Adicionar Item em Estoque (Validade, Preços & Qtd)
-            </div>
-          )}
-
-          {perfilAtivo === 'dona_app' && (
-            <div
-              className="sidebar-item"
-              style={{ fontWeight: 600, background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
-              onClick={() => {
-                abrirCadastro('master');
-                fecharMenu();
-              }}
-            >
-              👑 Cadastrar no Banco de Dados Master (Geral)
-            </div>
-          )}
-
-          {/* MÓDULO DELIVERY */}
-          <div
-            className="sidebar-item"
-            style={{
-              fontWeight: 800,
-              background: '#fef3c7',
-              color: '#92400e',
-              border: '1.5px solid #f59e0b',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-            onClick={() => {
-              setColunaDeliveryFixaVisivel(true);
-              abrirGestaoDelivery();
-              fecharMenu();
-            }}
-          >
-            <span>🛵 Painel Delivery</span>
-            {pedidosDelivery.filter((p) => p.status === 'pendente').length > 0 && (
-              <span
+          {/* 💰 1. CAIXA & VENDAS */}
+          {(temPermissaoOperador('gestao_caixa', 'gestao_caixa') ||
+            temPermissaoOperador('gerenciar_devedores', 'devedores') ||
+            temPermissaoOperador('ver_relatorios', 'relatorios')) && (
+            <div style={{ border: '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+              <div
+                onClick={() => alternarGrupoMenu('caixa')}
                 style={{
-                  background: '#ef4444',
-                  color: '#ffffff',
-                  borderRadius: '9999px',
-                  padding: '2px 8px',
-                  fontSize: '0.7rem',
-                  fontWeight: 900,
+                  padding: '12px 14px',
+                  background: grupoMenuAberto === 'caixa' ? '#eff6ff' : '#f8fafc',
+                  color: '#0f172a',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  borderBottom: grupoMenuAberto === 'caixa' ? '1px solid #bfdbfe' : 'none',
                 }}
               >
-                {pedidosDelivery.filter((p) => p.status === 'pendente').length} NOVO
-              </span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>💰 Caixa & Vendas</span>
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 800,
+                        padding: '2px 7px',
+                        borderRadius: '9999px',
+                        background: !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#fee2e2' : '#dcfce7',
+                        color: !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#991b1b' : '#166534',
+                      }}
+                    >
+                      {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '🔴 Fechado' : '🟢 Aberto'}
+                    </span>
+                  )}
+                  {temPermissaoOperador('gerenciar_devedores', 'devedores') &&
+                    clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length > 0 && (
+                      <span
+                        style={{
+                          fontSize: '0.68rem',
+                          fontWeight: 800,
+                          padding: '2px 7px',
+                          borderRadius: '9999px',
+                          background: '#fef2f2',
+                          color: '#b91c1c',
+                          border: '1px solid #fecaca',
+                        }}
+                      >
+                        {clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length} fiado
+                      </span>
+                    )}
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    {grupoMenuAberto === 'caixa' ? '▲' : '▼'}
+                  </span>
+                </div>
+              </div>
+
+              {grupoMenuAberto === 'caixa' && (
+                <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                  {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
+                    <div
+                      className="sidebar-item"
+                      style={{ fontWeight: 600, background: '#e0f2fe', color: '#0369a1', borderRadius: '6px' }}
+                      onClick={() => {
+                        setModalCaixaVisivel(true);
+                        fecharMenu();
+                      }}
+                    >
+                      💵 Gestão de Caixa (Abertura, Sangria & Turno){' '}
+                      {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '🔴 Fechado' : '🟢 Aberto'}
+                    </div>
+                  )}
+
+                  {temPermissaoOperador('gerenciar_devedores', 'devedores') && (
+                    <div
+                      className="sidebar-item"
+                      style={{ fontWeight: 600, background: '#fef2f2', color: '#991b1b', borderRadius: '6px' }}
+                      onClick={() => {
+                        setModalDevedoresVisivel(true);
+                        fecharMenu();
+                      }}
+                    >
+                      💳 Área de Devedores / Fiado ({clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length} com saldo devedor)
+                    </div>
+                  )}
+
+                  {temPermissaoOperador('ver_relatorios', 'relatorios') && (
+                    <div
+                      className="sidebar-item"
+                      onClick={() => {
+                        abrirRelatorioVendas();
+                        fecharMenu();
+                      }}
+                    >
+                      🧾 Histórico de Vendas & Cupons
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 📦 2. ESTOQUE & PRODUTOS */}
+          {(temPermissaoOperador('cadastrar_produtos', 'estoque') ||
+            temPermissaoOperador('ver_relatorios', 'relatorios') ||
+            temPermissaoOperador('imprimir_etiquetas', 'etiquetas') ||
+            temPermissaoOperador('catalogo_global', 'catalogo_global') ||
+            perfilAtivo === 'dona_app') && (
+            <div style={{ border: '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+              <div
+                onClick={() => alternarGrupoMenu('estoque')}
+                style={{
+                  padding: '12px 14px',
+                  background: grupoMenuAberto === 'estoque' ? '#f0fdf4' : '#f8fafc',
+                  color: '#0f172a',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  borderBottom: grupoMenuAberto === 'estoque' ? '1px solid #bbf7d0' : 'none',
+                }}
+              >
+                <span>📦 Estoque & Produtos</span>
+                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                  {grupoMenuAberto === 'estoque' ? '▲' : '▼'}
+                </span>
+              </div>
+
+              {grupoMenuAberto === 'estoque' && (
+                <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                  {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
+                    <div
+                      className="sidebar-item"
+                      style={{ fontWeight: 700, background: '#dcfce7', color: '#15803d', border: '1px solid #86efac' }}
+                      onClick={() => {
+                        abrirCadastro('estoque');
+                        fecharMenu();
+                      }}
+                    >
+                      ➕ Adicionar Item em Estoque (Validade, Preços & Qtd)
+                    </div>
+                  )}
+
+                  {(temPermissaoOperador('ver_relatorios', 'relatorios') ||
+                    temPermissaoOperador('cadastrar_produtos', 'estoque')) && (
+                    <div
+                      className="sidebar-item"
+                      onClick={() => {
+                        abrirRelatorio();
+                        fecharMenu();
+                      }}
+                    >
+                      📦 Posição de Estoque & Validades
+                    </div>
+                  )}
+
+                  {temPermissaoOperador('imprimir_etiquetas', 'etiquetas') && (
+                    <div
+                      className="sidebar-item"
+                      onClick={() => {
+                        setModalEtiquetasVisivel(true);
+                        fecharMenu();
+                      }}
+                    >
+                      🏷️ Imprimir Etiquetas de Prateleira
+                    </div>
+                  )}
+
+                  {temPermissaoOperador('catalogo_global', 'catalogo_global') && (
+                    <div
+                      className="sidebar-item"
+                      onClick={() => {
+                        abrirRelatorioCatalogo();
+                        fecharMenu();
+                      }}
+                    >
+                      🗂️ Catálogo Global
+                    </div>
+                  )}
+
+                  {perfilAtivo === 'dona_app' && (
+                    <div
+                      className="sidebar-item"
+                      style={{ fontWeight: 600, background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
+                      onClick={() => {
+                        abrirCadastro('master');
+                        fecharMenu();
+                      }}
+                    >
+                      👑 Cadastrar no Banco de Dados Master (Geral)
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* 🛵 3. DELIVERY */}
+          <div style={{ border: '1px solid #fde68a', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+            <div
+              onClick={() => alternarGrupoMenu('delivery')}
+              style={{
+                padding: '12px 14px',
+                background: grupoMenuAberto === 'delivery' ? '#fef3c7' : '#fffbeb',
+                color: '#92400e',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                userSelect: 'none',
+                borderBottom: grupoMenuAberto === 'delivery' ? '1px solid #fcd34d' : 'none',
+              }}
+            >
+              <span>🛵 Delivery</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {pedidosDelivery.filter((p) => p.status === 'pendente').length > 0 && (
+                  <span
+                    style={{
+                      background: '#ef4444',
+                      color: '#ffffff',
+                      borderRadius: '9999px',
+                      padding: '2px 8px',
+                      fontSize: '0.7rem',
+                      fontWeight: 900,
+                    }}
+                  >
+                    {pedidosDelivery.filter((p) => p.status === 'pendente').length} NOVO
+                  </span>
+                )}
+                <span style={{ fontSize: '0.75rem', color: '#92400e' }}>
+                  {grupoMenuAberto === 'delivery' ? '▲' : '▼'}
+                </span>
+              </div>
+            </div>
+
+            {grupoMenuAberto === 'delivery' && (
+              <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                <div
+                  className="sidebar-item"
+                  style={{
+                    fontWeight: 800,
+                    background: '#fef3c7',
+                    color: '#92400e',
+                    border: '1.5px solid #f59e0b',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                  onClick={() => {
+                    setColunaDeliveryFixaVisivel(true);
+                    abrirGestaoDelivery();
+                    fecharMenu();
+                  }}
+                >
+                  <span>🛵 Painel Delivery</span>
+                  {pedidosDelivery.filter((p) => p.status === 'pendente').length > 0 && (
+                    <span
+                      style={{
+                        background: '#ef4444',
+                        color: '#ffffff',
+                        borderRadius: '9999px',
+                        padding: '2px 8px',
+                        fontSize: '0.7rem',
+                        fontWeight: 900,
+                      }}
+                    >
+                      {pedidosDelivery.filter((p) => p.status === 'pendente').length} NOVO
+                    </span>
+                  )}
+                </div>
+
+                <div
+                  className="sidebar-item"
+                  style={{
+                    fontWeight: 700,
+                    background: '#fffbeb',
+                    color: '#b45309',
+                    borderRadius: '8px',
+                    border: '1px solid #fde68a',
+                  }}
+                  onClick={() => {
+                    abrirCardapioCliente();
+                    fecharMenu();
+                  }}
+                >
+                  🛍️ Ver Cardápio do Cliente
+                </div>
+
+                <div
+                  className="sidebar-item"
+                  style={{
+                    fontWeight: 700,
+                    background: linkCardapioCopiadoMenu ? '#dcfce7' : '#f8fafc',
+                    color: linkCardapioCopiadoMenu ? '#15803d' : '#334155',
+                    borderRadius: '8px',
+                    border: linkCardapioCopiadoMenu ? '1px solid #86efac' : '1px solid #e2e8f0',
+                  }}
+                  onClick={() => {
+                    const slug = lojaAtualObj?.slug || lojaAtualObj?.id || supermercadoAtual || 'loja_matriz_01';
+                    let url = `${window.location.origin}/?loja=${slug}`;
+                    if (lojaAtualObj?.marca) url += `&marca=${encodeURIComponent(lojaAtualObj.marca)}`;
+                    if (lojaAtualObj?.nome) url += `&nome=${encodeURIComponent(lojaAtualObj.nome)}`;
+                    navigator.clipboard.writeText(url);
+                    setLinkCardapioCopiadoMenu(true);
+                    setTimeout(() => setLinkCardapioCopiadoMenu(false), 2500);
+                  }}
+                >
+                  {linkCardapioCopiadoMenu ? '✅ Link do Cardápio Copiado!' : '🔗 Copiar Link do Cardápio'}
+                </div>
+              </div>
             )}
           </div>
 
-          <div
-            className="sidebar-item"
-            style={{
-              fontWeight: 700,
-              background: '#fffbeb',
-              color: '#b45309',
-              borderRadius: '8px',
-              border: '1px solid #fde68a',
-            }}
-            onClick={() => {
-              abrirCardapioCliente();
-              fecharMenu();
-            }}
-          >
-            🛍️ Ver Cardápio do Cliente
-          </div>
-
-          {/* CENTRAL ÚNICA DE RELATÓRIOS & LUCRO REAL */}
-          {temPermissaoOperador('ver_relatorios', 'relatorios') && (
-            <div
-              className="sidebar-item"
-              style={{
-                fontWeight: 800,
-                background: '#ecfdf5',
-                color: '#065f46',
-                border: '1.5px solid #10b981',
-                borderRadius: '8px',
-              }}
-              onClick={() => {
-                abrirCentralRelatorios('faturamento');
-                fecharMenu();
-              }}
-            >
-              📊 Central de Relatórios & Lucro Real (Hub Unificado)
-            </div>
-          )}
-
-          {temPermissaoOperador('ver_relatorios', 'relatorios') && (
-            <div
-              className="sidebar-item"
-              onClick={() => {
-                abrirRelatorioVendas();
-                fecharMenu();
-              }}
-            >
-              🧾 Histórico de Vendas & Cupons
-            </div>
-          )}
-
+          {/* 📊 4. RELATÓRIOS */}
           {(temPermissaoOperador('ver_relatorios', 'relatorios') ||
-            temPermissaoOperador('cadastrar_produtos', 'estoque')) && (
-            <div
-              className="sidebar-item"
-              onClick={() => {
-                abrirRelatorio();
-                fecharMenu();
-              }}
-            >
-              📦 Posição de Estoque & Validades
+            temPermissaoOperador('ver_graficos', 'graficos')) && (
+            <div style={{ border: '1px solid #a7f3d0', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+              <div
+                onClick={() => alternarGrupoMenu('relatorios')}
+                style={{
+                  padding: '12px 14px',
+                  background: grupoMenuAberto === 'relatorios' ? '#d1fae5' : '#ecfdf5',
+                  color: '#065f46',
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  borderBottom: grupoMenuAberto === 'relatorios' ? '1px solid #6ee7b7' : 'none',
+                }}
+              >
+                <span>📊 Relatórios</span>
+                <span style={{ fontSize: '0.75rem', color: '#065f46' }}>
+                  {grupoMenuAberto === 'relatorios' ? '▲' : '▼'}
+                </span>
+              </div>
+
+              {grupoMenuAberto === 'relatorios' && (
+                <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                  {temPermissaoOperador('ver_relatorios', 'relatorios') && (
+                    <div
+                      className="sidebar-item"
+                      style={{
+                        fontWeight: 800,
+                        background: '#ecfdf5',
+                        color: '#065f46',
+                        border: '1.5px solid #10b981',
+                        borderRadius: '8px',
+                      }}
+                      onClick={() => {
+                        abrirCentralRelatorios('faturamento');
+                        fecharMenu();
+                      }}
+                    >
+                      📊 Central de Relatórios & Lucro Real (Hub Unificado)
+                    </div>
+                  )}
+
+                  {temPermissaoOperador('ver_graficos', 'graficos') && (
+                    <div
+                      className="sidebar-item"
+                      onClick={() => {
+                        abrirGraficosVendas();
+                        fecharMenu();
+                      }}
+                    >
+                      📈 Gráficos de Lucro & Faturamento
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
-          {temPermissaoOperador('ver_graficos', 'graficos') && (
+          {/* ⚙️ 5. CONFIGURAÇÕES & EQUIPE */}
+          <div style={{ border: '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
             <div
-              className="sidebar-item"
-              onClick={() => {
-                abrirGraficosVendas();
-                fecharMenu();
+              onClick={() => alternarGrupoMenu('config')}
+              style={{
+                padding: '12px 14px',
+                background: grupoMenuAberto === 'config' ? '#f1f5f9' : '#f8fafc',
+                color: '#0f172a',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                userSelect: 'none',
+                borderBottom: grupoMenuAberto === 'config' ? '1px solid #cbd5e1' : 'none',
               }}
             >
-              📈 Gráficos de Lucro & Faturamento
+              <span>⚙️ Configurações & Equipe</span>
+              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                {grupoMenuAberto === 'config' ? '▲' : '▼'}
+              </span>
             </div>
-          )}
 
-          {temPermissaoOperador('catalogo_global', 'catalogo_global') && (
-            <div
-              className="sidebar-item"
-              onClick={() => {
-                abrirRelatorioCatalogo();
-                fecharMenu();
-              }}
-            >
-              🗂️ Catálogo Global
-            </div>
-          )}
+            {grupoMenuAberto === 'config' && (
+              <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                {temPermissaoOperador('gerenciar_equipe', 'usuarios') && (
+                  <div
+                    className="sidebar-item"
+                    onClick={() => {
+                      abrirModalOperadores();
+                      fecharMenu();
+                    }}
+                  >
+                    👥 Cadastrar Caixas & Permissões
+                  </div>
+                )}
 
-          {temPermissaoOperador('gerenciar_equipe', 'usuarios') && (
-            <div
-              className="sidebar-item"
-              onClick={() => {
-                abrirModalOperadores();
-                fecharMenu();
-              }}
-            >
-              👥 Cadastrar Caixas & Permissões
-            </div>
-          )}
+                {perfilAtivo === 'dona_app' && (
+                  <div
+                    className="sidebar-item"
+                    onClick={() => {
+                      abrirModalSupermercado();
+                      fecharMenu();
+                    }}
+                  >
+                    🏢 Cadastrar / Gerenciar Lojas (Dona do App)
+                  </div>
+                )}
 
-          {perfilAtivo === 'dona_app' && (
-            <div
-              className="sidebar-item"
-              onClick={() => {
-                abrirModalSupermercado();
-                fecharMenu();
-              }}
-            >
-              🏢 Cadastrar / Gerenciar Lojas (Dona do App)
-            </div>
-          )}
+                {perfilAtivo === 'dona_app' && (
+                  <div
+                    className="sidebar-item"
+                    style={{ fontWeight: 700, background: '#fdf4ff', color: '#9333ea', border: '1px solid #f0abfc' }}
+                    onClick={() => {
+                      setModalCredenciaisDonoVisivel(true);
+                      fecharMenu();
+                    }}
+                  >
+                    👑 Alterar Meu Login / Senha (Dono do App)
+                  </div>
+                )}
 
-          {perfilAtivo === 'dona_app' && (
-            <div
-              className="sidebar-item"
-              style={{ fontWeight: 700, background: '#fdf4ff', color: '#9333ea', border: '1px solid #f0abfc' }}
-              onClick={() => {
-                setModalCredenciaisDonoVisivel(true);
-                fecharMenu();
-              }}
-            >
-              👑 Alterar Meu Login / Senha (Dono do App)
-            </div>
-          )}
+                {temPermissaoOperador('alertas_whatsapp', 'alertas_whatsapp') && (
+                  <div
+                    className="sidebar-item"
+                    style={{ fontWeight: 600, background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}
+                    onClick={() => {
+                      setModalAlertasWhatsAppVisivel(true);
+                      fecharMenu();
+                    }}
+                  >
+                    📲 Alertas WhatsApp
+                  </div>
+                )}
 
-          {temPermissaoOperador('ver_manual_usuario', 'manual_ajuda') && (
-            <div
-              className="sidebar-item"
-              style={{ fontWeight: 600, background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
-              onClick={() => {
-                setModalManualVisivel(true);
-                fecharMenu();
-              }}
-            >
-              📘 Manual de Instruções do Usuário
-            </div>
-          )}
+                {temPermissaoOperador('ver_manual_usuario', 'manual_ajuda') && (
+                  <div
+                    className="sidebar-item"
+                    style={{ fontWeight: 600, background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
+                    onClick={() => {
+                      setModalManualVisivel(true);
+                      fecharMenu();
+                    }}
+                  >
+                    📘 Manual de Instruções do Usuário
+                  </div>
+                )}
 
-          <div
-            className="sidebar-item"
-            style={{ fontWeight: 600, background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}
-            onClick={() => {
-              setTermoApenasLeitura(true);
-              setModalTermoVisivel(true);
-              fecharMenu();
-            }}
-          >
-            📜 Termo de Sigilo & Concordância
+                <div
+                  className="sidebar-item"
+                  style={{ fontWeight: 600, background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}
+                  onClick={() => {
+                    setTermoApenasLeitura(true);
+                    setModalTermoVisivel(true);
+                    fecharMenu();
+                  }}
+                >
+                  📜 Termo de Sigilo & Concordância
+                </div>
+              </div>
+            )}
           </div>
 
           {vendasPendentesCount > 0 && (
