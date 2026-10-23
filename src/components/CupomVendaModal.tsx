@@ -31,7 +31,7 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
   };
 
   return (
-    <div className="modal-overlay" style={{ zIndex: 9999 }}>
+    <div className="modal-overlay" style={{ zIndex: 100200 }}>
       <div className="modal-container" style={{ maxWidth: '420px', padding: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>

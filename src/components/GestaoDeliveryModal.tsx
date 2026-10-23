@@ -326,13 +326,17 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
           {/* Barra de Busca de Pedidos (AtendeJá) */}
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
-              type="text"
+              type="search"
+              name="busca_gestao_delivery_modal"
+              autoComplete="off"
+              readOnly
+              onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
               value={pedidosSearch}
               onChange={(e) => setPedidosSearch(e.target.value)}
               placeholder="Buscar cliente, endereço, fone..."
-              className="w-full pl-9 pr-3.5 py-2 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-purple-500"
+              className="w-full pl-10 pr-3.5 py-2 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-purple-500"
             />
           </div>
         </div>

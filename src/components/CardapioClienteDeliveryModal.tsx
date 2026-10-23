@@ -39,6 +39,9 @@ interface CardapioClienteDeliveryModalProps {
   onCriarPedido: (novoPedido: PedidoDelivery) => void;
   pedidosExistentes?: PedidoDelivery[];
   onTrocarParaFuncionario?: () => void;
+  modoTelaCheia?: boolean;
+  obterFotoProduto?: (codigo: string, fotoFallback?: string) => string;
+  obterNomeProduto?: (codigo: string, nomeFallback?: string) => string;
 }
 
 interface ItemCarrinhoCliente {
@@ -65,6 +68,9 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   onCriarPedido,
   pedidosExistentes = [],
   onTrocarParaFuncionario,
+  modoTelaCheia = false,
+  obterFotoProduto,
+  obterNomeProduto,
 }) => {
   // Etapa atual: 'vitrine' | 'carrinho' | 'checkout' | 'rastreio' | 'meus_pedidos'
   const [etapa, setEtapa] = useState<'vitrine' | 'carrinho' | 'checkout' | 'rastreio' | 'meus_pedidos'>('vitrine');
@@ -138,29 +144,58 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     }
   }, [bairroSelecionadoId, listaBairros]);
 
+  // Agrupa produtos por código de barras (igual ao PDV) somando quantidades de lotes
+  const estoqueAgrupado = useMemo(() => {
+    const mapa = new Map<string, ItemEstoque>();
+    estoque.forEach((p) => {
+      const cod = p.codigo || '';
+      const nomeResolvido = obterNomeProduto ? obterNomeProduto(cod, p.nome) : p.nome;
+      const fotoResolvida = obterFotoProduto ? obterFotoProduto(cod, p.foto) : p.foto;
+      const existente = mapa.get(cod);
+      if (!existente) {
+        mapa.set(cod, {
+          ...p,
+          nome: nomeResolvido || p.nome,
+          foto: fotoResolvida || p.foto,
+          quantidade: Number(p.quantidade) || 0,
+        });
+      } else {
+        mapa.set(cod, {
+          ...existente,
+          nome: existente.nome || nomeResolvido,
+          foto: existente.foto || fotoResolvida,
+          quantidade: (Number(existente.quantidade) || 0) + (Number(p.quantidade) || 0),
+        });
+      }
+    });
+    return Array.from(mapa.values()).sort((a, b) =>
+      (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base', numeric: true })
+    );
+  }, [estoque, obterFotoProduto, obterNomeProduto]);
+
   // Categorias únicas baseadas no estoque real
   const categoriasDisponiveis = useMemo(() => {
     const setCat = new Set<string>();
-    estoque.forEach((p) => {
+    estoqueAgrupado.forEach((p) => {
       if (p.categoria && p.categoria.trim()) {
         setCat.add(p.categoria.trim());
       }
     });
     return Array.from(setCat).sort();
-  }, [estoque]);
+  }, [estoqueAgrupado]);
 
   // Contadores por tipo no estilo do PDV
   const countInternos = useMemo(() => {
-    return estoque.filter((p) => p.tipoCadastro === 'interno' || p.estoqueIlimitado).length;
-  }, [estoque]);
+    return estoqueAgrupado.filter((p) => p.tipoCadastro === 'interno' || p.estoqueIlimitado).length;
+  }, [estoqueAgrupado]);
 
   const countPadrao = useMemo(() => {
-    return estoque.filter((p) => p.tipoCadastro !== 'interno' && !p.estoqueIlimitado).length;
-  }, [estoque]);
+    return estoqueAgrupado.filter((p) => p.tipoCadastro !== 'interno' && !p.estoqueIlimitado).length;
+  }, [estoqueAgrupado]);
 
   // Filtragem de produtos idêntica ao PDV
   const produtosDisponiveis = useMemo(() => {
-    return estoque.filter((p) => {
+    return estoqueAgrupado.filter((p) => {
       // Busca
       if (busca.trim()) {
         const b = busca.toLowerCase().trim();
@@ -184,7 +219,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
       }
       return p.categoria === categoriaSelecionada;
     });
-  }, [estoque, busca, categoriaSelecionada]);
+  }, [estoqueAgrupado, busca, categoriaSelecionada]);
 
   // Adicionar ao carrinho
   const adicionarAoCarrinho = (item: ItemEstoque) => {
@@ -343,10 +378,20 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 animate-in fade-in duration-200"
+      className={
+        modoTelaCheia
+          ? 'fixed inset-0 flex flex-col bg-[#f1f5f9] overflow-hidden'
+          : 'fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 animate-in fade-in duration-200'
+      }
       style={{ zIndex: 10000000 }}
     >
-      <div className="bg-[#f8fafc] border border-stone-200 rounded-3xl max-w-6xl w-full h-[92vh] max-h-[900px] flex flex-col shadow-2xl overflow-hidden text-stone-900">
+      <div
+        className={
+          modoTelaCheia
+            ? 'bg-[#f1f5f9] w-full h-full flex flex-col overflow-hidden text-stone-900'
+            : 'bg-[#f1f5f9] border border-stone-200 rounded-3xl max-w-7xl w-full h-[94vh] max-h-[940px] flex flex-col shadow-2xl overflow-hidden text-stone-900'
+        }
+      >
         
         {/* HEADER MODERNO ESTILO PDV */}
         <div className="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between gap-3 shrink-0">
@@ -547,7 +592,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                       : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
                   }`}
                 >
-                  📦 Todos ({estoque.length})
+                  📦 Todos ({estoqueAgrupado.length})
                 </button>
 
                 {countInternos > 0 && (
@@ -594,110 +639,176 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                 ))}
               </div>
 
-              {/* GRID DE PRODUTOS NO FORMATO DA TELA DO PDV */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-3.5">
+              {/* GRID DE PRODUTOS IDÊNTICO AO FORMATO DO PDV (.grid-produtos / .card-produto) */}
+              <div className="grid-produtos">
                 {produtosDisponiveis.length === 0 ? (
-                  <div className="col-span-full py-16 text-center text-stone-500 text-xs space-y-2 bg-white rounded-3xl border border-dashed border-stone-200">
-                    <Store className="w-10 h-10 mx-auto text-stone-300" />
-                    <p className="font-bold text-stone-700 text-sm">Nenhum produto encontrado nesta categoria.</p>
-                    <p className="text-[11px] text-stone-400">Tente buscar por outro termo ou selecione Todos.</p>
+                  <div className="vazio">
+                    Nenhum produto encontrado nesta categoria. Tente buscar por outro termo ou selecione Todos.
                   </div>
                 ) : (
-                  produtosDisponiveis.map((prod) => {
+                  produtosDisponiveis.map((prod, pIdx) => {
                     const qtdNoCarrinho = carrinho[prod.codigo]?.qtd || 0;
                     const isInternoCard = prod.tipoCadastro === 'interno' || prod.estoqueIlimitado;
-                    const esgotado = !prod.estoqueIlimitado && (prod.quantidade || 0) <= 0;
+                    const esgotado = !isInternoCard && (prod.quantidade || 0) <= 0;
 
                     return (
                       <div
-                        key={prod.codigo}
-                        className="bg-white border border-stone-200 hover:border-emerald-500 rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between transition-all shadow-xs group"
+                        key={`cli_card_${prod.codigo}_${pIdx}`}
+                        className="card-produto"
                       >
-                        <div>
-                          {/* Foto no formato do card do PDV */}
-                          <div className="relative w-full aspect-square bg-stone-100 rounded-xl overflow-hidden mb-2 flex items-center justify-center border border-stone-100 p-1">
-                            {prod.foto ? (
-                              <img
-                                src={prod.foto}
-                                alt={prod.nome}
-                                className="w-full h-full max-w-full max-h-full object-contain group-hover:scale-105 transition duration-300"
-                                loading="lazy"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                              />
-                            ) : (
-                              <span className="text-stone-400 font-bold text-xs">Sem foto</span>
-                            )}
+                        <div
+                          className="foto-produto"
+                          onClick={() => {
+                            if (!esgotado) adicionarAoCarrinho(prod);
+                          }}
+                        >
+                          {prod.foto ? (
+                            <img
+                              src={prod.foto}
+                              alt={prod.nome}
+                              referrerPolicy="no-referrer"
+                              loading="lazy"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            'Sem imagem'
+                          )}
 
-                            {isInternoCard && (
-                              <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-amber-500 text-white text-[9px] font-extrabold tracking-wide shadow-xs">
-                                🍢 Adega
-                              </span>
-                            )}
+                          {isInternoCard && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '6px',
+                                left: '6px',
+                                background: '#d97706',
+                                color: '#fff',
+                                borderRadius: '6px',
+                                padding: '2px 6px',
+                                fontSize: '0.68rem',
+                                fontWeight: 800,
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                              }}
+                            >
+                              🍢 Adega
+                            </div>
+                          )}
 
-                            {qtdNoCarrinho > 0 && (
-                              <span className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black shadow-xs">
-                                🛒 {qtdNoCarrinho}
-                              </span>
-                            )}
-
-                            {esgotado && (
-                              <div className="absolute inset-0 bg-white/80 backdrop-blur-2xs flex items-center justify-center text-xs font-black text-red-600">
-                                Esgotado
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Nome e Categoria */}
-                          <h3 className="font-extrabold text-xs sm:text-sm text-stone-900 line-clamp-2 leading-tight">
-                            {prod.nome}
-                          </h3>
-                          <p className="text-[11px] text-stone-500 mt-0.5 truncate">
-                            {prod.categoria || prod.marca || `Cód: ${prod.codigo}`}
-                          </p>
+                          {qtdNoCarrinho > 0 && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '6px',
+                                right: '6px',
+                                background: '#16a34a',
+                                color: '#fff',
+                                borderRadius: '12px',
+                                padding: '2px 7px',
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                              }}
+                            >
+                              🛒 {qtdNoCarrinho} na sacola
+                            </div>
+                          )}
                         </div>
 
-                        {/* Preço e Botão de Adicionar */}
-                        <div className="pt-2.5 mt-2 border-t border-stone-100 flex items-center justify-between gap-1">
-                          <div className="min-w-0">
-                            <span className="text-[10px] text-stone-400 block -mb-0.5 font-medium leading-none">Preço:</span>
-                            <span className="text-sm sm:text-base font-black text-emerald-700 font-mono">
-                              R$ {Number(prod.preco_venda).toFixed(2)}
-                            </span>
+                        <div className="info-card">
+                          <div>
+                            <div
+                              className="nome-prod"
+                              onClick={() => {
+                                if (!esgotado) adicionarAoCarrinho(prod);
+                              }}
+                            >
+                              {prod.nome}
+                            </div>
+                            <div className="detalhe" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <span>{prod.categoria || prod.marca || `Cód: ${prod.codigo}`}</span>
+                              {isInternoCard && (
+                                <span
+                                  style={{
+                                    background: '#fef3c7',
+                                    color: '#92400e',
+                                    borderRadius: '4px',
+                                    padding: '1px 4px',
+                                    fontSize: '0.65rem',
+                                    fontWeight: 700,
+                                  }}
+                                >
+                                  Balcão
+                                </span>
+                              )}
+                            </div>
                           </div>
 
-                          {esgotado ? (
-                            <span className="text-[10px] text-stone-400 font-bold">Indisponível</span>
-                          ) : qtdNoCarrinho > 0 ? (
-                            <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-0.5 font-black shadow-2xs">
-                              <button
-                                type="button"
-                                onClick={() => removerDoCarrinho(prod.codigo)}
-                                className="w-6 h-6 rounded-lg bg-white hover:bg-emerald-100 flex items-center justify-center text-emerald-800 transition cursor-pointer"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </button>
-                              <span className="text-xs px-1 font-mono">{qtdNoCarrinho}</span>
-                              <button
-                                type="button"
-                                onClick={() => adicionarAoCarrinho(prod)}
-                                className="w-6 h-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition cursor-pointer"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </button>
+                          <div style={{ marginTop: '4px' }}>
+                            <div className="detalhe">
+                              {isInternoCard ? (
+                                <span style={{ color: '#059669', fontWeight: 700 }}>
+                                  ♾️ Disponível (Balcão)
+                                </span>
+                              ) : esgotado ? (
+                                <span style={{ color: '#dc2626', fontWeight: 700 }}>
+                                  Indisponível no momento
+                                </span>
+                              ) : (
+                                <>
+                                  Disponível: <b>{prod.quantidade} un</b>
+                                </>
+                              )}
                             </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => adicionarAoCarrinho(prod)}
-                              className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition active:scale-95 cursor-pointer"
-                              title="Adicionar produto ao carrinho"
-                            >
-                              <Plus className="w-3.5 h-3.5 stroke-[3]" />
-                              <span>Pedir</span>
-                            </button>
-                          )}
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px', gap: '6px' }}>
+                              <div className="detalhe preco-destaque">R$ {Number(prod.preco_venda).toFixed(2)}</div>
+
+                              {esgotado ? (
+                                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>Esgotado</span>
+                              ) : qtdNoCarrinho > 0 ? (
+                                <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-0.5 font-black shadow-2xs">
+                                  <button
+                                    type="button"
+                                    onClick={() => removerDoCarrinho(prod.codigo)}
+                                    className="w-6 h-6 rounded-lg bg-white hover:bg-emerald-100 flex items-center justify-center text-emerald-800 transition cursor-pointer"
+                                  >
+                                    <Minus className="w-3 h-3" />
+                                  </button>
+                                  <span className="text-xs px-1 font-mono">{qtdNoCarrinho}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => adicionarAoCarrinho(prod)}
+                                    className="w-6 h-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition cursor-pointer"
+                                  >
+                                    <Plus className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => adicionarAoCarrinho(prod)}
+                                  style={{
+                                    background: '#e0f2fe',
+                                    color: '#0369a1',
+                                    border: '1px solid #7dd3fc',
+                                    borderRadius: '6px',
+                                    padding: '4px 8px',
+                                    fontSize: '0.76rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '3px',
+                                  }}
+                                  title="Adicionar produto à sacola"
+                                >
+                                  <span>🛒</span>
+                                  <span>+ Sacola</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );

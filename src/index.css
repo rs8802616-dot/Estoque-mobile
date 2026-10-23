@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
-* {
+@layer base {
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
-}
+  }
 
-:root {
+  :root {
     --primario: #0284c7;
     --sucesso: #16a34a;
     --aviso: #d97706;
@@ -18,17 +19,17 @@
     --texto: #0f172a;
     --texto-secundario: #475569;
     --branco: #ffffff;
-}
+  }
 
-html {
+  html {
     background-color: var(--fundo);
     color: var(--texto);
     width: 100%;
     min-height: 100%;
     overflow-x: hidden;
-}
+  }
 
-body { 
+  body { 
     background-color: var(--fundo); 
     color: var(--texto); 
     min-height: 100vh;
@@ -36,15 +37,16 @@ body {
     width: 100%;
     overflow-x: hidden;
     padding-bottom: 30px; 
-}
+  }
 
-#root {
+  #root {
     min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
     background-color: var(--fundo);
     display: flex;
     flex-direction: column;
+  }
 }
 
 .cabecalho {
@@ -524,7 +526,7 @@ body {
     position: fixed; 
     inset: 0; 
     background: #000; 
-    z-index: 1000; 
+    z-index: 10100; 
     display: none;
     flex-direction: column; 
     align-items: center; 
@@ -609,7 +611,7 @@ body {
     align-items: center; 
     justify-content: center; 
     padding: 12px; 
-    z-index: 250;
+    z-index: 10050;
     backdrop-filter: blur(2px);
 }
 

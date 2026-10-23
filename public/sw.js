@@ -1,7 +1,7 @@
 // Service Worker para Estoque Mobile Multi-Supermercado
 // Permite funcionamento 100% offline mesmo ao recarregar a página (F5 ou abrir app sem conexão)
 
-const CACHE_NAME = 'estoque-mobile-pwa-v3';
+const CACHE_NAME = 'estoque-mobile-pwa-v7';
 
 const ASSETS_PARA_CACHE_INICIAL = [
   '/',
@@ -39,8 +39,8 @@ self.addEventListener('activate', (event) => {
 });
 
 // Interceptação de requisições:
-// 1. Requisições de navegação (HTML / recarregamento de página): Network-first com fallback imediato para o cache do index.html
-// 2. Scripts, CSS, imagens e fontes: Cache-first / Stale-While-Revalidate
+// 1. Requisições de navegação e bundles JS/CSS: Network-first com fallback para cache offline
+// 2. Imagens e fontes: Stale-While-Revalidate
 // 3. APIs externas ou Firebase: Pass-through de rede
 self.addEventListener('fetch', (event) => {
   const request = event.request;
@@ -61,8 +61,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 1. Requisições de Navegação (Recarregamento F5, PWA abrindo offline ou troca de rota)
-  if (request.mode === 'navigate' || request.destination === 'document') {
+  // 1. Requisições de Navegação (HTML) e Bundles JS/CSS (/assets/) -> SEMPRE Network-First
+  if (
+    request.mode === 'navigate' ||
+    request.destination === 'document' ||
+    request.destination === 'script' ||
+    request.destination === 'style' ||
+    url.pathname.startsWith('/assets/')
+  ) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -75,28 +81,29 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(async () => {
-          // Quando estiver OFFLINE, retorna o index.html em cache para carregar a aplicação React!
           const cachedResponse = await caches.match(request);
           if (cachedResponse) {
             return cachedResponse;
           }
-          const indexResponse = await caches.match('/index.html') || await caches.match('/');
-          if (indexResponse) {
-            return indexResponse;
+          if (request.mode === 'navigate' || request.destination === 'document') {
+            const indexResponse = (await caches.match('/index.html')) || (await caches.match('/'));
+            if (indexResponse) {
+              return indexResponse;
+            }
+            return new Response(
+              '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Estoque Mobile</title></head><body><div id="root"></div></body></html>',
+              { headers: { 'Content-Type': 'text/html' } }
+            );
           }
-          return new Response(
-            '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Estoque Mobile</title></head><body><div id="root"></div></body></html>',
-            { headers: { 'Content-Type': 'text/html' } }
-          );
+          return new Response('', { status: 503, statusText: 'Offline' });
         })
     );
     return;
   }
 
-  // 2. Recursos Estáticos (JS, CSS, Fontes, Imagens)
+  // 2. Demais Recursos Estáticos (Fontes, Imagens)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      // Se já está no cache, retorna imediatamente e atualiza em segundo plano (Stale-While-Revalidate)
       const fetchPromise = fetch(request)
         .then((networkResponse) => {
           if (
@@ -104,17 +111,14 @@ self.addEventListener('fetch', (event) => {
             networkResponse.status === 200 &&
             (networkResponse.type === 'basic' || networkResponse.type === 'cors')
           ) {
-            const responseClone = networkResponse.clone();
+            const responseToCache = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
+              cache.put(request, responseToCache);
             });
           }
           return networkResponse;
         })
-        .catch((fetchErr) => {
-          // Se falhar a rede e tiver em cache, o cachedResponse já resolve
-          return cachedResponse;
-        });
+        .catch(() => cachedResponse);
 
       return cachedResponse || fetchPromise;
     })

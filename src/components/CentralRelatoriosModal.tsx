@@ -104,8 +104,6 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 20;
 
-  if (!visivel) return null;
-
   // Helper para obter custo de um item
   const obterCustoItem = (item: { codigo?: string; preco_custo?: number; lote?: string; validade?: string }): number => {
     if (item.preco_custo !== undefined && item.preco_custo !== null && !isNaN(Number(item.preco_custo)) && Number(item.preco_custo) > 0) {
@@ -416,8 +414,13 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
     };
   }, [pedidosDelivery]);
 
+  if (!visivel) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
+      style={{ zIndex: 99999 }}
+    >
       <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-100">
         
         {/* CABEÇALHO PRINCIPAL COM LOGO & ABAS */}
@@ -434,7 +437,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 </span>
               </h2>
               <p className="text-xs text-slate-400">
-                Faturamento real, histórico de vendas, estoque, lote e métricas do Zé Delivery em um único lugar
+                Faturamento real, histórico de vendas, estoque, lote e métricas do Delivery em um único lugar
               </p>
             </div>
           </div>
@@ -494,7 +497,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             }`}
           >
             <Bike className="w-4 h-4" />
-            🛵 Inteligência Zé Delivery ({metricasDelivery.totalPedidos})
+            🛵 Inteligência Delivery ({metricasDelivery.totalPedidos})
           </button>
         </div>
 

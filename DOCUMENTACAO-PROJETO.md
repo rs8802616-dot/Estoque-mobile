@@ -104,6 +104,22 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-22 - Atualização 7]
+- **Correção Estrutural de CSS (Tailwind CSS v4), Painel Delivery Estilo AtendeJá, Cardápio Unificado com PDV e Correção dos Relatórios do Menu Lateral:**
+  - **Correção Global de Espaçamento/Padding (`src/index.css`):**
+    - Movido o reset global (`* { margin: 0; padding: 0; box-sizing: border-box; }`, `:root`, `html`, `body`, `#root`) para dentro de `@layer base { ... }`. Anteriormente, o seletor desprotegido `* { padding: 0; margin: 0; }` sobrescrevia todas as classes `@layer utilities` do Tailwind v4 (`p-*`, `px-*`, `py-*`, `pl-10`, `mx-auto`), causando botões espremidos, lupa sobrepondo o texto de busca e perda de espaçamento nos painéis.
+    - Ajustadas as camadas de `z-index` (`.modal` para `10050`, `.leitor-tela` para `10100`, `CentralRelatoriosModal` para `99999`, `CupomVendaModal` e `EtiquetasModal` para `100200`, `avisoRestrito` para `100950`) para que nenhuma janela abra escondida atrás de painéis de tela cheia.
+  - **Painel de Delivery no PDV (`src/components/CaixaDeliveryPanel.tsx`):**
+    - Alinhado 100% às medidas e layout do AtendeJá: container verde-menta (`#f0fdf4`), borda `#a7f3d0`, `rounded-3xl`, filtros rápidos (`Ativos`, `Novos`, `Preparo`, `A Caminho 🛵`) e rodapé de cada pedido ativo exibindo lado a lado sem cortes: `[TOTAL R$ X (+taxa)]` + `[🖨️]` + `[🛵 Link Motoboy]` (roxo `#9333ea`) + `[✓ Confirmar Entrega / Aceitar Pedido / Despachar]` (verde `#059669`).
+    - Bloqueado o autopreenchimento indevido de usuário salvo no navegador (`rodrigo.souza`) na barra de pesquisa usando `type="search"`, `autoComplete="off"`, `readOnly` com liberação no `onFocus`, e `pl-10` real para que a lupa nunca sobreponha o texto.
+  - **Cardápio do Cliente Unificado com o Formato do PDV (`src/components/CardapioClienteDeliveryModal.tsx` e `src/components/CustomerDeliveryView.tsx`):**
+    - Unificados o botão lateral **"🛍️ Ver Cardápio do Cliente"** e o link público **`/?loja=...`** para usarem exatamente a mesma estrutura limpa e expansiva do PDV (`.grid-produtos`, `.card-produto`, `.foto-produto`, `.info-card`, `.nome-prod`, `.detalhe`, `.preco-destaque`), com agrupamento por código de barras somando os lotes disponíveis, fotos reais resolvidas via `obterFotoProduto` e categorias reais do estoque da loja (sem tema escuro antigo nem bloqueio +18).
+  - **Correção das Abas e Relatórios do Menu Lateral (`src/components/CentralRelatoriosModal.tsx` e `src/App.tsx`):**
+    - Corrigido erro crítico de ordem de Hooks do React (`Rendered more hooks than during the previous render`) em `CentralRelatoriosModal.tsx` movendo `if (!visivel) return null;` para depois de todos os `useMemo`.
+    - Conectados individualmente os itens do menu lateral: `📊 Central de Relatórios & Lucro Real` abre o Hub Unificado de 4 abas; `🧾 Histórico de Vendas & Cupons` abre `RelatorioVendasModal`; `📦 Posição de Estoque & Validades` abre a tela completa de posição de estoque com edição, exclusão, leitor e etiquetas (`abrirRelatorio()`); `📈 Gráficos de Lucro & Faturamento` abre `GraficosVendasModal`.
+  - **Atualização Automática de Cache PWA (`public/sw.js` e `src/main.tsx`):**
+    - Atualizado o Service Worker para `estoque-mobile-pwa-v7` com estratégia *Network-First* para HTML, JS e CSS (`/assets/`), além de limpeza automática de caches antigos na inicialização.
+
 ### [2026-10-21 - Atualização 6]
 - **Ajustes de Acesso ao Cardápio do Cliente e Alinhamento Visual Idêntico ao AtendeJá:**
   - **Correção no Cardápio do Cliente (`CardapioClienteDeliveryModal.tsx`):**

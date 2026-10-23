@@ -262,11 +262,14 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
           type="search"
           name="busca_delivery_pedidos_input"
           id="busca_delivery_pedidos_input"
-          autoComplete="new-password"
+          autoComplete="off"
           autoCorrect="off"
           autoCapitalize="none"
           spellCheck={false}
+          readOnly
+          onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
           data-lpignore="true"
+          data-1p-ignore="true"
           data-form-type="other"
           value={deliverySearch}
           onChange={(e) => setDeliverySearch(e.target.value)}

@@ -4861,30 +4861,49 @@ export default function App() {
     notificarSincronizacao();
   };
 
+  // Helper para fechar sobreposições de tela cheia antes de abrir uma nova aba
+  const fecharPaineisTelaCheia = () => {
+    setRelatorioCheioVisivel(false);
+    setModalCentralRelatoriosVisivel(false);
+    setModalRelatorioVendasVisivel(false);
+    setModalGraficosVendasVisivel(false);
+    setModalGestaoDeliveryVisivel(false);
+    setModalCardapioClienteVisivel(false);
+  };
+
   // Central Única de Relatórios & Desempenho
   const abrirCentralRelatorios = (aba: 'faturamento' | 'vendas' | 'estoque' | 'delivery' = 'faturamento') => {
     fecharMenu();
     if (!verificarPermissaoOuAvisar('relatorios', 'ver_relatorios', 'Ver Central de Relatórios')) return;
+    fecharPaineisTelaCheia();
     setAbaRelatorioInicial(aba);
     setModalCentralRelatoriosVisivel(true);
   };
 
   const abrirRelatorioVendas = () => {
-    abrirCentralRelatorios('vendas');
+    fecharMenu();
+    if (!verificarPermissaoOuAvisar('relatorios', 'ver_relatorios', 'Ver Histórico de Vendas & Cupons')) return;
+    fecharPaineisTelaCheia();
+    setModalRelatorioVendasVisivel(true);
   };
 
   const abrirGraficosVendas = () => {
-    abrirCentralRelatorios('faturamento');
+    fecharMenu();
+    if (!verificarPermissaoOuAvisar('graficos', 'ver_graficos', 'Ver Gráficos de Lucro & Faturamento')) return;
+    fecharPaineisTelaCheia();
+    setModalGraficosVendasVisivel(true);
   };
 
-  // Funções do Delivery (Estilo Zé Delivery)
+  // Funções do Delivery
   const abrirGestaoDelivery = () => {
     fecharMenu();
+    fecharPaineisTelaCheia();
     setModalGestaoDeliveryVisivel(true);
   };
 
   const abrirCardapioCliente = () => {
     fecharMenu();
+    fecharPaineisTelaCheia();
     setModalCardapioClienteVisivel(true);
   };
 
@@ -4934,7 +4953,7 @@ export default function App() {
         hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         timestamp: agora.getTime(),
         operadorId: opId,
-        operadorNome: `${opNome} (Zé Delivery)`,
+        operadorNome: `${opNome} (Delivery)`,
         itens: pedidoAlvo.itens.map((it) => ({
           codigo: it.codigo,
           nome: it.nome,
@@ -5098,7 +5117,7 @@ export default function App() {
       hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: agora.getTime(),
       cliente: {
-        nome: 'Cliente Zé Delivery (Teste)',
+        nome: 'Cliente Delivery (Teste)',
         telefone: '(11) 99887-1122',
         maior18AnosConfirmado: true,
       },
@@ -5170,6 +5189,7 @@ export default function App() {
   // Full Reports
   const abrirRelatorio = () => {
     fecharMenu();
+    fecharPaineisTelaCheia();
     setModoRelatorioAtual('estoque');
     setBuscaRelatorio('');
     setRelatorioCheioVisivel(true);
@@ -5177,6 +5197,7 @@ export default function App() {
 
   const abrirRelatorioCatalogo = () => {
     fecharMenu();
+    fecharPaineisTelaCheia();
     setModoRelatorioAtual('catalogo');
     setBuscaRelatorio('');
     setRelatorioCheioVisivel(true);
@@ -5303,8 +5324,12 @@ export default function App() {
         lojaSlug={publicLojaSlugAtivo}
         lojas={listaSupermercados}
         estoque={estoque}
+        configDelivery={configDelivery}
         onCriarPedido={handleCriarPedidoCliente}
         pedidos={pedidosDelivery}
+        obterFotoProduto={obterFotoProduto}
+        obterNomeProduto={obterNomeProduto}
+        onTrocarParaFuncionario={() => setTelaLoginVisivel(true)}
       />
     );
   }
@@ -5322,8 +5347,12 @@ export default function App() {
 
           <div className="barra-acoes">
             <input
-              type="text"
+              type="search"
               id="busca"
+              name="busca_estoque_pdv_input"
+              autoComplete="off"
+              readOnly
+              onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
               className="input-busca"
               placeholder="Buscar no estoque..."
               value={busca}
@@ -5798,7 +5827,7 @@ export default function App() {
             <div
               className="sidebar-item"
               onClick={() => {
-                abrirCentralRelatorios('vendas');
+                abrirRelatorioVendas();
                 fecharMenu();
               }}
             >
@@ -5811,7 +5840,7 @@ export default function App() {
             <div
               className="sidebar-item"
               onClick={() => {
-                abrirCentralRelatorios('estoque');
+                abrirRelatorio();
                 fecharMenu();
               }}
             >
@@ -5823,7 +5852,7 @@ export default function App() {
             <div
               className="sidebar-item"
               onClick={() => {
-                abrirCentralRelatorios('faturamento');
+                abrirGraficosVendas();
                 fecharMenu();
               }}
             >
@@ -9223,7 +9252,7 @@ export default function App() {
       />
 
       {/* POPUP DE ALERTA DE ACESSO RESTRITO / PERMISSÃO NEGADA */}
-      <div className="modal" style={{ display: avisoRestrito ? 'flex' : 'none', zIndex: 999 }}>
+      <div className="modal" style={{ display: avisoRestrito ? 'flex' : 'none', zIndex: 100950 }}>
         <div className="modal-conteudo" style={{ maxWidth: '420px', borderTop: '6px solid #ef4444' }}>
           <div className="cab-modal" style={{ background: '#fef2f2', color: '#991b1b', borderBottom: '1px solid #fee2e2' }}>
             🔒 Acesso Bloqueado / Restrição de Perfil
@@ -9342,7 +9371,7 @@ export default function App() {
         onSimularNovoPedidoTeste={handleSimularPedidoTeste}
       />
 
-      {/* CARDÁPIO ONLINE DE BEBIDAS DO CLIENTE (VISÃO DO CONSUMIDOR ZÉ DELIVERY / ATENDEJÁ) */}
+      {/* CARDÁPIO ONLINE DO CLIENTE (MESMO PADRÃO DO PDV) */}
       <CardapioClienteDeliveryModal
         visivel={modalCardapioClienteVisivel}
         onFechar={() => setModalCardapioClienteVisivel(false)}
@@ -9355,6 +9384,8 @@ export default function App() {
         configDelivery={configDelivery}
         onCriarPedido={handleCriarPedidoCliente}
         pedidosExistentes={pedidosDelivery}
+        obterFotoProduto={obterFotoProduto}
+        obterNomeProduto={obterNomeProduto}
         onTrocarParaFuncionario={() => {
           setModalCardapioClienteVisivel(false);
           setTelaLoginVisivel(true);
