@@ -245,7 +245,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Modal de conferência e validação do código PIN de 4 dígitos.
     - Botão no cabeçalho do Caixa para fixar/ocultar o painel lateral de delivery a qualquer momento.
 
-### [2026-10-22]
+### [2026-10-22 - Atualização 2]
+- **Fidelidade Visual Total ao Modelo AtendeJá no Painel de Delivery do PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
+  - **Alinhamento às Imagens de Referência:**
+    - Ajustado o conjunto de botões da barra inferior do card para conter simultaneamente: `TOTAL` (box verde-menta), `[🖨️]` (imprimir comanda), `[🛵 Link Motoboy]` (botão roxo `#9333ea`) e o botão de ação verde (`[✓ Aceitar Pedido]`, `[✓ Despachar]` ou `[✓ Confirmar Entrega]`), exatamente como no modelo original AtendeJá.
+    - Largura da coluna no grid do PDV expandida para `465px` no `App.tsx` (medida idêntica à captura de tela de referência), garantindo que todos os 4 elementos caibam em linha única sem quebras ou transbordamento.
+    - Mantidos os destaques de borda por status (`border-2 border-[#a855f7]` para pedidos a caminho, vermelho para novos e âmbar para preparo).
+    - Campo de busca refinado com espaçamento sem sobreposição de ícones.
 - **Módulo de Delivery Idêntico ao AtendeJá com Roteamento por Loja e Segurança:**
   - **Link Exclusivo por Loja (`/?loja=<slug_ou_id>`):**
     - Quando um cliente acessa o link da loja via navegador (ex: `http://localhost:3000/?loja=loja_matriz_01` ou `?delivery=true`), o sistema identifica a loja automaticamente e abre diretamente o **Cardápio Digital do Cliente** (`CardapioClienteDeliveryModal.tsx`), **sem exibir a tela de login de funcionários**.
@@ -267,7 +273,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Validação de entrega segura por PIN de 4 dígitos.
     - Impressão térmica de comandas para o balcão.
 
-### [2026-10-22]
+### [2026-10-22 - Atualização 2]
+- **Fidelidade Visual Total ao Modelo AtendeJá no Painel de Delivery do PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
+  - **Alinhamento às Imagens de Referência:**
+    - Ajustado o conjunto de botões da barra inferior do card para conter simultaneamente: `TOTAL` (box verde-menta), `[🖨️]` (imprimir comanda), `[🛵 Link Motoboy]` (botão roxo `#9333ea`) e o botão de ação verde (`[✓ Aceitar Pedido]`, `[✓ Despachar]` ou `[✓ Confirmar Entrega]`), exatamente como no modelo original AtendeJá.
+    - Largura da coluna no grid do PDV expandida para `465px` no `App.tsx` (medida idêntica à captura de tela de referência), garantindo que todos os 4 elementos caibam em linha única sem quebras ou transbordamento.
+    - Mantidos os destaques de borda por status (`border-2 border-[#a855f7]` para pedidos a caminho, vermelho para novos e âmbar para preparo).
+    - Campo de busca refinado com espaçamento sem sobreposição de ícones.
 - **Reformulação e Correção de Layout do Painel Delivery no PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
   - **Problema Solucionado:** O painel lateral de delivery no Caixa/PDV apresentava sobreposição de ícone de lupa com texto no campo de busca, botões cortados/vazando para fora do card (`TOTAL`, `🖨️`, `Link Motoboy`, `Aceitar Pedido`), e largura da coluna lateral restrita (`390px`) que comprimia as informações visuais.
   - **Design Fiel e Harmonioso:**

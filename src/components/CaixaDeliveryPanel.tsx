@@ -431,86 +431,66 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                       <button
                         type="button"
                         onClick={() => onImprimirComanda(order)}
-                        className="w-9 h-9 rounded-xl border border-[#6ee7b7] bg-white hover:bg-emerald-50 text-[#047857] flex items-center justify-center shadow-xs transition cursor-pointer shrink-0 active:scale-95"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#6ee7b7] bg-white hover:bg-emerald-50 text-[#047857] flex items-center justify-center shadow-xs transition cursor-pointer shrink-0 active:scale-95"
                         title="Imprimir comanda térmica"
                       >
                         <Printer className="w-4 h-4 text-[#047857]" />
                       </button>
                     )}
 
-                    {/* Botão para Novo Pedido: Aceitar Pedido */}
-                    {isNovo && (
+                    {/* Botão Roxo: Link Motoboy (Sempre presente para pedidos ativos, idêntico à imagem) */}
+                    {order.status !== 'entregue' && order.status !== 'cancelado' && (
                       <button
                         type="button"
-                        onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
-                        className="px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition cursor-pointer active:scale-95 shrink-0"
-                        title="Aceitar pedido e dar baixa automática no estoque via FEFO"
+                        onClick={() => handleDespacharMotoboy(order)}
+                        className="px-2.5 sm:px-3 py-2 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        title="Enviar dados, itens e rota do Google Maps para o motoboy via WhatsApp"
                       >
-                        <Check className="w-4 h-4 stroke-[3]" />
-                        <span>Aceitar Pedido</span>
+                        <Bike className="w-3.5 h-3.5" />
+                        <span>Link Motoboy</span>
                       </button>
                     )}
 
-                    {/* Botões para Pedido em Preparo */}
-                    {isPreparo && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => handleDespacharMotoboy(order)}
-                          className="px-3 py-2 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0"
-                          title="Enviar dados e rota Maps para o motoboy via WhatsApp"
-                        >
-                          <Bike className="w-3.5 h-3.5" />
-                          <span>Link Motoboy</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => onAtualizarStatus(order.id, isDelivery ? 'saiu_para_entrega' : 'entregue')}
-                          className="px-3 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0"
-                          title={isDelivery ? 'Despachar entrega' : 'Finalizar retirada no balcão'}
-                        >
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
-                          <span>{isDelivery ? 'Despachar' : 'Entregue'}</span>
-                        </button>
-                      </>
-                    )}
-
-                    {/* Botões para Pedido A Caminho */}
-                    {isACaminho && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => handleDespacharMotoboy(order)}
-                          className="px-2.5 sm:px-3 py-2 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0"
-                          title="Reenviar dados e rota Maps para o motoboy no WhatsApp"
-                        >
-                          <Bike className="w-3.5 h-3.5" />
-                          <span>Link Motoboy</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setValidandoPinPedido(order);
-                            setPinDigitado('');
-                            setErroPin('');
-                          }}
-                          className="px-2.5 sm:px-3 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0"
-                          title="Confirmar entrega digitando o PIN de 4 dígitos do cliente"
-                        >
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
-                          <span>Confirmar Entrega</span>
-                        </button>
-                      </>
-                    )}
-
-                    {/* Entregue */}
-                    {isEntregue && (
+                    {/* Botão Verde de Ação Principal (Aceitar / Despachar / Confirmar Entrega) */}
+                    {isACaminho ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setValidandoPinPedido(order);
+                          setPinDigitado('');
+                          setErroPin('');
+                        }}
+                        className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        title="Confirmar entrega digitando o PIN de 4 dígitos do cliente"
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <span>Confirmar Entrega</span>
+                      </button>
+                    ) : isNovo ? (
+                      <button
+                        type="button"
+                        onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
+                        className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        title="Aceitar pedido e iniciar separação com baixa FEFO"
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <span>Aceitar Pedido</span>
+                      </button>
+                    ) : isPreparo ? (
+                      <button
+                        type="button"
+                        onClick={() => onAtualizarStatus(order.id, isDelivery ? 'saiu_para_entrega' : 'entregue')}
+                        className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        title={isDelivery ? 'Despachar entrega para o motoboy' : 'Finalizar retirada'}
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <span>Despachar</span>
+                      </button>
+                    ) : isEntregue ? (
                       <span className="px-2.5 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-xl">
                         ✓ Entregue
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               </div>

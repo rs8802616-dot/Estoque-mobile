@@ -6132,7 +6132,7 @@ export default function App() {
               className="layout-caixa-delivery-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: colunaDeliveryFixaVisivel ? 'minmax(0, 1fr) 440px' : 'minmax(0, 1fr)',
+                gridTemplateColumns: colunaDeliveryFixaVisivel ? 'minmax(0, 1fr) 465px' : 'minmax(0, 1fr)',
                 gap: '16px',
                 alignItems: 'start',
               }}
