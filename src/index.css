@@ -198,22 +198,24 @@
 
 .barra-acoes { 
     display: flex; 
-    gap: 6px; 
+    gap: 8px; 
     align-items: center; 
     flex: 1;
-    max-width: 800px;
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
 }
 
 .input-busca {
-    flex: 1; 
-    min-width: 0;
-    width: 0;
-    padding: 8px 12px; 
+    flex: 1 1 180px; 
+    min-width: 120px;
+    width: 100%;
+    padding: 8px 14px; 
     border: none; 
     border-radius: 8px;
     font-size: 0.9rem; 
     background: var(--branco); 
+    color: var(--texto);
     outline: none;
     text-overflow: ellipsis;
 }
@@ -1354,8 +1356,9 @@
     .input-busca {
         font-size: 14px !important;
         padding: 7px 10px;
-        min-width: 0;
-        width: 0;
+        flex: 1 1 90px;
+        min-width: 70px;
+        width: 100%;
     }
 
     .input-padrao, .input-modal, select.input-modal, select.select-perfil-header {
