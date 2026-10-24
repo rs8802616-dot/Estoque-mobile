@@ -105,8 +105,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 ## 5. Histórico de Alterações (Changelog)
 
 ### [2026-10-23 - Atualização 8]
-- **Organização do Menu Lateral em 5 Grupos Retráteis (Acordeão) (`src/App.tsx`):**
-  - Substituída a listagem extensa de 15+ botões soltos no menu lateral (`.sidebar-menu`) por **5 grupos expansíveis (acordeão)** com memória do último grupo aberto no `localStorage` (`menu_grupo_aberto`):
+- **Redesign Moderno do Menu Lateral em 5 Grupos Retráteis (Acordeão) (`src/App.tsx` e `src/index.css`):**
+  - Substituídos os emojis antigos e caixas pesadas por um design moderno estilo SaaS:
+    - **Cabeçalho Dark Slate (`#0f172a` -> `#1e293b`):** Ícone da loja em destaque, nome do estabelecimento e pílula de status de alto contraste (`Online • Sincronizado`).
+    - **Ícones Vetoriais Lucide SVG (`lucide-react`):** Cada grupo possui um container arredondado (`34x34px`) com ícone vetorial que muda de cor quando expandido, seta `ChevronDown` com rotação suave e sub-itens alinhados em árvore vertical (`border-left`) sem quebras de linha nos títulos ou selos.
+    - **Rodapé Fixo:** Botão de sincronização offline e botão `Sair da Conta / Trocar Usuário` fixos na base do menu lateral.
+  - **5 Grupos com Memória (`menu_grupo_aberto` no `localStorage`):**
     1. **💰 Caixa & Vendas:** Gestão de Caixa (Abertura, Sangria & Turno), Área de Devedores / Fiado e Histórico de Vendas & Cupons (com selos de status `🟢 Aberto` / `🔴 Fechado` e contador de fiado visíveis no cabeçalho mesmo fechado).
     2. **📦 Estoque & Produtos:** Adicionar Item em Estoque, Posição de Estoque & Validades, Imprimir Etiquetas de Prateleira, Catálogo Global e Cadastro no Banco Master (exclusivo Dona do App).
     3. **🛵 Delivery:** Painel Delivery (com selo vermelho `NOVO` no cabeçalho do grupo e no item), Ver Cardápio do Cliente e botão rápido `🔗 Copiar Link do Cardápio`.

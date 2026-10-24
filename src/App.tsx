@@ -1,4 +1,35 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
+import {
+  Store,
+  Wallet,
+  Package,
+  Bike,
+  BarChart3,
+  Settings,
+  ChevronDown,
+  DollarSign,
+  CreditCard,
+  Receipt,
+  PlusCircle,
+  Layers,
+  Tag,
+  FolderKanban,
+  Crown,
+  ShoppingBag,
+  Link2,
+  Check,
+  PieChart,
+  TrendingUp,
+  Users,
+  Building2,
+  KeyRound,
+  BellRing,
+  BookOpen,
+  FileCheck2,
+  Zap,
+  LogOut,
+  X,
+} from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import {
   obterStreamCameraOtimizado,
@@ -5713,112 +5744,262 @@ export default function App() {
       ></div>
       <div className={`sidebar ${menuAtivo ? 'ativo' : ''}`} id="sidebarMenu">
         <div className="sidebar-header">
-          <div>
-            <span id="labelSupermercadoAtivo" style={{ display: 'block', fontWeight: 700 }}>Loja: {nomeSupermercadoAtivo}</span>
-            <span
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+            <div
               style={{
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                color: isOnline ? '#16a34a' : '#dc2626',
-                display: 'inline-block',
-                marginTop: '2px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.35)',
               }}
             >
-              {isOnline ? '🟢 Online (PWA Sincronizado)' : `🔴 Offline (Fila: ${vendasPendentesCount})`}
-            </span>
+              <Store size={20} strokeWidth={2.2} />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <span
+                id="labelSupermercadoAtivo"
+                style={{
+                  display: 'block',
+                  fontWeight: 800,
+                  fontSize: '0.96rem',
+                  color: '#ffffff',
+                  letterSpacing: '-0.01em',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {nomeSupermercadoAtivo}
+              </span>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  fontWeight: 700,
+                  color: isOnline ? '#34d399' : '#f87171',
+                  background: isOnline ? 'rgba(16, 185, 129, 0.14)' : 'rgba(239, 68, 68, 0.16)',
+                  border: isOnline ? '1px solid rgba(52, 211, 153, 0.25)' : '1px solid rgba(248, 113, 113, 0.3)',
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  marginTop: '4px',
+                }}
+              >
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    background: isOnline ? '#10b981' : '#ef4444',
+                    boxShadow: isOnline ? '0 0 6px #10b981' : '0 0 6px #ef4444',
+                  }}
+                />
+                {isOnline ? 'Online • Sincronizado' : `Offline • Fila (${vendasPendentesCount})`}
+              </span>
+            </div>
           </div>
-          <button className="sidebar-fechar" onClick={fecharMenu}>
-            ✕
+          <button className="sidebar-fechar" onClick={fecharMenu} title="Fechar menu">
+            <X size={18} strokeWidth={2.4} />
           </button>
         </div>
+
         <div className="sidebar-menu">
-          {/* 💰 1. CAIXA & VENDAS */}
+          {/* 1. CAIXA & VENDAS */}
           {(temPermissaoOperador('gestao_caixa', 'gestao_caixa') ||
             temPermissaoOperador('gerenciar_devedores', 'devedores') ||
             temPermissaoOperador('ver_relatorios', 'relatorios')) && (
-            <div style={{ border: '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+            <div
+              style={{
+                border: grupoMenuAberto === 'caixa' ? '1px solid #bfdbfe' : '1px solid #e2e8f0',
+                borderRadius: '14px',
+                overflow: 'hidden',
+                background: '#ffffff',
+                boxShadow:
+                  grupoMenuAberto === 'caixa'
+                    ? '0 4px 14px -2px rgba(37, 99, 235, 0.08)'
+                    : '0 1px 2px rgba(15, 23, 42, 0.03)',
+                transition: 'all 0.2s ease',
+              }}
+            >
               <div
                 onClick={() => alternarGrupoMenu('caixa')}
                 style={{
-                  padding: '12px 14px',
-                  background: grupoMenuAberto === 'caixa' ? '#eff6ff' : '#f8fafc',
+                  padding: '11px 12px',
+                  background: grupoMenuAberto === 'caixa' ? '#f8fafc' : '#ffffff',
                   color: '#0f172a',
-                  fontWeight: 800,
-                  fontSize: '0.9rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  gap: '8px',
                   cursor: 'pointer',
                   userSelect: 'none',
-                  borderBottom: grupoMenuAberto === 'caixa' ? '1px solid #bfdbfe' : 'none',
                 }}
               >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>💰 Caixa & Vendas</span>
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                  <div
+                    style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '10px',
+                      background: grupoMenuAberto === 'caixa' ? '#2563eb' : '#eff6ff',
+                      color: grupoMenuAberto === 'caixa' ? '#ffffff' : '#2563eb',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <Wallet size={17} strokeWidth={2.2} />
+                  </div>
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '0.86rem',
+                      color: '#0f172a',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Caixa & Vendas
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
                   {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
                     <span
                       style={{
-                        fontSize: '0.68rem',
-                        fontWeight: 800,
+                        fontSize: '0.66rem',
+                        fontWeight: 700,
                         padding: '2px 7px',
                         borderRadius: '9999px',
-                        background: !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#fee2e2' : '#dcfce7',
-                        color: !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#991b1b' : '#166534',
+                        whiteSpace: 'nowrap',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        background:
+                          !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#fff1f2' : '#ecfdf5',
+                        color:
+                          !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#e11d48' : '#059669',
+                        border:
+                          !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado'
+                            ? '1px solid #ffe4e6'
+                            : '1px solid #d1fae5',
                       }}
                     >
-                      {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '🔴 Fechado' : '🟢 Aberto'}
+                      <span
+                        style={{
+                          width: '5px',
+                          height: '5px',
+                          borderRadius: '50%',
+                          background:
+                            !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#e11d48' : '#10b981',
+                        }}
+                      />
+                      {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? 'Fechado' : 'Aberto'}
                     </span>
                   )}
                   {temPermissaoOperador('gerenciar_devedores', 'devedores') &&
                     clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length > 0 && (
                       <span
                         style={{
-                          fontSize: '0.68rem',
-                          fontWeight: 800,
-                          padding: '2px 7px',
+                          fontSize: '0.66rem',
+                          fontWeight: 700,
+                          padding: '2px 6px',
                           borderRadius: '9999px',
+                          whiteSpace: 'nowrap',
                           background: '#fef2f2',
-                          color: '#b91c1c',
+                          color: '#dc2626',
                           border: '1px solid #fecaca',
                         }}
+                        title="Clientes com saldo devedor no fiado"
                       >
-                        {clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length} fiado
+                        {clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length}
                       </span>
                     )}
-                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    {grupoMenuAberto === 'caixa' ? '▲' : '▼'}
-                  </span>
+                  <ChevronDown
+                    size={16}
+                    style={{
+                      color: '#64748b',
+                      transform: grupoMenuAberto === 'caixa' ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease',
+                    }}
+                  />
                 </div>
               </div>
 
               {grupoMenuAberto === 'caixa' && (
-                <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                <div
+                  style={{
+                    margin: '2px 10px 10px 26px',
+                    paddingLeft: '10px',
+                    borderLeft: '2px solid #dbeafe',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                  }}
+                >
                   {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
                     <div
                       className="sidebar-item"
-                      style={{ fontWeight: 600, background: '#e0f2fe', color: '#0369a1', borderRadius: '6px' }}
                       onClick={() => {
                         setModalCaixaVisivel(true);
                         fecharMenu();
                       }}
                     >
-                      💵 Gestão de Caixa (Abertura, Sangria & Turno){' '}
-                      {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '🔴 Fechado' : '🟢 Aberto'}
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <DollarSign size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                        <span>Gestão de Caixa & Turno</span>
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.65rem',
+                          fontWeight: 700,
+                          padding: '2px 6px',
+                          borderRadius: '6px',
+                          whiteSpace: 'nowrap',
+                          background:
+                            !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#ffe4e6' : '#d1fae5',
+                          color:
+                            !sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? '#be123c' : '#047857',
+                        }}
+                      >
+                        {!sessaoCaixaAtiva || sessaoCaixaAtiva.status === 'fechado' ? 'Fechado' : 'Aberto'}
+                      </span>
                     </div>
                   )}
 
                   {temPermissaoOperador('gerenciar_devedores', 'devedores') && (
                     <div
                       className="sidebar-item"
-                      style={{ fontWeight: 600, background: '#fef2f2', color: '#991b1b', borderRadius: '6px' }}
                       onClick={() => {
                         setModalDevedoresVisivel(true);
                         fecharMenu();
                       }}
                     >
-                      💳 Área de Devedores / Fiado ({clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length} com saldo devedor)
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <CreditCard size={15} style={{ color: '#e11d48', flexShrink: 0 }} />
+                        <span>Devedores / Fiado</span>
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.66rem',
+                          fontWeight: 700,
+                          padding: '2px 6px',
+                          borderRadius: '6px',
+                          whiteSpace: 'nowrap',
+                          background: '#fff1f2',
+                          color: '#be123c',
+                        }}
+                      >
+                        {clientesDevedores.filter((c) => c.saldoDevedorTotal > 0).length} ativos
+                      </span>
                     </div>
                   )}
 
@@ -5830,7 +6011,10 @@ export default function App() {
                         fecharMenu();
                       }}
                     >
-                      🧾 Histórico de Vendas & Cupons
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Receipt size={15} style={{ color: '#64748b', flexShrink: 0 }} />
+                        <span>Histórico de Vendas & Cupons</span>
+                      </span>
                     </div>
                   )}
                 </div>
@@ -5838,47 +6022,94 @@ export default function App() {
             </div>
           )}
 
-          {/* 📦 2. ESTOQUE & PRODUTOS */}
+          {/* 2. ESTOQUE & PRODUTOS */}
           {(temPermissaoOperador('cadastrar_produtos', 'estoque') ||
             temPermissaoOperador('ver_relatorios', 'relatorios') ||
             temPermissaoOperador('imprimir_etiquetas', 'etiquetas') ||
             temPermissaoOperador('catalogo_global', 'catalogo_global') ||
             perfilAtivo === 'dona_app') && (
-            <div style={{ border: '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+            <div
+              style={{
+                border: grupoMenuAberto === 'estoque' ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
+                borderRadius: '14px',
+                overflow: 'hidden',
+                background: '#ffffff',
+                boxShadow:
+                  grupoMenuAberto === 'estoque'
+                    ? '0 4px 14px -2px rgba(16, 185, 129, 0.08)'
+                    : '0 1px 2px rgba(15, 23, 42, 0.03)',
+                transition: 'all 0.2s ease',
+              }}
+            >
               <div
                 onClick={() => alternarGrupoMenu('estoque')}
                 style={{
-                  padding: '12px 14px',
-                  background: grupoMenuAberto === 'estoque' ? '#f0fdf4' : '#f8fafc',
+                  padding: '11px 12px',
+                  background: grupoMenuAberto === 'estoque' ? '#f8fafc' : '#ffffff',
                   color: '#0f172a',
-                  fontWeight: 800,
-                  fontSize: '0.9rem',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  gap: '8px',
                   cursor: 'pointer',
                   userSelect: 'none',
-                  borderBottom: grupoMenuAberto === 'estoque' ? '1px solid #bbf7d0' : 'none',
                 }}
               >
-                <span>📦 Estoque & Produtos</span>
-                <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                  {grupoMenuAberto === 'estoque' ? '▲' : '▼'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                  <div
+                    style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '10px',
+                      background: grupoMenuAberto === 'estoque' ? '#059669' : '#ecfdf5',
+                      color: grupoMenuAberto === 'estoque' ? '#ffffff' : '#059669',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <Package size={17} strokeWidth={2.2} />
+                  </div>
+                  <span style={{ fontWeight: 700, fontSize: '0.86rem', color: '#0f172a', whiteSpace: 'nowrap' }}>
+                    Estoque & Produtos
+                  </span>
+                </div>
+                <ChevronDown
+                  size={16}
+                  style={{
+                    color: '#64748b',
+                    transform: grupoMenuAberto === 'estoque' ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                  }}
+                />
               </div>
 
               {grupoMenuAberto === 'estoque' && (
-                <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                <div
+                  style={{
+                    margin: '2px 10px 10px 26px',
+                    paddingLeft: '10px',
+                    borderLeft: '2px solid #a7f3d0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                  }}
+                >
                   {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
                     <div
                       className="sidebar-item"
-                      style={{ fontWeight: 700, background: '#dcfce7', color: '#15803d', border: '1px solid #86efac' }}
+                      style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #d1fae5' }}
                       onClick={() => {
                         abrirCadastro('estoque');
                         fecharMenu();
                       }}
                     >
-                      ➕ Adicionar Item em Estoque (Validade, Preços & Qtd)
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <PlusCircle size={15} style={{ color: '#059669', flexShrink: 0 }} />
+                        <span>Adicionar Item ao Estoque</span>
+                      </span>
                     </div>
                   )}
 
@@ -5891,7 +6122,10 @@ export default function App() {
                         fecharMenu();
                       }}
                     >
-                      📦 Posição de Estoque & Validades
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Layers size={15} style={{ color: '#059669', flexShrink: 0 }} />
+                        <span>Posição de Estoque & Validades</span>
+                      </span>
                     </div>
                   )}
 
@@ -5903,7 +6137,10 @@ export default function App() {
                         fecharMenu();
                       }}
                     >
-                      🏷️ Imprimir Etiquetas de Prateleira
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Tag size={15} style={{ color: '#64748b', flexShrink: 0 }} />
+                        <span>Etiquetas de Prateleira</span>
+                      </span>
                     </div>
                   )}
 
@@ -5915,20 +6152,25 @@ export default function App() {
                         fecharMenu();
                       }}
                     >
-                      🗂️ Catálogo Global
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <FolderKanban size={15} style={{ color: '#64748b', flexShrink: 0 }} />
+                        <span>Catálogo Global</span>
+                      </span>
                     </div>
                   )}
 
                   {perfilAtivo === 'dona_app' && (
                     <div
                       className="sidebar-item"
-                      style={{ fontWeight: 600, background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
                       onClick={() => {
                         abrirCadastro('master');
                         fecharMenu();
                       }}
                     >
-                      👑 Cadastrar no Banco de Dados Master (Geral)
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Crown size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
+                        <span>Cadastrar no Banco Master</span>
+                      </span>
                     </div>
                   )}
                 </div>
@@ -5936,76 +6178,118 @@ export default function App() {
             </div>
           )}
 
-          {/* 🛵 3. DELIVERY */}
-          <div style={{ border: '1px solid #fde68a', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+          {/* 3. DELIVERY */}
+          <div
+            style={{
+              border: grupoMenuAberto === 'delivery' ? '1px solid #fcd34d' : '1px solid #e2e8f0',
+              borderRadius: '14px',
+              overflow: 'hidden',
+              background: '#ffffff',
+              boxShadow:
+                grupoMenuAberto === 'delivery'
+                  ? '0 4px 14px -2px rgba(245, 158, 11, 0.1)'
+                  : '0 1px 2px rgba(15, 23, 42, 0.03)',
+              transition: 'all 0.2s ease',
+            }}
+          >
             <div
               onClick={() => alternarGrupoMenu('delivery')}
               style={{
-                padding: '12px 14px',
-                background: grupoMenuAberto === 'delivery' ? '#fef3c7' : '#fffbeb',
-                color: '#92400e',
-                fontWeight: 800,
-                fontSize: '0.9rem',
+                padding: '11px 12px',
+                background: grupoMenuAberto === 'delivery' ? '#f8fafc' : '#ffffff',
+                color: '#0f172a',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                gap: '8px',
                 cursor: 'pointer',
                 userSelect: 'none',
-                borderBottom: grupoMenuAberto === 'delivery' ? '1px solid #fcd34d' : 'none',
               }}
             >
-              <span>🛵 Delivery</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                <div
+                  style={{
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '10px',
+                    background: grupoMenuAberto === 'delivery' ? '#d97706' : '#fffbeb',
+                    color: grupoMenuAberto === 'delivery' ? '#ffffff' : '#d97706',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Bike size={17} strokeWidth={2.2} />
+                </div>
+                <span style={{ fontWeight: 700, fontSize: '0.86rem', color: '#0f172a', whiteSpace: 'nowrap' }}>
+                  Delivery
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                 {pedidosDelivery.filter((p) => p.status === 'pendente').length > 0 && (
                   <span
                     style={{
-                      background: '#ef4444',
+                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                       color: '#ffffff',
                       borderRadius: '9999px',
                       padding: '2px 8px',
-                      fontSize: '0.7rem',
-                      fontWeight: 900,
+                      fontSize: '0.66rem',
+                      fontWeight: 800,
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 2px 6px rgba(239, 68, 68, 0.35)',
                     }}
                   >
                     {pedidosDelivery.filter((p) => p.status === 'pendente').length} NOVO
                   </span>
                 )}
-                <span style={{ fontSize: '0.75rem', color: '#92400e' }}>
-                  {grupoMenuAberto === 'delivery' ? '▲' : '▼'}
-                </span>
+                <ChevronDown
+                  size={16}
+                  style={{
+                    color: '#64748b',
+                    transform: grupoMenuAberto === 'delivery' ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                  }}
+                />
               </div>
             </div>
 
             {grupoMenuAberto === 'delivery' && (
-              <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+              <div
+                style={{
+                  margin: '2px 10px 10px 26px',
+                  paddingLeft: '10px',
+                  borderLeft: '2px solid #fde68a',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                }}
+              >
                 <div
                   className="sidebar-item"
-                  style={{
-                    fontWeight: 800,
-                    background: '#fef3c7',
-                    color: '#92400e',
-                    border: '1.5px solid #f59e0b',
-                    borderRadius: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
+                  style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fde68a' }}
                   onClick={() => {
                     setColunaDeliveryFixaVisivel(true);
                     abrirGestaoDelivery();
                     fecharMenu();
                   }}
                 >
-                  <span>🛵 Painel Delivery</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bike size={15} style={{ color: '#d97706', flexShrink: 0 }} />
+                    <span>Painel de Pedidos</span>
+                  </span>
                   {pedidosDelivery.filter((p) => p.status === 'pendente').length > 0 && (
                     <span
                       style={{
                         background: '#ef4444',
                         color: '#ffffff',
                         borderRadius: '9999px',
-                        padding: '2px 8px',
-                        fontSize: '0.7rem',
-                        fontWeight: 900,
+                        padding: '1px 7px',
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {pedidosDelivery.filter((p) => p.status === 'pendente').length} NOVO
@@ -6015,30 +6299,24 @@ export default function App() {
 
                 <div
                   className="sidebar-item"
-                  style={{
-                    fontWeight: 700,
-                    background: '#fffbeb',
-                    color: '#b45309',
-                    borderRadius: '8px',
-                    border: '1px solid #fde68a',
-                  }}
                   onClick={() => {
                     abrirCardapioCliente();
                     fecharMenu();
                   }}
                 >
-                  🛍️ Ver Cardápio do Cliente
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ShoppingBag size={15} style={{ color: '#d97706', flexShrink: 0 }} />
+                    <span>Ver Cardápio do Cliente</span>
+                  </span>
                 </div>
 
                 <div
                   className="sidebar-item"
-                  style={{
-                    fontWeight: 700,
-                    background: linkCardapioCopiadoMenu ? '#dcfce7' : '#f8fafc',
-                    color: linkCardapioCopiadoMenu ? '#15803d' : '#334155',
-                    borderRadius: '8px',
-                    border: linkCardapioCopiadoMenu ? '1px solid #86efac' : '1px solid #e2e8f0',
-                  }}
+                  style={
+                    linkCardapioCopiadoMenu
+                      ? { background: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0' }
+                      : undefined
+                  }
                   onClick={() => {
                     const slug = lojaAtualObj?.slug || lojaAtualObj?.id || supermercadoAtual || 'loja_matriz_01';
                     let url = `${window.location.origin}/?loja=${slug}`;
@@ -6049,56 +6327,117 @@ export default function App() {
                     setTimeout(() => setLinkCardapioCopiadoMenu(false), 2500);
                   }}
                 >
-                  {linkCardapioCopiadoMenu ? '✅ Link do Cardápio Copiado!' : '🔗 Copiar Link do Cardápio'}
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {linkCardapioCopiadoMenu ? (
+                      <Check size={15} style={{ color: '#059669', flexShrink: 0 }} />
+                    ) : (
+                      <Link2 size={15} style={{ color: '#64748b', flexShrink: 0 }} />
+                    )}
+                    <span>{linkCardapioCopiadoMenu ? 'Link Copiado!' : 'Copiar Link do Cardápio'}</span>
+                  </span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* 📊 4. RELATÓRIOS */}
+          {/* 4. RELATÓRIOS */}
           {(temPermissaoOperador('ver_relatorios', 'relatorios') ||
             temPermissaoOperador('ver_graficos', 'graficos')) && (
-            <div style={{ border: '1px solid #a7f3d0', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+            <div
+              style={{
+                border: grupoMenuAberto === 'relatorios' ? '1px solid #ddd6fe' : '1px solid #e2e8f0',
+                borderRadius: '14px',
+                overflow: 'hidden',
+                background: '#ffffff',
+                boxShadow:
+                  grupoMenuAberto === 'relatorios'
+                    ? '0 4px 14px -2px rgba(124, 58, 237, 0.08)'
+                    : '0 1px 2px rgba(15, 23, 42, 0.03)',
+                transition: 'all 0.2s ease',
+              }}
+            >
               <div
                 onClick={() => alternarGrupoMenu('relatorios')}
                 style={{
-                  padding: '12px 14px',
-                  background: grupoMenuAberto === 'relatorios' ? '#d1fae5' : '#ecfdf5',
-                  color: '#065f46',
-                  fontWeight: 800,
-                  fontSize: '0.9rem',
+                  padding: '11px 12px',
+                  background: grupoMenuAberto === 'relatorios' ? '#f8fafc' : '#ffffff',
+                  color: '#0f172a',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  gap: '8px',
                   cursor: 'pointer',
                   userSelect: 'none',
-                  borderBottom: grupoMenuAberto === 'relatorios' ? '1px solid #6ee7b7' : 'none',
                 }}
               >
-                <span>📊 Relatórios</span>
-                <span style={{ fontSize: '0.75rem', color: '#065f46' }}>
-                  {grupoMenuAberto === 'relatorios' ? '▲' : '▼'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                  <div
+                    style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '10px',
+                      background: grupoMenuAberto === 'relatorios' ? '#7c3aed' : '#f5f3ff',
+                      color: grupoMenuAberto === 'relatorios' ? '#ffffff' : '#7c3aed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <BarChart3 size={17} strokeWidth={2.2} />
+                  </div>
+                  <span style={{ fontWeight: 700, fontSize: '0.86rem', color: '#0f172a', whiteSpace: 'nowrap' }}>
+                    Relatórios
+                  </span>
+                </div>
+                <ChevronDown
+                  size={16}
+                  style={{
+                    color: '#64748b',
+                    transform: grupoMenuAberto === 'relatorios' ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                  }}
+                />
               </div>
 
               {grupoMenuAberto === 'relatorios' && (
-                <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+                <div
+                  style={{
+                    margin: '2px 10px 10px 26px',
+                    paddingLeft: '10px',
+                    borderLeft: '2px solid #ddd6fe',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                  }}
+                >
                   {temPermissaoOperador('ver_relatorios', 'relatorios') && (
                     <div
                       className="sidebar-item"
-                      style={{
-                        fontWeight: 800,
-                        background: '#ecfdf5',
-                        color: '#065f46',
-                        border: '1.5px solid #10b981',
-                        borderRadius: '8px',
-                      }}
+                      style={{ background: '#f5f3ff', color: '#5b21b6', border: '1px solid #ede9fe' }}
                       onClick={() => {
                         abrirCentralRelatorios('faturamento');
                         fecharMenu();
                       }}
                     >
-                      📊 Central de Relatórios & Lucro Real (Hub Unificado)
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <PieChart size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
+                        <span>Central de Relatórios & Lucro</span>
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '0.62rem',
+                          fontWeight: 800,
+                          padding: '2px 6px',
+                          borderRadius: '6px',
+                          background: '#ede9fe',
+                          color: '#6d28d9',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Hub
+                      </span>
                     </div>
                   )}
 
@@ -6110,7 +6449,10 @@ export default function App() {
                         fecharMenu();
                       }}
                     >
-                      📈 Gráficos de Lucro & Faturamento
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <TrendingUp size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
+                        <span>Gráficos de Faturamento</span>
+                      </span>
                     </div>
                   )}
                 </div>
@@ -6118,32 +6460,76 @@ export default function App() {
             </div>
           )}
 
-          {/* ⚙️ 5. CONFIGURAÇÕES & EQUIPE */}
-          <div style={{ border: '1px solid #cbd5e1', borderRadius: '10px', overflow: 'hidden', background: '#ffffff' }}>
+          {/* 5. CONFIGURAÇÕES & EQUIPE */}
+          <div
+            style={{
+              border: grupoMenuAberto === 'config' ? '1px solid #cbd5e1' : '1px solid #e2e8f0',
+              borderRadius: '14px',
+              overflow: 'hidden',
+              background: '#ffffff',
+              boxShadow:
+                grupoMenuAberto === 'config'
+                  ? '0 4px 14px -2px rgba(15, 23, 42, 0.06)'
+                  : '0 1px 2px rgba(15, 23, 42, 0.03)',
+              transition: 'all 0.2s ease',
+            }}
+          >
             <div
               onClick={() => alternarGrupoMenu('config')}
               style={{
-                padding: '12px 14px',
-                background: grupoMenuAberto === 'config' ? '#f1f5f9' : '#f8fafc',
+                padding: '11px 12px',
+                background: grupoMenuAberto === 'config' ? '#f8fafc' : '#ffffff',
                 color: '#0f172a',
-                fontWeight: 800,
-                fontSize: '0.9rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                gap: '8px',
                 cursor: 'pointer',
                 userSelect: 'none',
-                borderBottom: grupoMenuAberto === 'config' ? '1px solid #cbd5e1' : 'none',
               }}
             >
-              <span>⚙️ Configurações & Equipe</span>
-              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                {grupoMenuAberto === 'config' ? '▲' : '▼'}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                <div
+                  style={{
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '10px',
+                    background: grupoMenuAberto === 'config' ? '#334155' : '#f1f5f9',
+                    color: grupoMenuAberto === 'config' ? '#ffffff' : '#475569',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Settings size={17} strokeWidth={2.2} />
+                </div>
+                <span style={{ fontWeight: 700, fontSize: '0.86rem', color: '#0f172a', whiteSpace: 'nowrap' }}>
+                  Configurações & Equipe
+                </span>
+              </div>
+              <ChevronDown
+                size={16}
+                style={{
+                  color: '#64748b',
+                  transform: grupoMenuAberto === 'config' ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s ease',
+                }}
+              />
             </div>
 
             {grupoMenuAberto === 'config' && (
-              <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px', background: '#ffffff' }}>
+              <div
+                style={{
+                  margin: '2px 10px 10px 26px',
+                  paddingLeft: '10px',
+                  borderLeft: '2px solid #cbd5e1',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                }}
+              >
                 {temPermissaoOperador('gerenciar_equipe', 'usuarios') && (
                   <div
                     className="sidebar-item"
@@ -6152,7 +6538,10 @@ export default function App() {
                       fecharMenu();
                     }}
                   >
-                    👥 Cadastrar Caixas & Permissões
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Users size={15} style={{ color: '#475569', flexShrink: 0 }} />
+                      <span>Caixas & Permissões</span>
+                    </span>
                   </div>
                 )}
 
@@ -6164,68 +6553,99 @@ export default function App() {
                       fecharMenu();
                     }}
                   >
-                    🏢 Cadastrar / Gerenciar Lojas (Dona do App)
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Building2 size={15} style={{ color: '#475569', flexShrink: 0 }} />
+                      <span>Gerenciar Lojas (Dona)</span>
+                    </span>
                   </div>
                 )}
 
                 {perfilAtivo === 'dona_app' && (
                   <div
                     className="sidebar-item"
-                    style={{ fontWeight: 700, background: '#fdf4ff', color: '#9333ea', border: '1px solid #f0abfc' }}
                     onClick={() => {
                       setModalCredenciaisDonoVisivel(true);
                       fecharMenu();
                     }}
                   >
-                    👑 Alterar Meu Login / Senha (Dono do App)
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <KeyRound size={15} style={{ color: '#9333ea', flexShrink: 0 }} />
+                      <span>Alterar Login / Senha Master</span>
+                    </span>
                   </div>
                 )}
 
                 {temPermissaoOperador('alertas_whatsapp', 'alertas_whatsapp') && (
                   <div
                     className="sidebar-item"
-                    style={{ fontWeight: 600, background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}
                     onClick={() => {
                       setModalAlertasWhatsAppVisivel(true);
                       fecharMenu();
                     }}
                   >
-                    📲 Alertas WhatsApp
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <BellRing size={15} style={{ color: '#16a34a', flexShrink: 0 }} />
+                      <span>Alertas WhatsApp</span>
+                    </span>
                   </div>
                 )}
 
                 {temPermissaoOperador('ver_manual_usuario', 'manual_ajuda') && (
                   <div
                     className="sidebar-item"
-                    style={{ fontWeight: 600, background: '#f0f9ff', color: '#0369a1', border: '1px solid #bae6fd' }}
                     onClick={() => {
                       setModalManualVisivel(true);
                       fecharMenu();
                     }}
                   >
-                    📘 Manual de Instruções do Usuário
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <BookOpen size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
+                      <span>Manual do Usuário</span>
+                    </span>
                   </div>
                 )}
 
                 <div
                   className="sidebar-item"
-                  style={{ fontWeight: 600, background: '#f8fafc', color: '#475569', border: '1px solid #e2e8f0' }}
                   onClick={() => {
                     setTermoApenasLeitura(true);
                     setModalTermoVisivel(true);
                     fecharMenu();
                   }}
                 >
-                  📜 Termo de Sigilo & Concordância
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FileCheck2 size={15} style={{ color: '#64748b', flexShrink: 0 }} />
+                    <span>Termo de Sigilo & Uso</span>
+                  </span>
                 </div>
               </div>
             )}
           </div>
+        </div>
 
+        {/* RODAPÉ FIXO DO MENU LATERAL */}
+        <div
+          style={{
+            padding: '12px',
+            borderTop: '1px solid #e2e8f0',
+            background: '#ffffff',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            flexShrink: 0,
+          }}
+        >
           {vendasPendentesCount > 0 && (
             <div
               className="sidebar-item"
-              style={{ fontWeight: 700, background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a' }}
+              style={{
+                fontWeight: 700,
+                background: '#fffbeb',
+                color: '#92400e',
+                border: '1px solid #fde68a',
+                borderRadius: '11px',
+                justifyContent: 'center',
+              }}
               onClick={async () => {
                 const res = await sincronizarFilaOfflinePrioritaria();
                 setFilaOfflineStats(obterEstatisticasFilaOffline());
@@ -6233,20 +6653,39 @@ export default function App() {
                 alert(`⚡ Sincronização Concluída!\n\n${res.sincronizados} registros prioritários gravados no Firestore.`);
               }}
             >
-              ⚡ Forçar Sincronização da Fila Offline ({vendasPendentesCount} pendentes)
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Zap size={16} style={{ color: '#d97706' }} />
+                <span>Sincronizar Fila ({vendasPendentesCount})</span>
+              </span>
             </div>
           )}
 
-          <div
-            className="sidebar-item"
-            style={{ marginTop: '12px', borderTop: '1px solid #e2e8f0', color: '#dc2626', fontWeight: 600 }}
+          <button
+            type="button"
             onClick={() => {
               fecharMenu();
               handleLogout();
             }}
+            style={{
+              width: '100%',
+              padding: '11px 14px',
+              borderRadius: '12px',
+              background: '#fff1f2',
+              color: '#e11d48',
+              border: '1px solid #ffe4e6',
+              fontWeight: 700,
+              fontSize: '0.84rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
           >
-            🚪 Sair da Conta / Trocar Usuário
-          </div>
+            <LogOut size={16} strokeWidth={2.2} />
+            <span>Sair da Conta / Trocar Usuário</span>
+          </button>
         </div>
       </div>
 
