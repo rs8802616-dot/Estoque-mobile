@@ -184,7 +184,7 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
 
 // Real-time listener for Catálogo Global (com sincronização em tempo real de adições, edições e exclusões)
 export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => void) {
-  const colRef = collection(db, 'produtos_catalogo');
+  const colRef = collection(db, 'catalogo_global');
   return onSnapshot(
     colRef,
     (snapshot) => {
@@ -558,14 +558,8 @@ export async function propagarAtualizacaoCatalogoGlobalParaTodasLojasFirestore(p
 export async function salvarProdutoCatalogoFirestore(prod: ProdutoCatalogo) {
   try {
     const safeCod = sanitizarIdDoc(prod.codigo || 'semcod');
-    const docRef = doc(db, 'produtos_catalogo', safeCod);
-    await setDoc(docRef, limparUndefined(prod), { merge: true });
-
-    // Também espelha na coleção 'catalogo_global' para compatibilidade total
-    try {
-      const docGlobalRef = doc(db, 'catalogo_global', safeCod);
-      await setDoc(docGlobalRef, limparUndefined(prod), { merge: true });
-    } catch (e) {}
+    const docGlobalRef = doc(db, 'catalogo_global', safeCod);
+    await setDoc(docGlobalRef, limparUndefined(prod), { merge: true });
 
     // Propagação instantânea para todos os supermercados e adegas no Firestore
     await propagarAtualizacaoCatalogoGlobalParaTodasLojasFirestore(prod);
@@ -584,13 +578,13 @@ export async function buscarProdutoCatalogoFirestore(codigo: string): Promise<Pr
     const cleanCod = codigo.trim();
     if (!cleanCod) return null;
     const safeCod = sanitizarIdDoc(cleanCod);
-    const docRef = doc(db, 'produtos_catalogo', safeCod);
+    const docRef = doc(db, 'catalogo_global', safeCod);
     const snap = await getDoc(docRef);
     if (snap.exists()) {
       return snap.data() as ProdutoCatalogo;
     }
     // Try query if ID was stored differently
-    const q = query(collection(db, 'produtos_catalogo'), where('codigo', '==', cleanCod));
+    const q = query(collection(db, 'catalogo_global'), where('codigo', '==', cleanCod));
     const qSnap = await getDocs(q);
     if (!qSnap.empty) {
       return qSnap.docs[0].data() as ProdutoCatalogo;
@@ -693,25 +687,12 @@ export async function excluirTodosLotesProdutoEstoqueFirestore(codigo: string, l
 export async function excluirProdutoCatalogoFirestore(codigo: string) {
   try {
     const safeCod = sanitizarIdDoc(codigo || 'semcod');
-    const docRef = doc(db, 'produtos_catalogo', safeCod);
-    try {
-      await deleteDoc(docRef);
-    } catch (e) {}
-
     try {
       const docGlobalRef = doc(db, 'catalogo_global', safeCod);
       await deleteDoc(docGlobalRef);
     } catch (e) {}
 
     // Excluir também por busca caso tenha sido salvo com ID diferente
-    try {
-      const q = query(collection(db, 'produtos_catalogo'), where('codigo', '==', codigo));
-      const snap = await getDocs(q);
-      for (const d of snap.docs) {
-        await deleteDoc(d.ref);
-      }
-    } catch (e) {}
-
     try {
       const qGlobal = query(collection(db, 'catalogo_global'), where('codigo', '==', codigo));
       const snapGlobal = await getDocs(qGlobal);
@@ -925,7 +906,7 @@ export async function inicializarDadosIniciaisFirestore(
     }
 
     // 2. Catálogo Global de Produtos
-    const snapCat = await getDocs(collection(db, 'produtos_catalogo'));
+    const snapCat = await getDocs(collection(db, 'catalogo_global'));
     if (snapCat.empty && catalogoInicial.length > 0) {
       for (const p of catalogoInicial) {
         await salvarProdutoCatalogoFirestore(p);

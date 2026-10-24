@@ -334,6 +334,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
+### [2026-10-24 - Atualização 21]
+- **Unificação Total na Coleção `catalogo_global` (Segurança para Exclusão de `produtos_catalogo`):**
+  - **Coleção Oficial Exclusiva:**
+    - Atualizado o listener [`subscribeCatalogo`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/firestoreSync.ts) e todos os métodos de leitura, busca e exclusão para operarem 100% sobre a coleção **`catalogo_global`**.
+    - A coleção duplicada `produtos_catalogo` foi tornada obsoleta no código e pode ser deletada pelo usuário no Firebase Console sem nenhum impacto.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v25` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 20]
 - **Verificação, População e Enriquecimento Total do Novo Banco (`adega-delivery-pdv`):**
   - **Catálogo Completo com 263 Produtos:**
@@ -425,6 +432,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 21]
+- **Unificação Total na Coleção `catalogo_global` (Segurança para Exclusão de `produtos_catalogo`):**
+  - **Coleção Oficial Exclusiva:**
+    - Atualizado o listener [`subscribeCatalogo`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/firestoreSync.ts) e todos os métodos de leitura, busca e exclusão para operarem 100% sobre a coleção **`catalogo_global`**.
+    - A coleção duplicada `produtos_catalogo` foi tornada obsoleta no código e pode ser deletada pelo usuário no Firebase Console sem nenhum impacto.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v25` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 20]
 - **Verificação, População e Enriquecimento Total do Novo Banco (`adega-delivery-pdv`):**
@@ -530,6 +544,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 21]
+- **Unificação Total na Coleção `catalogo_global` (Segurança para Exclusão de `produtos_catalogo`):**
+  - **Coleção Oficial Exclusiva:**
+    - Atualizado o listener [`subscribeCatalogo`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/firestoreSync.ts) e todos os métodos de leitura, busca e exclusão para operarem 100% sobre a coleção **`catalogo_global`**.
+    - A coleção duplicada `produtos_catalogo` foi tornada obsoleta no código e pode ser deletada pelo usuário no Firebase Console sem nenhum impacto.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v25` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 20]
 - **Verificação, População e Enriquecimento Total do Novo Banco (`adega-delivery-pdv`):**

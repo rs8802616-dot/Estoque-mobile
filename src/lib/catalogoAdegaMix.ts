@@ -873,7 +873,7 @@ export function garantirCatalogoAdegaNoBancoGlobal(catalogoAtual: ProdutoCatalog
 }
 
 /**
- * Sincroniza em lote os itens essenciais de adega com o Firestore (coleção 'produtos_catalogo')
+ * Sincroniza em lote os itens essenciais de adega com o Firestore (coleção 'catalogo_global')
  */
 export async function sincronizarCatalogoAdegaComFirestore(
   catalogoAtual: ProdutoCatalogo[],
