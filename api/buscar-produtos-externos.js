@@ -1,13 +1,15 @@
 // Vercel Serverless Function: /api/buscar-produtos-externos
-// Executa a busca de produtos combinando API 1 (BomJawaKit) + API 2 (Bluesoft Cosmos API)
-
-const BOMJAWAKIT_API_BASE = 'https://produtos.bomjawakit.com.br';
-const BOMJAWAKIT_API_KEY = 'sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU';
-const BOMJAWAKIT_R2_CDN = 'https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev';
+// Ordem de Prioridade:
+// 1º PRIORIDADE PRINCIPAL (API 1): Bluesoft Cosmos API (https://api.cosmos.bluesoft.com.br/products?query=...)
+// 2º CONTINGÊNCIA / COMPLEMENTO (API 2): BomJawaKit API (https://produtos.bomjawakit.com.br/api/v1/produtos)
 
 const COSMOS_API_BASE = 'https://api.cosmos.bluesoft.com.br';
 const COSMOS_TOKEN = '2Vu6HJqH8130Bk_YhL8Osg';
 const COSMOS_CDN = 'https://cdn-cosmos.bluesoft.com.br/products';
+
+const BOMJAWAKIT_API_BASE = 'https://produtos.bomjawakit.com.br';
+const BOMJAWAKIT_API_KEY = 'sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU';
+const BOMJAWAKIT_R2_CDN = 'https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,68 +25,13 @@ export default async function handler(req, res) {
     const query = String(body.query || req.query?.query || '').trim();
     const page = Number(body.page || req.query?.page || 1) || 1;
     const cosmosToken = body.cosmosToken || process.env.COSMOS_TOKEN || COSMOS_TOKEN;
-    const preferFallback = Boolean(body.preferFallback);
+    const onlyCosmos = Boolean(body.onlyCosmos);
 
     if (!query) {
       return res.status(400).json({ error: 'Termo de busca não informado', produtos: [] });
     }
 
-    // 1. Se não for chamada explícita de fallback, tenta primeiro na API 1 (BomJawaKit)
-    if (!preferFallback) {
-      try {
-        const qSemAcento = query
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .trim();
-        const isNum = /^\d{4,}$/.test(query);
-        const paramKey = isNum ? 'barcode' : 'q';
-        const offset = (page - 1) * 24;
-        const urlBomJawa = `${BOMJAWAKIT_API_BASE}/api/v1/produtos?${paramKey}=${encodeURIComponent(
-          qSemAcento
-        )}&limit=24&offset=${offset}`;
-
-        const r1 = await fetch(urlBomJawa, {
-          headers: {
-            'X-API-Key': BOMJAWAKIT_API_KEY,
-            Accept: 'application/json',
-          },
-        });
-        if (r1.ok) {
-          const j1 = await r1.json();
-          const itens = Array.isArray(j1?.itens) ? j1.itens : [];
-          if (itens.length > 0) {
-            const produtos = itens.map((item) => {
-              const barcode = String(item.barcode || '').trim();
-              const temImg = Boolean(item.tem_imagem);
-              return {
-                ean: barcode,
-                nomeProduto: String(item.nome || '').replace(/\|\|.*$/g, '').trim(),
-                marca: String(item.dados?.marca || '').trim(),
-                categoria: String(item.categoria || '')
-                  .replace(/^Carrefour\s*-\s*Mercearia\s*-\s*/i, '')
-                  .replace(/^Carrefour\s*-\s*/i, '')
-                  .replace(/^Amig[aã]o\s*-\s*/i, '')
-                  .trim(),
-                fotoUrl: temImg ? `${BOMJAWAKIT_R2_CDN}/${barcode}.png` : `${COSMOS_CDN}/${barcode}`,
-                ncm:
-                  item.ncm && !String(item.ncm).toLowerCase().includes('não disponível')
-                    ? String(item.ncm).trim()
-                    : '',
-                fonte: 'API BomJawaKit (produtos.bomjawakit.com.br)',
-              };
-            });
-            return res.status(200).json({
-              produtos,
-              total: Number(j1?.total || produtos.length),
-              page,
-              query,
-            });
-          }
-        }
-      } catch {}
-    }
-
-    // 2. API 2: Bluesoft Cosmos API Oficial (https://api.cosmos.bluesoft.com.br/products?query=...)
+    // 1º PRIORIDADE PRINCIPAL: Bluesoft Cosmos API Oficial (https://api.cosmos.bluesoft.com.br/products?query=...)
     try {
       const rCosmos = await fetch(
         `${COSMOS_API_BASE}/products?query=${encodeURIComponent(query)}&page=${page}`,
@@ -122,6 +69,63 @@ export default async function handler(req, res) {
           return res.status(200).json({
             produtos,
             total: Number(jCosmos?.total_count || produtos.length),
+            page,
+            query,
+          });
+        }
+      }
+    } catch {}
+
+    if (onlyCosmos) {
+      return res.status(200).json({ produtos: [], total: 0, page, query });
+    }
+
+    // 2º CONTINGÊNCIA AUTOMÁTICA: API BomJawaKit (https://produtos.bomjawakit.com.br/api/v1/produtos)
+    try {
+      const qSemAcento = query
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+      const isNum = /^\d{4,}$/.test(query);
+      const paramKey = isNum ? 'barcode' : 'q';
+      const offset = (page - 1) * 24;
+      const urlBomJawa = `${BOMJAWAKIT_API_BASE}/api/v1/produtos?${paramKey}=${encodeURIComponent(
+        qSemAcento
+      )}&limit=24&offset=${offset}`;
+
+      const r1 = await fetch(urlBomJawa, {
+        headers: {
+          'X-API-Key': BOMJAWAKIT_API_KEY,
+          Accept: 'application/json',
+        },
+      });
+      if (r1.ok) {
+        const j1 = await r1.json();
+        const itens = Array.isArray(j1?.itens) ? j1.itens : [];
+        if (itens.length > 0) {
+          const produtos = itens.map((item) => {
+            const barcode = String(item.barcode || '').trim();
+            const temImg = Boolean(item.tem_imagem);
+            return {
+              ean: barcode,
+              nomeProduto: String(item.nome || '').replace(/\|\|.*$/g, '').trim(),
+              marca: String(item.dados?.marca || '').trim(),
+              categoria: String(item.categoria || '')
+                .replace(/^Carrefour\s*-\s*Mercearia\s*-\s*/i, '')
+                .replace(/^Carrefour\s*-\s*/i, '')
+                .replace(/^Amig[aã]o\s*-\s*/i, '')
+                .trim(),
+              fotoUrl: temImg ? `${BOMJAWAKIT_R2_CDN}/${barcode}.png` : `${COSMOS_CDN}/${barcode}`,
+              ncm:
+                item.ncm && !String(item.ncm).toLowerCase().includes('não disponível')
+                  ? String(item.ncm).trim()
+                  : '',
+              fonte: 'API BomJawaKit (produtos.bomjawakit.com.br)',
+            };
+          });
+          return res.status(200).json({
+            produtos,
+            total: Number(j1?.total || produtos.length),
             page,
             query,
           });

@@ -3,7 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import {
-  consultarProdutoBomJawaKitPorCodigo,
+  consultarApenasBomJawaKitPorCodigo,
   buscarProdutosBomJawaKit,
   COSMOS_BLUESOFT_API_BASE,
   COSMOS_BLUESOFT_DEFAULT_TOKEN,
@@ -623,7 +623,7 @@ async function startServer() {
   // API endpoint to lookup Product Name, Category and Image by Barcode EAN directly in Cosmos Bluesoft (https://cosmos.bluesoft.com.br/) and Gemini AI
   app.post("/api/consultar-produto-codigo", async (req, res) => {
     try {
-      const { ean, cosmosToken, preferCosmos } = req.body;
+      const { ean, cosmosToken, onlyCosmos } = req.body;
       if (!ean || typeof ean !== "string") {
         return res.status(400).json({ error: "Código de barras inválido" });
       }
@@ -710,23 +710,7 @@ async function startServer() {
         },
       };
 
-      // 0. Prioridade 1: API Oficial BomJawaKit (se não veio de chamada de fallback)
-      if (!preferCosmos) {
-        const bomJawaDirect = await consultarProdutoBomJawaKitPorCodigo(ean.trim()).catch(() => null);
-        if (bomJawaDirect && bomJawaDirect.nomeProduto) {
-          return res.json({
-            nomeProduto: bomJawaDirect.nomeProduto,
-            marca: bomJawaDirect.marca || "",
-            categoria: bomJawaDirect.categoria || "",
-            fotoUrl: bomJawaDirect.fotoUrl || "",
-            descricao: bomJawaDirect.descricao || "",
-            ncm: bomJawaDirect.ncm || "",
-            fonte: bomJawaDirect.fonte,
-          });
-        }
-      }
-
-      // 1. Direct live lookup in Bluesoft Cosmos API (https://api.cosmos.bluesoft.com.br) & Consulta Produtos in parallel
+      // 1º PRIORIDADE PRINCIPAL: Bluesoft Cosmos API (https://api.cosmos.bluesoft.com.br) & Consulta Produtos
       const [cosmosDirect, cpDirect] = await Promise.all([
         consultarBluesoftCosmosDireto(cleanEan, cosmosToken).catch(() => null),
         consultarConsultaProdutosDireto(cleanEan).catch(() => null),
@@ -749,6 +733,22 @@ async function startServer() {
             descricao,
             ncm: cosmosDirect.ncm || cpDirect?.ncm || "",
             fonte,
+          });
+        }
+      }
+
+      if (!onlyCosmos) {
+        // 2º CONTINGÊNCIA AUTOMÁTICA: API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1)
+        const bomJawaDirect = await consultarApenasBomJawaKitPorCodigo(ean.trim()).catch(() => null);
+        if (bomJawaDirect && bomJawaDirect.nomeProduto) {
+          return res.json({
+            nomeProduto: bomJawaDirect.nomeProduto,
+            marca: bomJawaDirect.marca || "",
+            categoria: bomJawaDirect.categoria || "",
+            fotoUrl: bomJawaDirect.fotoUrl || "",
+            descricao: bomJawaDirect.descricao || "",
+            ncm: bomJawaDirect.ncm || "",
+            fonte: bomJawaDirect.fonte,
           });
         }
       }
@@ -948,31 +948,18 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
     }
   });
 
-  // API endpoint to search products by text/keyword in BomJawaKit + Bluesoft Cosmos API + Consulta Produtos
+  // API endpoint to search products by text/keyword: 1º Bluesoft Cosmos API + 2º BomJawaKit + Consulta Produtos
   app.post("/api/buscar-produtos-externos", async (req, res) => {
     try {
-      const { query, page, cosmosToken, preferFallback } = req.body;
+      const { query, page, cosmosToken, onlyCosmos } = req.body;
       if (!query || typeof query !== "string") {
         return res.status(400).json({ error: "Termo de busca não fornecido", produtos: [] });
       }
 
       const numPage = typeof page === "number" && page > 0 ? page : 1;
-      if (!preferFallback) {
-        const resBomJawa = await buscarProdutosBomJawaKit({
-          query,
-          page: numPage,
-          limit: 24,
-          comImagem: true,
-        }).catch(() => null);
-
-        if (resBomJawa && resBomJawa.produtos.length > 0) {
-          return res.json(resBomJawa);
-        }
-      }
-
       const tokenCosmos = (cosmosToken && cosmosToken.trim()) || process.env.COSMOS_TOKEN || COSMOS_BLUESOFT_DEFAULT_TOKEN;
 
-      // Tenta API Oficial Bluesoft Cosmos (GET /products?query=...)
+      // 1º PRIORIDADE PRINCIPAL: API Oficial Bluesoft Cosmos (GET /products?query=...)
       try {
         const ctrl = new AbortController();
         const tId = setTimeout(() => ctrl.abort(), 5000);
@@ -1022,6 +1009,22 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
           }
         }
       } catch {}
+
+      if (onlyCosmos) {
+        return res.json({ produtos: [], total: 0, page: numPage, query: query.trim() });
+      }
+
+      // 2º CONTINGÊNCIA: API BomJawaKit + ConsultaProdutos
+      const resBomJawa = await buscarProdutosBomJawaKit({
+        query,
+        page: numPage,
+        limit: 24,
+        comImagem: true,
+      }).catch(() => null);
+
+      if (resBomJawa && resBomJawa.produtos.length > 0) {
+        return res.json(resBomJawa);
+      }
 
       const resultado = await buscarConsultaProdutosLista(query, numPage);
       return res.json(resultado);

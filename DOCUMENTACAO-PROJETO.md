@@ -104,6 +104,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 15]
+- **Inversão de Prioridade do Motor Duplo: 1º API Bluesoft Cosmos (Principal) + 2º API BomJawaKit (Contingência):**
+  - Atendendo à solicitação do usuário, a **API Bluesoft Cosmos** (`https://api.cosmos.bluesoft.com.br` com `X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg`) foi configurada como **1ª Prioridade (API Principal)** em `src/lib/bomJawaKitApi.ts`, `api/consultar-produto-codigo.js`, `api/buscar-produtos-externos.js`, `server.ts` e `src/components/ConsultaProdutosModal.tsx`.
+  - A **API BomJawaKit** (`https://produtos.bomjawakit.com.br/api/v1` com `X-API-Key: sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU`) atua em **2º lugar como Contingência e Complemento Automático** quando a Bluesoft Cosmos atingir seu limite diário (`HTTP 429`) ou quando um produto não existir na Bluesoft Cosmos.
+  - Atualizado o cache do Service Worker para `estoque-mobile-pwa-v19` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 14]
 - **Motor Duplo de Consulta de Produtos (Dual-API: BomJawaKit + Bluesoft Cosmos API):**
   - **Integração Conjunta das 2 APIs (`src/lib/bomJawaKitApi.ts`, `server.ts`, `api/consultar-produto-codigo.js`, `api/buscar-produtos-externos.js`):**

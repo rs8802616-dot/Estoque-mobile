@@ -1,15 +1,15 @@
 // Motor Duplo de Consulta de Produtos (Dual-API Engine):
-// 1. API Primária: BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) - Header: X-API-Key
-// 2. API Secundária / Contingência: Bluesoft Cosmos (https://api.cosmos.bluesoft.com.br) - Header: X-Cosmos-Token
-// As duas APIs trabalham em conjunto: se uma atingir o limite (429/403) ou não tiver o produto/foto, a outra assume ou complementa os dados automaticamente.
-
-export const BOMJAWAKIT_API_BASE = 'https://produtos.bomjawakit.com.br';
-export const BOMJAWAKIT_DEFAULT_API_KEY = 'sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU';
-export const BOMJAWAKIT_R2_IMAGE_CDN = 'https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev';
+// 1º PRIORIDADE PRINCIPAL (API 1): Bluesoft Cosmos (https://api.cosmos.bluesoft.com.br) - Header: X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg
+// 2º CONTINGÊNCIA / COMPLEMENTO (API 2): BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) - Header: X-API-Key: sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU
+// A Bluesoft Cosmos roda PRIMEIRO em todas as consultas. Caso atinja o limite diário (429) ou não tenha o produto, a BomJawaKit entra em ação automaticamente.
 
 export const COSMOS_BLUESOFT_API_BASE = 'https://api.cosmos.bluesoft.com.br';
 export const COSMOS_BLUESOFT_DEFAULT_TOKEN = '2Vu6HJqH8130Bk_YhL8Osg';
 export const COSMOS_BLUESOFT_CDN = 'https://cdn-cosmos.bluesoft.com.br/products';
+
+export const BOMJAWAKIT_API_BASE = 'https://produtos.bomjawakit.com.br';
+export const BOMJAWAKIT_DEFAULT_API_KEY = 'sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU';
+export const BOMJAWAKIT_R2_IMAGE_CDN = 'https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev';
 
 export interface BomJawaKitProdutoRaw {
   barcode: string;
@@ -70,18 +70,6 @@ export interface ProdutoNormalizadoBomJawaKit {
   fonte: string;
 }
 
-export function getBomJawaKitApiKey(): string {
-  if (typeof window !== 'undefined') {
-    try {
-      const customKey = localStorage.getItem('bomjawakit_api_key');
-      if (customKey && customKey.trim().startsWith('sk_')) {
-        return customKey.trim();
-      }
-    } catch {}
-  }
-  return BOMJAWAKIT_DEFAULT_API_KEY;
-}
-
 export function getCosmosBluesoftToken(): string {
   if (typeof window !== 'undefined') {
     try {
@@ -94,20 +82,31 @@ export function getCosmosBluesoftToken(): string {
   return COSMOS_BLUESOFT_DEFAULT_TOKEN;
 }
 
-export function construirUrlImagemBomJawaKit(barcode: string, temImagem?: boolean): string {
-  const clean = (barcode || '').trim();
-  if (!clean) return '';
-  if (temImagem === false) {
-    // Se não tem imagem no R2 da BomJawaKit, usa o CDN oficial da Bluesoft Cosmos como fallback
-    return `${COSMOS_BLUESOFT_CDN}/${encodeURIComponent(clean)}`;
+export function getBomJawaKitApiKey(): string {
+  if (typeof window !== 'undefined') {
+    try {
+      const customKey = localStorage.getItem('bomjawakit_api_key');
+      if (customKey && customKey.trim().startsWith('sk_')) {
+        return customKey.trim();
+      }
+    } catch {}
   }
-  return `${BOMJAWAKIT_R2_IMAGE_CDN}/${encodeURIComponent(clean)}.png`;
+  return BOMJAWAKIT_DEFAULT_API_KEY;
 }
 
 export function construirUrlImagemCosmos(barcode: string): string {
   const clean = (barcode || '').trim().replace(/\D/g, '');
   if (!clean) return '';
   return `${COSMOS_BLUESOFT_CDN}/${encodeURIComponent(clean)}`;
+}
+
+export function construirUrlImagemBomJawaKit(barcode: string, temImagem?: boolean): string {
+  const clean = (barcode || '').trim();
+  if (!clean) return '';
+  if (temImagem === false) {
+    return construirUrlImagemCosmos(clean);
+  }
+  return `${BOMJAWAKIT_R2_IMAGE_CDN}/${encodeURIComponent(clean)}.png`;
 }
 
 /**
@@ -156,6 +155,31 @@ function limparCategoriaBomJawaKit(cat?: string | null): string {
     .trim();
 }
 
+export function normalizarProdutoCosmosBluesoft(item: CosmosBluesoftProdutoRaw): ProdutoNormalizadoBomJawaKit {
+  const gtin = String(item.gtin || '').trim();
+  const nomeLimpo = String(item.description || '').trim();
+  const marcaLimpa = String(item.brand?.name || '').trim();
+  const categoriaLimpa = String(item.gpc?.description || item.ncm?.description || '').trim();
+  const ncmLimpo = String(item.ncm?.code || '').trim();
+  const thumb = String(item.thumbnail || '').trim();
+  const fotoFinal =
+    thumb && !thumb.includes('default') && !thumb.includes('no-image')
+      ? thumb
+      : construirUrlImagemCosmos(gtin);
+
+  return {
+    ean: gtin,
+    nomeProduto: nomeLimpo,
+    marca: marcaLimpa,
+    categoria: categoriaLimpa,
+    fotoUrl: fotoFinal,
+    ncm: ncmLimpo,
+    descricao: String(item.ncm?.full_description || item.description || '').trim(),
+    temImagem: Boolean(fotoFinal),
+    fonte: 'API Bluesoft Cosmos (cosmos.bluesoft.com.br)',
+  };
+}
+
 export function normalizarProdutoBomJawaKit(item: BomJawaKitProdutoRaw): ProdutoNormalizadoBomJawaKit {
   const barcode = String(item.barcode || '').trim();
   const nomeLimpo = String(item.nome || '')
@@ -183,33 +207,8 @@ export function normalizarProdutoBomJawaKit(item: BomJawaKitProdutoRaw): Produto
   };
 }
 
-export function normalizarProdutoCosmosBluesoft(item: CosmosBluesoftProdutoRaw): ProdutoNormalizadoBomJawaKit {
-  const gtin = String(item.gtin || '').trim();
-  const nomeLimpo = String(item.description || '').trim();
-  const marcaLimpa = String(item.brand?.name || '').trim();
-  const categoriaLimpa = String(item.gpc?.description || item.ncm?.description || '').trim();
-  const ncmLimpo = String(item.ncm?.code || '').trim();
-  const thumb = String(item.thumbnail || '').trim();
-  const fotoFinal =
-    thumb && !thumb.includes('default') && !thumb.includes('no-image')
-      ? thumb
-      : construirUrlImagemCosmos(gtin);
-
-  return {
-    ean: gtin,
-    nomeProduto: nomeLimpo,
-    marca: marcaLimpa,
-    categoria: categoriaLimpa,
-    fotoUrl: fotoFinal,
-    ncm: ncmLimpo,
-    descricao: String(item.ncm?.full_description || item.description || '').trim(),
-    temImagem: Boolean(fotoFinal),
-    fonte: 'API Bluesoft Cosmos (cosmos.bluesoft.com.br)',
-  };
-}
-
 /**
- * Consulta direta na API Oficial Bluesoft Cosmos (https://api.cosmos.bluesoft.com.br/gtins/{gtin}.json)
+ * 1º PRIORIDADE: Consulta na API Oficial Bluesoft Cosmos (https://api.cosmos.bluesoft.com.br/gtins/{gtin}.json)
  * Autenticação via X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg
  */
 export async function consultarProdutoCosmosBluesoftPorCodigo(
@@ -223,7 +222,7 @@ export async function consultarProdutoCosmosBluesoftPorCodigo(
   // 1. Tenta chamada direta à API REST Oficial Bluesoft Cosmos
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5500);
+    const timeout = setTimeout(() => controller.abort(), 5000);
 
     const res = await fetch(
       `${COSMOS_BLUESOFT_API_BASE}/gtins/${encodeURIComponent(cleanCode)}.json`,
@@ -247,15 +246,15 @@ export async function consultarProdutoCosmosBluesoftPorCodigo(
       }
     }
   } catch {
-    // Em navegadores, caso haja bloqueio de CORS na chamada direta ao domínio api.cosmos.bluesoft.com.br,
-    // prossegue automaticamente para a rota proxy do servidor/Vercel (/api/consultar-produto-codigo).
+    // Em navegadores com bloqueio de CORS no domínio api.cosmos.bluesoft.com.br,
+    // prossegue imediatamente para a rota Serverless/Backend (/api/consultar-produto-codigo).
   }
 
-  // 2. Fallback via Serverless/Backend Proxy (/api/consultar-produto-codigo) que consulta Cosmos no Node.js sem restrição de CORS
+  // 2. Consulta via Serverless/Backend Proxy (/api/consultar-produto-codigo) com prioridade para Bluesoft Cosmos
   if (typeof window !== 'undefined') {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 6500);
+      const timeout = setTimeout(() => controller.abort(), 6000);
 
       const resProxy = await fetch('/api/consultar-produto-codigo', {
         method: 'POST',
@@ -264,7 +263,7 @@ export async function consultarProdutoCosmosBluesoftPorCodigo(
         body: JSON.stringify({
           ean: cleanCode,
           cosmosToken,
-          preferCosmos: true,
+          onlyCosmos: true,
         }),
       });
       clearTimeout(timeout);
@@ -293,7 +292,131 @@ export async function consultarProdutoCosmosBluesoftPorCodigo(
 }
 
 /**
+ * 2º CONTINGÊNCIA: Consulta na API BomJawaKit (GET /api/v1/produtos/{barcode})
+ */
+export async function consultarApenasBomJawaKitPorCodigo(
+  barcode: string
+): Promise<ProdutoNormalizadoBomJawaKit | null> {
+  const cleanCode = (barcode || '').trim();
+  if (!cleanCode) return null;
+
+  const apiKey = getBomJawaKitApiKey();
+
+  // 1. Detalhe direto: GET /api/v1/produtos/{barcode}
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5500);
+
+    const res = await fetch(
+      `${BOMJAWAKIT_API_BASE}/api/v1/produtos/${encodeURIComponent(cleanCode)}`,
+      {
+        method: 'GET',
+        signal: controller.signal,
+        headers: {
+          'X-API-Key': apiKey,
+          Accept: 'application/json',
+        },
+      }
+    );
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const item: BomJawaKitProdutoRaw = await res.json();
+      if (item && item.nome) {
+        return normalizarProdutoBomJawaKit(item);
+      }
+    }
+  } catch (err) {
+    console.warn('Aviso ao consultar detalhe de produto na API BomJawaKit:', err);
+  }
+
+  // 2. Busca parcial por barcode: GET /api/v1/produtos?barcode={cleanCode}&limit=5
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5500);
+
+    const resLista = await fetch(
+      `${BOMJAWAKIT_API_BASE}/api/v1/produtos?barcode=${encodeURIComponent(cleanCode)}&limit=5`,
+      {
+        method: 'GET',
+        signal: controller.signal,
+        headers: {
+          'X-API-Key': apiKey,
+          Accept: 'application/json',
+        },
+      }
+    );
+    clearTimeout(timeout);
+
+    if (resLista.ok) {
+      const dados = await resLista.json();
+      const itens: BomJawaKitProdutoRaw[] = Array.isArray(dados?.itens) ? dados.itens : [];
+      if (itens.length > 0) {
+        const exato = itens.find((i) => String(i.barcode) === cleanCode) || itens[0];
+        return normalizarProdutoBomJawaKit(exato);
+      }
+    }
+  } catch (err) {
+    console.warn('Aviso ao buscar barcode parcial na API BomJawaKit:', err);
+  }
+
+  return null;
+}
+
+/**
+ * Consulta Inteligente em Conjunto:
+ * 1º Roda PRIMEIRO a API Bluesoft Cosmos (Token: 2Vu6HJqH8130Bk_YhL8Osg).
+ * 2º Caso a Bluesoft Cosmos exceda o limite (429) ou não tenha o produto, aciona automaticamente a API BomJawaKit.
+ * 3º Se encontrar na Bluesoft Cosmos mas faltar categoria/NCM/foto, complementa com a BomJawaKit.
+ */
+export async function consultarProdutoBomJawaKitPorCodigo(
+  barcode: string
+): Promise<ProdutoNormalizadoBomJawaKit | null> {
+  const cleanCode = (barcode || '').trim();
+  if (!cleanCode) return null;
+
+  // 1º PRIORIDADE MÁXIMA: API Bluesoft Cosmos
+  const resultadoCosmos = await consultarProdutoCosmosBluesoftPorCodigo(cleanCode);
+
+  if (resultadoCosmos && resultadoCosmos.nomeProduto) {
+    // Se a Bluesoft Cosmos trouxe tudo (nome, marca, categoria e foto), retorna imediatamente!
+    if (resultadoCosmos.categoria && resultadoCosmos.fotoUrl) {
+      return resultadoCosmos;
+    }
+
+    // Se faltou categoria ou NCM na Bluesoft Cosmos, tenta complementar silenciosamente na BomJawaKit
+    try {
+      const complementoBomJawa = await consultarApenasBomJawaKitPorCodigo(cleanCode);
+      if (complementoBomJawa) {
+        return {
+          ...resultadoCosmos,
+          marca: resultadoCosmos.marca || complementoBomJawa.marca || '',
+          categoria: resultadoCosmos.categoria || complementoBomJawa.categoria || '',
+          ncm: resultadoCosmos.ncm || complementoBomJawa.ncm || '',
+          fotoUrl: complementoBomJawa.temImagem
+            ? complementoBomJawa.fotoUrl
+            : resultadoCosmos.fotoUrl || complementoBomJawa.fotoUrl,
+          temImagem: Boolean(complementoBomJawa.temImagem || resultadoCosmos.temImagem),
+          fonte: 'Bluesoft Cosmos + BomJawaKit (Integrado)',
+        };
+      }
+    } catch {}
+
+    return resultadoCosmos;
+  }
+
+  // 2º CONTINGÊNCIA AUTOMÁTICA: Se não tinha na Bluesoft Cosmos ou se a Bluesoft excedeu o limite, busca na BomJawaKit
+  const resultadoBomJawa = await consultarApenasBomJawaKitPorCodigo(cleanCode);
+  if (resultadoBomJawa && resultadoBomJawa.nomeProduto) {
+    return resultadoBomJawa;
+  }
+
+  return null;
+}
+
+/**
  * Busca de lista de produtos na API Oficial Bluesoft Cosmos (GET /products?query={query}&page={page})
+ * Usa chamada direta + fallback via Serverless/Backend (/api/buscar-produtos-externos)
  */
 export async function buscarProdutosCosmosBluesoft(
   query: string,
@@ -304,9 +427,10 @@ export async function buscarProdutosCosmosBluesoft(
 
   const cosmosToken = getCosmosBluesoftToken();
 
+  // 1. Tenta chamada direta à API REST Oficial Bluesoft Cosmos
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
+    const timeout = setTimeout(() => controller.abort(), 5500);
 
     const url = `${COSMOS_BLUESOFT_API_BASE}/products?query=${encodeURIComponent(cleanQuery)}&page=${page}`;
     const res = await fetch(url, {
@@ -328,123 +452,56 @@ export async function buscarProdutosCosmosBluesoft(
         : Array.isArray(data)
         ? data
         : [];
-      return listaRaw
-        .filter((item) => item && item.description)
-        .map(normalizarProdutoCosmosBluesoft);
+      if (listaRaw.length > 0) {
+        return listaRaw
+          .filter((item) => item && item.description)
+          .map(normalizarProdutoCosmosBluesoft);
+      }
     }
   } catch {
-    // Ignora falha de CORS no navegador e usa rota /api/buscar-produtos-externos
+    // Em navegadores onde o CORS bloqueia api.cosmos.bluesoft.com.br, usa a rota Serverless/Backend abaixo
   }
 
-  return [];
-}
-
-/**
- * Consulta Inteligente em Conjunto (BomJawaKit API + Bluesoft Cosmos API)
- * - Se não encontrar na API 1 ou se a API 1 exceder o limite, busca automaticamente na API 2 (Cosmos Bluesoft).
- * - Se encontrar na API 1 mas faltar marca/categoria/foto, complementa com a API 2.
- */
-export async function consultarProdutoBomJawaKitPorCodigo(
-  barcode: string
-): Promise<ProdutoNormalizadoBomJawaKit | null> {
-  const cleanCode = (barcode || '').trim();
-  if (!cleanCode) return null;
-
-  const apiKey = getBomJawaKitApiKey();
-  let resultadoBomJawa: ProdutoNormalizadoBomJawaKit | null = null;
-
-  // 1. Tenta endpoint direto da API 1 (BomJawaKit): GET /api/v1/produtos/{barcode}
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5500);
-
-    const res = await fetch(
-      `${BOMJAWAKIT_API_BASE}/api/v1/produtos/${encodeURIComponent(cleanCode)}`,
-      {
-        method: 'GET',
-        signal: controller.signal,
-        headers: {
-          'X-API-Key': apiKey,
-          Accept: 'application/json',
-        },
-      }
-    );
-    clearTimeout(timeout);
-
-    if (res.ok) {
-      const item: BomJawaKitProdutoRaw = await res.json();
-      if (item && item.nome) {
-        resultadoBomJawa = normalizarProdutoBomJawaKit(item);
-      }
-    }
-  } catch (err) {
-    console.warn('Aviso ao consultar detalhe de produto na API BomJawaKit:', err);
-  }
-
-  // 2. Se não achou exato na API 1, tenta busca parcial por barcode na API 1: GET /api/v1/produtos?barcode={cleanCode}&limit=5
-  if (!resultadoBomJawa) {
+  // 2. Chama rota Serverless/Backend (/api/buscar-produtos-externos) com onlyCosmos=true
+  if (typeof window !== 'undefined') {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5500);
+      const timeout = setTimeout(() => controller.abort(), 6500);
 
-      const resLista = await fetch(
-        `${BOMJAWAKIT_API_BASE}/api/v1/produtos?barcode=${encodeURIComponent(cleanCode)}&limit=5`,
-        {
-          method: 'GET',
-          signal: controller.signal,
-          headers: {
-            'X-API-Key': apiKey,
-            Accept: 'application/json',
-          },
-        }
-      );
+      const resServer = await fetch('/api/buscar-produtos-externos', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: cleanQuery,
+          page,
+          cosmosToken,
+          onlyCosmos: true,
+        }),
+      });
       clearTimeout(timeout);
 
-      if (resLista.ok) {
-        const dados = await resLista.json();
-        const itens: BomJawaKitProdutoRaw[] = Array.isArray(dados?.itens) ? dados.itens : [];
-        if (itens.length > 0) {
-          const exato = itens.find((i) => String(i.barcode) === cleanCode) || itens[0];
-          resultadoBomJawa = normalizarProdutoBomJawaKit(exato);
+      const cType = resServer.headers.get('content-type') || '';
+      if (resServer.ok && cType.includes('application/json')) {
+        const jsonServer = await resServer.json();
+        if (Array.isArray(jsonServer?.produtos) && jsonServer.produtos.length > 0) {
+          return jsonServer.produtos.map((p: any) => ({
+            ean: String(p.ean || ''),
+            nomeProduto: String(p.nomeProduto || ''),
+            marca: String(p.marca || ''),
+            categoria: String(p.categoria || ''),
+            fotoUrl: String(p.fotoUrl || construirUrlImagemCosmos(String(p.ean || ''))),
+            ncm: String(p.ncm || ''),
+            descricao: String(p.descricao || ''),
+            temImagem: Boolean(p.fotoUrl),
+            fonte: String(p.fonte || 'API Bluesoft Cosmos (cosmos.bluesoft.com.br)'),
+          }));
         }
-      }
-    } catch (err) {
-      console.warn('Aviso ao buscar barcode parcial na API BomJawaKit:', err);
-    }
-  }
-
-  // 3. Se a API 1 encontrou o produto completo (com nome e foto), mas sem marca, ou se não encontrou na API 1:
-  // Aciona a API 2 (Bluesoft Cosmos) quando:
-  // a) O produto NÃO foi encontrado na API 1 (ou a API 1 atingiu o limite 429)
-  // b) O produto foi encontrado na API 1 mas veio sem marca ou sem categoria
-  if (!resultadoBomJawa) {
-    const resultadoCosmos = await consultarProdutoCosmosBluesoftPorCodigo(cleanCode);
-    if (resultadoCosmos && resultadoCosmos.nomeProduto) {
-      return resultadoCosmos;
-    }
-    return null;
-  }
-
-  // Se achou na BomJawaKit mas falta marca ou categoria, tenta enriquecer rapidamente com a Cosmos
-  if (!resultadoBomJawa.marca || !resultadoBomJawa.categoria) {
-    try {
-      const complementoCosmos = await consultarProdutoCosmosBluesoftPorCodigo(cleanCode);
-      if (complementoCosmos) {
-        return {
-          ...resultadoBomJawa,
-          marca: resultadoBomJawa.marca || complementoCosmos.marca || '',
-          categoria: resultadoBomJawa.categoria || complementoCosmos.categoria || '',
-          ncm: resultadoBomJawa.ncm || complementoCosmos.ncm || '',
-          fotoUrl: resultadoBomJawa.temImagem
-            ? resultadoBomJawa.fotoUrl
-            : complementoCosmos.fotoUrl || resultadoBomJawa.fotoUrl,
-          fonte: 'BomJawaKit + Bluesoft Cosmos (Integrado)',
-        };
       }
     } catch {}
   }
 
-  return resultadoBomJawa;
+  return [];
 }
 
 export interface OpcoesBuscaBomJawaKit {
@@ -456,8 +513,8 @@ export interface OpcoesBuscaBomJawaKit {
 }
 
 /**
- * Busca produtos paginados combinando API 1 (BomJawaKit) + API 2 (Bluesoft Cosmos)
- * Caso a API 1 atinja o limite ou não possua o produto pesquisado, a API 2 entra em ação automaticamente.
+ * Busca produtos paginados priorizando PRIMEIRO a API 1 (Bluesoft Cosmos) e em seguida a API 2 (BomJawaKit)
+ * - Se a Bluesoft Cosmos exceder o limite ou não tiver todos os produtos, a BomJawaKit complementa automaticamente.
  */
 export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): Promise<{
   produtos: ProdutoNormalizadoBomJawaKit[];
@@ -470,10 +527,40 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
   const limit = opcoes.limit && opcoes.limit <= 200 ? opcoes.limit : 24;
   const offset = (page - 1) * limit;
   const apiKey = getBomJawaKitApiKey();
+  const isNumericBarcode = /^\d{4,}$/.test(rawQuery);
 
-  let bomJawaFalhouOuLimite = false;
+  const listaCombinada: ProdutoNormalizadoBomJawaKit[] = [];
+  const eansAdicionados = new Set<string>();
 
-  const executarFetch = async (params: URLSearchParams) => {
+  // 1º PRIORIDADE PRINCIPAL: Consultar PRIMEIRO a API Bluesoft Cosmos (quando houver termo de busca e sem filtro exclusivo de slug de categoria da BomJawaKit)
+  if (rawQuery && !opcoes.categoria) {
+    try {
+      let resultadosCosmos: ProdutoNormalizadoBomJawaKit[] = [];
+      if (isNumericBarcode) {
+        const itemUnico = await consultarProdutoCosmosBluesoftPorCodigo(rawQuery);
+        if (itemUnico) resultadosCosmos = [itemUnico];
+      } else {
+        resultadosCosmos = await buscarProdutosCosmosBluesoft(rawQuery, page);
+      }
+
+      for (const itemC of resultadosCosmos) {
+        const chave = itemC.ean || itemC.nomeProduto;
+        if (chave && !eansAdicionados.has(chave)) {
+          listaCombinada.push(itemC);
+          eansAdicionados.add(chave);
+        }
+      }
+    } catch (err) {
+      console.warn('Aviso ao consultar Bluesoft Cosmos na busca principal:', err);
+    }
+  }
+
+  // 2º CONTINGÊNCIA E COMPLEMENTO: Consultar a API BomJawaKit para:
+  // - Assumir integralmente caso a Bluesoft Cosmos tenha atingido o limite diário (listaCombinada vazia)
+  // - Complementar com produtos que não existem na Bluesoft Cosmos ou quando filtrar por categoria específica
+  let totalBomJawa = 0;
+
+  const executarFetchBomJawa = async (params: URLSearchParams) => {
     const url = `${BOMJAWAKIT_API_BASE}/api/v1/produtos?${params.toString()}`;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 7500);
@@ -488,10 +575,6 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
         },
       });
       clearTimeout(timeout);
-      if (r.status === 429 || r.status === 403 || r.status === 401) {
-        bomJawaFalhouOuLimite = true;
-        return { total: 0, itens: [] as BomJawaKitProdutoRaw[] };
-      }
       if (!r.ok) return { total: 0, itens: [] as BomJawaKitProdutoRaw[] };
       const json = await r.json();
       return {
@@ -500,13 +583,11 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       };
     } catch {
       clearTimeout(timeout);
-      bomJawaFalhouOuLimite = true;
       return { total: 0, itens: [] as BomJawaKitProdutoRaw[] };
     }
   };
 
   try {
-    const isNumericBarcode = /^\d{4,}$/.test(rawQuery);
     const baseParams = new URLSearchParams();
     baseParams.set('limit', String(limit));
     baseParams.set('offset', String(offset));
@@ -530,10 +611,9 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       }
     }
 
-    let resultado = await executarFetch(baseParams);
+    let resultadoBJ = await executarFetchBomJawa(baseParams);
 
-    // Se a busca por texto com espaço ("Coca cola") retornou 0, tenta variação com hífen ("Coca-cola")
-    if (!bomJawaFalhouOuLimite && resultado.itens.length === 0 && rawQuery && !isNumericBarcode && rawQuery.includes(' ')) {
+    if (resultadoBJ.itens.length === 0 && rawQuery && !isNumericBarcode && rawQuery.includes(' ')) {
       const paramsHifen = new URLSearchParams(baseParams);
       paramsHifen.set(
         'q',
@@ -543,90 +623,35 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
           .trim()
           .replace(/\s+/g, '-')
       );
-      resultado = await executarFetch(paramsHifen);
+      resultadoBJ = await executarFetchBomJawa(paramsHifen);
     }
 
-    // Se estava com filtro com_imagem=true e mesmo assim deu 0, tenta sem restringir imagem
-    if (!bomJawaFalhouOuLimite && resultado.itens.length === 0 && opcoes.comImagem === true && rawQuery) {
+    if (resultadoBJ.itens.length === 0 && opcoes.comImagem === true && rawQuery) {
       const paramsSemFiltroImg = new URLSearchParams(baseParams);
       paramsSemFiltroImg.delete('com_imagem');
-      resultado = await executarFetch(paramsSemFiltroImg);
+      resultadoBJ = await executarFetchBomJawa(paramsSemFiltroImg);
     }
 
-    const normalizados = resultado.itens.map(normalizarProdutoBomJawaKit);
+    totalBomJawa = resultadoBJ.total;
+    const normalizadosBJ = resultadoBJ.itens.map(normalizarProdutoBomJawaKit);
 
-    // CONTINGÊNCIA E COMPLEMENTO COM A API 2 (BLUESOFT COSMOS):
-    // Se a API 1 atingiu o limite, falhou, ou retornou menos de 4 itens para a pesquisa do usuário,
-    // consulta automaticamente a Bluesoft Cosmos e junta os resultados sem duplicar EAN!
-    if ((bomJawaFalhouOuLimite || normalizados.length < 4) && rawQuery && !opcoes.categoria) {
-      let itensCosmos: ProdutoNormalizadoBomJawaKit[] = [];
-
-      if (isNumericBarcode) {
-        const unicoCosmos = await consultarProdutoCosmosBluesoftPorCodigo(rawQuery);
-        if (unicoCosmos) itensCosmos = [unicoCosmos];
-      } else {
-        itensCosmos = await buscarProdutosCosmosBluesoft(rawQuery, page);
-
-        // Se no navegador o CORS bloqueou a busca direta no Cosmos, tenta via endpoint /api/buscar-produtos-externos
-        if (itensCosmos.length === 0 && typeof window !== 'undefined') {
-          try {
-            const resServer = await fetch('/api/buscar-produtos-externos', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                query: rawQuery,
-                page,
-                cosmosToken: getCosmosBluesoftToken(),
-                preferFallback: true,
-              }),
-            });
-            const cType = resServer.headers.get('content-type') || '';
-            if (resServer.ok && cType.includes('application/json')) {
-              const jsonServer = await resServer.json();
-              if (Array.isArray(jsonServer?.produtos)) {
-                itensCosmos = jsonServer.produtos.map((p: any) => ({
-                  ean: String(p.ean || ''),
-                  nomeProduto: String(p.nomeProduto || ''),
-                  marca: String(p.marca || ''),
-                  categoria: String(p.categoria || ''),
-                  fotoUrl: String(p.fotoUrl || construirUrlImagemCosmos(String(p.ean || ''))),
-                  ncm: String(p.ncm || ''),
-                  descricao: String(p.descricao || ''),
-                  temImagem: Boolean(p.fotoUrl),
-                  fonte: String(p.fonte || 'API Bluesoft Cosmos'),
-                }));
-              }
-            }
-          } catch {}
-        }
-      }
-
-      const eansExistentes = new Set(normalizados.map((p) => p.ean));
-      for (const itemC of itensCosmos) {
-        if (itemC.ean && !eansExistentes.has(itemC.ean)) {
-          normalizados.push(itemC);
-          eansExistentes.add(itemC.ean);
-        }
+    for (const itemBJ of normalizadosBJ) {
+      const chave = itemBJ.ean || itemBJ.nomeProduto;
+      if (chave && !eansAdicionados.has(chave)) {
+        listaCombinada.push(itemBJ);
+        eansAdicionados.add(chave);
       }
     }
-
-    normalizados.sort((a, b) => Number(b.temImagem) - Number(a.temImagem));
-
-    return {
-      produtos: normalizados,
-      total: Math.max(resultado.total, normalizados.length),
-      page,
-      query: rawQuery,
-    };
   } catch (err) {
-    console.warn('Erro ao buscar lista de produtos nas APIs:', err);
-    return {
-      produtos: [],
-      total: 0,
-      page,
-      query: rawQuery,
-    };
+    console.warn('Erro ao complementar busca com API BomJawaKit:', err);
   }
+
+  return {
+    produtos: listaCombinada,
+    total: Math.max(totalBomJawa, listaCombinada.length),
+    page,
+    query: rawQuery,
+  };
 }
 
 /**

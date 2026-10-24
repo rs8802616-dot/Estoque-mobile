@@ -163,7 +163,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                 Catálogo Oficial Multi-API de Produtos & Códigos EAN
               </h2>
               <p style={{ margin: 0, fontSize: '0.76rem', opacity: 0.92 }}>
-                Motor Duplo Ativo: <b>API 1 (BomJawaKit)</b> + <b>API 2 (Bluesoft Cosmos)</b> • Contingência e complemento automático
+                Motor Duplo Ativo: <b>1º API Bluesoft Cosmos (Principal)</b> + <b>2º API BomJawaKit (Contingência)</b>
               </p>
             </div>
           </div>
@@ -345,10 +345,10 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>⏳</div>
               <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>
-                Consultando APIs em conjunto (BomJawaKit + Bluesoft Cosmos)...
+                Consultando 1º Bluesoft Cosmos + 2º BomJawaKit...
               </div>
               <div style={{ fontSize: '0.84rem' }}>
-                Se não existir em uma ou atingir o limite, a segunda API assume automaticamente.
+                A Bluesoft Cosmos é consultada primeiro; se atingir o limite ou faltar item, a BomJawaKit assume automaticamente.
               </div>
             </div>
           ) : resultados.length === 0 ? (
