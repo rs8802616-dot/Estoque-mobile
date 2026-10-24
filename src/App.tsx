@@ -99,6 +99,11 @@ import {
   sincronizarCatalogoAdegaComFirestore,
 } from './lib/catalogoAdegaMix';
 import {
+  CATALOGO_ZE_DELIVERY_MIX_OFICIAL,
+  garantirCatalogoZeDeliveryNoBancoGlobal,
+  sincronizarCatalogoZeDeliveryComFirestore,
+} from './lib/catalogoZeDeliveryMix';
+import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
   tocarSomAlerta,
@@ -352,9 +357,10 @@ export default function App() {
         }
       } catch (e) {}
     }
-    // Garante que todo o catálogo da Ambev (173 itens) e o Mix Essencial de Adega (84 itens) estejam presentes
+    // Garante que o catálogo oficial Ambev, Mix Adega e Mix Zé Delivery estejam presentes
     const { catalogoCompleto: comAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaBase);
-    const { catalogoCompleto } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
+    const { catalogoCompleto: comAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
+    const { catalogoCompleto } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
     try {
       localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
     } catch (e) {}
@@ -1115,9 +1121,10 @@ export default function App() {
           }
         });
         const listaUnica = Array.from(mapaProds.values());
-        // Auto-reconcilia com o catálogo oficial Ambev (173 itens) e Mix Essencial de Adega (84 itens)
+        // Auto-reconcilia com o catálogo oficial Ambev (173 itens), Mix Essencial de Adega (90 itens) e Mix Zé Delivery (80 itens)
         const { catalogoCompleto: comAmbev, novosInseridos: novosAmbev, atualizados: atAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaUnica);
-        const { catalogoCompleto, novosInseridos: novosAdega, atualizados: atAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
+        const { catalogoCompleto: comAdega, novosInseridos: novosAdega, atualizados: atAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
+        const { catalogoCompleto, novosInseridos: novosZe, atualizados: atZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
 
         setCatalogoGlobal(catalogoCompleto);
         safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
@@ -3907,6 +3914,17 @@ export default function App() {
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
       alert(`🥃 Mix de Adega Sincronizado no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
+    } catch (err: any) {
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
+    }
+  };
+
+  const handleSincronizarMixZeDelivery = async () => {
+    try {
+      const res = await sincronizarCatalogoZeDeliveryComFirestore(catalogoGlobal);
+      setCatalogoGlobal(res.catalogoFinal);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
+      alert(`🛵 Mix Zé Delivery Sincronizado no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
     } catch (err: any) {
       alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
@@ -8668,9 +8686,17 @@ export default function App() {
                     className="btn-acao-rel"
                     style={{ background: '#7c3aed', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
                     onClick={handleSincronizarMixAdega}
-                    title="Carrega todos os 84 produtos essenciais de adega (Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria) no seu Catálogo Geral interno do app"
+                    title="Carrega todos os produtos essenciais de adega (Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria) no seu Catálogo Geral interno do app"
                   >
                     🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)
+                  </button>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: '#10b981', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    onClick={handleSincronizarMixZeDelivery}
+                    title="Carrega os 80 produtos campeões de vendas do Zé Delivery (Red Bull, Monster, Baly, Coca-Cola, Destilados, Copos) no seu Catálogo Geral"
+                  >
+                    🛵 Mix Zé Delivery (80 Itens Campeões)
                   </button>
                 </div>
               </div>

@@ -104,6 +104,25 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 24]
+- **Expansão do Catálogo Global com Mix Oficial Zé Delivery & Adegas Brasileiras (80 Novos Produtos, Totalizando 343 Itens):**
+  - **Solicitação do Usuário:** Pesquisar adegas reais e o cardápio oficial do Zé Delivery, identificar os produtos de maior giro e demanda que faltavam no cadastro global e cadastrar todos com fotos de alta definição, código de barras EAN-13 oficial, marcas e categorias.
+  - **Produtos Mapeados e Inseridos (80 novos itens):**
+    1. **Energéticos de Alto Giro (15 itens):** Linha completa Red Bull (Tradicional 250ml/355ml, Sugarfree 250ml, Tropical 250ml, Melancia 250ml, Pitaya 250ml), Monster Energy (Tradicional 473ml, Mango Loco 473ml, Ultra White Sem Açúcar 473ml, Ultra Paradise 473ml, Pacific Punch 473ml), Baly 2L (Tradicional, Maçã Verde, Tropical, Melancia).
+    2. **Refrigerantes & Não Alcoólicos Essenciais (18 itens):** Linha Coca-Cola (Lata 350ml Original e Zero, Pet 2L Original e Zero, Pet 1.5L, Pet 600ml, Vidro Retornável KS 290ml), Fanta Laranja (Lata 350ml e Pet 2L), Fanta Uva (Lata 350ml e Pet 2L), Sprite Limão (Lata 350ml e Pet 2L), Linha Schweppes (Tônica 350ml, Citrus 350ml, Citrus 1.5L).
+    3. **Águas Minerais, Coco & Sucos Prontos (8 itens):** Água Mineral Crystal 500ml e 1.5L (Sem Gás e Com Gás), Água Mineral Bonafont 500ml Sem Gás, Água de Coco Kero Coco (1L e 200ml), Sucos Del Valle 1L (Uva, Pêssego e Laranja).
+    4. **Destilados, Gins, Tequilas, Runs e Cachaças Nobres (20 itens):** Linha Jack Daniel's Tennessee Whiskey 1L (Old No. 7, Honey, Apple, Fire), Johnnie Walker Gold Label Reserve 750ml, Royal Salute 21 Anos 700ml, Gin Beefeater London Dry 750ml, Gin Bombay Sapphire London Dry 750ml, Gin Seagers London Dry 1L, Vodka Grey Goose Premium 750ml, Vodka Cîroc Francesa 750ml, Tequila José Cuervo Especial (Gold/Ouro 750ml e Silver/Prata 750ml), Rum Bacardi Carta Blanca 980ml, Rum Bacardi Carta Oro 980ml, Rum Malibu Coconut 750ml, Conhaque Dreher 900ml, Cachaça Ypióca (Prata e Ouro 965ml), Cachaça Cabaré Ouro 700ml, Cachaça Salinas Tradicional 700ml, Licor Stock Blue Curaçao 720ml, Xarope Fabbri Mixybar Maçã Verde 1L.
+    5. **Cervejas Especiais e Não-Ambev Mais Pedidas (15 itens):** Cerveja Petra Puro Malte (Lata 350ml e Long Neck 355ml), Cerveja Itaipava Pilsen (Lata 350ml e 269ml) e 100% Malte 350ml, Cerveja Império Puro Malte Lager (Lata 350ml e Long Neck 210ml), Cerveja Blue Moon Belgian White 355ml, Linha Baden Baden 600ml (Witbier, Cristal Pilsen e IPA), Cerveja Paulaner Hefe-Weissbier Trigo 500ml, Cerveja Sol Premium 330ml, Cerveja Estrella Galicia Especial 330ml.
+    6. **Copos e Acessórios para Festas / Drinks (4 itens):** Copo Descartável 500ml (Pacote 50 un), Copo Long Drink Acrílico Balada Cores Neon 350ml, Taça de Gin Acrílico Degrade 580ml, Copo Descartável Shot/Dose 50ml (Pacote 50 un).
+  - **Gravação Direta no Firestore (`adega-delivery-pdv`):**
+    - Todos os 80 produtos foram gravados diretamente na coleção `catalogo_global`, elevando o total do banco de dados master de 263 para **343 produtos cadastrados**.
+    - 100% dos 343 produtos do catálogo contam com fotos de alta qualidade validadas (`200 OK`) e preenchimento de códigos de barra EAN-13, marcas, categorias e descrições detalhadas.
+  - **Integração no Frontend (`App.tsx` e `src/lib/catalogoZeDeliveryMix.ts`):**
+    - Criado arquivo de catálogo local `src/lib/catalogoZeDeliveryMix.ts` com reconciliação automática e persistência offline.
+    - Adicionado botão `🛵 Mix Zé Delivery (80 Itens Campeões)` no painel da Dona do Aplicativo para sincronização rápida sob demanda.
+  - **Atualização do Service Worker:**
+    - PWA atualizado para a versão `estoque-mobile-pwa-v28` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 23]
 - **Enriquecimento e Cobertura 100% de Fotos nos 263 Produtos do Catálogo Global e Adega Mix:**
   - **Problema Solucionado:** Dos 263 produtos cadastrados no Banco de Dados Global, os 90 produtos do mix essencial de adega (Whiskies Red Label, Black Label, Old Parr, Buchanan's, Jameson, Passport; Vodkas Absolut, Smirnoff, Orloff, Askov; Gins Tanqueray, Gordon's; Cervejas Heineken, Amstel, Eisenbahn; Vinhos Casillero, Pergola, Concha y Toro; Salgadinhos Doritos, Ruffles, Cheetos, Torcida, Pringles; Chocolates Bis, Kit Kat, Lacta; Tabacaria, Isqueiros BIC, Sedas, Carvão e Gelo) estavam com links de fotos quebrados (retornando erro 404).
