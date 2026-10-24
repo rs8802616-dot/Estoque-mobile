@@ -10,9 +10,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba com Gás 510ml — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136544-260-260/gua-Mineral-Fonte-da-Lomba-com-Gs-510ml.png?v=639259677730470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136544-260-260/gua-Mineral-Fonte-da-Lomba-com-Gs-510ml.png?v=639259677730470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136544-260-260/gua-Mineral-Fonte-da-Lomba-com-Gs-510ml.png?v=639259677730470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126068.png?alt=media&token=a836c5bf-e570-4251-93be-aefefdfe7be1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126068.png?alt=media&token=a836c5bf-e570-4251-93be-aefefdfe7be1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126068.png?alt=media&token=a836c5bf-e570-4251-93be-aefefdfe7be1"
   },
   {
     "codigo": "7898939126044",
@@ -21,9 +21,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba sem Gás 510ml — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136545-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-510ml.png?v=639259677734370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136545-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-510ml.png?v=639259677734370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136545-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-510ml.png?v=639259677734370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126044.png?alt=media&token=1586bd61-6a2d-4221-ad5a-74268806bdcc",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126044.png?alt=media&token=1586bd61-6a2d-4221-ad5a-74268806bdcc",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126044.png?alt=media&token=1586bd61-6a2d-4221-ad5a-74268806bdcc"
   },
   {
     "codigo": "78933873",
@@ -32,9 +32,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Pet 200ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126876-260-260/Refrigerante-CocaCola-sem-Acar-Pet-200ml.png?v=639259587571330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126876-260-260/Refrigerante-CocaCola-sem-Acar-Pet-200ml.png?v=639259587571330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126876-260-260/Refrigerante-CocaCola-sem-Acar-Pet-200ml.png?v=639259587571330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78933873.png?alt=media&token=4df5c2ca-c022-4b04-8b71-f12034d38425",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78933873.png?alt=media&token=4df5c2ca-c022-4b04-8b71-f12034d38425",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78933873.png?alt=media&token=4df5c2ca-c022-4b04-8b71-f12034d38425"
   },
   {
     "codigo": "78908901",
@@ -43,9 +43,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Pet 200ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1123473-260-260/Refrigerante-CocaCola-Pet-200ml.png?v=639259549245400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1123473-260-260/Refrigerante-CocaCola-Pet-200ml.png?v=639259549245400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1123473-260-260/Refrigerante-CocaCola-Pet-200ml.png?v=639259549245400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78908901.png?alt=media&token=bec25437-d4c1-4b04-8d6f-aaa364ba5bf1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78908901.png?alt=media&token=bec25437-d4c1-4b04-8d6f-aaa364ba5bf1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78908901.png?alt=media&token=bec25437-d4c1-4b04-8d6f-aaa364ba5bf1"
   },
   {
     "codigo": "7892840813444",
@@ -54,9 +54,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Black sem Açúcar Pet 2L — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129883-260-260/Refrigerante-Pepsi-Black-sem-Acar-Pet-2L.png?v=639259614139800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129883-260-260/Refrigerante-Pepsi-Black-sem-Acar-Pet-2L.png?v=639259614139800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129883-260-260/Refrigerante-Pepsi-Black-sem-Acar-Pet-2L.png?v=639259614139800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840813444.png?alt=media&token=f09aaa3c-aa21-46f1-8901-1614235a53b4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840813444.png?alt=media&token=f09aaa3c-aa21-46f1-8901-1614235a53b4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840813444.png?alt=media&token=f09aaa3c-aa21-46f1-8901-1614235a53b4"
   },
   {
     "codigo": "7898939126105",
@@ -65,9 +65,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba com Gás 1,5L — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126431-260-260/gua-Mineral-Fonte-da-Lomba-com-Gs-15L.png?v=639259584272330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126431-260-260/gua-Mineral-Fonte-da-Lomba-com-Gs-15L.png?v=639259584272330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126431-260-260/gua-Mineral-Fonte-da-Lomba-com-Gs-15L.png?v=639259584272330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126105.png?alt=media&token=da3e3a1a-fffd-403e-84d4-d815e5e3811c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126105.png?alt=media&token=da3e3a1a-fffd-403e-84d4-d815e5e3811c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126105.png?alt=media&token=da3e3a1a-fffd-403e-84d4-d815e5e3811c"
   },
   {
     "codigo": "7898939126013",
@@ -76,9 +76,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba sem Gás 5L — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122774-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-5L.png?v=639259541777500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122774-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-5L.png?v=639259541777500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122774-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-5L.png?v=639259541777500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126013.png?alt=media&token=8ed2cc6e-6ec3-49ee-88a4-764220abb25c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126013.png?alt=media&token=8ed2cc6e-6ec3-49ee-88a4-764220abb25c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126013.png?alt=media&token=8ed2cc6e-6ec3-49ee-88a4-764220abb25c"
   },
   {
     "codigo": "7896436100642",
@@ -87,9 +87,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra com Gás 500ml — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129337-260-260/gua-Mineral-gua-da-Pedra-com-Gs-500ml.png?v=639259608690770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129337-260-260/gua-Mineral-gua-da-Pedra-com-Gs-500ml.png?v=639259608690770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129337-260-260/gua-Mineral-gua-da-Pedra-com-Gs-500ml.png?v=639259608690770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100642.png?alt=media&token=4aa41fd9-d31b-478d-a39f-7135064b9228",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100642.png?alt=media&token=4aa41fd9-d31b-478d-a39f-7135064b9228",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100642.png?alt=media&token=4aa41fd9-d31b-478d-a39f-7135064b9228"
   },
   {
     "codigo": "7896436100666",
@@ -98,9 +98,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra sem Gás 500ml — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119075-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-500ml.png?v=639259509452000000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119075-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-500ml.png?v=639259509452000000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119075-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-500ml.png?v=639259509452000000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100666.png?alt=media&token=b798f2a5-acf8-4608-89c1-c33329b3c129",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100666.png?alt=media&token=b798f2a5-acf8-4608-89c1-c33329b3c129",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100666.png?alt=media&token=b798f2a5-acf8-4608-89c1-c33329b3c129"
   },
   {
     "codigo": "7892840819323",
@@ -109,9 +109,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Black sem Açúcar Pet 200ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124749-260-260/Refrigerante-Pepsi-Black-sem-Acar-Pet-200ml.png?v=639259569675530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124749-260-260/Refrigerante-Pepsi-Black-sem-Acar-Pet-200ml.png?v=639259569675530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124749-260-260/Refrigerante-Pepsi-Black-sem-Acar-Pet-200ml.png?v=639259569675530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840819323.png?alt=media&token=e2576ba0-959a-4174-963a-073ce82efec0",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840819323.png?alt=media&token=e2576ba0-959a-4174-963a-073ce82efec0",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840819323.png?alt=media&token=e2576ba0-959a-4174-963a-073ce82efec0"
   },
   {
     "codigo": "7896436102356",
@@ -120,9 +120,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Zero Guaraná Pet 200ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1137704-260-260/Refrigerante-Fruki-Zero-Guaran-Pet-200ml.png?v=639262915574770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1137704-260-260/Refrigerante-Fruki-Zero-Guaran-Pet-200ml.png?v=639262915574770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1137704-260-260/Refrigerante-Fruki-Zero-Guaran-Pet-200ml.png?v=639262915574770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102356.png?alt=media&token=a8aaba47-29a2-4f10-877a-338a5388dd4c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102356.png?alt=media&token=a8aaba47-29a2-4f10-877a-338a5388dd4c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102356.png?alt=media&token=a8aaba47-29a2-4f10-877a-338a5388dd4c"
   },
   {
     "codigo": "7892840800567",
@@ -131,9 +131,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Pet 200ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117491-260-260/Refrigerante-Pepsi-Pet-200ml.png?v=639259496652900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117491-260-260/Refrigerante-Pepsi-Pet-200ml.png?v=639259496652900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117491-260-260/Refrigerante-Pepsi-Pet-200ml.png?v=639259496652900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800567.png?alt=media&token=46dcda1d-119b-41ec-984a-0d9d198f7364",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800567.png?alt=media&token=46dcda1d-119b-41ec-984a-0d9d198f7364",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800567.png?alt=media&token=46dcda1d-119b-41ec-984a-0d9d198f7364"
   },
   {
     "codigo": "7896436101427",
@@ -142,9 +142,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Pet 1,5L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133620-260-260/Refrigerante-Fruki-Guaran-Pet-15L.png?v=639259648098600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133620-260-260/Refrigerante-Fruki-Guaran-Pet-15L.png?v=639259648098600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133620-260-260/Refrigerante-Fruki-Guaran-Pet-15L.png?v=639259648098600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101427.png?alt=media&token=c3d3ae22-e757-4012-9e9b-22d5ec64855c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101427.png?alt=media&token=c3d3ae22-e757-4012-9e9b-22d5ec64855c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101427.png?alt=media&token=c3d3ae22-e757-4012-9e9b-22d5ec64855c"
   },
   {
     "codigo": "7894900701159",
@@ -153,9 +153,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Lata 310ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117275-260-260/Refrigerante-CocaCola-sem-Acar-Lata-310ml.png?v=639259494338570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117275-260-260/Refrigerante-CocaCola-sem-Acar-Lata-310ml.png?v=639259494338570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117275-260-260/Refrigerante-CocaCola-sem-Acar-Lata-310ml.png?v=639259494338570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701159.png?alt=media&token=8557adf2-92c3-41af-b1c4-9ab2f33aae1b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701159.png?alt=media&token=8557adf2-92c3-41af-b1c4-9ab2f33aae1b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701159.png?alt=media&token=8557adf2-92c3-41af-b1c4-9ab2f33aae1b"
   },
   {
     "codigo": "70847022206",
@@ -164,9 +164,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Ultra Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133377-260-260/Bebida-Energtica-Monster-Ultra-Lata-473ml.png?v=639259647099570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133377-260-260/Bebida-Energtica-Monster-Ultra-Lata-473ml.png?v=639259647099570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133377-260-260/Bebida-Energtica-Monster-Ultra-Lata-473ml.png?v=639259647099570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022206.png?alt=media&token=416a3482-81b7-4feb-94ba-7c763b54349c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022206.png?alt=media&token=416a3482-81b7-4feb-94ba-7c763b54349c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022206.png?alt=media&token=416a3482-81b7-4feb-94ba-7c763b54349c"
   },
   {
     "codigo": "7896436100680",
@@ -175,9 +175,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra com Gás 350ml — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116646-260-260/gua-Mineral-gua-da-Pedra-com-Gs-350ml.png?v=639259488732970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116646-260-260/gua-Mineral-gua-da-Pedra-com-Gs-350ml.png?v=639259488732970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116646-260-260/gua-Mineral-gua-da-Pedra-com-Gs-350ml.png?v=639259488732970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100680.png?alt=media&token=c6289611-1816-4c27-a657-f5e464a99f7b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100680.png?alt=media&token=c6289611-1816-4c27-a657-f5e464a99f7b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100680.png?alt=media&token=c6289611-1816-4c27-a657-f5e464a99f7b"
   },
   {
     "codigo": "7892840802707",
@@ -186,9 +186,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Pet 2,5L — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136150-260-260/Refrigerante-Pepsi-Pet-25L.png?v=639259671618230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136150-260-260/Refrigerante-Pepsi-Pet-25L.png?v=639259671618230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136150-260-260/Refrigerante-Pepsi-Pet-25L.png?v=639259671618230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840802707.png?alt=media&token=9eb78c7c-f599-4381-9ef3-d5e48345ed3e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840802707.png?alt=media&token=9eb78c7c-f599-4381-9ef3-d5e48345ed3e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840802707.png?alt=media&token=9eb78c7c-f599-4381-9ef3-d5e48345ed3e"
   },
   {
     "codigo": "7894900593709",
@@ -197,9 +197,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Uva Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112966-260-260/Bebida-Kapo-Uva-Adoada-200ml.png?v=639259458182270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112966-260-260/Bebida-Kapo-Uva-Adoada-200ml.png?v=639259458182270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112966-260-260/Bebida-Kapo-Uva-Adoada-200ml.png?v=639259458182270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900593709.png?alt=media&token=0a7d128a-24be-4581-aafb-280747ee4436",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900593709.png?alt=media&token=0a7d128a-24be-4581-aafb-280747ee4436",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900593709.png?alt=media&token=0a7d128a-24be-4581-aafb-280747ee4436"
   },
   {
     "codigo": "7896436100604",
@@ -208,9 +208,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra com Gás 2L — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122477-260-260/gua-Mineral-gua-da-Pedra-com-Gs-2L.png?v=639259539120600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122477-260-260/gua-Mineral-gua-da-Pedra-com-Gs-2L.png?v=639259539120600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122477-260-260/gua-Mineral-gua-da-Pedra-com-Gs-2L.png?v=639259539120600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100604.png?alt=media&token=044727d7-9ff0-4fb2-9844-21fcba4500cf",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100604.png?alt=media&token=044727d7-9ff0-4fb2-9844-21fcba4500cf",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100604.png?alt=media&token=044727d7-9ff0-4fb2-9844-21fcba4500cf"
   },
   {
     "codigo": "7894900050011",
@@ -219,9 +219,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Uva Lata 350ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116315-260-260/Refrigerante-Fanta-Uva-Lata-350ml.png?v=639259485541700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116315-260-260/Refrigerante-Fanta-Uva-Lata-350ml.png?v=639259485541700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116315-260-260/Refrigerante-Fanta-Uva-Lata-350ml.png?v=639259485541700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900050011.png?alt=media&token=8f5e5dbe-624b-49e0-aa71-62c6936fde2a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900050011.png?alt=media&token=8f5e5dbe-624b-49e0-aa71-62c6936fde2a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900050011.png?alt=media&token=8f5e5dbe-624b-49e0-aa71-62c6936fde2a"
   },
   {
     "codigo": "7894900030013",
@@ -230,9 +230,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Lata 350ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122410-260-260/Refrigerante-Fanta-Laranja-Lata-350ml.png?v=639259538860430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122410-260-260/Refrigerante-Fanta-Laranja-Lata-350ml.png?v=639259538860430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122410-260-260/Refrigerante-Fanta-Laranja-Lata-350ml.png?v=639259538860430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900030013.png?alt=media&token=de86a507-00d3-4bb3-8b9d-c8e18d70e30f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900030013.png?alt=media&token=de86a507-00d3-4bb3-8b9d-c8e18d70e30f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900030013.png?alt=media&token=de86a507-00d3-4bb3-8b9d-c8e18d70e30f"
   },
   {
     "codigo": "7894900097542",
@@ -241,9 +241,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Ghost Face Punch Lata 350ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138174-260-260/Refrigerante-Fanta-Ghost-Face-Punch-Lata-350ml.png?v=639265363480700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138174-260-260/Refrigerante-Fanta-Ghost-Face-Punch-Lata-350ml.png?v=639265363480700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138174-260-260/Refrigerante-Fanta-Ghost-Face-Punch-Lata-350ml.png?v=639265363480700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900097542.png?alt=media&token=0356df7f-1c1b-4baf-b705-9a6af9bc022a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900097542.png?alt=media&token=0356df7f-1c1b-4baf-b705-9a6af9bc022a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900097542.png?alt=media&token=0356df7f-1c1b-4baf-b705-9a6af9bc022a"
   },
   {
     "codigo": "7891991016124",
@@ -252,9 +252,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná sem Açúcares Pet 200ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118294-260-260/Refrigerante-Antarctica-Guaran-sem-Acares-Pet-200ml.png?v=639259503126630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118294-260-260/Refrigerante-Antarctica-Guaran-sem-Acares-Pet-200ml.png?v=639259503126630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118294-260-260/Refrigerante-Antarctica-Guaran-sem-Acares-Pet-200ml.png?v=639259503126630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991016124.png?alt=media&token=21daf886-1280-407d-8efa-a03cb658cc02",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991016124.png?alt=media&token=21daf886-1280-407d-8efa-a03cb658cc02",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991016124.png?alt=media&token=21daf886-1280-407d-8efa-a03cb658cc02"
   },
   {
     "codigo": "7898938890076",
@@ -263,9 +263,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Zero Sugar Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115571-260-260/Bebida-Energtica-Monster-Zero-Sugar-Lata-473ml.png?v=639259479585100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115571-260-260/Bebida-Energtica-Monster-Zero-Sugar-Lata-473ml.png?v=639259479585100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115571-260-260/Bebida-Energtica-Monster-Zero-Sugar-Lata-473ml.png?v=639259479585100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890076.png?alt=media&token=abfc4a86-edbb-4b8a-a444-93effa73f10b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890076.png?alt=media&token=abfc4a86-edbb-4b8a-a444-93effa73f10b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890076.png?alt=media&token=abfc4a86-edbb-4b8a-a444-93effa73f10b"
   },
   {
     "codigo": "7896436101441",
@@ -274,9 +274,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Zero Açúcar Pet 1,5L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135170-260-260/Refrigerante-Fruki-Guaran-Zero-Acar-Pet-15L.png?v=639259662473930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135170-260-260/Refrigerante-Fruki-Guaran-Zero-Acar-Pet-15L.png?v=639259662473930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135170-260-260/Refrigerante-Fruki-Guaran-Zero-Acar-Pet-15L.png?v=639259662473930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101441.png?alt=media&token=073ce8ab-722c-4068-acba-d9ab1f67b307",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101441.png?alt=media&token=073ce8ab-722c-4068-acba-d9ab1f67b307",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101441.png?alt=media&token=073ce8ab-722c-4068-acba-d9ab1f67b307"
   },
   {
     "codigo": "7894900027013",
@@ -285,9 +285,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Pet 2L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1114905-260-260/Refrigerante-CocaCola-Pet-2L.png?v=639259473907130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1114905-260-260/Refrigerante-CocaCola-Pet-2L.png?v=639259473907130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1114905-260-260/Refrigerante-CocaCola-Pet-2L.png?v=639259473907130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027013.png?alt=media&token=69175744-8d87-4509-94e8-7da0c5a9c334",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027013.png?alt=media&token=69175744-8d87-4509-94e8-7da0c5a9c334",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027013.png?alt=media&token=69175744-8d87-4509-94e8-7da0c5a9c334"
   },
   {
     "codigo": "7894900851519",
@@ -296,9 +296,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Charrua Guaraná Pet 2L — Marca: CHARRUA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139822-260-260/Refrigerante-Charrua-Guaran-Pet-2L---0.png?v=639271374249100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139822-260-260/Refrigerante-Charrua-Guaran-Pet-2L---0.png?v=639271374249100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139822-260-260/Refrigerante-Charrua-Guaran-Pet-2L---0.png?v=639271374249100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851519.png?alt=media&token=6ce99a81-5cb2-4e15-98a6-20236e1159b7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851519.png?alt=media&token=6ce99a81-5cb2-4e15-98a6-20236e1159b7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851519.png?alt=media&token=6ce99a81-5cb2-4e15-98a6-20236e1159b7"
   },
   {
     "codigo": "78936478",
@@ -307,9 +307,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Pet 200ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140547-260-260/Refrigerante-Fanta-Laranja-Pet-200ml---0.png?v=639276810240730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140547-260-260/Refrigerante-Fanta-Laranja-Pet-200ml---0.png?v=639276810240730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140547-260-260/Refrigerante-Fanta-Laranja-Pet-200ml---0.png?v=639276810240730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78936478.png?alt=media&token=18652eaa-227f-4725-bed2-6a3f2cc83f2b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78936478.png?alt=media&token=18652eaa-227f-4725-bed2-6a3f2cc83f2b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78936478.png?alt=media&token=18652eaa-227f-4725-bed2-6a3f2cc83f2b"
   },
   {
     "codigo": "7894900700398",
@@ -318,9 +318,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Lata 220ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136982-260-260/Refrigerante-CocaCola-sem-Acar-Lata-220ml.png?v=639259684109930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136982-260-260/Refrigerante-CocaCola-sem-Acar-Lata-220ml.png?v=639259684109930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136982-260-260/Refrigerante-CocaCola-sem-Acar-Lata-220ml.png?v=639259684109930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900700398.png?alt=media&token=ad0c5769-3fff-4772-a6b0-3616bc15822e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900700398.png?alt=media&token=ad0c5769-3fff-4772-a6b0-3616bc15822e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900700398.png?alt=media&token=ad0c5769-3fff-4772-a6b0-3616bc15822e"
   },
   {
     "codigo": "7622210696632",
@@ -329,9 +329,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Laranja 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133452-260-260/Refresco-em-P-Clight-Laranja-8g.png?v=639259647418370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133452-260-260/Refresco-em-P-Clight-Laranja-8g.png?v=639259647418370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133452-260-260/Refresco-em-P-Clight-Laranja-8g.png?v=639259647418370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696632.png?alt=media&token=2349e517-35e6-4ee7-b94b-b08d391c6f8f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696632.png?alt=media&token=2349e517-35e6-4ee7-b94b-b08d391c6f8f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696632.png?alt=media&token=2349e517-35e6-4ee7-b94b-b08d391c6f8f"
   },
   {
     "codigo": "7622210696328",
@@ -340,9 +340,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Limonada 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1123228-260-260/Refresco-em-P-Clight-Limonada-8g.png?v=639259548216570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1123228-260-260/Refresco-em-P-Clight-Limonada-8g.png?v=639259548216570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1123228-260-260/Refresco-em-P-Clight-Limonada-8g.png?v=639259548216570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696328.png?alt=media&token=a8563656-89bd-4a88-8c26-36cb22a9c5c1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696328.png?alt=media&token=a8563656-89bd-4a88-8c26-36cb22a9c5c1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696328.png?alt=media&token=a8563656-89bd-4a88-8c26-36cb22a9c5c1"
   },
   {
     "codigo": "7894900093001",
@@ -351,9 +351,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Guaraná Lata 350ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130061-260-260/Refrigerante-Fanta-Guaran-Lata-350ml.png?v=639259614942770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130061-260-260/Refrigerante-Fanta-Guaran-Lata-350ml.png?v=639259614942770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130061-260-260/Refrigerante-Fanta-Guaran-Lata-350ml.png?v=639259614942770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093001.png?alt=media&token=6c078812-bd68-4355-8967-e92e370569ef",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093001.png?alt=media&token=6c078812-bd68-4355-8967-e92e370569ef",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093001.png?alt=media&token=6c078812-bd68-4355-8967-e92e370569ef"
   },
   {
     "codigo": "7894900010398",
@@ -362,9 +362,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Lata 220ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136822-260-260/Refrigerante-CocaCola-Lata-220ml.png?v=639259683464500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136822-260-260/Refrigerante-CocaCola-Lata-220ml.png?v=639259683464500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136822-260-260/Refrigerante-CocaCola-Lata-220ml.png?v=639259683464500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900010398.png?alt=media&token=6e4d29f0-0e8f-4369-b947-da6ba9e5df4b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900010398.png?alt=media&token=6e4d29f0-0e8f-4369-b947-da6ba9e5df4b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900010398.png?alt=media&token=6e4d29f0-0e8f-4369-b947-da6ba9e5df4b"
   },
   {
     "codigo": "7894900011159",
@@ -373,9 +373,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Lata 310ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136810-260-260/Refrigerante-CocaCola-Lata-310ml.png?v=639259683412700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136810-260-260/Refrigerante-CocaCola-Lata-310ml.png?v=639259683412700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136810-260-260/Refrigerante-CocaCola-Lata-310ml.png?v=639259683412700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011159.png?alt=media&token=e14a850c-c78d-49af-a112-1cf1a03e854e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011159.png?alt=media&token=e14a850c-c78d-49af-a112-1cf1a03e854e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011159.png?alt=media&token=e14a850c-c78d-49af-a112-1cf1a03e854e"
   },
   {
     "codigo": "70847022015",
@@ -384,9 +384,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Energy Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119705-260-260/Bebida-Energtica-Monster-Energy-Lata-473ml.png?v=639259514977370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119705-260-260/Bebida-Energtica-Monster-Energy-Lata-473ml.png?v=639259514977370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119705-260-260/Bebida-Energtica-Monster-Energy-Lata-473ml.png?v=639259514977370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022015.png?alt=media&token=0dd498ad-560f-4196-bdd3-cb1e4bc9d219",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022015.png?alt=media&token=0dd498ad-560f-4196-bdd3-cb1e4bc9d219",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022015.png?alt=media&token=0dd498ad-560f-4196-bdd3-cb1e4bc9d219"
   },
   {
     "codigo": "7896034300819",
@@ -395,9 +395,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Garibaldi Integral Uva 1,5L — Marca: GARIBALDI. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129747-260-260/Suco-Garibaldi-Integral-Uva-15L.png?v=639259612124400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129747-260-260/Suco-Garibaldi-Integral-Uva-15L.png?v=639259612124400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129747-260-260/Suco-Garibaldi-Integral-Uva-15L.png?v=639259612124400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896034300819.png?alt=media&token=095b0c1a-fe05-4f4c-b3f3-8df7be35d2d7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896034300819.png?alt=media&token=095b0c1a-fe05-4f4c-b3f3-8df7be35d2d7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896034300819.png?alt=media&token=095b0c1a-fe05-4f4c-b3f3-8df7be35d2d7"
   },
   {
     "codigo": "7896436100703",
@@ -406,9 +406,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Premium sem Gás 350ml — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116627-260-260/gua-Mineral-gua-da-Pedra-Premium-sem-Gs-350ml.png?v=639259488660200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116627-260-260/gua-Mineral-gua-da-Pedra-Premium-sem-Gs-350ml.png?v=639259488660200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116627-260-260/gua-Mineral-gua-da-Pedra-Premium-sem-Gs-350ml.png?v=639259488660200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100703.png?alt=media&token=40fa1c33-da6e-4fb3-ab04-0964e1a12c72",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100703.png?alt=media&token=40fa1c33-da6e-4fb3-ab04-0964e1a12c72",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100703.png?alt=media&token=40fa1c33-da6e-4fb3-ab04-0964e1a12c72"
   },
   {
     "codigo": "7894900701753",
@@ -417,9 +417,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Pet 1,5L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132885-260-260/Refrigerante-CocaCola-sem-Acar-Pet-15L.png?v=639259641936800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132885-260-260/Refrigerante-CocaCola-sem-Acar-Pet-15L.png?v=639259641936800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132885-260-260/Refrigerante-CocaCola-sem-Acar-Pet-15L.png?v=639259641936800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701753.png?alt=media&token=6358e465-04b8-46bc-8341-ed636539d18c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701753.png?alt=media&token=6358e465-04b8-46bc-8341-ed636539d18c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701753.png?alt=media&token=6358e465-04b8-46bc-8341-ed636539d18c"
   },
   {
     "codigo": "7894900701609",
@@ -428,9 +428,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Pet 600ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129466-260-260/Refrigerante-CocaCola-sem-Acar-Pet-600ml.png?v=639259610924270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129466-260-260/Refrigerante-CocaCola-sem-Acar-Pet-600ml.png?v=639259610924270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129466-260-260/Refrigerante-CocaCola-sem-Acar-Pet-600ml.png?v=639259610924270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701609.png?alt=media&token=f8b4d6d7-898f-4624-9211-21e2dd1b5ce6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701609.png?alt=media&token=f8b4d6d7-898f-4624-9211-21e2dd1b5ce6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701609.png?alt=media&token=f8b4d6d7-898f-4624-9211-21e2dd1b5ce6"
   },
   {
     "codigo": "7896436100581",
@@ -439,9 +439,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra sem Gás 5L — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132713-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-5L.png?v=639259641219730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132713-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-5L.png?v=639259641219730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132713-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-5L.png?v=639259641219730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100581.png?alt=media&token=9850a483-7584-4ad9-9034-e4325cf6341f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100581.png?alt=media&token=9850a483-7584-4ad9-9034-e4325cf6341f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100581.png?alt=media&token=9850a483-7584-4ad9-9034-e4325cf6341f"
   },
   {
     "codigo": "7891991000727",
@@ -450,9 +450,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná sem Açúcar Lata 350ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125834-260-260/Refrigerante-Antarctica-Guaran-sem-Acar-Lata-350ml.png?v=639259578564600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125834-260-260/Refrigerante-Antarctica-Guaran-sem-Acar-Lata-350ml.png?v=639259578564600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125834-260-260/Refrigerante-Antarctica-Guaran-sem-Acar-Lata-350ml.png?v=639259578564600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000727.png?alt=media&token=ca5a49c2-2d79-4086-829f-5de48a691325",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000727.png?alt=media&token=ca5a49c2-2d79-4086-829f-5de48a691325",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000727.png?alt=media&token=ca5a49c2-2d79-4086-829f-5de48a691325"
   },
   {
     "codigo": "7894900150018",
@@ -461,9 +461,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Zero Açúcar Lata 350ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129257-260-260/Refrigerante-Fanta-Laranja-Zero-Acar-Lata-350ml.png?v=639259608410630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129257-260-260/Refrigerante-Fanta-Laranja-Zero-Acar-Lata-350ml.png?v=639259608410630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129257-260-260/Refrigerante-Fanta-Laranja-Zero-Acar-Lata-350ml.png?v=639259608410630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900150018.png?alt=media&token=3beb3676-c6da-4602-aa9b-b35312896939",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900150018.png?alt=media&token=3beb3676-c6da-4602-aa9b-b35312896939",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900150018.png?alt=media&token=3beb3676-c6da-4602-aa9b-b35312896939"
   },
   {
     "codigo": "7894900029628",
@@ -472,9 +472,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Zero Cafeína Lata 350ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138103-260-260/Refrigerante-CocaCola-Zero-Cafena-Lata-350ml.png?v=639264841397700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138103-260-260/Refrigerante-CocaCola-Zero-Cafena-Lata-350ml.png?v=639264841397700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138103-260-260/Refrigerante-CocaCola-Zero-Cafena-Lata-350ml.png?v=639264841397700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900029628.png?alt=media&token=6df487ce-cf79-4d05-ac5d-0082eaf10f5f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900029628.png?alt=media&token=6df487ce-cf79-4d05-ac5d-0082eaf10f5f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900029628.png?alt=media&token=6df487ce-cf79-4d05-ac5d-0082eaf10f5f"
   },
   {
     "codigo": "7894900069488",
@@ -483,9 +483,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Pet 2L+01 Refrigerante Sprite sem Açúcar Pet 2L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112841-260-260/Refrigerante-CocaCola-sem-Acar-Pet-2L01-Refrigerante-Sprite-sem-Acar-Pet-2L.png?v=639259456021000000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112841-260-260/Refrigerante-CocaCola-sem-Acar-Pet-2L01-Refrigerante-Sprite-sem-Acar-Pet-2L.png?v=639259456021000000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112841-260-260/Refrigerante-CocaCola-sem-Acar-Pet-2L01-Refrigerante-Sprite-sem-Acar-Pet-2L.png?v=639259456021000000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900069488.png?alt=media&token=e3f2d22b-6a3f-40b0-a520-d7418bce0b29",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900069488.png?alt=media&token=e3f2d22b-6a3f-40b0-a520-d7418bce0b29",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900069488.png?alt=media&token=e3f2d22b-6a3f-40b0-a520-d7418bce0b29"
   },
   {
     "codigo": "7898939126150",
@@ -494,9 +494,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Mountain com Gás 510ml — Marca: MOUNTAIN. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112134-260-260/gua-Mineral-Mountain-com-Gs-510ml.png?v=639259451679930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112134-260-260/gua-Mineral-Mountain-com-Gs-510ml.png?v=639259451679930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112134-260-260/gua-Mineral-Mountain-com-Gs-510ml.png?v=639259451679930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126150.png?alt=media&token=2174885a-5d0e-4d7f-a3ad-a1b770433e85",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126150.png?alt=media&token=2174885a-5d0e-4d7f-a3ad-a1b770433e85",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126150.png?alt=media&token=2174885a-5d0e-4d7f-a3ad-a1b770433e85"
   },
   {
     "codigo": "7896045112081",
@@ -505,9 +505,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Laranja 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124989-260-260/Refresco-em-P-Frisco-Laranja-18g.png?v=639259572190170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124989-260-260/Refresco-em-P-Frisco-Laranja-18g.png?v=639259572190170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124989-260-260/Refresco-em-P-Frisco-Laranja-18g.png?v=639259572190170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112081.png?alt=media&token=f352622e-f148-4c9b-81c7-7b4833551e67",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112081.png?alt=media&token=f352622e-f148-4c9b-81c7-7b4833551e67",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112081.png?alt=media&token=f352622e-f148-4c9b-81c7-7b4833551e67"
   },
   {
     "codigo": "7894900701715",
@@ -516,9 +516,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola sem Açúcar Pet 1L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131778-260-260/Refrigerante-CocaCola-sem-Acar-Pet-1L.png?v=639259632556470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131778-260-260/Refrigerante-CocaCola-sem-Acar-Pet-1L.png?v=639259632556470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131778-260-260/Refrigerante-CocaCola-sem-Acar-Pet-1L.png?v=639259632556470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701715.png?alt=media&token=3887461c-8cba-477d-8571-fea008093d14",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701715.png?alt=media&token=3887461c-8cba-477d-8571-fea008093d14",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900701715.png?alt=media&token=3887461c-8cba-477d-8571-fea008093d14"
   },
   {
     "codigo": "7896204358954",
@@ -527,9 +527,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco CBS 100% Uva 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134893-260-260/Suco-CBS-100-Uva-200ml.png?v=639259659982600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134893-260-260/Suco-CBS-100-Uva-200ml.png?v=639259659982600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134893-260-260/Suco-CBS-100-Uva-200ml.png?v=639259659982600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358954.png?alt=media&token=1710b30c-e04f-46ef-b3da-6f8774116fac",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358954.png?alt=media&token=1710b30c-e04f-46ef-b3da-6f8774116fac",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358954.png?alt=media&token=1710b30c-e04f-46ef-b3da-6f8774116fac"
   },
   {
     "codigo": "7622210571755",
@@ -538,9 +538,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Abacaxi 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128072-260-260/Refresco-em-P-Tang-Abacaxi-18g.png?v=639259598979600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128072-260-260/Refresco-em-P-Tang-Abacaxi-18g.png?v=639259598979600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128072-260-260/Refresco-em-P-Tang-Abacaxi-18g.png?v=639259598979600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571755.png?alt=media&token=33898339-e9a5-44c8-842f-3c29843d88d6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571755.png?alt=media&token=33898339-e9a5-44c8-842f-3c29843d88d6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571755.png?alt=media&token=33898339-e9a5-44c8-842f-3c29843d88d6"
   },
   {
     "codigo": "7894900027334",
@@ -549,9 +549,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Original Pet 2L+01 Refrigerante Fanta Guaraná Pet 2L Leve Mais, Pague Menos — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1114909-260-260/Refrigerante-CocaCola-Original-Pet-2L01-Refrigerante-Fanta-Guaran-Pet-2L-Leve-Mais-Pague-Menos.png?v=639259473920400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1114909-260-260/Refrigerante-CocaCola-Original-Pet-2L01-Refrigerante-Fanta-Guaran-Pet-2L-Leve-Mais-Pague-Menos.png?v=639259473920400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1114909-260-260/Refrigerante-CocaCola-Original-Pet-2L01-Refrigerante-Fanta-Guaran-Pet-2L-Leve-Mais-Pague-Menos.png?v=639259473920400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027334.png?alt=media&token=beaa3d38-fda6-45a9-b686-d85ebfaca8bb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027334.png?alt=media&token=beaa3d38-fda6-45a9-b686-d85ebfaca8bb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027334.png?alt=media&token=beaa3d38-fda6-45a9-b686-d85ebfaca8bb"
   },
   {
     "codigo": "7894900027037",
@@ -560,9 +560,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Pet 3L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111466-260-260/Refrigerante-CocaCola-Pet-3L.png?v=639259445731670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111466-260-260/Refrigerante-CocaCola-Pet-3L.png?v=639259445731670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111466-260-260/Refrigerante-CocaCola-Pet-3L.png?v=639259445731670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027037.png?alt=media&token=8c6641db-1b44-4a30-a1bf-2800a35af8fd",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027037.png?alt=media&token=8c6641db-1b44-4a30-a1bf-2800a35af8fd",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027037.png?alt=media&token=8c6641db-1b44-4a30-a1bf-2800a35af8fd"
   },
   {
     "codigo": "7892840800000",
@@ -571,9 +571,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Pet 2L — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1110909-260-260/Refrigerante-Pepsi-Pet-2L.png?v=639259440140570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1110909-260-260/Refrigerante-Pepsi-Pet-2L.png?v=639259440140570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1110909-260-260/Refrigerante-Pepsi-Pet-2L.png?v=639259440140570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800000.png?alt=media&token=cba0fbe8-e80e-47a2-b83f-072fa5250b3b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800000.png?alt=media&token=cba0fbe8-e80e-47a2-b83f-072fa5250b3b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800000.png?alt=media&token=cba0fbe8-e80e-47a2-b83f-072fa5250b3b"
   },
   {
     "codigo": "7896436100383",
@@ -582,9 +582,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Zero Pet 2L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130686-260-260/Refrigerante-Fruki-Guaran-Zero-Pet-2L.png?v=639259623499430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130686-260-260/Refrigerante-Fruki-Guaran-Zero-Pet-2L.png?v=639259623499430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130686-260-260/Refrigerante-Fruki-Guaran-Zero-Pet-2L.png?v=639259623499430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100383.png?alt=media&token=67abe89c-dbd1-4f30-894c-44ebbb44d47a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100383.png?alt=media&token=67abe89c-dbd1-4f30-894c-44ebbb44d47a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100383.png?alt=media&token=67abe89c-dbd1-4f30-894c-44ebbb44d47a"
   },
   {
     "codigo": "7896436100062",
@@ -593,9 +593,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Pet 2L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120486-260-260/Refrigerante-Fruki-Guaran-Pet-2L.png?v=639259521284930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120486-260-260/Refrigerante-Fruki-Guaran-Pet-2L.png?v=639259521284930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120486-260-260/Refrigerante-Fruki-Guaran-Pet-2L.png?v=639259521284930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100062.png?alt=media&token=2db4d77a-4614-4e03-af73-1805f42a59ab",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100062.png?alt=media&token=2db4d77a-4614-4e03-af73-1805f42a59ab",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100062.png?alt=media&token=2db4d77a-4614-4e03-af73-1805f42a59ab"
   },
   {
     "codigo": "7894900061512",
@@ -604,9 +604,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite sem Açúcar Pet 2L — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140439-260-260/Refrigerante-Sprite-sem-Acar-Pet-2L---0.png?v=639275826200670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140439-260-260/Refrigerante-Sprite-sem-Acar-Pet-2L---0.png?v=639275826200670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140439-260-260/Refrigerante-Sprite-sem-Acar-Pet-2L---0.png?v=639275826200670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900061512.png?alt=media&token=96b9a15f-bfe0-4f1d-b23e-32d093dae773",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900061512.png?alt=media&token=96b9a15f-bfe0-4f1d-b23e-32d093dae773",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900061512.png?alt=media&token=96b9a15f-bfe0-4f1d-b23e-32d093dae773"
   },
   {
     "codigo": "70847033301",
@@ -615,9 +615,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Mangoloco Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133915-260-260/Bebida-Energtica-Monster-Mangoloco-Lata-473ml.png?v=639259650870370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133915-260-260/Bebida-Energtica-Monster-Mangoloco-Lata-473ml.png?v=639259650870370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133915-260-260/Bebida-Energtica-Monster-Mangoloco-Lata-473ml.png?v=639259650870370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847033301.png?alt=media&token=a8f4dc69-77fe-4f5a-9e93-0de02e143029",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847033301.png?alt=media&token=a8f4dc69-77fe-4f5a-9e93-0de02e143029",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847033301.png?alt=media&token=a8f4dc69-77fe-4f5a-9e93-0de02e143029"
   },
   {
     "codigo": "7894900680508",
@@ -626,9 +626,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Fresh Limão Pet 510ml — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130471-260-260/Refrigerante-Sprite-Fresh-Limo-Pet-510ml.png?v=639259620901670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130471-260-260/Refrigerante-Sprite-Fresh-Limo-Pet-510ml.png?v=639259620901670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130471-260-260/Refrigerante-Sprite-Fresh-Limo-Pet-510ml.png?v=639259620901670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900680508.png?alt=media&token=512ddfba-7012-40e3-89ab-5a0b1699e7d9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900680508.png?alt=media&token=512ddfba-7012-40e3-89ab-5a0b1699e7d9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900680508.png?alt=media&token=512ddfba-7012-40e3-89ab-5a0b1699e7d9"
   },
   {
     "codigo": "78939745",
@@ -637,9 +637,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Original Pet 200ml — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140548-260-260/Refrigerante-Sprite-Original-Pet-200ml---0.png?v=639276810255300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140548-260-260/Refrigerante-Sprite-Original-Pet-200ml---0.png?v=639276810255300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140548-260-260/Refrigerante-Sprite-Original-Pet-200ml---0.png?v=639276810255300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78939745.png?alt=media&token=424d9393-d50f-4535-94e6-86ad3b469cb5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78939745.png?alt=media&token=424d9393-d50f-4535-94e6-86ad3b469cb5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78939745.png?alt=media&token=424d9393-d50f-4535-94e6-86ad3b469cb5"
   },
   {
     "codigo": "7891991014908",
@@ -648,9 +648,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Pet 200ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130358-260-260/Refrigerante-Antarctica-Guaran-Pet-200ml.png?v=639259620439470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130358-260-260/Refrigerante-Antarctica-Guaran-Pet-200ml.png?v=639259620439470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130358-260-260/Refrigerante-Antarctica-Guaran-Pet-200ml.png?v=639259620439470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014908.png?alt=media&token=6c38c268-66b5-47cf-9c3a-b7a4cc0d76c7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014908.png?alt=media&token=6c38c268-66b5-47cf-9c3a-b7a4cc0d76c7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014908.png?alt=media&token=6c38c268-66b5-47cf-9c3a-b7a4cc0d76c7"
   },
   {
     "codigo": "7894900520507",
@@ -659,9 +659,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal Sparkling Limão 510ml — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130349-260-260/gua-Mineral-Crystal-Sparkling-Limo-510ml.png?v=639259620401830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130349-260-260/gua-Mineral-Crystal-Sparkling-Limo-510ml.png?v=639259620401830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130349-260-260/gua-Mineral-Crystal-Sparkling-Limo-510ml.png?v=639259620401830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900520507.png?alt=media&token=00e00ae6-486b-4283-a968-5f0b858793da",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900520507.png?alt=media&token=00e00ae6-486b-4283-a968-5f0b858793da",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900520507.png?alt=media&token=00e00ae6-486b-4283-a968-5f0b858793da"
   },
   {
     "codigo": "78912908",
@@ -670,9 +670,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Vidro 250ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126809-260-260/Refrigerante-CocaCola-Vidro-250ml.png?v=639259587261200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126809-260-260/Refrigerante-CocaCola-Vidro-250ml.png?v=639259587261200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126809-260-260/Refrigerante-CocaCola-Vidro-250ml.png?v=639259587261200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78912908.png?alt=media&token=165a8af9-26a8-4c0c-9e59-14b13bd4a771",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78912908.png?alt=media&token=165a8af9-26a8-4c0c-9e59-14b13bd4a771",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78912908.png?alt=media&token=165a8af9-26a8-4c0c-9e59-14b13bd4a771"
   },
   {
     "codigo": "7894900681000",
@@ -681,9 +681,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Original Pet 2L — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140440-260-260/Refrigerante-Sprite-Original-Pet-2L---0.png?v=639275826204730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140440-260-260/Refrigerante-Sprite-Original-Pet-2L---0.png?v=639275826204730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140440-260-260/Refrigerante-Sprite-Original-Pet-2L---0.png?v=639275826204730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681000.png?alt=media&token=0078ec8c-7879-47c6-8e71-ed156a2d1755",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681000.png?alt=media&token=0078ec8c-7879-47c6-8e71-ed156a2d1755",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681000.png?alt=media&token=0078ec8c-7879-47c6-8e71-ed156a2d1755"
   },
   {
     "codigo": "7894900031607",
@@ -692,9 +692,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Pet 600ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133492-260-260/Refrigerante-Fanta-Laranja-Pet-600ml.png?v=639259647569970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133492-260-260/Refrigerante-Fanta-Laranja-Pet-600ml.png?v=639259647569970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133492-260-260/Refrigerante-Fanta-Laranja-Pet-600ml.png?v=639259647569970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031607.png?alt=media&token=c018d434-98f1-4f44-83e7-0e4dd234bb6e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031607.png?alt=media&token=c018d434-98f1-4f44-83e7-0e4dd234bb6e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031607.png?alt=media&token=c018d434-98f1-4f44-83e7-0e4dd234bb6e"
   },
   {
     "codigo": "7622210696373",
@@ -703,9 +703,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Abacaxi 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117149-260-260/Refresco-em-P-Clight-Abacaxi-8g.png?v=639259493862600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117149-260-260/Refresco-em-P-Clight-Abacaxi-8g.png?v=639259493862600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117149-260-260/Refresco-em-P-Clight-Abacaxi-8g.png?v=639259493862600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696373.png?alt=media&token=11c9a254-ab7d-48bc-b059-bb3d2f8f36a3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696373.png?alt=media&token=11c9a254-ab7d-48bc-b059-bb3d2f8f36a3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696373.png?alt=media&token=11c9a254-ab7d-48bc-b059-bb3d2f8f36a3"
   },
   {
     "codigo": "7899732700042",
@@ -714,9 +714,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Obrigado Integral 1L — Marca: OBRIGADO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126615-260-260/gua-de-Coco-Obrigado-Integral-1L.png?v=639259585079200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126615-260-260/gua-de-Coco-Obrigado-Integral-1L.png?v=639259585079200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126615-260-260/gua-de-Coco-Obrigado-Integral-1L.png?v=639259585079200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7899732700042.png?alt=media&token=6dae0974-e932-4d71-9bb0-f4e683019e64",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7899732700042.png?alt=media&token=6dae0974-e932-4d71-9bb0-f4e683019e64",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7899732700042.png?alt=media&token=6dae0974-e932-4d71-9bb0-f4e683019e64"
   },
   {
     "codigo": "7892840813505",
@@ -725,9 +725,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Black sem Açúcar Lata 350ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136679-260-260/Refrigerante-Pepsi-Black-sem-Acar-Lata-350ml.png?v=639259678305130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136679-260-260/Refrigerante-Pepsi-Black-sem-Acar-Lata-350ml.png?v=639259678305130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136679-260-260/Refrigerante-Pepsi-Black-sem-Acar-Lata-350ml.png?v=639259678305130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840813505.png?alt=media&token=bc48a04b-0538-429a-8fc6-c4beb58a57ec",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840813505.png?alt=media&token=bc48a04b-0538-429a-8fc6-c4beb58a57ec",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840813505.png?alt=media&token=bc48a04b-0538-429a-8fc6-c4beb58a57ec"
   },
   {
     "codigo": "7894900530001",
@@ -736,9 +736,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal sem Gás 500ml — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126283-260-260/gua-Mineral-Crystal-sem-Gs-500ml.png?v=639259583596770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126283-260-260/gua-Mineral-Crystal-sem-Gs-500ml.png?v=639259583596770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126283-260-260/gua-Mineral-Crystal-sem-Gs-500ml.png?v=639259583596770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530001.png?alt=media&token=7c5c01e3-d85c-4b53-bf4a-e186d528fd4b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530001.png?alt=media&token=7c5c01e3-d85c-4b53-bf4a-e186d528fd4b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530001.png?alt=media&token=7c5c01e3-d85c-4b53-bf4a-e186d528fd4b"
   },
   {
     "codigo": "7894900011753",
@@ -747,9 +747,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Original Pet 1,5L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136272-260-260/Refrigerante-CocaCola-Original-Pet-15L.png?v=639259672136430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136272-260-260/Refrigerante-CocaCola-Original-Pet-15L.png?v=639259672136430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136272-260-260/Refrigerante-CocaCola-Original-Pet-15L.png?v=639259672136430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011753.png?alt=media&token=97a13e98-fa9d-47a9-bc37-75c27d7fcc0e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011753.png?alt=media&token=97a13e98-fa9d-47a9-bc37-75c27d7fcc0e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011753.png?alt=media&token=97a13e98-fa9d-47a9-bc37-75c27d7fcc0e"
   },
   {
     "codigo": "611269101713",
@@ -758,9 +758,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull sem Açúcar Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119165-260-260/Bebida-Energtica-Red-Bull-sem-Acar-Lata-250ml.png?v=639259509777600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119165-260-260/Bebida-Energtica-Red-Bull-sem-Acar-Lata-250ml.png?v=639259509777600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119165-260-260/Bebida-Energtica-Red-Bull-sem-Acar-Lata-250ml.png?v=639259509777600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F611269101713.png?alt=media&token=464734b2-319c-4221-8d40-0542655e5085",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F611269101713.png?alt=media&token=464734b2-319c-4221-8d40-0542655e5085",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F611269101713.png?alt=media&token=464734b2-319c-4221-8d40-0542655e5085"
   },
   {
     "codigo": "7892840808051",
@@ -769,9 +769,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Gatorade Uva Pet 500ml — Marca: GATORADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116418-260-260/Isotnico-Gatorade-Uva-Pet-500ml.png?v=639259487775400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116418-260-260/Isotnico-Gatorade-Uva-Pet-500ml.png?v=639259487775400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116418-260-260/Isotnico-Gatorade-Uva-Pet-500ml.png?v=639259487775400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808051.png?alt=media&token=c4d47e41-85aa-43f2-a95e-765c2e86dc31",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808051.png?alt=media&token=c4d47e41-85aa-43f2-a95e-765c2e86dc31",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808051.png?alt=media&token=c4d47e41-85aa-43f2-a95e-765c2e86dc31"
   },
   {
     "codigo": "7894900583700",
@@ -780,9 +780,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Morango Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129343-260-260/Bebida-Kapo-Morango-Adoada-200ml.png?v=639259608711900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129343-260-260/Bebida-Kapo-Morango-Adoada-200ml.png?v=639259608711900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129343-260-260/Bebida-Kapo-Morango-Adoada-200ml.png?v=639259608711900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900583700.png?alt=media&token=48721921-17a3-4879-84c6-1fbe6d1f954a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900583700.png?alt=media&token=48721921-17a3-4879-84c6-1fbe6d1f954a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900583700.png?alt=media&token=48721921-17a3-4879-84c6-1fbe6d1f954a"
   },
   {
     "codigo": "7896436100628",
@@ -791,9 +791,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra sem Gás 1,5L — Marca: DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136086-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-15L.png?v=639259671404030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136086-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-15L.png?v=639259671404030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136086-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-15L.png?v=639259671404030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100628.png?alt=media&token=4ee69b52-bf9d-4137-80c3-edfcea85ae98",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100628.png?alt=media&token=4ee69b52-bf9d-4137-80c3-edfcea85ae98",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100628.png?alt=media&token=4ee69b52-bf9d-4137-80c3-edfcea85ae98"
   },
   {
     "codigo": "7891991000826",
@@ -802,9 +802,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Lata 350ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132638-260-260/Refrigerante-Antarctica-Guaran-Lata-350ml.png?v=639259640892330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132638-260-260/Refrigerante-Antarctica-Guaran-Lata-350ml.png?v=639259640892330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132638-260-260/Refrigerante-Antarctica-Guaran-Lata-350ml.png?v=639259640892330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000826.png?alt=media&token=fc49b0bb-5c3f-4c84-a223-5b96e2b36794",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000826.png?alt=media&token=fc49b0bb-5c3f-4c84-a223-5b96e2b36794",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000826.png?alt=media&token=fc49b0bb-5c3f-4c84-a223-5b96e2b36794"
   },
   {
     "codigo": "7894900060010",
@@ -813,9 +813,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Original sem Açúcar Lata 350ml — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136020-260-260/Refrigerante-Sprite-Original-sem-Acar-Lata-350ml.png?v=639259671075500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136020-260-260/Refrigerante-Sprite-Original-sem-Acar-Lata-350ml.png?v=639259671075500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136020-260-260/Refrigerante-Sprite-Original-sem-Acar-Lata-350ml.png?v=639259671075500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900060010.png?alt=media&token=ba55ca05-abe5-4e32-a738-caa70d409ec8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900060010.png?alt=media&token=ba55ca05-abe5-4e32-a738-caa70d409ec8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900060010.png?alt=media&token=ba55ca05-abe5-4e32-a738-caa70d409ec8"
   },
   {
     "codigo": "7894900861518",
@@ -824,9 +824,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Charrua Guaraná Zero Açúcar Pet 2L — Marca: CHARRUA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132601-260-260/Refrigerante-Charrua-Guaran-Zero-Acar-Pet-2L.png?v=639259640710370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132601-260-260/Refrigerante-Charrua-Guaran-Zero-Acar-Pet-2L.png?v=639259640710370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132601-260-260/Refrigerante-Charrua-Guaran-Zero-Acar-Pet-2L.png?v=639259640710370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900861518.png?alt=media&token=6e626af3-b761-4754-82f0-6a3d3e28eee2",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900861518.png?alt=media&token=6e626af3-b761-4754-82f0-6a3d3e28eee2",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900861518.png?alt=media&token=6e626af3-b761-4754-82f0-6a3d3e28eee2"
   },
   {
     "codigo": "7896004011752",
@@ -835,9 +835,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Floripa Pink Lemonade 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140657-260-260/Refresco-em-P-Trink-Floripa-Pink-Lemonade-15g---0.png?v=639277497288070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140657-260-260/Refresco-em-P-Trink-Floripa-Pink-Lemonade-15g---0.png?v=639277497288070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140657-260-260/Refresco-em-P-Trink-Floripa-Pink-Lemonade-15g---0.png?v=639277497288070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011752.png?alt=media&token=fc27609e-14cc-4ab8-ac46-0389e3567c2d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011752.png?alt=media&token=fc27609e-14cc-4ab8-ac46-0389e3567c2d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011752.png?alt=media&token=fc27609e-14cc-4ab8-ac46-0389e3567c2d"
   },
   {
     "codigo": "7892840821647",
@@ -846,9 +846,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Black Pet 2,5L — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125572-260-260/Refrigerante-Pepsi-Black-Pet-25L.png?v=639259576008270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125572-260-260/Refrigerante-Pepsi-Black-Pet-25L.png?v=639259576008270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125572-260-260/Refrigerante-Pepsi-Black-Pet-25L.png?v=639259576008270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840821647.png?alt=media&token=a2896ff4-4aee-4829-b885-4c75284b9db8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840821647.png?alt=media&token=a2896ff4-4aee-4829-b885-4c75284b9db8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840821647.png?alt=media&token=a2896ff4-4aee-4829-b885-4c75284b9db8"
   },
   {
     "codigo": "7896045112449",
@@ -857,9 +857,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Guaraná 18g — Marca: FRISCO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112632-260-260/Refresco-em-P-Frisco-Guaran-18g.png?v=639259455070270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112632-260-260/Refresco-em-P-Frisco-Guaran-18g.png?v=639259455070270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112632-260-260/Refresco-em-P-Frisco-Guaran-18g.png?v=639259455070270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112449.png?alt=media&token=7b2f5d88-bd16-437f-a291-a13f3bfaf453",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112449.png?alt=media&token=7b2f5d88-bd16-437f-a291-a13f3bfaf453",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112449.png?alt=media&token=7b2f5d88-bd16-437f-a291-a13f3bfaf453"
   },
   {
     "codigo": "7896204360339",
@@ -868,9 +868,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco CBS Integral Uva 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132371-260-260/Suco-CBS-Integral-Uva-135L.png?v=639259638271830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132371-260-260/Suco-CBS-Integral-Uva-135L.png?v=639259638271830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132371-260-260/Suco-CBS-Integral-Uva-135L.png?v=639259638271830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204360339.png?alt=media&token=050e658b-8f25-41ef-9b67-4096f4065635",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204360339.png?alt=media&token=050e658b-8f25-41ef-9b67-4096f4065635",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204360339.png?alt=media&token=050e658b-8f25-41ef-9b67-4096f4065635"
   },
   {
     "codigo": "7894900852790",
@@ -879,9 +879,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Charrua Guaraná Pet 200ml — Marca: CHARRUA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135686-260-260/Refrigerante-Charrua-Guaran-Pet-200ml.png?v=639259667524100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135686-260-260/Refrigerante-Charrua-Guaran-Pet-200ml.png?v=639259667524100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135686-260-260/Refrigerante-Charrua-Guaran-Pet-200ml.png?v=639259667524100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900852790.png?alt=media&token=21729320-d4ba-4cd6-a08c-6b1c5f942071",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900852790.png?alt=media&token=21729320-d4ba-4cd6-a08c-6b1c5f942071",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900852790.png?alt=media&token=21729320-d4ba-4cd6-a08c-6b1c5f942071"
   },
   {
     "codigo": "7896436103872",
@@ -890,9 +890,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Bergamota e Capim Limão com Gás Lata 350ml — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132260-260-260/gua-Mineral-gua-da-Pedra-Bergamota-e-Capim-Limo-com-Gs-Lata-350ml.png?v=639259637812570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132260-260-260/gua-Mineral-gua-da-Pedra-Bergamota-e-Capim-Limo-com-Gs-Lata-350ml.png?v=639259637812570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132260-260-260/gua-Mineral-gua-da-Pedra-Bergamota-e-Capim-Limo-com-Gs-Lata-350ml.png?v=639259637812570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103872.png?alt=media&token=07685221-f757-493c-ba0e-4ba293f31387",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103872.png?alt=media&token=07685221-f757-493c-ba0e-4ba293f31387",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103872.png?alt=media&token=07685221-f757-493c-ba0e-4ba293f31387"
   },
   {
     "codigo": "7898648022279",
@@ -901,9 +901,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Coco Cube 1L — Marca: COCO CUBE. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128751-260-260/gua-de-Coco-Coco-Cube-1L.png?v=639259604808430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128751-260-260/gua-de-Coco-Coco-Cube-1L.png?v=639259604808430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128751-260-260/gua-de-Coco-Coco-Cube-1L.png?v=639259604808430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648022279.png?alt=media&token=6577fbcb-021b-416a-9d00-0f1f6e97d7d3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648022279.png?alt=media&token=6577fbcb-021b-416a-9d00-0f1f6e97d7d3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648022279.png?alt=media&token=6577fbcb-021b-416a-9d00-0f1f6e97d7d3"
   },
   {
     "codigo": "7898648022262",
@@ -912,9 +912,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Coco Cube 200ml — Marca: COCO CUBE. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121902-260-260/gua-de-Coco-Coco-Cube-200ml.png?v=639259533401430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121902-260-260/gua-de-Coco-Coco-Cube-200ml.png?v=639259533401430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121902-260-260/gua-de-Coco-Coco-Cube-200ml.png?v=639259533401430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648022262.png?alt=media&token=80a902ed-8b0e-4b27-9a85-20feefcdc089",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648022262.png?alt=media&token=80a902ed-8b0e-4b27-9a85-20feefcdc089",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648022262.png?alt=media&token=80a902ed-8b0e-4b27-9a85-20feefcdc089"
   },
   {
     "codigo": "7896436103056",
@@ -923,9 +923,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Frukito Uva Zero Açúcares Pet 200ml — Marca: FRUKITO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118509-260-260/Bebida-Mista-Frukito-Uva-Zero-Acares-Pet-200ml.png?v=639259503862170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118509-260-260/Bebida-Mista-Frukito-Uva-Zero-Acares-Pet-200ml.png?v=639259503862170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118509-260-260/Bebida-Mista-Frukito-Uva-Zero-Acares-Pet-200ml.png?v=639259503862170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103056.png?alt=media&token=258344d7-3d23-44c5-b173-7d6cdd25c747",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103056.png?alt=media&token=258344d7-3d23-44c5-b173-7d6cdd25c747",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103056.png?alt=media&token=258344d7-3d23-44c5-b173-7d6cdd25c747"
   },
   {
     "codigo": "7898938890090",
@@ -934,9 +934,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Ultra Peachy Keen Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118459-260-260/Bebida-Energtica-Monster-Ultra-Peachy-Keen-Lata-473ml.png?v=639259503692600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118459-260-260/Bebida-Energtica-Monster-Ultra-Peachy-Keen-Lata-473ml.png?v=639259503692600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118459-260-260/Bebida-Energtica-Monster-Ultra-Peachy-Keen-Lata-473ml.png?v=639259503692600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890090.png?alt=media&token=5773136b-7c64-41c1-be55-38ac2e33bfbe",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890090.png?alt=media&token=5773136b-7c64-41c1-be55-38ac2e33bfbe",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890090.png?alt=media&token=5773136b-7c64-41c1-be55-38ac2e33bfbe"
   },
   {
     "codigo": "7896436103261",
@@ -945,9 +945,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Limão e Alecrim com Gás Lata 350ml — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128664-260-260/gua-Mineral-gua-da-Pedra-Limo-e-Alecrim-com-Gs-Lata-350ml.png?v=639259602896770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128664-260-260/gua-Mineral-gua-da-Pedra-Limo-e-Alecrim-com-Gs-Lata-350ml.png?v=639259602896770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128664-260-260/gua-Mineral-gua-da-Pedra-Limo-e-Alecrim-com-Gs-Lata-350ml.png?v=639259602896770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103261.png?alt=media&token=b2e1fc80-06c3-4466-81e0-20a2215614e4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103261.png?alt=media&token=b2e1fc80-06c3-4466-81e0-20a2215614e4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103261.png?alt=media&token=b2e1fc80-06c3-4466-81e0-20a2215614e4"
   },
   {
     "codigo": "7898939126143",
@@ -956,9 +956,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Mountain sem Gás 510ml — Marca: MOUNTAIN. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128519-260-260/gua-Mineral-Mountain-sem-Gs-510ml.png?v=639259602363100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128519-260-260/gua-Mineral-Mountain-sem-Gs-510ml.png?v=639259602363100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128519-260-260/gua-Mineral-Mountain-sem-Gs-510ml.png?v=639259602363100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126143.png?alt=media&token=ea0c11bb-7d27-469c-b866-9d40967fc9a2",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126143.png?alt=media&token=ea0c11bb-7d27-469c-b866-9d40967fc9a2",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126143.png?alt=media&token=ea0c11bb-7d27-469c-b866-9d40967fc9a2"
   },
   {
     "codigo": "7898939126167",
@@ -967,9 +967,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Mountain sem Gás 5L — Marca: MOUNTAIN. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135249-260-260/gua-Mineral-Mountain-sem-Gs-5L.png?v=639259662747470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135249-260-260/gua-Mineral-Mountain-sem-Gs-5L.png?v=639259662747470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135249-260-260/gua-Mineral-Mountain-sem-Gs-5L.png?v=639259662747470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126167.png?alt=media&token=2b4b443d-5ba2-46e1-a842-3b83fb93d0f6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126167.png?alt=media&token=2b4b443d-5ba2-46e1-a842-3b83fb93d0f6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126167.png?alt=media&token=2b4b443d-5ba2-46e1-a842-3b83fb93d0f6"
   },
   {
     "codigo": "7896045112098",
@@ -978,9 +978,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Abacaxi 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135200-260-260/Refresco-em-P-Frisco-Abacaxi-18g.png?v=639259662582830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135200-260-260/Refresco-em-P-Frisco-Abacaxi-18g.png?v=639259662582830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135200-260-260/Refresco-em-P-Frisco-Abacaxi-18g.png?v=639259662582830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112098.png?alt=media&token=f075fd57-ace0-436f-a36a-1185c6710181",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112098.png?alt=media&token=f075fd57-ace0-436f-a36a-1185c6710181",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112098.png?alt=media&token=f075fd57-ace0-436f-a36a-1185c6710181"
   },
   {
     "codigo": "7896045112135",
@@ -989,9 +989,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Maracujá 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121577-260-260/Refresco-em-P-Frisco-Maracuj-18g.png?v=639259530761900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121577-260-260/Refresco-em-P-Frisco-Maracuj-18g.png?v=639259530761900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121577-260-260/Refresco-em-P-Frisco-Maracuj-18g.png?v=639259530761900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112135.png?alt=media&token=fb8699bb-99bc-4616-96c8-8fb9cd0b8eb5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112135.png?alt=media&token=fb8699bb-99bc-4616-96c8-8fb9cd0b8eb5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112135.png?alt=media&token=fb8699bb-99bc-4616-96c8-8fb9cd0b8eb5"
   },
   {
     "codigo": "7896045112104",
@@ -1000,9 +1000,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Uva 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135199-260-260/Refresco-em-P-Frisco-Uva-18g.png?v=639259662579700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135199-260-260/Refresco-em-P-Frisco-Uva-18g.png?v=639259662579700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135199-260-260/Refresco-em-P-Frisco-Uva-18g.png?v=639259662579700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112104.png?alt=media&token=c82c1c8a-0519-42ad-ba94-773f6ca4f6c6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112104.png?alt=media&token=c82c1c8a-0519-42ad-ba94-773f6ca4f6c6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112104.png?alt=media&token=c82c1c8a-0519-42ad-ba94-773f6ca4f6c6"
   },
   {
     "codigo": "7894900011715",
@@ -1011,9 +1011,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Pet 1L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115435-260-260/Refrigerante-CocaCola-Pet-1L.png?v=639259479142670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115435-260-260/Refrigerante-CocaCola-Pet-1L.png?v=639259479142670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115435-260-260/Refrigerante-CocaCola-Pet-1L.png?v=639259479142670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011715.png?alt=media&token=cb251788-616e-41c0-a7f7-38d22102467e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011715.png?alt=media&token=cb251788-616e-41c0-a7f7-38d22102467e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900011715.png?alt=media&token=cb251788-616e-41c0-a7f7-38d22102467e"
   },
   {
     "codigo": "7898648021838",
@@ -1022,9 +1022,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Vitcoco 1L — Marca: VITCOCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124882-260-260/gua-de-Coco-Vitcoco-1L.png?v=639259571786300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124882-260-260/gua-de-Coco-Vitcoco-1L.png?v=639259571786300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124882-260-260/gua-de-Coco-Vitcoco-1L.png?v=639259571786300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648021838.png?alt=media&token=cbaf97c4-21f8-44fb-8bd9-df96d11d3369",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648021838.png?alt=media&token=cbaf97c4-21f8-44fb-8bd9-df96d11d3369",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648021838.png?alt=media&token=cbaf97c4-21f8-44fb-8bd9-df96d11d3369"
   },
   {
     "codigo": "1220000250147",
@@ -1033,9 +1033,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Khaotic Tropical Orange Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124876-260-260/Bebida-Energtica-Monster-Khaotic-Tropical-Orange-Lata-473ml.png?v=639259571751200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124876-260-260/Bebida-Energtica-Monster-Khaotic-Tropical-Orange-Lata-473ml.png?v=639259571751200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124876-260-260/Bebida-Energtica-Monster-Khaotic-Tropical-Orange-Lata-473ml.png?v=639259571751200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250147.png?alt=media&token=6a701e8f-12a0-4d14-9025-b04565d8beea",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250147.png?alt=media&token=6a701e8f-12a0-4d14-9025-b04565d8beea",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250147.png?alt=media&token=6a701e8f-12a0-4d14-9025-b04565d8beea"
   },
   {
     "codigo": "7896004008837",
@@ -1044,9 +1044,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Uva 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121450-260-260/Refresco-em-P-Trink-Uva-15g.png?v=639259530239530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121450-260-260/Refresco-em-P-Trink-Uva-15g.png?v=639259530239530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121450-260-260/Refresco-em-P-Trink-Uva-15g.png?v=639259530239530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008837.png?alt=media&token=dccdafd1-b19a-4800-9696-5e5cbbe996ba",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008837.png?alt=media&token=dccdafd1-b19a-4800-9696-5e5cbbe996ba",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008837.png?alt=media&token=dccdafd1-b19a-4800-9696-5e5cbbe996ba"
   },
   {
     "codigo": "7896004008660",
@@ -1055,9 +1055,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Laranja 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111924-260-260/Refresco-em-P-Trink-Laranja-15g.png?v=639259449103700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111924-260-260/Refresco-em-P-Trink-Laranja-15g.png?v=639259449103700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111924-260-260/Refresco-em-P-Trink-Laranja-15g.png?v=639259449103700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008660.png?alt=media&token=8c206573-928e-47a5-a9f9-d414aef1a182",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008660.png?alt=media&token=8c206573-928e-47a5-a9f9-d414aef1a182",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008660.png?alt=media&token=8c206573-928e-47a5-a9f9-d414aef1a182"
   },
   {
     "codigo": "7896004008790",
@@ -1066,9 +1066,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Guaraná 15g — Marca: TRINK. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115342-260-260/Refresco-em-P-Trink-Guaran-15g.png?v=639259478825670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115342-260-260/Refresco-em-P-Trink-Guaran-15g.png?v=639259478825670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115342-260-260/Refresco-em-P-Trink-Guaran-15g.png?v=639259478825670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008790.png?alt=media&token=ad08f232-2bed-4b3a-bcdf-bceb5e1f0682",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008790.png?alt=media&token=ad08f232-2bed-4b3a-bcdf-bceb5e1f0682",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008790.png?alt=media&token=ad08f232-2bed-4b3a-bcdf-bceb5e1f0682"
   },
   {
     "codigo": "7896004008707",
@@ -1077,9 +1077,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Abacaxi com Hortelã 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111923-260-260/Refresco-em-P-Trink-Abacaxi-com-Hortel-15g.png?v=639259449101200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111923-260-260/Refresco-em-P-Trink-Abacaxi-com-Hortel-15g.png?v=639259449101200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111923-260-260/Refresco-em-P-Trink-Abacaxi-com-Hortel-15g.png?v=639259449101200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008707.png?alt=media&token=594eaa95-89ab-47f1-a7ed-c18e5de56a40",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008707.png?alt=media&token=594eaa95-89ab-47f1-a7ed-c18e5de56a40",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008707.png?alt=media&token=594eaa95-89ab-47f1-a7ed-c18e5de56a40"
   },
   {
     "codigo": "7896436102790",
@@ -1088,9 +1088,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Frukito Frutas Cítricas 200ml — Marca: FRUKITO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111735-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-200ml.png?v=639259446686500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111735-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-200ml.png?v=639259446686500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111735-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-200ml.png?v=639259446686500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102790.png?alt=media&token=d34911ca-f0eb-495b-a95b-d5b441d4948c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102790.png?alt=media&token=d34911ca-f0eb-495b-a95b-d5b441d4948c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102790.png?alt=media&token=d34911ca-f0eb-495b-a95b-d5b441d4948c"
   },
   {
     "codigo": "7622210571786",
@@ -1099,9 +1099,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Uva 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117825-260-260/Refresco-em-P-Tang-Uva-18g.png?v=639259497989670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117825-260-260/Refresco-em-P-Tang-Uva-18g.png?v=639259497989670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117825-260-260/Refresco-em-P-Tang-Uva-18g.png?v=639259497989670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571786.png?alt=media&token=161593bf-c7d5-46f3-96fd-fa21f1f97935",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571786.png?alt=media&token=161593bf-c7d5-46f3-96fd-fa21f1f97935",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571786.png?alt=media&token=161593bf-c7d5-46f3-96fd-fa21f1f97935"
   },
   {
     "codigo": "7896436100178",
@@ -1110,9 +1110,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Pet 600ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130711-260-260/Refrigerante-Fruki-Guaran-Pet-600ml.png?v=639259623596700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130711-260-260/Refrigerante-Fruki-Guaran-Pet-600ml.png?v=639259623596700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130711-260-260/Refrigerante-Fruki-Guaran-Pet-600ml.png?v=639259623596700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100178.png?alt=media&token=4cfd2618-950e-4823-8e75-6e7c1e4b7301",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100178.png?alt=media&token=4cfd2618-950e-4823-8e75-6e7c1e4b7301",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100178.png?alt=media&token=4cfd2618-950e-4823-8e75-6e7c1e4b7301"
   },
   {
     "codigo": "7896436100277",
@@ -1121,9 +1121,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Zero Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1109221-260-260/Refrigerante-Fruki-Guaran-Zero-Lata-350ml.png?v=639259425198170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1109221-260-260/Refrigerante-Fruki-Guaran-Zero-Lata-350ml.png?v=639259425198170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1109221-260-260/Refrigerante-Fruki-Guaran-Zero-Lata-350ml.png?v=639259425198170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100277.png?alt=media&token=a1bb61bd-e087-47de-8b10-6e3f86ad643b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100277.png?alt=media&token=a1bb61bd-e087-47de-8b10-6e3f86ad643b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100277.png?alt=media&token=a1bb61bd-e087-47de-8b10-6e3f86ad643b"
   },
   {
     "codigo": "7892840800239",
@@ -1132,9 +1132,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Pet 600ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1114345-260-260/Refrigerante-Pepsi-Pet-600ml.png?v=639259470002300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1114345-260-260/Refrigerante-Pepsi-Pet-600ml.png?v=639259470002300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1114345-260-260/Refrigerante-Pepsi-Pet-600ml.png?v=639259470002300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800239.png?alt=media&token=7b41f044-8aeb-46f8-9ca1-32615b021407",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800239.png?alt=media&token=7b41f044-8aeb-46f8-9ca1-32615b021407",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800239.png?alt=media&token=7b41f044-8aeb-46f8-9ca1-32615b021407"
   },
   {
     "codigo": "70847033929",
@@ -1143,9 +1143,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Ultra Violet Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117664-260-260/Bebida-Energtica-Monster-Ultra-Violet-Lata-473ml.png?v=639259497368500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117664-260-260/Bebida-Energtica-Monster-Ultra-Violet-Lata-473ml.png?v=639259497368500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117664-260-260/Bebida-Energtica-Monster-Ultra-Violet-Lata-473ml.png?v=639259497368500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847033929.png?alt=media&token=13b5762c-6727-4728-963d-63daaffe670b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847033929.png?alt=media&token=13b5762c-6727-4728-963d-63daaffe670b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847033929.png?alt=media&token=13b5762c-6727-4728-963d-63daaffe670b"
   },
   {
     "codigo": "70847022305",
@@ -1154,9 +1154,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Absolut Zero Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120202-260-260/Bebida-Energtica-Monster-Absolut-Zero-Lata-473ml.png?v=639259518571330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120202-260-260/Bebida-Energtica-Monster-Absolut-Zero-Lata-473ml.png?v=639259518571330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120202-260-260/Bebida-Energtica-Monster-Absolut-Zero-Lata-473ml.png?v=639259518571330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022305.png?alt=media&token=d9c2e447-a15e-42b7-8c6f-da2bcf914e75",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022305.png?alt=media&token=d9c2e447-a15e-42b7-8c6f-da2bcf914e75",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847022305.png?alt=media&token=d9c2e447-a15e-42b7-8c6f-da2bcf914e75"
   },
   {
     "codigo": "7894900681246",
@@ -1165,9 +1165,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Original Pet 600ml — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117502-260-260/Refrigerante-Sprite-Original-Pet-600ml.png?v=639259496691700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117502-260-260/Refrigerante-Sprite-Original-Pet-600ml.png?v=639259496691700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117502-260-260/Refrigerante-Sprite-Original-Pet-600ml.png?v=639259496691700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681246.png?alt=media&token=555eb11f-5759-4e55-9323-f26b8ec8e662",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681246.png?alt=media&token=555eb11f-5759-4e55-9323-f26b8ec8e662",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681246.png?alt=media&token=555eb11f-5759-4e55-9323-f26b8ec8e662"
   },
   {
     "codigo": "7894900180541",
@@ -1176,9 +1176,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Schweppes Citrus Original Pet 1,5L — Marca: SCHWEPPES. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117477-260-260/Refrigerante-Schweppes-Citrus-Original-Pet-15L.png?v=639259496599170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117477-260-260/Refrigerante-Schweppes-Citrus-Original-Pet-15L.png?v=639259496599170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117477-260-260/Refrigerante-Schweppes-Citrus-Original-Pet-15L.png?v=639259496599170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180541.png?alt=media&token=6528f37c-2c50-4f7f-b939-270fa774bf50",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180541.png?alt=media&token=6528f37c-2c50-4f7f-b939-270fa774bf50",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180541.png?alt=media&token=6528f37c-2c50-4f7f-b939-270fa774bf50"
   },
   {
     "codigo": "7896034302264",
@@ -1187,9 +1187,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Garibaldi Integral Uva Branco 1,5L — Marca: GARIBALDI. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1123476-260-260/Suco-Garibaldi-Integral-Uva-Branco-15L.png?v=639259549253230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1123476-260-260/Suco-Garibaldi-Integral-Uva-Branco-15L.png?v=639259549253230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1123476-260-260/Suco-Garibaldi-Integral-Uva-Branco-15L.png?v=639259549253230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896034302264.png?alt=media&token=d574d16c-8d88-4587-8a16-28a207327798",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896034302264.png?alt=media&token=d574d16c-8d88-4587-8a16-28a207327798",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896034302264.png?alt=media&token=d574d16c-8d88-4587-8a16-28a207327798"
   },
   {
     "codigo": "7891098040909",
@@ -1198,9 +1198,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Leão Ice Tea Pêssego Pet 1,5L — Marca: LEAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138245-260-260/Ch-Leo-Ice-Tea-Pssego-Pet-15L.png?v=639265687591400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138245-260-260/Ch-Leo-Ice-Tea-Pssego-Pet-15L.png?v=639265687591400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138245-260-260/Ch-Leo-Ice-Tea-Pssego-Pet-15L.png?v=639265687591400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040909.png?alt=media&token=9a1c9b5c-40e5-4331-945c-36139e79a187",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040909.png?alt=media&token=9a1c9b5c-40e5-4331-945c-36139e79a187",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040909.png?alt=media&token=9a1c9b5c-40e5-4331-945c-36139e79a187"
   },
   {
     "codigo": "7894900530049",
@@ -1209,9 +1209,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal Copo 310ml — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1123318-260-260/gua-Mineral-Crystal-Copo-310ml.png?v=639259548559200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1123318-260-260/gua-Mineral-Crystal-Copo-310ml.png?v=639259548559200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1123318-260-260/gua-Mineral-Crystal-Copo-310ml.png?v=639259548559200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530049.png?alt=media&token=e47bfa37-1732-486a-a196-885a891b9873",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530049.png?alt=media&token=e47bfa37-1732-486a-a196-885a891b9873",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530049.png?alt=media&token=e47bfa37-1732-486a-a196-885a891b9873"
   },
   {
     "codigo": "7622210696595",
@@ -1220,9 +1220,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Maracujá 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130068-260-260/Refresco-em-P-Clight-Maracuj-8g.png?v=639259615128700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130068-260-260/Refresco-em-P-Clight-Maracuj-8g.png?v=639259615128700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130068-260-260/Refresco-em-P-Clight-Maracuj-8g.png?v=639259615128700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696595.png?alt=media&token=820bba61-8221-44f8-b9db-67fb6c4a3165",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696595.png?alt=media&token=820bba61-8221-44f8-b9db-67fb6c4a3165",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696595.png?alt=media&token=820bba61-8221-44f8-b9db-67fb6c4a3165"
   },
   {
     "codigo": "7622210696670",
@@ -1231,9 +1231,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Uva 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136851-260-260/Refresco-em-P-Clight-Uva-8g.png?v=639259683560100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136851-260-260/Refresco-em-P-Clight-Uva-8g.png?v=639259683560100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136851-260-260/Refresco-em-P-Clight-Uva-8g.png?v=639259683560100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696670.png?alt=media&token=a305b5f9-610e-4b72-8396-16d024d300da",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696670.png?alt=media&token=a305b5f9-610e-4b72-8396-16d024d300da",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696670.png?alt=media&token=a305b5f9-610e-4b72-8396-16d024d300da"
   },
   {
     "codigo": "7894900550061",
@@ -1242,9 +1242,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Uva Pet 1,5L — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129822-260-260/Refresco-Del-Valle-Frut-Uva-Pet-15L.png?v=639259613880570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129822-260-260/Refresco-Del-Valle-Frut-Uva-Pet-15L.png?v=639259613880570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129822-260-260/Refresco-Del-Valle-Frut-Uva-Pet-15L.png?v=639259613880570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550061.png?alt=media&token=4c7cf316-088b-4e5b-ae1f-76929eed119b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550061.png?alt=media&token=4c7cf316-088b-4e5b-ae1f-76929eed119b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550061.png?alt=media&token=4c7cf316-088b-4e5b-ae1f-76929eed119b"
   },
   {
     "codigo": "7894900531008",
@@ -1253,9 +1253,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal com Gás 500ml — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116781-260-260/gua-Mineral-Crystal-com-Gs-500ml.png?v=639259490881070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116781-260-260/gua-Mineral-Crystal-com-Gs-500ml.png?v=639259490881070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116781-260-260/gua-Mineral-Crystal-com-Gs-500ml.png?v=639259490881070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900531008.png?alt=media&token=f13b3c37-9b6d-4d0b-853a-136cd20c7498",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900531008.png?alt=media&token=f13b3c37-9b6d-4d0b-853a-136cd20c7498",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900531008.png?alt=media&token=f13b3c37-9b6d-4d0b-853a-136cd20c7498"
   },
   {
     "codigo": "7894900501001",
@@ -1264,9 +1264,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Uva Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122718-260-260/Isotnico-Powerade-Uva-Pet-500ml.png?v=639259540041930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122718-260-260/Isotnico-Powerade-Uva-Pet-500ml.png?v=639259540041930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122718-260-260/Isotnico-Powerade-Uva-Pet-500ml.png?v=639259540041930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900501001.png?alt=media&token=9ac3ed7b-78fa-4644-af37-e8f7179b82df",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900501001.png?alt=media&token=9ac3ed7b-78fa-4644-af37-e8f7179b82df",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900501001.png?alt=media&token=9ac3ed7b-78fa-4644-af37-e8f7179b82df"
   },
   {
     "codigo": "7894900503029",
@@ -1275,9 +1275,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Laranja Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136356-260-260/Isotnico-Powerade-Laranja-Pet-500ml.png?v=639259676948570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136356-260-260/Isotnico-Powerade-Laranja-Pet-500ml.png?v=639259676948570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136356-260-260/Isotnico-Powerade-Laranja-Pet-500ml.png?v=639259676948570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900503029.png?alt=media&token=0df8947d-8d0b-4a51-9b74-5e7a49265195",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900503029.png?alt=media&token=0df8947d-8d0b-4a51-9b74-5e7a49265195",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900503029.png?alt=media&token=0df8947d-8d0b-4a51-9b74-5e7a49265195"
   },
   {
     "codigo": "7891149102808",
@@ -1286,9 +1286,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sukita Uva Pet 2L — Marca: SUKITA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113157-260-260/Refrigerante-Sukita-Uva-Pet-2L.png?v=639259459058100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113157-260-260/Refrigerante-Sukita-Uva-Pet-2L.png?v=639259459058100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113157-260-260/Refrigerante-Sukita-Uva-Pet-2L.png?v=639259459058100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891149102808.png?alt=media&token=ad0cfffb-3ba0-42fb-9160-e96c333614af",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891149102808.png?alt=media&token=ad0cfffb-3ba0-42fb-9160-e96c333614af",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891149102808.png?alt=media&token=ad0cfffb-3ba0-42fb-9160-e96c333614af"
   },
   {
     "codigo": "7892840808044",
@@ -1297,9 +1297,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Gatorade Tangerina Pet 500ml — Marca: GATORADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129402-260-260/Isotnico-Gatorade-Tangerina-Pet-500ml.png?v=639259610672730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129402-260-260/Isotnico-Gatorade-Tangerina-Pet-500ml.png?v=639259610672730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129402-260-260/Isotnico-Gatorade-Tangerina-Pet-500ml.png?v=639259610672730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808044.png?alt=media&token=5fe1160c-f33b-4a35-991a-9a5682cbb4d7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808044.png?alt=media&token=5fe1160c-f33b-4a35-991a-9a5682cbb4d7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808044.png?alt=media&token=5fe1160c-f33b-4a35-991a-9a5682cbb4d7"
   },
   {
     "codigo": "7892840808037",
@@ -1308,9 +1308,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Gatorade Limão Pet 500ml — Marca: GATORADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136153-260-260/Isotnico-Gatorade-Limo-Pet-500ml.png?v=639259671628100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136153-260-260/Isotnico-Gatorade-Limo-Pet-500ml.png?v=639259671628100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136153-260-260/Isotnico-Gatorade-Limo-Pet-500ml.png?v=639259671628100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808037.png?alt=media&token=de989617-8412-4985-9219-f2d61b79ed8b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808037.png?alt=media&token=de989617-8412-4985-9219-f2d61b79ed8b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808037.png?alt=media&token=de989617-8412-4985-9219-f2d61b79ed8b"
   },
   {
     "codigo": "7891141019838",
@@ -1319,9 +1319,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Aurora Integral Uva Tinto 1,5L — Marca: AURORA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132768-260-260/Suco-Aurora-Integral-Uva-Tinto-15L.png?v=639259641444230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132768-260-260/Suco-Aurora-Integral-Uva-Tinto-15L.png?v=639259641444230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132768-260-260/Suco-Aurora-Integral-Uva-Tinto-15L.png?v=639259641444230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141019838.png?alt=media&token=ccb30c9f-e1c4-41ef-a957-5a69dc8a7f70",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141019838.png?alt=media&token=ccb30c9f-e1c4-41ef-a957-5a69dc8a7f70",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141019838.png?alt=media&token=ccb30c9f-e1c4-41ef-a957-5a69dc8a7f70"
   },
   {
     "codigo": "7896436100888",
@@ -1330,9 +1330,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Zero Pet 600ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119088-260-260/Refrigerante-Fruki-Guaran-Zero-Pet-600ml.png?v=639259509494100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119088-260-260/Refrigerante-Fruki-Guaran-Zero-Pet-600ml.png?v=639259509494100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119088-260-260/Refrigerante-Fruki-Guaran-Zero-Pet-600ml.png?v=639259509494100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100888.png?alt=media&token=eb397aea-f9be-4045-8acd-9b6d62d72b35",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100888.png?alt=media&token=eb397aea-f9be-4045-8acd-9b6d62d72b35",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100888.png?alt=media&token=eb397aea-f9be-4045-8acd-9b6d62d72b35"
   },
   {
     "codigo": "7894900563702",
@@ -1341,9 +1341,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Laranja Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129342-260-260/Bebida-Kapo-Laranja-Adoada-200ml.png?v=639259608709230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129342-260-260/Bebida-Kapo-Laranja-Adoada-200ml.png?v=639259608709230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129342-260-260/Bebida-Kapo-Laranja-Adoada-200ml.png?v=639259608709230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900563702.png?alt=media&token=605c60f6-59d4-4b16-a175-50a07ad720b1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900563702.png?alt=media&token=605c60f6-59d4-4b16-a175-50a07ad720b1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900563702.png?alt=media&token=605c60f6-59d4-4b16-a175-50a07ad720b1"
   },
   {
     "codigo": "7891991002646",
@@ -1352,9 +1352,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Pet 600ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119011-260-260/Refrigerante-Antarctica-Guaran-Pet-600ml.png?v=639259509197600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119011-260-260/Refrigerante-Antarctica-Guaran-Pet-600ml.png?v=639259509197600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119011-260-260/Refrigerante-Antarctica-Guaran-Pet-600ml.png?v=639259509197600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991002646.png?alt=media&token=df257a49-1457-4ba0-a148-6b3f5c43317a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991002646.png?alt=media&token=df257a49-1457-4ba0-a148-6b3f5c43317a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991002646.png?alt=media&token=df257a49-1457-4ba0-a148-6b3f5c43317a"
   },
   {
     "codigo": "7891991001373",
@@ -1363,9 +1363,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná sem Açúcares Pet 2L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125819-260-260/Refrigerante-Antarctica-Guaran-sem-Acares-Pet-2L.png?v=639259578515900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125819-260-260/Refrigerante-Antarctica-Guaran-sem-Acares-Pet-2L.png?v=639259578515900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125819-260-260/Refrigerante-Antarctica-Guaran-sem-Acares-Pet-2L.png?v=639259578515900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001373.png?alt=media&token=8ff292b9-c29b-4218-85dd-8bea02a30fb6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001373.png?alt=media&token=8ff292b9-c29b-4218-85dd-8bea02a30fb6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001373.png?alt=media&token=8ff292b9-c29b-4218-85dd-8bea02a30fb6"
   },
   {
     "codigo": "7891991001342",
@@ -1374,9 +1374,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Pet 2L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136014-260-260/Refrigerante-Antarctica-Guaran-Pet-2L.png?v=639259671050230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136014-260-260/Refrigerante-Antarctica-Guaran-Pet-2L.png?v=639259671050230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136014-260-260/Refrigerante-Antarctica-Guaran-Pet-2L.png?v=639259671050230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001342.png?alt=media&token=8c84ee12-c5b7-45c2-b344-d7532b30cc26",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001342.png?alt=media&token=8c84ee12-c5b7-45c2-b344-d7532b30cc26",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001342.png?alt=media&token=8c84ee12-c5b7-45c2-b344-d7532b30cc26"
   },
   {
     "codigo": "7896004012544",
@@ -1385,9 +1385,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Mate e Bergamota 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135966-260-260/Refresco-em-P-Trink-Mate-e-Bergamota-15g.png?v=639259668688600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135966-260-260/Refresco-em-P-Trink-Mate-e-Bergamota-15g.png?v=639259668688600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135966-260-260/Refresco-em-P-Trink-Mate-e-Bergamota-15g.png?v=639259668688600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012544.png?alt=media&token=ece176d8-3708-44b9-a81c-c7b09e168cf8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012544.png?alt=media&token=ece176d8-3708-44b9-a81c-c7b09e168cf8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012544.png?alt=media&token=ece176d8-3708-44b9-a81c-c7b09e168cf8"
   },
   {
     "codigo": "7896004012605",
@@ -1396,9 +1396,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Mate Limão e Menta 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122369-260-260/Refresco-em-P-Trink-Mate-Limo-e-Menta-15g.png?v=639259536619570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122369-260-260/Refresco-em-P-Trink-Mate-Limo-e-Menta-15g.png?v=639259536619570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122369-260-260/Refresco-em-P-Trink-Mate-Limo-e-Menta-15g.png?v=639259536619570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012605.png?alt=media&token=f332bf13-6d53-47e4-a75d-34ca44f8d1b9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012605.png?alt=media&token=f332bf13-6d53-47e4-a75d-34ca44f8d1b9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012605.png?alt=media&token=f332bf13-6d53-47e4-a75d-34ca44f8d1b9"
   },
   {
     "codigo": "7898080664556",
@@ -1407,9 +1407,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tradicional sem Açúcar Pet 1L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132506-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-1L.png?v=639259638810200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132506-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-1L.png?v=639259638810200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132506-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-1L.png?v=639259638810200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664556.png?alt=media&token=14839720-304d-4bc5-b12c-acfbc192d069",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664556.png?alt=media&token=14839720-304d-4bc5-b12c-acfbc192d069",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664556.png?alt=media&token=14839720-304d-4bc5-b12c-acfbc192d069"
   },
   {
     "codigo": "7898080666185",
@@ -1418,9 +1418,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Maçã Verde sem Açúcar Pet 1L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112771-260-260/Bebida-Energtica-Baly-Ma-Verde-sem-Acar-Pet-1L.png?v=639259455693370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112771-260-260/Bebida-Energtica-Baly-Ma-Verde-sem-Acar-Pet-1L.png?v=639259455693370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112771-260-260/Bebida-Energtica-Baly-Ma-Verde-sem-Acar-Pet-1L.png?v=639259455693370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666185.png?alt=media&token=bdd45512-beb0-4476-a37f-9e31424e6005",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666185.png?alt=media&token=bdd45512-beb0-4476-a37f-9e31424e6005",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666185.png?alt=media&token=bdd45512-beb0-4476-a37f-9e31424e6005"
   },
   {
     "codigo": "7622202351815",
@@ -1429,9 +1429,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Pink Lemonade 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118721-260-260/Refresco-em-P-Clight-Pink-Lemonade-8g.png?v=639259506098700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118721-260-260/Refresco-em-P-Clight-Pink-Lemonade-8g.png?v=639259506098700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118721-260-260/Refresco-em-P-Clight-Pink-Lemonade-8g.png?v=639259506098700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202351815.png?alt=media&token=4d5d4ae4-2501-4a93-a70f-06cd698dec73",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202351815.png?alt=media&token=4d5d4ae4-2501-4a93-a70f-06cd698dec73",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202351815.png?alt=media&token=4d5d4ae4-2501-4a93-a70f-06cd698dec73"
   },
   {
     "codigo": "7891141038754",
@@ -1440,9 +1440,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Aurora 100% Maçã Integral 1,5L — Marca: AURORA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112547-260-260/Suco-Aurora-100-Ma-Integral-15L.png?v=639259454733100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112547-260-260/Suco-Aurora-100-Ma-Integral-15L.png?v=639259454733100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112547-260-260/Suco-Aurora-100-Ma-Integral-15L.png?v=639259454733100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141038754.png?alt=media&token=25b73c20-0300-4aab-8138-2cb218f3c464",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141038754.png?alt=media&token=25b73c20-0300-4aab-8138-2cb218f3c464",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141038754.png?alt=media&token=25b73c20-0300-4aab-8138-2cb218f3c464"
   },
   {
     "codigo": "7894900851700",
@@ -1451,9 +1451,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Charrua Guaraná Pet 3L — Marca: CHARRUA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132296-260-260/Refrigerante-Charrua-Guaran-Pet-3L.png?v=639259637937770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132296-260-260/Refrigerante-Charrua-Guaran-Pet-3L.png?v=639259637937770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132296-260-260/Refrigerante-Charrua-Guaran-Pet-3L.png?v=639259637937770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851700.png?alt=media&token=4a4509bf-e782-4500-b31a-afd1ca4eb42b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851700.png?alt=media&token=4a4509bf-e782-4500-b31a-afd1ca4eb42b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851700.png?alt=media&token=4a4509bf-e782-4500-b31a-afd1ca4eb42b"
   },
   {
     "codigo": "7896436103896",
@@ -1462,9 +1462,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Blueberry e Limão Siciliano com Gás Lata 350ml — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125424-260-260/gua-Mineral-gua-da-Pedra-Blueberry-e-Limo-Siciliano-com-Gs-Lata-350ml.png?v=639259575470600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125424-260-260/gua-Mineral-gua-da-Pedra-Blueberry-e-Limo-Siciliano-com-Gs-Lata-350ml.png?v=639259575470600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125424-260-260/gua-Mineral-gua-da-Pedra-Blueberry-e-Limo-Siciliano-com-Gs-Lata-350ml.png?v=639259575470600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103896.png?alt=media&token=3406f87e-d4c3-41ca-a248-749d637f64db",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103896.png?alt=media&token=3406f87e-d4c3-41ca-a248-749d637f64db",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103896.png?alt=media&token=3406f87e-d4c3-41ca-a248-749d637f64db"
   },
   {
     "codigo": "7896436103919",
@@ -1473,9 +1473,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Pêssego com Gás Lata 350ml — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118634-260-260/gua-Mineral-gua-da-Pedra-Pssego-com-Gs-Lata-350ml.png?v=639259505821100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118634-260-260/gua-Mineral-gua-da-Pedra-Pssego-com-Gs-Lata-350ml.png?v=639259505821100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118634-260-260/gua-Mineral-gua-da-Pedra-Pssego-com-Gs-Lata-350ml.png?v=639259505821100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103919.png?alt=media&token=69c2c436-2014-4076-b1f9-c5999ad72832",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103919.png?alt=media&token=69c2c436-2014-4076-b1f9-c5999ad72832",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103919.png?alt=media&token=69c2c436-2014-4076-b1f9-c5999ad72832"
   },
   {
     "codigo": "7898938890113",
@@ -1484,9 +1484,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Ultra Fiesta Mango Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121982-260-260/Bebida-Energtica-Monster-Ultra-Fiesta-Mango-Lata-473ml.png?v=639259533669870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121982-260-260/Bebida-Energtica-Monster-Ultra-Fiesta-Mango-Lata-473ml.png?v=639259533669870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121982-260-260/Bebida-Energtica-Monster-Ultra-Fiesta-Mango-Lata-473ml.png?v=639259533669870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890113.png?alt=media&token=148fec27-b0ca-4d86-8e5d-b7cc91d2a5d8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890113.png?alt=media&token=148fec27-b0ca-4d86-8e5d-b7cc91d2a5d8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890113.png?alt=media&token=148fec27-b0ca-4d86-8e5d-b7cc91d2a5d8"
   },
   {
     "codigo": "7896436103711",
@@ -1495,9 +1495,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná e Abacaxi Zero Açúcar Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125273-260-260/Refrigerante-Fruki-Guaran-e-Abacaxi-Zero-Acar-Lata-350ml.png?v=639259574921500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125273-260-260/Refrigerante-Fruki-Guaran-e-Abacaxi-Zero-Acar-Lata-350ml.png?v=639259574921500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125273-260-260/Refrigerante-Fruki-Guaran-e-Abacaxi-Zero-Acar-Lata-350ml.png?v=639259574921500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103711.png?alt=media&token=38d82058-bbd2-4c15-b31a-2840e39f88f6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103711.png?alt=media&token=38d82058-bbd2-4c15-b31a-2840e39f88f6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103711.png?alt=media&token=38d82058-bbd2-4c15-b31a-2840e39f88f6"
   },
   {
     "codigo": "7896436103308",
@@ -1506,9 +1506,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Frutas Vermelhas com Gás Lata 350ml — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118451-260-260/gua-Mineral-gua-da-Pedra-Frutas-Vermelhas-com-Gs-Lata-350ml.png?v=639259503663230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118451-260-260/gua-Mineral-gua-da-Pedra-Frutas-Vermelhas-com-Gs-Lata-350ml.png?v=639259503663230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118451-260-260/gua-Mineral-gua-da-Pedra-Frutas-Vermelhas-com-Gs-Lata-350ml.png?v=639259503663230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103308.png?alt=media&token=26c80462-fe15-4957-9cbd-325126f102cc",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103308.png?alt=media&token=26c80462-fe15-4957-9cbd-325126f102cc",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103308.png?alt=media&token=26c80462-fe15-4957-9cbd-325126f102cc"
   },
   {
     "codigo": "7896436103285",
@@ -1517,9 +1517,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra Abacaxi e Hortelã com Gás Lata 350ml — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135456-260-260/gua-Mineral-gua-da-Pedra-Abacaxi-e-Hortel-com-Gs-Lata-350ml.png?v=639259665080030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135456-260-260/gua-Mineral-gua-da-Pedra-Abacaxi-e-Hortel-com-Gs-Lata-350ml.png?v=639259665080030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135456-260-260/gua-Mineral-gua-da-Pedra-Abacaxi-e-Hortel-com-Gs-Lata-350ml.png?v=639259665080030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103285.png?alt=media&token=0a7f109b-49be-45dd-a838-d175030ce760",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103285.png?alt=media&token=0a7f109b-49be-45dd-a838-d175030ce760",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103285.png?alt=media&token=0a7f109b-49be-45dd-a838-d175030ce760"
   },
   {
     "codigo": "7896045112142",
@@ -1528,9 +1528,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Morango 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121576-260-260/Refresco-em-P-Frisco-Morango-18g.png?v=639259530756270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121576-260-260/Refresco-em-P-Frisco-Morango-18g.png?v=639259530756270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121576-260-260/Refresco-em-P-Frisco-Morango-18g.png?v=639259530756270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112142.png?alt=media&token=f5fc28f9-baac-4fc3-8d0c-b546ecf82ff8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112142.png?alt=media&token=f5fc28f9-baac-4fc3-8d0c-b546ecf82ff8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112142.png?alt=media&token=f5fc28f9-baac-4fc3-8d0c-b546ecf82ff8"
   },
   {
     "codigo": "7896045112128",
@@ -1539,9 +1539,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Limão 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112038-260-260/Refresco-em-P-Frisco-Limo-18g.png?v=639259449538600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112038-260-260/Refresco-em-P-Frisco-Limo-18g.png?v=639259449538600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112038-260-260/Refresco-em-P-Frisco-Limo-18g.png?v=639259449538600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112128.png?alt=media&token=3b99141d-4f8e-4835-b548-362043f5ea95",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112128.png?alt=media&token=3b99141d-4f8e-4835-b548-362043f5ea95",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112128.png?alt=media&token=3b99141d-4f8e-4835-b548-362043f5ea95"
   },
   {
     "codigo": "7896004008820",
@@ -1550,9 +1550,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Morango 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135078-260-260/Refresco-em-P-Trink-Morango-15g.png?v=639259662083470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135078-260-260/Refresco-em-P-Trink-Morango-15g.png?v=639259662083470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135078-260-260/Refresco-em-P-Trink-Morango-15g.png?v=639259662083470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008820.png?alt=media&token=10b69dbd-c964-431f-aa19-09e866cd7991",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008820.png?alt=media&token=10b69dbd-c964-431f-aa19-09e866cd7991",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008820.png?alt=media&token=10b69dbd-c964-431f-aa19-09e866cd7991"
   },
   {
     "codigo": "7896004008721",
@@ -1561,9 +1561,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Limonada Suíça 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115344-260-260/Refresco-em-P-Trink-Limonada-Sua-15g.png?v=639259478831100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115344-260-260/Refresco-em-P-Trink-Limonada-Sua-15g.png?v=639259478831100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115344-260-260/Refresco-em-P-Trink-Limonada-Sua-15g.png?v=639259478831100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008721.png?alt=media&token=7097f720-f44f-4853-aeb6-7c9d3ca90149",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008721.png?alt=media&token=7097f720-f44f-4853-aeb6-7c9d3ca90149",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008721.png?alt=media&token=7097f720-f44f-4853-aeb6-7c9d3ca90149"
   },
   {
     "codigo": "7896204358947",
@@ -1572,9 +1572,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS 100% Laranja e Maça 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121275-260-260/Suco-Misto-100-CBS-100-Laranja-e-Maa-200ml.png?v=639259527735900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121275-260-260/Suco-Misto-100-CBS-100-Laranja-e-Maa-200ml.png?v=639259527735900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121275-260-260/Suco-Misto-100-CBS-100-Laranja-e-Maa-200ml.png?v=639259527735900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358947.png?alt=media&token=8b029312-b4a4-49b9-895e-7beb87f35592",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358947.png?alt=media&token=8b029312-b4a4-49b9-895e-7beb87f35592",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358947.png?alt=media&token=8b029312-b4a4-49b9-895e-7beb87f35592"
   },
   {
     "codigo": "7622210571571",
@@ -1583,9 +1583,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Laranja Docinha 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134883-260-260/Refresco-em-P-Tang-Laranja-Docinha-18g.png?v=639259659931530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134883-260-260/Refresco-em-P-Tang-Laranja-Docinha-18g.png?v=639259659931530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134883-260-260/Refresco-em-P-Tang-Laranja-Docinha-18g.png?v=639259659931530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571571.png?alt=media&token=471fa836-c774-4fe2-91ca-3e1240b7b1eb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571571.png?alt=media&token=471fa836-c774-4fe2-91ca-3e1240b7b1eb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571571.png?alt=media&token=471fa836-c774-4fe2-91ca-3e1240b7b1eb"
   },
   {
     "codigo": "7622210571816",
@@ -1594,9 +1594,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Guaraná 18g — Marca: TANG. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134832-260-260/Refresco-em-P-Tang-Guaran-18g.png?v=639259659713970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134832-260-260/Refresco-em-P-Tang-Guaran-18g.png?v=639259659713970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134832-260-260/Refresco-em-P-Tang-Guaran-18g.png?v=639259659713970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571816.png?alt=media&token=7eb80e73-5678-45f2-9f64-4c0669af8add",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571816.png?alt=media&token=7eb80e73-5678-45f2-9f64-4c0669af8add",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571816.png?alt=media&token=7eb80e73-5678-45f2-9f64-4c0669af8add"
   },
   {
     "codigo": "7622210571724",
@@ -1605,9 +1605,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Morango 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115095-260-260/Refresco-em-P-Tang-Morango-18g.png?v=639259476117130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115095-260-260/Refresco-em-P-Tang-Morango-18g.png?v=639259476117130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115095-260-260/Refresco-em-P-Tang-Morango-18g.png?v=639259476117130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571724.png?alt=media&token=4d3d5a5b-f219-46e2-a864-174fb38ed504",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571724.png?alt=media&token=4d3d5a5b-f219-46e2-a864-174fb38ed504",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571724.png?alt=media&token=4d3d5a5b-f219-46e2-a864-174fb38ed504"
   },
   {
     "codigo": "7622210571601",
@@ -1616,9 +1616,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Laranja 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117826-260-260/Refresco-em-P-Tang-Laranja-18g.png?v=639259497992770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117826-260-260/Refresco-em-P-Tang-Laranja-18g.png?v=639259497992770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117826-260-260/Refresco-em-P-Tang-Laranja-18g.png?v=639259497992770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571601.png?alt=media&token=32dcd4d7-6f81-48c2-b56c-de7805bdcd1b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571601.png?alt=media&token=32dcd4d7-6f81-48c2-b56c-de7805bdcd1b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571601.png?alt=media&token=32dcd4d7-6f81-48c2-b56c-de7805bdcd1b"
   },
   {
     "codigo": "7622210571540",
@@ -1627,9 +1627,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Limão 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134831-260-260/Refresco-em-P-Tang-Limo-18g.png?v=639259659711170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134831-260-260/Refresco-em-P-Tang-Limo-18g.png?v=639259659711170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134831-260-260/Refresco-em-P-Tang-Limo-18g.png?v=639259659711170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571540.png?alt=media&token=aaf4e86e-1fbf-4152-8451-b1f22c522cc5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571540.png?alt=media&token=aaf4e86e-1fbf-4152-8451-b1f22c522cc5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571540.png?alt=media&token=aaf4e86e-1fbf-4152-8451-b1f22c522cc5"
   },
   {
     "codigo": "7896204358275",
@@ -1638,9 +1638,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Pêssego 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127943-260-260/Nctar-Misto-CBS-Pssego-1L.png?v=639259596690600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127943-260-260/Nctar-Misto-CBS-Pssego-1L.png?v=639259596690600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127943-260-260/Nctar-Misto-CBS-Pssego-1L.png?v=639259596690600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358275.png?alt=media&token=9affbc52-54e3-4c66-9aea-b2f794871ec5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358275.png?alt=media&token=9affbc52-54e3-4c66-9aea-b2f794871ec5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358275.png?alt=media&token=9affbc52-54e3-4c66-9aea-b2f794871ec5"
   },
   {
     "codigo": "7894900027327",
@@ -1649,9 +1649,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Original Pet 2L+01 Refrigerante Fanta Laranja Pet 2L Leve Mais, Pague Menos — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134633-260-260/Refrigerante-CocaCola-Original-Pet-2L01-Refrigerante-Fanta-Laranja-Pet-2L-Leve-Mais-Pague-Menos.png?v=639259658881070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134633-260-260/Refrigerante-CocaCola-Original-Pet-2L01-Refrigerante-Fanta-Laranja-Pet-2L-Leve-Mais-Pague-Menos.png?v=639259658881070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134633-260-260/Refrigerante-CocaCola-Original-Pet-2L01-Refrigerante-Fanta-Laranja-Pet-2L-Leve-Mais-Pague-Menos.png?v=639259658881070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027327.png?alt=media&token=e5644ff1-71a9-4c04-81b2-a3376ba09150",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027327.png?alt=media&token=e5644ff1-71a9-4c04-81b2-a3376ba09150",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027327.png?alt=media&token=e5644ff1-71a9-4c04-81b2-a3376ba09150"
   },
   {
     "codigo": "7896052607228",
@@ -1660,9 +1660,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Tônica Fys Lata 350ml — Marca: FYS. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131089-260-260/gua-Tnica-Fys-Lata-350ml.png?v=639259626950830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131089-260-260/gua-Tnica-Fys-Lata-350ml.png?v=639259626950830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131089-260-260/gua-Tnica-Fys-Lata-350ml.png?v=639259626950830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052607228.png?alt=media&token=bd4a594a-5413-4dda-8b74-bc035656c578",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052607228.png?alt=media&token=bd4a594a-5413-4dda-8b74-bc035656c578",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052607228.png?alt=media&token=bd4a594a-5413-4dda-8b74-bc035656c578"
   },
   {
     "codigo": "7896204357179",
@@ -1671,9 +1671,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco CBS 100% Uva Tinto 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134172-260-260/Suco-CBS-100-Uva-Tinto-1L.png?v=639259653785200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134172-260-260/Suco-CBS-100-Uva-Tinto-1L.png?v=639259653785200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134172-260-260/Suco-CBS-100-Uva-Tinto-1L.png?v=639259653785200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204357179.png?alt=media&token=bb4ec243-1134-44a5-9617-e84c776973c3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204357179.png?alt=media&token=bb4ec243-1134-44a5-9617-e84c776973c3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204357179.png?alt=media&token=bb4ec243-1134-44a5-9617-e84c776973c3"
   },
   {
     "codigo": "7896204357162",
@@ -1682,9 +1682,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS Laranja e Maçã 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1114439-260-260/Suco-Misto-100-CBS-Laranja-e-Ma-1L.png?v=639259470408230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1114439-260-260/Suco-Misto-100-CBS-Laranja-e-Ma-1L.png?v=639259470408230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1114439-260-260/Suco-Misto-100-CBS-Laranja-e-Ma-1L.png?v=639259470408230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204357162.png?alt=media&token=d40e51a0-fe14-47c3-a558-9ed346a4a402",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204357162.png?alt=media&token=d40e51a0-fe14-47c3-a558-9ed346a4a402",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204357162.png?alt=media&token=d40e51a0-fe14-47c3-a558-9ed346a4a402"
   },
   {
     "codigo": "7894900051513",
@@ -1693,9 +1693,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Uva Pet 2L — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138084-260-260/Refrigerante-Fanta-Uva-Pet-2L.png?v=639264715521800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138084-260-260/Refrigerante-Fanta-Uva-Pet-2L.png?v=639264715521800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138084-260-260/Refrigerante-Fanta-Uva-Pet-2L.png?v=639264715521800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900051513.png?alt=media&token=7e8305fb-af04-4c0f-80c8-4e38960f5db9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900051513.png?alt=media&token=7e8305fb-af04-4c0f-80c8-4e38960f5db9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900051513.png?alt=media&token=7e8305fb-af04-4c0f-80c8-4e38960f5db9"
   },
   {
     "codigo": "7894900031515",
@@ -1704,9 +1704,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Pet 2L — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138083-260-260/Refrigerante-Fanta-Laranja-Pet-2L.png?v=639264715509870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138083-260-260/Refrigerante-Fanta-Laranja-Pet-2L.png?v=639264715509870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138083-260-260/Refrigerante-Fanta-Laranja-Pet-2L.png?v=639264715509870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031515.png?alt=media&token=0413e1b5-3bf1-41a6-8fb2-d1f6312aef74",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031515.png?alt=media&token=0413e1b5-3bf1-41a6-8fb2-d1f6312aef74",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031515.png?alt=media&token=0413e1b5-3bf1-41a6-8fb2-d1f6312aef74"
   },
   {
     "codigo": "7894900151510",
@@ -1715,9 +1715,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Zero Pet 2L — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138082-260-260/Refrigerante-Fanta-Laranja-Zero-Pet-2L.png?v=639264715497530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138082-260-260/Refrigerante-Fanta-Laranja-Zero-Pet-2L.png?v=639264715497530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138082-260-260/Refrigerante-Fanta-Laranja-Zero-Pet-2L.png?v=639264715497530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900151510.png?alt=media&token=6517c0e8-f8ce-42e6-b98d-425e9eee579c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900151510.png?alt=media&token=6517c0e8-f8ce-42e6-b98d-425e9eee579c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900151510.png?alt=media&token=6517c0e8-f8ce-42e6-b98d-425e9eee579c"
   },
   {
     "codigo": "7894900180503",
@@ -1726,9 +1726,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Schweppes Citrus Original Lata 350ml — Marca: SCHWEPPES. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126942-260-260/Refrigerante-Schweppes-Citrus-Original-Lata-350ml.png?v=639259587827370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126942-260-260/Refrigerante-Schweppes-Citrus-Original-Lata-350ml.png?v=639259587827370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126942-260-260/Refrigerante-Schweppes-Citrus-Original-Lata-350ml.png?v=639259587827370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180503.png?alt=media&token=67b486b8-cfe6-41c5-a209-5fcb9661fc41",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180503.png?alt=media&token=67b486b8-cfe6-41c5-a209-5fcb9661fc41",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180503.png?alt=media&token=67b486b8-cfe6-41c5-a209-5fcb9661fc41"
   },
   {
     "codigo": "7894900521504",
@@ -1737,9 +1737,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal Sparkling Frutas Vermelhas 510ml — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1123542-260-260/gua-Mineral-Crystal-Sparkling-Frutas-Vermelhas-510ml.png?v=639259554034830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1123542-260-260/gua-Mineral-Crystal-Sparkling-Frutas-Vermelhas-510ml.png?v=639259554034830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1123542-260-260/gua-Mineral-Crystal-Sparkling-Frutas-Vermelhas-510ml.png?v=639259554034830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900521504.png?alt=media&token=80dda114-0cf3-43bc-b219-d80f22064311",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900521504.png?alt=media&token=80dda114-0cf3-43bc-b219-d80f22064311",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900521504.png?alt=media&token=80dda114-0cf3-43bc-b219-d80f22064311"
   },
   {
     "codigo": "7896023014819",
@@ -1748,9 +1748,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Salton Integral Uva 1,5L — Marca: SALTON. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130208-260-260/Suco-Salton-Integral-Uva-15L.png?v=639259619805070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130208-260-260/Suco-Salton-Integral-Uva-15L.png?v=639259619805070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130208-260-260/Suco-Salton-Integral-Uva-15L.png?v=639259619805070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023014819.png?alt=media&token=0c36d402-9b63-44c2-ba7d-2b23c25e50a7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023014819.png?alt=media&token=0c36d402-9b63-44c2-ba7d-2b23c25e50a7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023014819.png?alt=media&token=0c36d402-9b63-44c2-ba7d-2b23c25e50a7"
   },
   {
     "codigo": "7894900521009",
@@ -1759,9 +1759,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal Sparkling Tangerina e Capim Limão 510ml — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133589-260-260/gua-Mineral-Crystal-Sparkling-Tangerina-e-Capim-Limo-510ml.png?v=639259647981470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133589-260-260/gua-Mineral-Crystal-Sparkling-Tangerina-e-Capim-Limo-510ml.png?v=639259647981470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133589-260-260/gua-Mineral-Crystal-Sparkling-Tangerina-e-Capim-Limo-510ml.png?v=639259647981470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900521009.png?alt=media&token=48b2b20b-6f80-401b-8ff6-171c27bb8047",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900521009.png?alt=media&token=48b2b20b-6f80-401b-8ff6-171c27bb8047",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900521009.png?alt=media&token=48b2b20b-6f80-401b-8ff6-171c27bb8047"
   },
   {
     "codigo": "7894900131154",
@@ -1770,9 +1770,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Light Lata 310ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133577-260-260/Refrigerante-CocaCola-Light-Lata-310ml.png?v=639259647934970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133577-260-260/Refrigerante-CocaCola-Light-Lata-310ml.png?v=639259647934970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133577-260-260/Refrigerante-CocaCola-Light-Lata-310ml.png?v=639259647934970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900131154.png?alt=media&token=6d3e6696-e235-460f-b0f5-07a8cb10e478",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900131154.png?alt=media&token=6d3e6696-e235-460f-b0f5-07a8cb10e478",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900131154.png?alt=media&token=6d3e6696-e235-460f-b0f5-07a8cb10e478"
   },
   {
     "codigo": "7622210696441",
@@ -1781,9 +1781,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Clight Morango 8g — Marca: CLIGHT. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133504-260-260/Refresco-em-P-Clight-Morango-8g.png?v=639259647611300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133504-260-260/Refresco-em-P-Clight-Morango-8g.png?v=639259647611300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133504-260-260/Refresco-em-P-Clight-Morango-8g.png?v=639259647611300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696441.png?alt=media&token=e9ed59fb-57f1-437b-900c-462d6d6f6fb1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696441.png?alt=media&token=e9ed59fb-57f1-437b-900c-462d6d6f6fb1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210696441.png?alt=media&token=e9ed59fb-57f1-437b-900c-462d6d6f6fb1"
   },
   {
     "codigo": "7894900612004",
@@ -1792,9 +1792,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Del Valle 100% Maçã 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126506-260-260/Suco-Del-Valle-100-Ma-1L.png?v=639259584624070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126506-260-260/Suco-Del-Valle-100-Ma-1L.png?v=639259584624070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126506-260-260/Suco-Del-Valle-100-Ma-1L.png?v=639259584624070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900612004.png?alt=media&token=f75665a2-af68-44d6-83c8-490bc6ae0e1f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900612004.png?alt=media&token=f75665a2-af68-44d6-83c8-490bc6ae0e1f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900612004.png?alt=media&token=f75665a2-af68-44d6-83c8-490bc6ae0e1f"
   },
   {
     "codigo": "7896436101366",
@@ -1803,9 +1803,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Tônica Fruki Pet 1,5L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119649-260-260/Tnica-Fruki-Pet-15L.png?v=639259514702570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119649-260-260/Tnica-Fruki-Pet-15L.png?v=639259514702570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119649-260-260/Tnica-Fruki-Pet-15L.png?v=639259514702570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101366.png?alt=media&token=690ad987-7e73-4d8f-9622-281a3a88a47b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101366.png?alt=media&token=690ad987-7e73-4d8f-9622-281a3a88a47b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101366.png?alt=media&token=690ad987-7e73-4d8f-9622-281a3a88a47b"
   },
   {
     "codigo": "7898939126082",
@@ -1814,9 +1814,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba sem Gás 1,5L — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119647-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-15L.png?v=639259514694830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119647-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-15L.png?v=639259514694830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119647-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-15L.png?v=639259514694830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126082.png?alt=media&token=9298d0fa-7cd9-4062-9240-3b9cd9ab2593",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126082.png?alt=media&token=9298d0fa-7cd9-4062-9240-3b9cd9ab2593",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126082.png?alt=media&token=9298d0fa-7cd9-4062-9240-3b9cd9ab2593"
   },
   {
     "codigo": "7894900506006",
@@ -1825,9 +1825,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Mix de Frutas Zero Calorias Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122916-260-260/Isotnico-Powerade-Mix-de-Frutas-Zero-Calorias-Pet-500ml.png?v=639259542446130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122916-260-260/Isotnico-Powerade-Mix-de-Frutas-Zero-Calorias-Pet-500ml.png?v=639259542446130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122916-260-260/Isotnico-Powerade-Mix-de-Frutas-Zero-Calorias-Pet-500ml.png?v=639259542446130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900506006.png?alt=media&token=e72fa420-3c7d-4222-a734-fddc05fa66a5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900506006.png?alt=media&token=e72fa420-3c7d-4222-a734-fddc05fa66a5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900506006.png?alt=media&token=e72fa420-3c7d-4222-a734-fddc05fa66a5"
   },
   {
     "codigo": "7898080662668",
@@ -1836,9 +1836,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tradicional Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136518-260-260/Bebida-Energtica-Baly-Tradicional-Pet-2L.png?v=639259677603500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136518-260-260/Bebida-Energtica-Baly-Tradicional-Pet-2L.png?v=639259677603500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136518-260-260/Bebida-Energtica-Baly-Tradicional-Pet-2L.png?v=639259677603500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080662668.png?alt=media&token=8c643c16-3ec1-4337-890c-fc67f4723a71",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080662668.png?alt=media&token=8c643c16-3ec1-4337-890c-fc67f4723a71",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080662668.png?alt=media&token=8c643c16-3ec1-4337-890c-fc67f4723a71"
   },
   {
     "codigo": "7894900531015",
@@ -1847,9 +1847,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal com Gás 1,5L — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129706-260-260/gua-Mineral-Crystal-com-Gs-15L.png?v=639259611943030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129706-260-260/gua-Mineral-Crystal-com-Gs-15L.png?v=639259611943030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129706-260-260/gua-Mineral-Crystal-com-Gs-15L.png?v=639259611943030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900531015.png?alt=media&token=15115a2c-1568-4f64-9974-8ae0208049cb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900531015.png?alt=media&token=15115a2c-1568-4f64-9974-8ae0208049cb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900531015.png?alt=media&token=15115a2c-1568-4f64-9974-8ae0208049cb"
   },
   {
     "codigo": "7894900500035",
@@ -1858,9 +1858,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Limão Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116751-260-260/Isotnico-Powerade-Limo-Pet-500ml.png?v=639259490745900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116751-260-260/Isotnico-Powerade-Limo-Pet-500ml.png?v=639259490745900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116751-260-260/Isotnico-Powerade-Limo-Pet-500ml.png?v=639259490745900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900500035.png?alt=media&token=80cb2fa6-0134-4657-9312-6174d268f4ee",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900500035.png?alt=media&token=80cb2fa6-0134-4657-9312-6174d268f4ee",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900500035.png?alt=media&token=80cb2fa6-0134-4657-9312-6174d268f4ee"
   },
   {
     "codigo": "7892840808174",
@@ -1869,9 +1869,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Gatorade Morango e Maracujá Pet 500ml — Marca: GATORADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116419-260-260/Isotnico-Gatorade-Morango-e-Maracuj-Pet-500ml.png?v=639259487777900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116419-260-260/Isotnico-Gatorade-Morango-e-Maracuj-Pet-500ml.png?v=639259487777900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116419-260-260/Isotnico-Gatorade-Morango-e-Maracuj-Pet-500ml.png?v=639259487777900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808174.png?alt=media&token=2b25c3d3-80d8-4ecb-b1aa-193f0478799d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808174.png?alt=media&token=2b25c3d3-80d8-4ecb-b1aa-193f0478799d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808174.png?alt=media&token=2b25c3d3-80d8-4ecb-b1aa-193f0478799d"
   },
   {
     "codigo": "7894900603705",
@@ -1880,9 +1880,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Abacaxi Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136092-260-260/Bebida-Kapo-Abacaxi-Adoada-200ml.png?v=639259671423670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136092-260-260/Bebida-Kapo-Abacaxi-Adoada-200ml.png?v=639259671423670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136092-260-260/Bebida-Kapo-Abacaxi-Adoada-200ml.png?v=639259671423670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900603705.png?alt=media&token=12f62b29-0e23-4a1e-9d55-cf9c97d9f507",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900603705.png?alt=media&token=12f62b29-0e23-4a1e-9d55-cf9c97d9f507",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900603705.png?alt=media&token=12f62b29-0e23-4a1e-9d55-cf9c97d9f507"
   },
   {
     "codigo": "7894900573701",
@@ -1891,9 +1891,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Maracujá Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119081-260-260/Bebida-Kapo-Maracuj-Adoada-200ml.png?v=639259509470200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119081-260-260/Bebida-Kapo-Maracuj-Adoada-200ml.png?v=639259509470200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119081-260-260/Bebida-Kapo-Maracuj-Adoada-200ml.png?v=639259509470200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900573701.png?alt=media&token=dbaa2c3c-f5c1-463a-b3ad-93bd6a5c39c0",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900573701.png?alt=media&token=dbaa2c3c-f5c1-463a-b3ad-93bd6a5c39c0",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900573701.png?alt=media&token=dbaa2c3c-f5c1-463a-b3ad-93bd6a5c39c0"
   },
   {
     "codigo": "7891991001359",
@@ -1902,9 +1902,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Soda Pet 2L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129259-260-260/Refrigerante-Antarctica-Soda-Pet-2L.png?v=639259608415970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129259-260-260/Refrigerante-Antarctica-Soda-Pet-2L.png?v=639259608415970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129259-260-260/Refrigerante-Antarctica-Soda-Pet-2L.png?v=639259608415970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001359.png?alt=media&token=a9f5d15c-c9c2-4de6-a1e2-e04abe1aa480",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001359.png?alt=media&token=a9f5d15c-c9c2-4de6-a1e2-e04abe1aa480",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991001359.png?alt=media&token=a9f5d15c-c9c2-4de6-a1e2-e04abe1aa480"
   },
   {
     "codigo": "7891991002684",
@@ -1913,9 +1913,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Diet Guaraná Pet 600ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112891-260-260/Refrigerante-Antarctica-Diet-Guaran-Pet-600ml.png?v=639259457862430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112891-260-260/Refrigerante-Antarctica-Diet-Guaran-Pet-600ml.png?v=639259457862430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112891-260-260/Refrigerante-Antarctica-Diet-Guaran-Pet-600ml.png?v=639259457862430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991002684.png?alt=media&token=2c458301-ca34-4728-9830-d478742e62de",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991002684.png?alt=media&token=2c458301-ca34-4728-9830-d478742e62de",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991002684.png?alt=media&token=2c458301-ca34-4728-9830-d478742e62de"
   },
   {
     "codigo": "7896004012575",
@@ -1924,9 +1924,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Mate e Pêssego 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125780-260-260/Refresco-em-P-Trink-Mate-e-Pssego-15g.png?v=639259578265130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125780-260-260/Refresco-em-P-Trink-Mate-e-Pssego-15g.png?v=639259578265130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125780-260-260/Refresco-em-P-Trink-Mate-e-Pssego-15g.png?v=639259578265130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012575.png?alt=media&token=462f21f1-6577-43e6-bf07-36817790b7e4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012575.png?alt=media&token=462f21f1-6577-43e6-bf07-36817790b7e4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004012575.png?alt=media&token=462f21f1-6577-43e6-bf07-36817790b7e4"
   },
   {
     "codigo": "7898080666178",
@@ -1935,9 +1935,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tradicional sem Açúcar Pet 1L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112772-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-1L.png?v=639259455696630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112772-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-1L.png?v=639259455696630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112772-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-1L.png?v=639259455696630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666178.png?alt=media&token=103ddce4-4430-4a44-8f1e-498c9d088cf8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666178.png?alt=media&token=103ddce4-4430-4a44-8f1e-498c9d088cf8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666178.png?alt=media&token=103ddce4-4430-4a44-8f1e-498c9d088cf8"
   },
   {
     "codigo": "7898080664808",
@@ -1946,9 +1946,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tropical sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112739-260-260/Bebida-Energtica-Baly-Tropical-sem-Acar-Lata-473ml.png?v=639259455565070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112739-260-260/Bebida-Energtica-Baly-Tropical-sem-Acar-Lata-473ml.png?v=639259455565070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112739-260-260/Bebida-Energtica-Baly-Tropical-sem-Acar-Lata-473ml.png?v=639259455565070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664808.png?alt=media&token=ea13e1c0-13fe-4cc8-acf9-caac821f84b7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664808.png?alt=media&token=ea13e1c0-13fe-4cc8-acf9-caac821f84b7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664808.png?alt=media&token=ea13e1c0-13fe-4cc8-acf9-caac821f84b7"
   },
   {
     "codigo": "7891991307406",
@@ -1957,9 +1957,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Antarctica Intense Zero Açúcar Lata — Marca: ANTARCTICA. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112738-260-260/Tnica-Antarctica-Intense-Zero-Acar-Lata.png?v=639259455554700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112738-260-260/Tnica-Antarctica-Intense-Zero-Acar-Lata.png?v=639259455554700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112738-260-260/Tnica-Antarctica-Intense-Zero-Acar-Lata.png?v=639259455554700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991307406.png?alt=media&token=68c20e4d-a373-4531-88ba-23b35d65a468",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991307406.png?alt=media&token=68c20e4d-a373-4531-88ba-23b35d65a468",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991307406.png?alt=media&token=68c20e4d-a373-4531-88ba-23b35d65a468"
   },
   {
     "codigo": "7896016605017",
@@ -1968,9 +1968,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Ducoco Blend 200ml — Marca: DUCOCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125618-260-260/gua-de-Coco-Ducoco-Blend-200ml.png?v=639259577541730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125618-260-260/gua-de-Coco-Ducoco-Blend-200ml.png?v=639259577541730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125618-260-260/gua-de-Coco-Ducoco-Blend-200ml.png?v=639259577541730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896016605017.png?alt=media&token=145aeae5-4612-4407-8542-ab85b7579756",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896016605017.png?alt=media&token=145aeae5-4612-4407-8542-ab85b7579756",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896016605017.png?alt=media&token=145aeae5-4612-4407-8542-ab85b7579756"
   },
   {
     "codigo": "7896016605000",
@@ -1979,9 +1979,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Ducoco Blend 1L — Marca: DUCOCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112686-260-260/gua-de-Coco-Ducoco-Blend-1L.png?v=639259455296600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112686-260-260/gua-de-Coco-Ducoco-Blend-1L.png?v=639259455296600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112686-260-260/gua-de-Coco-Ducoco-Blend-1L.png?v=639259455296600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896016605000.png?alt=media&token=b6a8c0a4-96f2-45c8-8d1e-c2ffeaee1067",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896016605000.png?alt=media&token=b6a8c0a4-96f2-45c8-8d1e-c2ffeaee1067",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896016605000.png?alt=media&token=b6a8c0a4-96f2-45c8-8d1e-c2ffeaee1067"
   },
   {
     "codigo": "7896004011745",
@@ -1990,9 +1990,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Porto Seguro Piña Colada 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140659-260-260/Refresco-em-P-Trink-Porto-Seguro-Pia-Colada-15g---0.png?v=639277497296670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140659-260-260/Refresco-em-P-Trink-Porto-Seguro-Pia-Colada-15g---0.png?v=639277497296670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140659-260-260/Refresco-em-P-Trink-Porto-Seguro-Pia-Colada-15g---0.png?v=639277497296670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011745.png?alt=media&token=036cb6ae-9ac7-41f3-973c-d6de7213bb15",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011745.png?alt=media&token=036cb6ae-9ac7-41f3-973c-d6de7213bb15",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011745.png?alt=media&token=036cb6ae-9ac7-41f3-973c-d6de7213bb15"
   },
   {
     "codigo": "7896004011738",
@@ -2001,9 +2001,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Rio de Janeiro Mate Limão 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140658-260-260/Refresco-em-P-Trink-Rio-de-Janeiro-Mate-Limo-15g---0.png?v=639277497292600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140658-260-260/Refresco-em-P-Trink-Rio-de-Janeiro-Mate-Limo-15g---0.png?v=639277497292600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140658-260-260/Refresco-em-P-Trink-Rio-de-Janeiro-Mate-Limo-15g---0.png?v=639277497292600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011738.png?alt=media&token=e2a8f3f2-0748-4b3f-8f9a-88f0da570a29",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011738.png?alt=media&token=e2a8f3f2-0748-4b3f-8f9a-88f0da570a29",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004011738.png?alt=media&token=e2a8f3f2-0748-4b3f-8f9a-88f0da570a29"
   },
   {
     "codigo": "7897001050515",
@@ -2012,9 +2012,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida à Base de Soja Cocamar Purity Original 1L — Marca: COCAMAR. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118771-260-260/Bebida-Base-de-Soja-Cocamar-Purity-Original-1L.png?v=639259506283470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118771-260-260/Bebida-Base-de-Soja-Cocamar-Purity-Original-1L.png?v=639259506283470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118771-260-260/Bebida-Base-de-Soja-Cocamar-Purity-Original-1L.png?v=639259506283470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897001050515.png?alt=media&token=60067b1e-51ed-40ac-8843-d1960a571d9c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897001050515.png?alt=media&token=60067b1e-51ed-40ac-8843-d1960a571d9c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897001050515.png?alt=media&token=60067b1e-51ed-40ac-8843-d1960a571d9c"
   },
   {
     "codigo": "9002490283469",
@@ -2023,9 +2023,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Blueberry e Baunilha sem Açúcar Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112478-260-260/Bebida-Energtica-Red-Bull-Blueberry-e-Baunilha-sem-Acar-Lata-250ml.png?v=639259452987100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112478-260-260/Bebida-Energtica-Red-Bull-Blueberry-e-Baunilha-sem-Acar-Lata-250ml.png?v=639259452987100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112478-260-260/Bebida-Energtica-Red-Bull-Blueberry-e-Baunilha-sem-Acar-Lata-250ml.png?v=639259452987100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490283469.png?alt=media&token=6e3f444f-7c7c-410e-b3f4-1a6de9a9505b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490283469.png?alt=media&token=6e3f444f-7c7c-410e-b3f4-1a6de9a9505b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490283469.png?alt=media&token=6e3f444f-7c7c-410e-b3f4-1a6de9a9505b"
   },
   {
     "codigo": "9002490280901",
@@ -2034,9 +2034,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Pomelo sem Açúcar Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128773-260-260/Bebida-Energtica-Red-Bull-Pomelo-sem-Acar-Lata-250ml.png?v=639259604875370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128773-260-260/Bebida-Energtica-Red-Bull-Pomelo-sem-Acar-Lata-250ml.png?v=639259604875370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128773-260-260/Bebida-Energtica-Red-Bull-Pomelo-sem-Acar-Lata-250ml.png?v=639259604875370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490280901.png?alt=media&token=79da2743-8e67-4daf-934e-8538ae16986a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490280901.png?alt=media&token=79da2743-8e67-4daf-934e-8538ae16986a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490280901.png?alt=media&token=79da2743-8e67-4daf-934e-8538ae16986a"
   },
   {
     "codigo": "7896052608140",
@@ -2045,9 +2045,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fys Guaraná Zero Açúcar Lata 350ml — Marca: FYS. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118536-260-260/Refrigerante-Fys-Guaran-Zero-Acar-Lata-350ml.png?v=639259503947230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118536-260-260/Refrigerante-Fys-Guaran-Zero-Acar-Lata-350ml.png?v=639259503947230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118536-260-260/Refrigerante-Fys-Guaran-Zero-Acar-Lata-350ml.png?v=639259503947230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052608140.png?alt=media&token=ae70845b-e84f-44f7-8d91-8c134b9b8e47",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052608140.png?alt=media&token=ae70845b-e84f-44f7-8d91-8c134b9b8e47",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052608140.png?alt=media&token=ae70845b-e84f-44f7-8d91-8c134b9b8e47"
   },
   {
     "codigo": "9002490275020",
@@ -2056,9 +2056,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Amora sem Açúcar Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135398-260-260/Bebida-Energtica-Red-Bull-Amora-sem-Acar-Lata-250ml.png?v=639259664903600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135398-260-260/Bebida-Energtica-Red-Bull-Amora-sem-Acar-Lata-250ml.png?v=639259664903600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135398-260-260/Bebida-Energtica-Red-Bull-Amora-sem-Acar-Lata-250ml.png?v=639259664903600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490275020.png?alt=media&token=01dbfb21-4783-4d6c-9ea7-e4adbeb26b89",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490275020.png?alt=media&token=01dbfb21-4783-4d6c-9ea7-e4adbeb26b89",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490275020.png?alt=media&token=01dbfb21-4783-4d6c-9ea7-e4adbeb26b89"
   },
   {
     "codigo": "7892840823603",
@@ -2067,9 +2067,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Black Zero Pet 600ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121712-260-260/Refrigerante-Pepsi-Black-Zero-Pet-600ml.png?v=639259532668930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121712-260-260/Refrigerante-Pepsi-Black-Zero-Pet-600ml.png?v=639259532668930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121712-260-260/Refrigerante-Pepsi-Black-Zero-Pet-600ml.png?v=639259532668930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840823603.png?alt=media&token=448fc562-a1be-4fde-a21f-f1c74707c619",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840823603.png?alt=media&token=448fc562-a1be-4fde-a21f-f1c74707c619",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840823603.png?alt=media&token=448fc562-a1be-4fde-a21f-f1c74707c619"
   },
   {
     "codigo": "7898080665447",
@@ -2078,9 +2078,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Abacaxi e Hortelã Sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118318-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Sem-Acar-Lata-473ml.png?v=639259503211430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118318-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Sem-Acar-Lata-473ml.png?v=639259503211430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118318-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Sem-Acar-Lata-473ml.png?v=639259503211430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665447.png?alt=media&token=8ca5d676-599a-457a-9d71-e6ac6bf54f19",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665447.png?alt=media&token=8ca5d676-599a-457a-9d71-e6ac6bf54f19",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665447.png?alt=media&token=8ca5d676-599a-457a-9d71-e6ac6bf54f19"
   },
   {
     "codigo": "7898638067327",
@@ -2089,9 +2089,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Plenno Laranja 1,35L — Marca: PLENNO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135323-260-260/Suco-Plenno-Laranja-135L.png?v=639259664651470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135323-260-260/Suco-Plenno-Laranja-135L.png?v=639259664651470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135323-260-260/Suco-Plenno-Laranja-135L.png?v=639259664651470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898638067327.png?alt=media&token=f9784707-9045-4eba-b890-dab48334d8a3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898638067327.png?alt=media&token=f9784707-9045-4eba-b890-dab48334d8a3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898638067327.png?alt=media&token=f9784707-9045-4eba-b890-dab48334d8a3"
   },
   {
     "codigo": "7894900660425",
@@ -2100,9 +2100,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Pêssego 200ml — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115577-260-260/Nctar-Del-Valle-Pssego-200ml.png?v=639259479601900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115577-260-260/Nctar-Del-Valle-Pssego-200ml.png?v=639259479601900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115577-260-260/Nctar-Del-Valle-Pssego-200ml.png?v=639259479601900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660425.png?alt=media&token=9e3445bf-f8d5-47d1-acb1-67706cf73d5a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660425.png?alt=media&token=9e3445bf-f8d5-47d1-acb1-67706cf73d5a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660425.png?alt=media&token=9e3445bf-f8d5-47d1-acb1-67706cf73d5a"
   },
   {
     "codigo": "7894900660432",
@@ -2111,9 +2111,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Uva 200ml — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115576-260-260/Nctar-Del-Valle-Uva-200ml.png?v=639259479598630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115576-260-260/Nctar-Del-Valle-Uva-200ml.png?v=639259479598630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115576-260-260/Nctar-Del-Valle-Uva-200ml.png?v=639259479598630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660432.png?alt=media&token=96b214de-559c-4ac3-89bd-373fdbdd1b72",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660432.png?alt=media&token=96b214de-559c-4ac3-89bd-373fdbdd1b72",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660432.png?alt=media&token=96b214de-559c-4ac3-89bd-373fdbdd1b72"
   },
   {
     "codigo": "7896004008684",
@@ -2122,9 +2122,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Maracujá 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118066-260-260/Refresco-em-P-Trink-Maracuj-15g.png?v=639259500350170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118066-260-260/Refresco-em-P-Trink-Maracuj-15g.png?v=639259500350170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118066-260-260/Refresco-em-P-Trink-Maracuj-15g.png?v=639259500350170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008684.png?alt=media&token=620becd3-adf1-4749-8c9a-7f5db77aa688",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008684.png?alt=media&token=620becd3-adf1-4749-8c9a-7f5db77aa688",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008684.png?alt=media&token=620becd3-adf1-4749-8c9a-7f5db77aa688"
   },
   {
     "codigo": "7896004008844",
@@ -2133,9 +2133,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Abacaxi 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128304-260-260/Refresco-em-P-Trink-Abacaxi-15g.png?v=639259599910470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128304-260-260/Refresco-em-P-Trink-Abacaxi-15g.png?v=639259599910470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128304-260-260/Refresco-em-P-Trink-Abacaxi-15g.png?v=639259599910470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008844.png?alt=media&token=6fbfeced-d395-4c2b-ad01-8d797e813d61",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008844.png?alt=media&token=6fbfeced-d395-4c2b-ad01-8d797e813d61",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008844.png?alt=media&token=6fbfeced-d395-4c2b-ad01-8d797e813d61"
   },
   {
     "codigo": "7896436103124",
@@ -2144,9 +2144,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná e Bergamota Zero Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111910-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Zero-Lata-350ml.png?v=639259449059730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111910-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Zero-Lata-350ml.png?v=639259449059730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111910-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Zero-Lata-350ml.png?v=639259449059730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103124.png?alt=media&token=a41e5a59-add3-4fd7-ad10-27a14b630646",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103124.png?alt=media&token=a41e5a59-add3-4fd7-ad10-27a14b630646",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103124.png?alt=media&token=a41e5a59-add3-4fd7-ad10-27a14b630646"
   },
   {
     "codigo": "7894900508017",
@@ -2155,9 +2155,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Frutas Tropicais Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117900-260-260/Isotnico-Powerade-Frutas-Tropicais-Pet-500ml.png?v=639259499797530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117900-260-260/Isotnico-Powerade-Frutas-Tropicais-Pet-500ml.png?v=639259499797530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117900-260-260/Isotnico-Powerade-Frutas-Tropicais-Pet-500ml.png?v=639259499797530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900508017.png?alt=media&token=b63e88a6-bf87-4c62-86f2-9d6ef8a38640",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900508017.png?alt=media&token=b63e88a6-bf87-4c62-86f2-9d6ef8a38640",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900508017.png?alt=media&token=b63e88a6-bf87-4c62-86f2-9d6ef8a38640"
   },
   {
     "codigo": "7891141036170",
@@ -2166,9 +2166,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Aurora 100% Uva Integral 1,5L — Marca: AURORA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128140-260-260/Suco-Aurora-100-Uva-Integral-15L.png?v=639259599263500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128140-260-260/Suco-Aurora-100-Uva-Integral-15L.png?v=639259599263500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128140-260-260/Suco-Aurora-100-Uva-Integral-15L.png?v=639259599263500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141036170.png?alt=media&token=ab0cf375-bba5-4ad8-b472-9d8c03995272",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141036170.png?alt=media&token=ab0cf375-bba5-4ad8-b472-9d8c03995272",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141036170.png?alt=media&token=ab0cf375-bba5-4ad8-b472-9d8c03995272"
   },
   {
     "codigo": "7622210571694",
@@ -2177,9 +2177,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Maracujá 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131446-260-260/Refresco-em-P-Tang-Maracuj-18g.png?v=639259629706530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131446-260-260/Refresco-em-P-Tang-Maracuj-18g.png?v=639259629706530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131446-260-260/Refresco-em-P-Tang-Maracuj-18g.png?v=639259629706530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571694.png?alt=media&token=338c5991-3d92-474e-a742-13e435a685ef",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571694.png?alt=media&token=338c5991-3d92-474e-a742-13e435a685ef",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571694.png?alt=media&token=338c5991-3d92-474e-a742-13e435a685ef"
   },
   {
     "codigo": "7896436102769",
@@ -2188,9 +2188,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná e Bergamota Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134828-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Lata-350ml.png?v=639259659701500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134828-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Lata-350ml.png?v=639259659701500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134828-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Lata-350ml.png?v=639259659701500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102769.png?alt=media&token=44a22c39-f372-43e5-98cd-51123c8220e5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102769.png?alt=media&token=44a22c39-f372-43e5-98cd-51123c8220e5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102769.png?alt=media&token=44a22c39-f372-43e5-98cd-51123c8220e5"
   },
   {
     "codigo": "7898080664662",
@@ -2199,9 +2199,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tradicional sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124594-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Lata-473ml.png?v=639259569034630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124594-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Lata-473ml.png?v=639259569034630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124594-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Lata-473ml.png?v=639259569034630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664662.png?alt=media&token=f086fafd-35ed-481f-9d2b-9cc153130772",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664662.png?alt=media&token=f086fafd-35ed-481f-9d2b-9cc153130772",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664662.png?alt=media&token=f086fafd-35ed-481f-9d2b-9cc153130772"
   },
   {
     "codigo": "7896204358244",
@@ -2210,9 +2210,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Uva 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124485-260-260/Nctar-Misto-CBS-Uva-200ml.png?v=639259564743200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124485-260-260/Nctar-Misto-CBS-Uva-200ml.png?v=639259564743200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124485-260-260/Nctar-Misto-CBS-Uva-200ml.png?v=639259564743200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358244.png?alt=media&token=c67eb81b-be15-483c-8baf-3ddd8f2b74bf",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358244.png?alt=media&token=c67eb81b-be15-483c-8baf-3ddd8f2b74bf",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358244.png?alt=media&token=c67eb81b-be15-483c-8baf-3ddd8f2b74bf"
   },
   {
     "codigo": "7896436100222",
@@ -2221,9 +2221,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1109240-260-260/Refrigerante-Fruki-Guaran-Lata-350ml.png?v=639259425301400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1109240-260-260/Refrigerante-Fruki-Guaran-Lata-350ml.png?v=639259425301400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1109240-260-260/Refrigerante-Fruki-Guaran-Lata-350ml.png?v=639259425301400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100222.png?alt=media&token=5e287d2f-9e1f-4bd8-8961-f9baeb545d5e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100222.png?alt=media&token=5e287d2f-9e1f-4bd8-8961-f9baeb545d5e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436100222.png?alt=media&token=5e287d2f-9e1f-4bd8-8961-f9baeb545d5e"
   },
   {
     "codigo": "7892840800079",
@@ -2232,9 +2232,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Lata 350ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130563-260-260/Refrigerante-Pepsi-Lata-350ml.png?v=639259622717400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130563-260-260/Refrigerante-Pepsi-Lata-350ml.png?v=639259622717400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130563-260-260/Refrigerante-Pepsi-Lata-350ml.png?v=639259622717400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800079.png?alt=media&token=1b875e69-4cf0-4c89-b635-75f7a2462901",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800079.png?alt=media&token=1b875e69-4cf0-4c89-b635-75f7a2462901",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800079.png?alt=media&token=1b875e69-4cf0-4c89-b635-75f7a2462901"
   },
   {
     "codigo": "7894900612059",
@@ -2243,9 +2243,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Del Valle 100% Maçã 200ml — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127114-260-260/Suco-Del-Valle-100-Ma-200ml.png?v=639259590112800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127114-260-260/Suco-Del-Valle-100-Ma-200ml.png?v=639259590112800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127114-260-260/Suco-Del-Valle-100-Ma-200ml.png?v=639259590112800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900612059.png?alt=media&token=63acc0dc-b32f-4805-b273-9e7b8119e6f4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900612059.png?alt=media&token=63acc0dc-b32f-4805-b273-9e7b8119e6f4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900612059.png?alt=media&token=63acc0dc-b32f-4805-b273-9e7b8119e6f4"
   },
   {
     "codigo": "7891098040893",
@@ -2254,9 +2254,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Leão Ice Tea Pêssego Pet 450ml — Marca: LEAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120049-260-260/Ch-Leo-Ice-Tea-Pssego-Pet-450ml.png?v=639259517886430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120049-260-260/Ch-Leo-Ice-Tea-Pssego-Pet-450ml.png?v=639259517886430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120049-260-260/Ch-Leo-Ice-Tea-Pssego-Pet-450ml.png?v=639259517886430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040893.png?alt=media&token=d90a6e09-64cb-4531-9df6-456791202f47",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040893.png?alt=media&token=d90a6e09-64cb-4531-9df6-456791202f47",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040893.png?alt=media&token=d90a6e09-64cb-4531-9df6-456791202f47"
   },
   {
     "codigo": "7894900681017",
@@ -2265,9 +2265,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Original Lata 350ml — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117335-260-260/Refrigerante-Sprite-Original-Lata-350ml.png?v=639259494574500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117335-260-260/Refrigerante-Sprite-Original-Lata-350ml.png?v=639259494574500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117335-260-260/Refrigerante-Sprite-Original-Lata-350ml.png?v=639259494574500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681017.png?alt=media&token=8f5f9818-624a-4404-a729-44e6a5058835",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681017.png?alt=media&token=8f5f9818-624a-4404-a729-44e6a5058835",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681017.png?alt=media&token=8f5f9818-624a-4404-a729-44e6a5058835"
   },
   {
     "codigo": "9002490229160",
@@ -2276,9 +2276,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Frutas Tropicais Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133254-260-260/Bebida-Energtica-Red-Bull-Frutas-Tropicais-Lata-250ml.png?v=639259644859670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133254-260-260/Bebida-Energtica-Red-Bull-Frutas-Tropicais-Lata-250ml.png?v=639259644859670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133254-260-260/Bebida-Energtica-Red-Bull-Frutas-Tropicais-Lata-250ml.png?v=639259644859670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490229160.png?alt=media&token=7e18d1b7-a531-4c5e-8782-03f2b2a9dbff",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490229160.png?alt=media&token=7e18d1b7-a531-4c5e-8782-03f2b2a9dbff",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490229160.png?alt=media&token=7e18d1b7-a531-4c5e-8782-03f2b2a9dbff"
   },
   {
     "codigo": "7894900610017",
@@ -2287,9 +2287,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Del Valle Laranja 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129827-260-260/Suco-Del-Valle-Laranja-1L.png?v=639259613909570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129827-260-260/Suco-Del-Valle-Laranja-1L.png?v=639259613909570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129827-260-260/Suco-Del-Valle-Laranja-1L.png?v=639259613909570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900610017.png?alt=media&token=96985a48-20d2-427e-98e0-d56c846d143a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900610017.png?alt=media&token=96985a48-20d2-427e-98e0-d56c846d143a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900610017.png?alt=media&token=96985a48-20d2-427e-98e0-d56c846d143a"
   },
   {
     "codigo": "7894900504002",
@@ -2298,9 +2298,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Mix de Frutas Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113218-260-260/Isotnico-Powerade-Mix-de-Frutas-Pet-500ml.png?v=639259460645100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113218-260-260/Isotnico-Powerade-Mix-de-Frutas-Pet-500ml.png?v=639259460645100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113218-260-260/Isotnico-Powerade-Mix-de-Frutas-Pet-500ml.png?v=639259460645100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900504002.png?alt=media&token=f2024a73-67f2-4dae-8041-d9922478577c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900504002.png?alt=media&token=f2024a73-67f2-4dae-8041-d9922478577c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900504002.png?alt=media&token=f2024a73-67f2-4dae-8041-d9922478577c"
   },
   {
     "codigo": "7891991008655",
@@ -2309,9 +2309,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Pet 2,5L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129401-260-260/Refrigerante-Antarctica-Guaran-Pet-25L.png?v=639259610663370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129401-260-260/Refrigerante-Antarctica-Guaran-Pet-25L.png?v=639259610663370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129401-260-260/Refrigerante-Antarctica-Guaran-Pet-25L.png?v=639259610663370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008655.png?alt=media&token=f69d9b46-7708-4cac-a216-1bf2d653cbed",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008655.png?alt=media&token=f69d9b46-7708-4cac-a216-1bf2d653cbed",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008655.png?alt=media&token=f69d9b46-7708-4cac-a216-1bf2d653cbed"
   },
   {
     "codigo": "7896000557056",
@@ -2320,9 +2320,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Concentrado Maguary Abacaxi 500ml — Marca: MAGUARY. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116346-260-260/Suco-Concentrado-Maguary-Abacaxi-500ml.png?v=639259485643570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116346-260-260/Suco-Concentrado-Maguary-Abacaxi-500ml.png?v=639259485643570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116346-260-260/Suco-Concentrado-Maguary-Abacaxi-500ml.png?v=639259485643570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000557056.png?alt=media&token=a5a965f3-2fae-4446-9163-dd3efd0ad528",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000557056.png?alt=media&token=a5a965f3-2fae-4446-9163-dd3efd0ad528",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000557056.png?alt=media&token=a5a965f3-2fae-4446-9163-dd3efd0ad528"
   },
   {
     "codigo": "7896000555359",
@@ -2331,9 +2331,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Concentrado Maguary Maracujá 500ml — Marca: MAGUARY. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132650-260-260/Suco-Concentrado-Maguary-Maracuj-500ml.png?v=639259640931100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132650-260-260/Suco-Concentrado-Maguary-Maracuj-500ml.png?v=639259640931100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132650-260-260/Suco-Concentrado-Maguary-Maracuj-500ml.png?v=639259640931100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000555359.png?alt=media&token=3442d5b6-b03d-46ff-83a1-1d4bfc19e560",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000555359.png?alt=media&token=3442d5b6-b03d-46ff-83a1-1d4bfc19e560",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000555359.png?alt=media&token=3442d5b6-b03d-46ff-83a1-1d4bfc19e560"
   },
   {
     "codigo": "7894900300017",
@@ -2342,9 +2342,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes Lata 350ml — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122392-260-260/Tnica-Schweppes-Lata-350ml.png?v=639259538801570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122392-260-260/Tnica-Schweppes-Lata-350ml.png?v=639259538801570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122392-260-260/Tnica-Schweppes-Lata-350ml.png?v=639259538801570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900300017.png?alt=media&token=4997f755-f50f-472c-9a28-b731c1c5ef4e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900300017.png?alt=media&token=4997f755-f50f-472c-9a28-b731c1c5ef4e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900300017.png?alt=media&token=4997f755-f50f-472c-9a28-b731c1c5ef4e"
   },
   {
     "codigo": "7891991308311",
@@ -2353,9 +2353,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Zero Fibras Lata 350ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135972-260-260/Refrigerante-Antarctica-Guaran-Zero-Fibras-Lata-350ml.png?v=639259668742970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135972-260-260/Refrigerante-Antarctica-Guaran-Zero-Fibras-Lata-350ml.png?v=639259668742970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135972-260-260/Refrigerante-Antarctica-Guaran-Zero-Fibras-Lata-350ml.png?v=639259668742970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991308311.png?alt=media&token=4387bc7f-0deb-4cb7-b8e5-dee3da117e7f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991308311.png?alt=media&token=4387bc7f-0deb-4cb7-b8e5-dee3da117e7f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991308311.png?alt=media&token=4387bc7f-0deb-4cb7-b8e5-dee3da117e7f"
   },
   {
     "codigo": "9002490301019",
@@ -2364,9 +2364,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Cereja e Baunilha Lata 473ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116254-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Baunilha-Lata-473ml.png?v=639259485192430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116254-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Baunilha-Lata-473ml.png?v=639259485192430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116254-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Baunilha-Lata-473ml.png?v=639259485192430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490301019.png?alt=media&token=80f96188-fb0e-4057-b3c0-4e40c8fd508e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490301019.png?alt=media&token=80f96188-fb0e-4057-b3c0-4e40c8fd508e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490301019.png?alt=media&token=80f96188-fb0e-4057-b3c0-4e40c8fd508e"
   },
   {
     "codigo": "7898080666222",
@@ -2375,9 +2375,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Melancia sem Açúcar Pet 1L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118886-260-260/Bebida-Energtica-Baly-Melancia-sem-Acar-Pet-1L.png?v=639259506777230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118886-260-260/Bebida-Energtica-Baly-Melancia-sem-Acar-Pet-1L.png?v=639259506777230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118886-260-260/Bebida-Energtica-Baly-Melancia-sem-Acar-Pet-1L.png?v=639259506777230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666222.png?alt=media&token=ab1fa0d1-43a1-45b8-b87c-8895b0dc2ace",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666222.png?alt=media&token=ab1fa0d1-43a1-45b8-b87c-8895b0dc2ace",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666222.png?alt=media&token=ab1fa0d1-43a1-45b8-b87c-8895b0dc2ace"
   },
   {
     "codigo": "7898080664839",
@@ -2386,9 +2386,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Melancia sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118864-260-260/Bebida-Energtica-Baly-Melancia-sem-Acar-Lata-473ml.png?v=639259506656430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118864-260-260/Bebida-Energtica-Baly-Melancia-sem-Acar-Lata-473ml.png?v=639259506656430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118864-260-260/Bebida-Energtica-Baly-Melancia-sem-Acar-Lata-473ml.png?v=639259506656430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664839.png?alt=media&token=eaf389aa-4254-4809-afac-9ba8b6e86127",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664839.png?alt=media&token=eaf389aa-4254-4809-afac-9ba8b6e86127",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664839.png?alt=media&token=eaf389aa-4254-4809-afac-9ba8b6e86127"
   },
   {
     "codigo": "7891141035494",
@@ -2397,9 +2397,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Aurora Integral Uva Branca Gaseificado Lata 269ml — Marca: AURORA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122236-260-260/Suco-Aurora-Integral-Uva-Branca-Gaseificado-Lata-269ml.png?v=639259536130030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122236-260-260/Suco-Aurora-Integral-Uva-Branca-Gaseificado-Lata-269ml.png?v=639259536130030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122236-260-260/Suco-Aurora-Integral-Uva-Branca-Gaseificado-Lata-269ml.png?v=639259536130030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141035494.png?alt=media&token=4171ce7b-371a-4164-bbd9-15a03abd9807",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141035494.png?alt=media&token=4171ce7b-371a-4164-bbd9-15a03abd9807",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141035494.png?alt=media&token=4171ce7b-371a-4164-bbd9-15a03abd9807"
   },
   {
     "codigo": "7896436105456",
@@ -2408,9 +2408,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná e Bergamota Pet 2L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125619-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Pet-2L.png?v=639259577546730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125619-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Pet-2L.png?v=639259577546730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125619-260-260/Refrigerante-Fruki-Guaran-e-Bergamota-Pet-2L.png?v=639259577546730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105456.png?alt=media&token=ae462a46-150d-4b88-b665-e1aba94d1df7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105456.png?alt=media&token=ae462a46-150d-4b88-b665-e1aba94d1df7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105456.png?alt=media&token=ae462a46-150d-4b88-b665-e1aba94d1df7"
   },
   {
     "codigo": "9002490283063",
@@ -2419,9 +2419,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Zero Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125461-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-250ml.png?v=639259575608070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125461-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-250ml.png?v=639259575608070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125461-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-250ml.png?v=639259575608070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490283063.png?alt=media&token=aedc5d5c-d1b4-4d3b-b5d2-d7dc1696dee9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490283063.png?alt=media&token=aedc5d5c-d1b4-4d3b-b5d2-d7dc1696dee9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490283063.png?alt=media&token=aedc5d5c-d1b4-4d3b-b5d2-d7dc1696dee9"
   },
   {
     "codigo": "7898080665416",
@@ -2430,9 +2430,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Morango e Pêssego sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135487-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-sem-Acar-Lata-473ml.png?v=639259665177500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135487-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-sem-Acar-Lata-473ml.png?v=639259665177500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135487-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-sem-Acar-Lata-473ml.png?v=639259665177500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665416.png?alt=media&token=0c405454-b6c3-4a92-a075-0b5a45498a67",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665416.png?alt=media&token=0c405454-b6c3-4a92-a075-0b5a45498a67",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665416.png?alt=media&token=0c405454-b6c3-4a92-a075-0b5a45498a67"
   },
   {
     "codigo": "9002490275013",
@@ -2441,9 +2441,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Maracujá e Melão Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118460-260-260/Bebida-Energtica-Red-Bull-Maracuj-e-Melo-Lata-250ml.png?v=639259503695400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118460-260-260/Bebida-Energtica-Red-Bull-Maracuj-e-Melo-Lata-250ml.png?v=639259503695400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118460-260-260/Bebida-Energtica-Red-Bull-Maracuj-e-Melo-Lata-250ml.png?v=639259503695400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490275013.png?alt=media&token=b599cac0-c1db-49d9-a21a-843b24fbb999",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490275013.png?alt=media&token=b599cac0-c1db-49d9-a21a-843b24fbb999",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490275013.png?alt=media&token=b599cac0-c1db-49d9-a21a-843b24fbb999"
   },
   {
     "codigo": "7896436103339",
@@ -2452,9 +2452,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná e Abacaxi Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112056-260-260/Refrigerante-Fruki-Guaran-e-Abacaxi-Lata-350ml.png?v=639259449601100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112056-260-260/Refrigerante-Fruki-Guaran-e-Abacaxi-Lata-350ml.png?v=639259449601100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112056-260-260/Refrigerante-Fruki-Guaran-e-Abacaxi-Lata-350ml.png?v=639259449601100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103339.png?alt=media&token=2b1b478f-6772-4ca9-93c6-248f8e6d8424",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103339.png?alt=media&token=2b1b478f-6772-4ca9-93c6-248f8e6d8424",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103339.png?alt=media&token=2b1b478f-6772-4ca9-93c6-248f8e6d8424"
   },
   {
     "codigo": "7898080665362",
@@ -2463,9 +2463,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Abacaxi e Hortelã Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112041-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Lata-473ml.png?v=639259449550470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112041-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Lata-473ml.png?v=639259449550470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112041-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Lata-473ml.png?v=639259449550470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665362.png?alt=media&token=0ea927d3-5646-441d-96ee-4450f86d9a76",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665362.png?alt=media&token=0ea927d3-5646-441d-96ee-4450f86d9a76",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665362.png?alt=media&token=0ea927d3-5646-441d-96ee-4450f86d9a76"
   },
   {
     "codigo": "7894900851601",
@@ -2474,9 +2474,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Charrua Guaraná Pet 600ml — Marca: CHARRUA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118176-260-260/Refrigerante-Charrua-Guaran-Pet-600ml.png?v=639259502680030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118176-260-260/Refrigerante-Charrua-Guaran-Pet-600ml.png?v=639259502680030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118176-260-260/Refrigerante-Charrua-Guaran-Pet-600ml.png?v=639259502680030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851601.png?alt=media&token=961b7c9f-3ec0-4365-b00b-5ac25745de52",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851601.png?alt=media&token=961b7c9f-3ec0-4365-b00b-5ac25745de52",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900851601.png?alt=media&token=961b7c9f-3ec0-4365-b00b-5ac25745de52"
   },
   {
     "codigo": "7896004008691",
@@ -2485,9 +2485,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Limão 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131691-260-260/Refresco-em-P-Trink-Limo-15g.png?v=639259632209100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131691-260-260/Refresco-em-P-Trink-Limo-15g.png?v=639259632209100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131691-260-260/Refresco-em-P-Trink-Limo-15g.png?v=639259632209100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008691.png?alt=media&token=822489d5-5471-4d30-82ec-7f070c7ab6ec",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008691.png?alt=media&token=822489d5-5471-4d30-82ec-7f070c7ab6ec",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008691.png?alt=media&token=822489d5-5471-4d30-82ec-7f070c7ab6ec"
   },
   {
     "codigo": "9002490264093",
@@ -2496,9 +2496,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Cereja e Frutas Silvestres Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115312-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Frutas-Silvestres-Lata-250ml.png?v=639259478721030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115312-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Frutas-Silvestres-Lata-250ml.png?v=639259478721030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115312-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Frutas-Silvestres-Lata-250ml.png?v=639259478721030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490264093.png?alt=media&token=2972f87c-db81-4185-b46f-b49309e54098",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490264093.png?alt=media&token=2972f87c-db81-4185-b46f-b49309e54098",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490264093.png?alt=media&token=2972f87c-db81-4185-b46f-b49309e54098"
   },
   {
     "codigo": "1220000250222",
@@ -2507,9 +2507,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Ultra Melancia Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128217-260-260/Bebida-Energtica-Monster-Ultra-Melancia-Lata-473ml.png?v=639259599596700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128217-260-260/Bebida-Energtica-Monster-Ultra-Melancia-Lata-473ml.png?v=639259599596700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128217-260-260/Bebida-Energtica-Monster-Ultra-Melancia-Lata-473ml.png?v=639259599596700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250222.png?alt=media&token=f8ff1e45-2a8d-41b7-951d-5ab8ad316716",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250222.png?alt=media&token=f8ff1e45-2a8d-41b7-951d-5ab8ad316716",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250222.png?alt=media&token=f8ff1e45-2a8d-41b7-951d-5ab8ad316716"
   },
   {
     "codigo": "7896436103094",
@@ -2518,9 +2518,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Frukito Frutas Cítricas Pet 2L — Marca: FRUKITO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124686-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-Pet-2L.png?v=639259569438430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124686-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-Pet-2L.png?v=639259569438430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124686-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-Pet-2L.png?v=639259569438430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103094.png?alt=media&token=ac01a5e7-3c4e-4cd9-80af-09c95f796194",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103094.png?alt=media&token=ac01a5e7-3c4e-4cd9-80af-09c95f796194",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436103094.png?alt=media&token=ac01a5e7-3c4e-4cd9-80af-09c95f796194"
   },
   {
     "codigo": "7898080664587",
@@ -2529,9 +2529,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Maça Verde Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128134-260-260/Bebida-Energtica-Baly-Maa-Verde-Lata-473ml.png?v=639259599240700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128134-260-260/Bebida-Energtica-Baly-Maa-Verde-Lata-473ml.png?v=639259599240700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128134-260-260/Bebida-Energtica-Baly-Maa-Verde-Lata-473ml.png?v=639259599240700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664587.png?alt=media&token=86b14a4f-1cd2-440c-a3ef-5225b9388a51",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664587.png?alt=media&token=86b14a4f-1cd2-440c-a3ef-5225b9388a51",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664587.png?alt=media&token=86b14a4f-1cd2-440c-a3ef-5225b9388a51"
   },
   {
     "codigo": "9002490258825",
@@ -2540,9 +2540,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Morango e Pêssego Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131506-260-260/Bebida-Energtica-Red-Bull-Morango-e-Pssego-Lata-250ml.png?v=639259631558270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131506-260-260/Bebida-Energtica-Red-Bull-Morango-e-Pssego-Lata-250ml.png?v=639259631558270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131506-260-260/Bebida-Energtica-Red-Bull-Morango-e-Pssego-Lata-250ml.png?v=639259631558270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490258825.png?alt=media&token=8ca64a95-d86d-4960-a3f4-a639d0e2e3ea",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490258825.png?alt=media&token=8ca64a95-d86d-4960-a3f4-a639d0e2e3ea",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490258825.png?alt=media&token=8ca64a95-d86d-4960-a3f4-a639d0e2e3ea"
   },
   {
     "codigo": "7896204358824",
@@ -2551,9 +2551,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Manga 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117838-260-260/Nctar-Misto-CBS-Manga-1L.png?v=639259499532130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117838-260-260/Nctar-Misto-CBS-Manga-1L.png?v=639259499532130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117838-260-260/Nctar-Misto-CBS-Manga-1L.png?v=639259499532130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358824.png?alt=media&token=a2a40465-e087-4ee1-861d-5dd2db52619d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358824.png?alt=media&token=a2a40465-e087-4ee1-861d-5dd2db52619d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358824.png?alt=media&token=a2a40465-e087-4ee1-861d-5dd2db52619d"
   },
   {
     "codigo": "7622210571632",
@@ -2562,9 +2562,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Tangerina 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111671-260-260/Refresco-em-P-Tang-Tangerina-18g.png?v=639259446420330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111671-260-260/Refresco-em-P-Tang-Tangerina-18g.png?v=639259446420330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111671-260-260/Refresco-em-P-Tang-Tangerina-18g.png?v=639259446420330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571632.png?alt=media&token=44356b92-de54-4fc5-ae5e-d927e2669150",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571632.png?alt=media&token=44356b92-de54-4fc5-ae5e-d927e2669150",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571632.png?alt=media&token=44356b92-de54-4fc5-ae5e-d927e2669150"
   },
   {
     "codigo": "7894900660364",
@@ -2573,9 +2573,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Abacaxi TP 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111542-260-260/Nctar-Del-Valle-Abacaxi-TP-1L.png?v=639259445973100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111542-260-260/Nctar-Del-Valle-Abacaxi-TP-1L.png?v=639259445973100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111542-260-260/Nctar-Del-Valle-Abacaxi-TP-1L.png?v=639259445973100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660364.png?alt=media&token=b77fc260-aa45-4ce0-a2c4-4b6258cdab38",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660364.png?alt=media&token=b77fc260-aa45-4ce0-a2c4-4b6258cdab38",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900660364.png?alt=media&token=b77fc260-aa45-4ce0-a2c4-4b6258cdab38"
   },
   {
     "codigo": "7896204358282",
@@ -2584,9 +2584,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Uva 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111527-260-260/Nctar-Misto-CBS-Uva-1L.png?v=639259445921330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111527-260-260/Nctar-Misto-CBS-Uva-1L.png?v=639259445921330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111527-260-260/Nctar-Misto-CBS-Uva-1L.png?v=639259445921330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358282.png?alt=media&token=12d07951-3ca0-456c-83fb-92cd50fdc19f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358282.png?alt=media&token=12d07951-3ca0-456c-83fb-92cd50fdc19f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358282.png?alt=media&token=12d07951-3ca0-456c-83fb-92cd50fdc19f"
   },
   {
     "codigo": "7896204358251",
@@ -2595,9 +2595,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Abacaxi 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134694-260-260/Nctar-Misto-CBS-Abacaxi-1L.png?v=639259659061770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134694-260-260/Nctar-Misto-CBS-Abacaxi-1L.png?v=639259659061770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134694-260-260/Nctar-Misto-CBS-Abacaxi-1L.png?v=639259659061770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358251.png?alt=media&token=91768808-be43-464f-a8f6-eaab4f8e5cdd",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358251.png?alt=media&token=91768808-be43-464f-a8f6-eaab4f8e5cdd",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358251.png?alt=media&token=91768808-be43-464f-a8f6-eaab4f8e5cdd"
   },
   {
     "codigo": "7896204358237",
@@ -2606,9 +2606,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Pêssego 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111526-260-260/Nctar-Misto-CBS-Pssego-200ml.png?v=639259445918200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111526-260-260/Nctar-Misto-CBS-Pssego-200ml.png?v=639259445918200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111526-260-260/Nctar-Misto-CBS-Pssego-200ml.png?v=639259445918200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358237.png?alt=media&token=bf122ed2-4bd6-4237-84d2-f6e3b9953e3f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358237.png?alt=media&token=bf122ed2-4bd6-4237-84d2-f6e3b9953e3f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358237.png?alt=media&token=bf122ed2-4bd6-4237-84d2-f6e3b9953e3f"
   },
   {
     "codigo": "1220000250031",
@@ -2617,9 +2617,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Pacific Punch Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111472-260-260/Bebida-Energtica-Monster-Pacific-Punch-Lata-473ml.png?v=639259445750500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111472-260-260/Bebida-Energtica-Monster-Pacific-Punch-Lata-473ml.png?v=639259445750500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111472-260-260/Bebida-Energtica-Monster-Pacific-Punch-Lata-473ml.png?v=639259445750500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250031.png?alt=media&token=7b795cd3-ee3e-4de9-bc05-f6036049a447",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250031.png?alt=media&token=7b795cd3-ee3e-4de9-bc05-f6036049a447",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250031.png?alt=media&token=7b795cd3-ee3e-4de9-bc05-f6036049a447"
   },
   {
     "codigo": "7898080664402",
@@ -2628,9 +2628,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Melancia Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111408-260-260/Bebida-Energtica-Baly-Melancia-Lata-473ml.png?v=639259445490030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111408-260-260/Bebida-Energtica-Baly-Melancia-Lata-473ml.png?v=639259445490030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111408-260-260/Bebida-Energtica-Baly-Melancia-Lata-473ml.png?v=639259445490030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664402.png?alt=media&token=c44b0c83-dece-471f-ae34-234b950d331b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664402.png?alt=media&token=c44b0c83-dece-471f-ae34-234b950d331b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664402.png?alt=media&token=c44b0c83-dece-471f-ae34-234b950d331b"
   },
   {
     "codigo": "7894900650013",
@@ -2639,9 +2639,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Maçã Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120619-260-260/Bebida-Kapo-Ma-Adoada-200ml.png?v=639259523621170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120619-260-260/Bebida-Kapo-Ma-Adoada-200ml.png?v=639259523621170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120619-260-260/Bebida-Kapo-Ma-Adoada-200ml.png?v=639259523621170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900650013.png?alt=media&token=d1031d99-aced-46a4-ae4b-37d48e03a714",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900650013.png?alt=media&token=d1031d99-aced-46a4-ae4b-37d48e03a714",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900650013.png?alt=media&token=d1031d99-aced-46a4-ae4b-37d48e03a714"
   },
   {
     "codigo": "9002490243678",
@@ -2650,9 +2650,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull sem Açúcar Lata 355ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1110946-260-260/Bebida-Energtica-Red-Bull-sem-Acar-Lata-355ml.png?v=639259440272500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1110946-260-260/Bebida-Energtica-Red-Bull-sem-Acar-Lata-355ml.png?v=639259440272500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1110946-260-260/Bebida-Energtica-Red-Bull-sem-Acar-Lata-355ml.png?v=639259440272500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490243678.png?alt=media&token=890cd449-f21a-4c59-8d9e-10851e1aff9d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490243678.png?alt=media&token=890cd449-f21a-4c59-8d9e-10851e1aff9d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490243678.png?alt=media&token=890cd449-f21a-4c59-8d9e-10851e1aff9d"
   },
   {
     "codigo": "7894900680522",
@@ -2661,9 +2661,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Fresh Limão Pet 1,5L — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1137267-260-260/Refrigerante-Sprite-Fresh-Limo-Pet-15L.png?v=639259689589000000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1137267-260-260/Refrigerante-Sprite-Fresh-Limo-Pet-15L.png?v=639259689589000000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1137267-260-260/Refrigerante-Sprite-Fresh-Limo-Pet-15L.png?v=639259689589000000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900680522.png?alt=media&token=57dae94f-a7b0-434d-a777-b7b20f5dea1d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900680522.png?alt=media&token=57dae94f-a7b0-434d-a777-b7b20f5dea1d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900680522.png?alt=media&token=57dae94f-a7b0-434d-a777-b7b20f5dea1d"
   },
   {
     "codigo": "7891098040565",
@@ -2672,9 +2672,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Matte Leão Natural Pet 1,5L — Marca: LEAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138246-260-260/Ch-Matte-Leo-Natural-Pet-15L.png?v=639265687595900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138246-260-260/Ch-Matte-Leo-Natural-Pet-15L.png?v=639265687595900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138246-260-260/Ch-Matte-Leo-Natural-Pet-15L.png?v=639265687595900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040565.png?alt=media&token=f4259964-a900-45fc-8ac8-23742c4a234e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040565.png?alt=media&token=f4259964-a900-45fc-8ac8-23742c4a234e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040565.png?alt=media&token=f4259964-a900-45fc-8ac8-23742c4a234e"
   },
   {
     "codigo": "7891098040855",
@@ -2683,9 +2683,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Leão Ice Tea Limão Pet 1,5L — Marca: LEAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138244-260-260/Ch-Leo-Ice-Tea-Limo-Pet-15L.png?v=639265687588600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138244-260-260/Ch-Leo-Ice-Tea-Limo-Pet-15L.png?v=639265687588600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138244-260-260/Ch-Leo-Ice-Tea-Limo-Pet-15L.png?v=639265687588600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040855.png?alt=media&token=e9f3ff8b-d63d-4093-a704-e6c44d5e261d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040855.png?alt=media&token=e9f3ff8b-d63d-4093-a704-e6c44d5e261d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040855.png?alt=media&token=e9f3ff8b-d63d-4093-a704-e6c44d5e261d"
   },
   {
     "codigo": "7894900093025",
@@ -2694,9 +2694,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Guaraná Lata 220ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126755-260-260/Refrigerante-Fanta-Guaran-Lata-220ml.png?v=639259587064600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126755-260-260/Refrigerante-Fanta-Guaran-Lata-220ml.png?v=639259587064600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126755-260-260/Refrigerante-Fanta-Guaran-Lata-220ml.png?v=639259587064600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093025.png?alt=media&token=9ef72375-942c-4735-a967-899a4246aa5e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093025.png?alt=media&token=9ef72375-942c-4735-a967-899a4246aa5e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093025.png?alt=media&token=9ef72375-942c-4735-a967-899a4246aa5e"
   },
   {
     "codigo": "7896436101403",
@@ -2705,9 +2705,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Citrus Pet 1,5L — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126435-260-260/Refrigerante-Fruki-Citrus-Pet-15L.png?v=639259584286330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126435-260-260/Refrigerante-Fruki-Citrus-Pet-15L.png?v=639259584286330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126435-260-260/Refrigerante-Fruki-Citrus-Pet-15L.png?v=639259584286330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101403.png?alt=media&token=00dff430-0ba5-4589-8cdc-c6d9a9b3e749",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101403.png?alt=media&token=00dff430-0ba5-4589-8cdc-c6d9a9b3e749",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436101403.png?alt=media&token=00dff430-0ba5-4589-8cdc-c6d9a9b3e749"
   },
   {
     "codigo": "7894900530056",
@@ -2716,9 +2716,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal sem Gás Pet 5L — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133114-260-260/gua-Mineral-Crystal-sem-Gs-Pet-5L.png?v=639259644332100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133114-260-260/gua-Mineral-Crystal-sem-Gs-Pet-5L.png?v=639259644332100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133114-260-260/gua-Mineral-Crystal-sem-Gs-Pet-5L.png?v=639259644332100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530056.png?alt=media&token=3862e8e7-d5ba-4370-bf6a-a7a3b3676edb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530056.png?alt=media&token=3862e8e7-d5ba-4370-bf6a-a7a3b3676edb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530056.png?alt=media&token=3862e8e7-d5ba-4370-bf6a-a7a3b3676edb"
   },
   {
     "codigo": "9002490214166",
@@ -2727,9 +2727,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Energy Drink Lata 473ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113391-260-260/Bebida-Energtica-Red-Bull-Energy-Drink-Lata-473ml.png?v=639259461379300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113391-260-260/Bebida-Energtica-Red-Bull-Energy-Drink-Lata-473ml.png?v=639259461379300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113391-260-260/Bebida-Energtica-Red-Bull-Energy-Drink-Lata-473ml.png?v=639259461379300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490214166.png?alt=media&token=18ee4974-042b-4717-8cb5-3aa859230228",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490214166.png?alt=media&token=18ee4974-042b-4717-8cb5-3aa859230228",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490214166.png?alt=media&token=18ee4974-042b-4717-8cb5-3aa859230228"
   },
   {
     "codigo": "7894900530032",
@@ -2738,9 +2738,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal sem Gás 1,5L — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136492-260-260/gua-Mineral-Crystal-sem-Gs-15L.png?v=639259677481370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136492-260-260/gua-Mineral-Crystal-sem-Gs-15L.png?v=639259677481370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136492-260-260/gua-Mineral-Crystal-sem-Gs-15L.png?v=639259677481370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530032.png?alt=media&token=ba6f0950-e202-43b4-916c-926ad0d61c6d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530032.png?alt=media&token=ba6f0950-e202-43b4-916c-926ad0d61c6d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530032.png?alt=media&token=ba6f0950-e202-43b4-916c-926ad0d61c6d"
   },
   {
     "codigo": "7894900031751",
@@ -2749,9 +2749,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Pet 1,5L — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119399-260-260/Refrigerante-Fanta-Laranja-Pet-15L.png?v=639259512191430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119399-260-260/Refrigerante-Fanta-Laranja-Pet-15L.png?v=639259512191430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119399-260-260/Refrigerante-Fanta-Laranja-Pet-15L.png?v=639259512191430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031751.png?alt=media&token=b8cb9f21-27f1-435b-afd3-7464485cfb33",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031751.png?alt=media&token=b8cb9f21-27f1-435b-afd3-7464485cfb33",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900031751.png?alt=media&token=b8cb9f21-27f1-435b-afd3-7464485cfb33"
   },
   {
     "codigo": "7891149102785",
@@ -2760,9 +2760,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sukita Uva Lata 350ml — Marca: SUKITA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113156-260-260/Refrigerante-Sukita-Uva-Lata-350ml.png?v=639259459055000000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113156-260-260/Refrigerante-Sukita-Uva-Lata-350ml.png?v=639259459055000000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113156-260-260/Refrigerante-Sukita-Uva-Lata-350ml.png?v=639259459055000000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891149102785.png?alt=media&token=a5a9a6be-62e3-4fc2-b060-7744b96daea4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891149102785.png?alt=media&token=a5a9a6be-62e3-4fc2-b060-7744b96daea4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891149102785.png?alt=media&token=a5a9a6be-62e3-4fc2-b060-7744b96daea4"
   },
   {
     "codigo": "7894900360011",
@@ -2771,9 +2771,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes sem Açúcar Lata 350ml — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119228-260-260/Tnica-Schweppes-sem-Acar-Lata-350ml.png?v=639259511502600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119228-260-260/Tnica-Schweppes-sem-Acar-Lata-350ml.png?v=639259511502600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119228-260-260/Tnica-Schweppes-sem-Acar-Lata-350ml.png?v=639259511502600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900360011.png?alt=media&token=24c70635-7760-42ec-9a82-ae6949d90ccb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900360011.png?alt=media&token=24c70635-7760-42ec-9a82-ae6949d90ccb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900360011.png?alt=media&token=24c70635-7760-42ec-9a82-ae6949d90ccb"
   },
   {
     "codigo": "7891991008785",
@@ -2782,9 +2782,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná sem Açúcar Pet 1,5L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129453-260-260/Refrigerante-Antarctica-Guaran-sem-Acar-Pet-15L.png?v=639259610882030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129453-260-260/Refrigerante-Antarctica-Guaran-sem-Acar-Pet-15L.png?v=639259610882030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129453-260-260/Refrigerante-Antarctica-Guaran-sem-Acar-Pet-15L.png?v=639259610882030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008785.png?alt=media&token=b623587d-db1a-4ef8-946b-a0f61e939f4e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008785.png?alt=media&token=b623587d-db1a-4ef8-946b-a0f61e939f4e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008785.png?alt=media&token=b623587d-db1a-4ef8-946b-a0f61e939f4e"
   },
   {
     "codigo": "7898341430036",
@@ -2793,9 +2793,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Pêssego TP 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122591-260-260/Nctar-Del-Valle-Pssego-TP-1L.png?v=639259539565370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122591-260-260/Nctar-Del-Valle-Pssego-TP-1L.png?v=639259539565370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122591-260-260/Nctar-Del-Valle-Pssego-TP-1L.png?v=639259539565370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430036.png?alt=media&token=12eb40de-8b01-4094-9428-ee36036b8c71",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430036.png?alt=media&token=12eb40de-8b01-4094-9428-ee36036b8c71",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430036.png?alt=media&token=12eb40de-8b01-4094-9428-ee36036b8c71"
   },
   {
     "codigo": "7898341430098",
@@ -2804,9 +2804,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Uva TP 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129418-260-260/Nctar-Del-Valle-Uva-TP-1L.png?v=639259610754600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129418-260-260/Nctar-Del-Valle-Uva-TP-1L.png?v=639259610754600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129418-260-260/Nctar-Del-Valle-Uva-TP-1L.png?v=639259610754600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430098.png?alt=media&token=455f7bff-9a4d-4751-9c8f-acee4f60132e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430098.png?alt=media&token=455f7bff-9a4d-4751-9c8f-acee4f60132e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430098.png?alt=media&token=455f7bff-9a4d-4751-9c8f-acee4f60132e"
   },
   {
     "codigo": "7896000554369",
@@ -2815,9 +2815,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Concentrado Maguary Caju 500ml — Marca: MAGUARY. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112964-260-260/Suco-Concentrado-Maguary-Caju-500ml.png?v=639259458174500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112964-260-260/Suco-Concentrado-Maguary-Caju-500ml.png?v=639259458174500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112964-260-260/Suco-Concentrado-Maguary-Caju-500ml.png?v=639259458174500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000554369.png?alt=media&token=7fbf2031-f091-4c6f-a708-0e69ec6f34e8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000554369.png?alt=media&token=7fbf2031-f091-4c6f-a708-0e69ec6f34e8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000554369.png?alt=media&token=7fbf2031-f091-4c6f-a708-0e69ec6f34e8"
   },
   {
     "codigo": "7898080666239",
@@ -2826,9 +2826,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Cereja sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1137774-260-260/Bebida-Energtica-Baly-Cereja-sem-Acar-Lata-473ml.png?v=639263275471100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1137774-260-260/Bebida-Energtica-Baly-Cereja-sem-Acar-Lata-473ml.png?v=639263275471100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1137774-260-260/Bebida-Energtica-Baly-Cereja-sem-Acar-Lata-473ml.png?v=639263275471100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666239.png?alt=media&token=630feaa6-7f9e-423f-a21c-9b19fd11af1e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666239.png?alt=media&token=630feaa6-7f9e-423f-a21c-9b19fd11af1e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666239.png?alt=media&token=630feaa6-7f9e-423f-a21c-9b19fd11af1e"
   },
   {
     "codigo": "7898692301993",
@@ -2837,9 +2837,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Suplemento Alimentar Liquído Jungle Low Carb Abacaxi e Hortelã 500ml — Marca: JUNGLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132592-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Abacaxi-e-Hortel-500ml.png?v=639259640653100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132592-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Abacaxi-e-Hortel-500ml.png?v=639259640653100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132592-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Abacaxi-e-Hortel-500ml.png?v=639259640653100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692301993.png?alt=media&token=94bfc8f9-f90a-491d-b78a-b131dc2953ce",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692301993.png?alt=media&token=94bfc8f9-f90a-491d-b78a-b131dc2953ce",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692301993.png?alt=media&token=94bfc8f9-f90a-491d-b78a-b131dc2953ce"
   },
   {
     "codigo": "7896436105630",
@@ -2848,9 +2848,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Laranja Zero Açúcar Pet 200ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139995-260-260/Refrigerante-Fruki-Laranja-Zero-Acar-Pet-200ml---0.png?v=639272241363300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139995-260-260/Refrigerante-Fruki-Laranja-Zero-Acar-Pet-200ml---0.png?v=639272241363300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139995-260-260/Refrigerante-Fruki-Laranja-Zero-Acar-Pet-200ml---0.png?v=639272241363300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105630.png?alt=media&token=7ff8d0ab-3981-4228-a106-cd687acaf6ba",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105630.png?alt=media&token=7ff8d0ab-3981-4228-a106-cd687acaf6ba",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105630.png?alt=media&token=7ff8d0ab-3981-4228-a106-cd687acaf6ba"
   },
   {
     "codigo": "9002490300838",
@@ -2859,9 +2859,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Cereja e Baunilha sem Açúcar Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135956-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Baunilha-sem-Acar-Lata-250ml.png?v=639259668624570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135956-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Baunilha-sem-Acar-Lata-250ml.png?v=639259668624570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135956-260-260/Bebida-Energtica-Red-Bull-Cereja-e-Baunilha-sem-Acar-Lata-250ml.png?v=639259668624570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490300838.png?alt=media&token=4f076eca-ac74-4665-a624-7b738a6dfe6e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490300838.png?alt=media&token=4f076eca-ac74-4665-a624-7b738a6dfe6e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490300838.png?alt=media&token=4f076eca-ac74-4665-a624-7b738a6dfe6e"
   },
   {
     "codigo": "7892840823986",
@@ -2870,9 +2870,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante H2OH! Limoneto Zero Açúcares Lata 350ml — Marca: H2OH. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122355-260-260/Refrigerante-H2OH-Limoneto-Zero-Acares-Lata-350ml.png?v=639259536558800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122355-260-260/Refrigerante-H2OH-Limoneto-Zero-Acares-Lata-350ml.png?v=639259536558800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122355-260-260/Refrigerante-H2OH-Limoneto-Zero-Acares-Lata-350ml.png?v=639259536558800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840823986.png?alt=media&token=f152b03d-32b2-4031-b2ee-9fe71e82794b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840823986.png?alt=media&token=f152b03d-32b2-4031-b2ee-9fe71e82794b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840823986.png?alt=media&token=f152b03d-32b2-4031-b2ee-9fe71e82794b"
   },
   {
     "codigo": "7898651400408",
@@ -2881,9 +2881,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Verde com Limão Siciliano e Hortelã Zero Açúcar 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122177-260-260/Ch-Ya-Verde-com-Limo-Siciliano-e-Hortel-Zero-Acar-1L.png?v=639259535930200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122177-260-260/Ch-Ya-Verde-com-Limo-Siciliano-e-Hortel-Zero-Acar-1L.png?v=639259535930200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122177-260-260/Ch-Ya-Verde-com-Limo-Siciliano-e-Hortel-Zero-Acar-1L.png?v=639259535930200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400408.png?alt=media&token=829b2e5a-a880-463d-a3f5-829cbbda43fa",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400408.png?alt=media&token=829b2e5a-a880-463d-a3f5-829cbbda43fa",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400408.png?alt=media&token=829b2e5a-a880-463d-a3f5-829cbbda43fa"
   },
   {
     "codigo": "7894900650365",
@@ -2892,9 +2892,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Kapo Olho do Pirata Adoçada 200ml — Marca: KAPO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118775-260-260/Bebida-Kapo-Olho-do-Pirata-Adoada-200ml.png?v=639259506297370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118775-260-260/Bebida-Kapo-Olho-do-Pirata-Adoada-200ml.png?v=639259506297370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118775-260-260/Bebida-Kapo-Olho-do-Pirata-Adoada-200ml.png?v=639259506297370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900650365.png?alt=media&token=488c73c8-c9f3-43c9-8fe8-c28980ab2347",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900650365.png?alt=media&token=488c73c8-c9f3-43c9-8fe8-c28980ab2347",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900650365.png?alt=media&token=488c73c8-c9f3-43c9-8fe8-c28980ab2347"
   },
   {
     "codigo": "7898760040076",
@@ -2903,9 +2903,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Vegetal Vida Veg Kids Growth Morango sem Açúcar Garrafa 250g — Marca: VIDA VEG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118770-260-260/Bebida-Vegetal-Vida-Veg-Kids-Growth-Morango-sem-Acar-Garrafa-250g.png?v=639259506281000000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118770-260-260/Bebida-Vegetal-Vida-Veg-Kids-Growth-Morango-sem-Acar-Garrafa-250g.png?v=639259506281000000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118770-260-260/Bebida-Vegetal-Vida-Veg-Kids-Growth-Morango-sem-Acar-Garrafa-250g.png?v=639259506281000000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040076.png?alt=media&token=13dbb1aa-c0ec-4c15-bc6d-4fbe6480efbc",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040076.png?alt=media&token=13dbb1aa-c0ec-4c15-bc6d-4fbe6480efbc",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040076.png?alt=media&token=13dbb1aa-c0ec-4c15-bc6d-4fbe6480efbc"
   },
   {
     "codigo": "7898938890120",
@@ -2914,9 +2914,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Rio Punch 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128978-260-260/Bebida-Energtica-Monster-Rio-Punch-473ml.png?v=639259605608470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128978-260-260/Bebida-Energtica-Monster-Rio-Punch-473ml.png?v=639259605608470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128978-260-260/Bebida-Energtica-Monster-Rio-Punch-473ml.png?v=639259605608470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890120.png?alt=media&token=c855afc9-0c2a-41ce-bbe7-1b4181d6d121",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890120.png?alt=media&token=c855afc9-0c2a-41ce-bbe7-1b4181d6d121",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890120.png?alt=media&token=c855afc9-0c2a-41ce-bbe7-1b4181d6d121"
   },
   {
     "codigo": "7896052607044",
@@ -2925,9 +2925,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fys Guaraná 50% menos Açúcar Lata 350ml — Marca: FYS. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121917-260-260/Refrigerante-Fys-Guaran-50-menos-Acar-Lata-350ml.png?v=639259533466300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121917-260-260/Refrigerante-Fys-Guaran-50-menos-Acar-Lata-350ml.png?v=639259533466300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121917-260-260/Refrigerante-Fys-Guaran-50-menos-Acar-Lata-350ml.png?v=639259533466300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052607044.png?alt=media&token=f8384951-61da-41b5-bb99-95b7ca32b6f6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052607044.png?alt=media&token=f8384951-61da-41b5-bb99-95b7ca32b6f6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896052607044.png?alt=media&token=f8384951-61da-41b5-bb99-95b7ca32b6f6"
   },
   {
     "codigo": "7898692300880",
@@ -2936,9 +2936,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Suplemento Alimentar Liquído Jungle Low Carb Uva 500ml — Marca: JUNGLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135349-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Uva-500ml.png?v=639259664757900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135349-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Uva-500ml.png?v=639259664757900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135349-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Uva-500ml.png?v=639259664757900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300880.png?alt=media&token=20353abc-fd0c-4dee-bff2-73420ab2e6a4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300880.png?alt=media&token=20353abc-fd0c-4dee-bff2-73420ab2e6a4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300880.png?alt=media&token=20353abc-fd0c-4dee-bff2-73420ab2e6a4"
   },
   {
     "codigo": "7898080664815",
@@ -2947,9 +2947,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Maçã Verde sem Açúcar Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125113-260-260/Bebida-Energtica-Baly-Ma-Verde-sem-Acar-Lata-473ml.png?v=639259572705230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125113-260-260/Bebida-Energtica-Baly-Ma-Verde-sem-Acar-Lata-473ml.png?v=639259572705230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125113-260-260/Bebida-Energtica-Baly-Ma-Verde-sem-Acar-Lata-473ml.png?v=639259572705230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664815.png?alt=media&token=bd6a4ae2-4b64-4edd-b0e2-192d2edac618",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664815.png?alt=media&token=bd6a4ae2-4b64-4edd-b0e2-192d2edac618",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664815.png?alt=media&token=bd6a4ae2-4b64-4edd-b0e2-192d2edac618"
   },
   {
     "codigo": "7892840820671",
@@ -2958,9 +2958,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Gatorade Laranja Lima Zero Calorias Pet 350ml — Marca: GATORADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118293-260-260/Isotnico-Gatorade-Laranja-Lima-Zero-Calorias-Pet-350ml.png?v=639259503123800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118293-260-260/Isotnico-Gatorade-Laranja-Lima-Zero-Calorias-Pet-350ml.png?v=639259503123800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118293-260-260/Isotnico-Gatorade-Laranja-Lima-Zero-Calorias-Pet-350ml.png?v=639259503123800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840820671.png?alt=media&token=86d385df-46d2-43cf-a785-68a7fa719ff7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840820671.png?alt=media&token=86d385df-46d2-43cf-a785-68a7fa719ff7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840820671.png?alt=media&token=86d385df-46d2-43cf-a785-68a7fa719ff7"
   },
   {
     "codigo": "7894900556063",
@@ -2969,9 +2969,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Laranja Pet 1,5L — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125034-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-15L.png?v=639259572415700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125034-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-15L.png?v=639259572415700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125034-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-15L.png?v=639259572415700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556063.png?alt=media&token=bef5f8ba-7934-4e48-85a4-9ebea17d7e39",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556063.png?alt=media&token=bef5f8ba-7934-4e48-85a4-9ebea17d7e39",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556063.png?alt=media&token=bef5f8ba-7934-4e48-85a4-9ebea17d7e39"
   },
   {
     "codigo": "7898648021821",
@@ -2980,9 +2980,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Vitcoco 200ml — Marca: VITCOCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115358-260-260/gua-de-Coco-Vitcoco-200ml.png?v=639259478872070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115358-260-260/gua-de-Coco-Vitcoco-200ml.png?v=639259478872070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115358-260-260/gua-de-Coco-Vitcoco-200ml.png?v=639259478872070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648021821.png?alt=media&token=4981bb1d-301a-4c36-8a17-47b1946db16d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648021821.png?alt=media&token=4981bb1d-301a-4c36-8a17-47b1946db16d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898648021821.png?alt=media&token=4981bb1d-301a-4c36-8a17-47b1946db16d"
   },
   {
     "codigo": "7896204358978",
@@ -2991,9 +2991,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista CBS Morango 1L — Marca: CBS. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115165-260-260/Bebida-Mista-CBS-Morango-1L.png?v=639259476398930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115165-260-260/Bebida-Mista-CBS-Morango-1L.png?v=639259476398930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115165-260-260/Bebida-Mista-CBS-Morango-1L.png?v=639259476398930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358978.png?alt=media&token=5f0b8e62-0c30-42bc-8ed8-cdc32bda174d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358978.png?alt=media&token=5f0b8e62-0c30-42bc-8ed8-cdc32bda174d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358978.png?alt=media&token=5f0b8e62-0c30-42bc-8ed8-cdc32bda174d"
   },
   {
     "codigo": "7622210571946",
@@ -3002,9 +3002,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Laranja 18g com 15un Leve Mais, Pague Menos — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115096-260-260/Refresco-em-P-Tang-Laranja-18g-com-15un-Leve-Mais-Pague-Menos.png?v=639259476120100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115096-260-260/Refresco-em-P-Tang-Laranja-18g-com-15un-Leve-Mais-Pague-Menos.png?v=639259476120100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115096-260-260/Refresco-em-P-Tang-Laranja-18g-com-15un-Leve-Mais-Pague-Menos.png?v=639259476120100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571946.png?alt=media&token=d55f56e4-4506-4ffd-8d8c-6ecf87fcb77c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571946.png?alt=media&token=d55f56e4-4506-4ffd-8d8c-6ecf87fcb77c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571946.png?alt=media&token=d55f56e4-4506-4ffd-8d8c-6ecf87fcb77c"
   },
   {
     "codigo": "7622210571847",
@@ -3013,9 +3013,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Laranja e Mamão 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121220-260-260/Refresco-em-P-Tang-Laranja-e-Mamo-18g.png?v=639259527498670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121220-260-260/Refresco-em-P-Tang-Laranja-e-Mamo-18g.png?v=639259527498670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121220-260-260/Refresco-em-P-Tang-Laranja-e-Mamo-18g.png?v=639259527498670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571847.png?alt=media&token=226175dd-2006-4021-8100-c4dd438a3883",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571847.png?alt=media&token=226175dd-2006-4021-8100-c4dd438a3883",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571847.png?alt=media&token=226175dd-2006-4021-8100-c4dd438a3883"
   },
   {
     "codigo": "7622210571526",
@@ -3024,9 +3024,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Manga 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128074-260-260/Refresco-em-P-Tang-Manga-18g.png?v=639259598985070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128074-260-260/Refresco-em-P-Tang-Manga-18g.png?v=639259598985070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128074-260-260/Refresco-em-P-Tang-Manga-18g.png?v=639259598985070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571526.png?alt=media&token=668c2628-5140-4834-a726-c62e39a86ab8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571526.png?alt=media&token=668c2628-5140-4834-a726-c62e39a86ab8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571526.png?alt=media&token=668c2628-5140-4834-a726-c62e39a86ab8"
   },
   {
     "codigo": "7894900027020",
@@ -3035,9 +3035,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Pet 2,5L — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124418-260-260/Refrigerante-CocaCola-Pet-25L.png?v=639259564525630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124418-260-260/Refrigerante-CocaCola-Pet-25L.png?v=639259564525630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124418-260-260/Refrigerante-CocaCola-Pet-25L.png?v=639259564525630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027020.png?alt=media&token=e7fa5a72-44e6-4660-8142-59f0873e50e6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027020.png?alt=media&token=e7fa5a72-44e6-4660-8142-59f0873e50e6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027020.png?alt=media&token=e7fa5a72-44e6-4660-8142-59f0873e50e6"
   },
   {
     "codigo": "9002490247379",
@@ -3046,9 +3046,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Melancia Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127682-260-260/Bebida-Energtica-Red-Bull-Melancia-Lata-250ml.png?v=639259595740900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127682-260-260/Bebida-Energtica-Red-Bull-Melancia-Lata-250ml.png?v=639259595740900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127682-260-260/Bebida-Energtica-Red-Bull-Melancia-Lata-250ml.png?v=639259595740900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490247379.png?alt=media&token=5f291f01-8eaa-4d17-b473-21289b4e5c03",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490247379.png?alt=media&token=5f291f01-8eaa-4d17-b473-21289b4e5c03",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490247379.png?alt=media&token=5f291f01-8eaa-4d17-b473-21289b4e5c03"
   },
   {
     "codigo": "78912892",
@@ -3057,9 +3057,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Zero Vidro 250ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1133633-260-260/Refrigerante-CocaCola-Zero-Vidro-250ml.png?v=639259648152300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1133633-260-260/Refrigerante-CocaCola-Zero-Vidro-250ml.png?v=639259648152300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1133633-260-260/Refrigerante-CocaCola-Zero-Vidro-250ml.png?v=639259648152300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78912892.png?alt=media&token=80a3364b-ec27-484e-bb5a-8f255db1928c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78912892.png?alt=media&token=80a3364b-ec27-484e-bb5a-8f255db1928c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78912892.png?alt=media&token=80a3364b-ec27-484e-bb5a-8f255db1928c"
   },
   {
     "codigo": "7898080663733",
@@ -3068,9 +3068,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136999-260-260/Bebida-Energtica-Baly-Lata-473ml.png?v=639259684188600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136999-260-260/Bebida-Energtica-Baly-Lata-473ml.png?v=639259684188600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136999-260-260/Bebida-Energtica-Baly-Lata-473ml.png?v=639259684188600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080663733.png?alt=media&token=99948a10-018b-4724-a7f0-c3e88c3e3aef",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080663733.png?alt=media&token=99948a10-018b-4724-a7f0-c3e88c3e3aef",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080663733.png?alt=media&token=99948a10-018b-4724-a7f0-c3e88c3e3aef"
   },
   {
     "codigo": "7894900030396",
@@ -3079,9 +3079,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Laranja Lata 220ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126768-260-260/Refrigerante-Fanta-Laranja-Lata-220ml.png?v=639259587118970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126768-260-260/Refrigerante-Fanta-Laranja-Lata-220ml.png?v=639259587118970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126768-260-260/Refrigerante-Fanta-Laranja-Lata-220ml.png?v=639259587118970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900030396.png?alt=media&token=1eb3fc27-7cd0-4d23-bc02-0b12a5bfd98e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900030396.png?alt=media&token=1eb3fc27-7cd0-4d23-bc02-0b12a5bfd98e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900030396.png?alt=media&token=1eb3fc27-7cd0-4d23-bc02-0b12a5bfd98e"
   },
   {
     "codigo": "7898341430111",
@@ -3090,9 +3090,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Laranja TP 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116448-260-260/Nctar-Del-Valle-Laranja-TP-1L.png?v=639259487911330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116448-260-260/Nctar-Del-Valle-Laranja-TP-1L.png?v=639259487911330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116448-260-260/Nctar-Del-Valle-Laranja-TP-1L.png?v=639259487911330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430111.png?alt=media&token=f91b5bc7-33ab-411d-8b90-fce64b48611e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430111.png?alt=media&token=f91b5bc7-33ab-411d-8b90-fce64b48611e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898341430111.png?alt=media&token=f91b5bc7-33ab-411d-8b90-fce64b48611e"
   },
   {
     "codigo": "7896023085840",
@@ -3101,9 +3101,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Salton Integral Uva 500ml — Marca: SALTON. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122431-260-260/Suco-Salton-Integral-Uva-500ml.png?v=639259538930130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122431-260-260/Suco-Salton-Integral-Uva-500ml.png?v=639259538930130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122431-260-260/Suco-Salton-Integral-Uva-500ml.png?v=639259538930130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023085840.png?alt=media&token=f7731d6d-a3cd-4af0-92f8-decf93fb1bc2",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023085840.png?alt=media&token=f7731d6d-a3cd-4af0-92f8-decf93fb1bc2",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023085840.png?alt=media&token=f7731d6d-a3cd-4af0-92f8-decf93fb1bc2"
   },
   {
     "codigo": "7891991000833",
@@ -3112,9 +3112,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Soda Limão Lata 350ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125835-260-260/Refrigerante-Soda-Limo-Lata-350ml.png?v=639259578567900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125835-260-260/Refrigerante-Soda-Limo-Lata-350ml.png?v=639259578567900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125835-260-260/Refrigerante-Soda-Limo-Lata-350ml.png?v=639259578567900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000833.png?alt=media&token=83659050-840f-4b39-bd96-9c9e051a12a7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000833.png?alt=media&token=83659050-840f-4b39-bd96-9c9e051a12a7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991000833.png?alt=media&token=83659050-840f-4b39-bd96-9c9e051a12a7"
   },
   {
     "codigo": "7898651400545",
@@ -3123,9 +3123,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Verde com Lichia Zero Açúcar 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125590-260-260/Ch-Ya-Verde-com-Lichia-Zero-Acar-1L.png?v=639259576088330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125590-260-260/Ch-Ya-Verde-com-Lichia-Zero-Acar-1L.png?v=639259576088330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125590-260-260/Ch-Ya-Verde-com-Lichia-Zero-Acar-1L.png?v=639259576088330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400545.png?alt=media&token=0f6d8809-848c-4454-acc6-8ee287a43d6d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400545.png?alt=media&token=0f6d8809-848c-4454-acc6-8ee287a43d6d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400545.png?alt=media&token=0f6d8809-848c-4454-acc6-8ee287a43d6d"
   },
   {
     "codigo": "7896023023019",
@@ -3134,9 +3134,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Salton Abbraccio Uva 1,5L — Marca: SALTON. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132381-260-260/Bebida-Salton-Abbraccio-Uva-15L.png?v=639259638312830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132381-260-260/Bebida-Salton-Abbraccio-Uva-15L.png?v=639259638312830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132381-260-260/Bebida-Salton-Abbraccio-Uva-15L.png?v=639259638312830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023023019.png?alt=media&token=19432a31-f332-4528-93f4-ded4028fece3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023023019.png?alt=media&token=19432a31-f332-4528-93f4-ded4028fece3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023023019.png?alt=media&token=19432a31-f332-4528-93f4-ded4028fece3"
   },
   {
     "codigo": "9002490280604",
@@ -3145,9 +3145,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Frutas Tropicais Lata 473ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112483-260-260/Bebida-Energtica-Red-Bull-Frutas-Tropicais-Lata-473ml.png?v=639259453003500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112483-260-260/Bebida-Energtica-Red-Bull-Frutas-Tropicais-Lata-473ml.png?v=639259453003500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112483-260-260/Bebida-Energtica-Red-Bull-Frutas-Tropicais-Lata-473ml.png?v=639259453003500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490280604.png?alt=media&token=f16b4906-cbc7-4f5c-a50d-ce05f631bca7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490280604.png?alt=media&token=f16b4906-cbc7-4f5c-a50d-ce05f631bca7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490280604.png?alt=media&token=f16b4906-cbc7-4f5c-a50d-ce05f631bca7"
   },
   {
     "codigo": "7894900184600",
@@ -3156,9 +3156,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes Rose Lata 220ml — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135147-260-260/Tnica-Schweppes-Rose-Lata-220ml.png?v=639259662382500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135147-260-260/Tnica-Schweppes-Rose-Lata-220ml.png?v=639259662382500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135147-260-260/Tnica-Schweppes-Rose-Lata-220ml.png?v=639259662382500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900184600.png?alt=media&token=b79d469d-85fa-4b03-b0a7-3ef564aa7e9f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900184600.png?alt=media&token=b79d469d-85fa-4b03-b0a7-3ef564aa7e9f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900184600.png?alt=media&token=b79d469d-85fa-4b03-b0a7-3ef564aa7e9f"
   },
   {
     "codigo": "7892840820664",
@@ -3167,9 +3167,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Black Pet 1,5L — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131683-260-260/Refrigerante-Pepsi-Black-Pet-15L.png?v=639259632180170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131683-260-260/Refrigerante-Pepsi-Black-Pet-15L.png?v=639259632180170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131683-260-260/Refrigerante-Pepsi-Black-Pet-15L.png?v=639259632180170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840820664.png?alt=media&token=0d901425-82d3-4a3d-8d8d-f04d6c916de4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840820664.png?alt=media&token=0d901425-82d3-4a3d-8d8d-f04d6c916de4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840820664.png?alt=media&token=0d901425-82d3-4a3d-8d8d-f04d6c916de4"
   },
   {
     "codigo": "7896204359241",
@@ -3178,9 +3178,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista CBS Morango 200ml — Marca: CBS. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134977-260-260/Bebida-Mista-CBS-Morango-200ml.png?v=639259661786700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134977-260-260/Bebida-Mista-CBS-Morango-200ml.png?v=639259661786700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134977-260-260/Bebida-Mista-CBS-Morango-200ml.png?v=639259661786700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359241.png?alt=media&token=cedb8651-fc48-40d9-bce6-75167cd4debb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359241.png?alt=media&token=cedb8651-fc48-40d9-bce6-75167cd4debb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359241.png?alt=media&token=cedb8651-fc48-40d9-bce6-75167cd4debb"
   },
   {
     "codigo": "7894900184402",
@@ -3189,9 +3189,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes Limão Toque de Sal Lata 220ml — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124758-260-260/Tnica-Schweppes-Limo-Toque-de-Sal-Lata-220ml.png?v=639259569706830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124758-260-260/Tnica-Schweppes-Limo-Toque-de-Sal-Lata-220ml.png?v=639259569706830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124758-260-260/Tnica-Schweppes-Limo-Toque-de-Sal-Lata-220ml.png?v=639259569706830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900184402.png?alt=media&token=3d5c97fa-f933-46cd-9ef4-663eed87edd4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900184402.png?alt=media&token=3d5c97fa-f933-46cd-9ef4-663eed87edd4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900184402.png?alt=media&token=3d5c97fa-f933-46cd-9ef4-663eed87edd4"
   },
   {
     "codigo": "7896204358213",
@@ -3200,9 +3200,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Abacaxi 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127941-260-260/Nctar-Misto-CBS-Abacaxi-200ml.png?v=639259596683870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127941-260-260/Nctar-Misto-CBS-Abacaxi-200ml.png?v=639259596683870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127941-260-260/Nctar-Misto-CBS-Abacaxi-200ml.png?v=639259596683870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358213.png?alt=media&token=0c052aa1-8488-498a-a95a-575ea81c25d2",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358213.png?alt=media&token=0c052aa1-8488-498a-a95a-575ea81c25d2",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358213.png?alt=media&token=0c052aa1-8488-498a-a95a-575ea81c25d2"
   },
   {
     "codigo": "7894900524000",
@@ -3211,9 +3211,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Smartwater sem Gás 591ml — Marca: SMARTWATER. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130505-260-260/gua-Mineral-Smartwater-sem-Gs-591ml.png?v=639259621033500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130505-260-260/gua-Mineral-Smartwater-sem-Gs-591ml.png?v=639259621033500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130505-260-260/gua-Mineral-Smartwater-sem-Gs-591ml.png?v=639259621033500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900524000.png?alt=media&token=044a60c6-aae5-41ad-87fd-f63eb391d02d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900524000.png?alt=media&token=044a60c6-aae5-41ad-87fd-f63eb391d02d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900524000.png?alt=media&token=044a60c6-aae5-41ad-87fd-f63eb391d02d"
   },
   {
     "codigo": "7894900681178",
@@ -3222,9 +3222,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Sprite Original Lata 220ml — Marca: SPRITE. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120151-260-260/Refrigerante-Sprite-Original-Lata-220ml.png?v=639259518368470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120151-260-260/Refrigerante-Sprite-Original-Lata-220ml.png?v=639259518368470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120151-260-260/Refrigerante-Sprite-Original-Lata-220ml.png?v=639259518368470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681178.png?alt=media&token=3fdeb627-0564-4657-b54e-a4638dc58f84",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681178.png?alt=media&token=3fdeb627-0564-4657-b54e-a4638dc58f84",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900681178.png?alt=media&token=3fdeb627-0564-4657-b54e-a4638dc58f84"
   },
   {
     "codigo": "7894900550030",
@@ -3233,9 +3233,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Uva Pet 1L — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1137099-260-260/Refresco-Del-Valle-Frut-Uva-Pet-1L.png?v=639259688845700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1137099-260-260/Refresco-Del-Valle-Frut-Uva-Pet-1L.png?v=639259688845700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1137099-260-260/Refresco-Del-Valle-Frut-Uva-Pet-1L.png?v=639259688845700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550030.png?alt=media&token=745ca912-401d-475e-88e6-cb0e1270cc27",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550030.png?alt=media&token=745ca912-401d-475e-88e6-cb0e1270cc27",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550030.png?alt=media&token=745ca912-401d-475e-88e6-cb0e1270cc27"
   },
   {
     "codigo": "7894900556032",
@@ -3244,9 +3244,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Laranja Pet 1L — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113966-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-1L.png?v=639259466714870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113966-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-1L.png?v=639259466714870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113966-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-1L.png?v=639259466714870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556032.png?alt=media&token=a55a5e6b-2202-466f-8057-cbdfd190d6e6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556032.png?alt=media&token=a55a5e6b-2202-466f-8057-cbdfd190d6e6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556032.png?alt=media&token=a55a5e6b-2202-466f-8057-cbdfd190d6e6"
   },
   {
     "codigo": "7891098040848",
@@ -3255,9 +3255,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Leão Ice Tea Limão Pet 450ml — Marca: LEAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1137066-260-260/Ch-Leo-Ice-Tea-Limo-Pet-450ml.png?v=639259684456800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1137066-260-260/Ch-Leo-Ice-Tea-Limo-Pet-450ml.png?v=639259684456800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1137066-260-260/Ch-Leo-Ice-Tea-Limo-Pet-450ml.png?v=639259684456800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040848.png?alt=media&token=da489979-0daf-4f4c-bc9b-2f9a183661b1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040848.png?alt=media&token=da489979-0daf-4f4c-bc9b-2f9a183661b1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040848.png?alt=media&token=da489979-0daf-4f4c-bc9b-2f9a183661b1"
   },
   {
     "codigo": "7891098040589",
@@ -3266,9 +3266,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Matte Leão Limão Pet 1,5L — Marca: LEAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138243-260-260/Ch-Matte-Leo-Limo-Pet-15L.png?v=639265687585800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138243-260-260/Ch-Matte-Leo-Limo-Pet-15L.png?v=639265687585800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138243-260-260/Ch-Matte-Leo-Limo-Pet-15L.png?v=639265687585800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040589.png?alt=media&token=d0231f20-fafb-44a4-b616-9ab074e290dc",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040589.png?alt=media&token=d0231f20-fafb-44a4-b616-9ab074e290dc",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098040589.png?alt=media&token=d0231f20-fafb-44a4-b616-9ab074e290dc"
   },
   {
     "codigo": "7894900611014",
@@ -3277,9 +3277,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Del Valle 100% Uva 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119607-260-260/Suco-Del-Valle-100-Uva-1L.png?v=639259514488800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119607-260-260/Suco-Del-Valle-100-Uva-1L.png?v=639259514488800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119607-260-260/Suco-Del-Valle-100-Uva-1L.png?v=639259514488800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900611014.png?alt=media&token=2b6c5861-8a73-4fec-ada6-0af435e50766",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900611014.png?alt=media&token=2b6c5861-8a73-4fec-ada6-0af435e50766",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900611014.png?alt=media&token=2b6c5861-8a73-4fec-ada6-0af435e50766"
   },
   {
     "codigo": "7894900301755",
@@ -3288,9 +3288,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes Pet 1,5L — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116703-260-260/Tnica-Schweppes-Pet-15L.png?v=639259488961270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116703-260-260/Tnica-Schweppes-Pet-15L.png?v=639259488961270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116703-260-260/Tnica-Schweppes-Pet-15L.png?v=639259488961270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900301755.png?alt=media&token=b5294583-d738-49e1-a6fd-f5edb115f3db",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900301755.png?alt=media&token=b5294583-d738-49e1-a6fd-f5edb115f3db",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900301755.png?alt=media&token=b5294583-d738-49e1-a6fd-f5edb115f3db"
   },
   {
     "codigo": "7894900556056",
@@ -3299,9 +3299,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Laranja Pet 450ml — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122711-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-450ml.png?v=639259539988200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122711-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-450ml.png?v=639259539988200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122711-260-260/Refresco-Del-Valle-Frut-Laranja-Pet-450ml.png?v=639259539988200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556056.png?alt=media&token=ed9f99f2-50e1-4aaa-bd1e-493edcd93897",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556056.png?alt=media&token=ed9f99f2-50e1-4aaa-bd1e-493edcd93897",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900556056.png?alt=media&token=ed9f99f2-50e1-4aaa-bd1e-493edcd93897"
   },
   {
     "codigo": "7894900550054",
@@ -3310,9 +3310,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Uva Pet 450ml — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129575-260-260/Refresco-Del-Valle-Frut-Uva-Pet-450ml.png?v=639259611373700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129575-260-260/Refresco-Del-Valle-Frut-Uva-Pet-450ml.png?v=639259611373700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129575-260-260/Refresco-Del-Valle-Frut-Uva-Pet-450ml.png?v=639259611373700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550054.png?alt=media&token=afba5961-c567-4522-8ee8-48b578d0c954",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550054.png?alt=media&token=afba5961-c567-4522-8ee8-48b578d0c954",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900550054.png?alt=media&token=afba5961-c567-4522-8ee8-48b578d0c954"
   },
   {
     "codigo": "9002490209346",
@@ -3321,9 +3321,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Energy Drink Lata 355ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136343-260-260/Bebida-Energtica-Red-Bull-Energy-Drink-Lata-355ml.png?v=639259676900400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136343-260-260/Bebida-Energtica-Red-Bull-Energy-Drink-Lata-355ml.png?v=639259676900400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136343-260-260/Bebida-Energtica-Red-Bull-Energy-Drink-Lata-355ml.png?v=639259676900400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490209346.png?alt=media&token=bb5eeb15-6065-4ab5-b898-caeabd6f6fd5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490209346.png?alt=media&token=bb5eeb15-6065-4ab5-b898-caeabd6f6fd5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490209346.png?alt=media&token=bb5eeb15-6065-4ab5-b898-caeabd6f6fd5"
   },
   {
     "codigo": "7891991008761",
@@ -3332,9 +3332,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Pet 1,5L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136229-260-260/Refrigerante-Antarctica-Guaran-Pet-15L.png?v=639259671965970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136229-260-260/Refrigerante-Antarctica-Guaran-Pet-15L.png?v=639259671965970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136229-260-260/Refrigerante-Antarctica-Guaran-Pet-15L.png?v=639259671965970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008761.png?alt=media&token=10db5e02-a3d0-4c0a-b1f9-ceff01ef86a0",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008761.png?alt=media&token=10db5e02-a3d0-4c0a-b1f9-ceff01ef86a0",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991008761.png?alt=media&token=10db5e02-a3d0-4c0a-b1f9-ceff01ef86a0"
   },
   {
     "codigo": "7897001050539",
@@ -3343,9 +3343,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida à Base de Soja Cocamar Purity Original Zero 1L — Marca: COCAMAR. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125964-260-260/Bebida-Base-de-Soja-Cocamar-Purity-Original-Zero-1L.png?v=639259581010900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125964-260-260/Bebida-Base-de-Soja-Cocamar-Purity-Original-Zero-1L.png?v=639259581010900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125964-260-260/Bebida-Base-de-Soja-Cocamar-Purity-Original-Zero-1L.png?v=639259581010900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897001050539.png?alt=media&token=900ef2ab-c90c-4ebd-baee-5cc602b3cc6b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897001050539.png?alt=media&token=900ef2ab-c90c-4ebd-baee-5cc602b3cc6b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897001050539.png?alt=media&token=900ef2ab-c90c-4ebd-baee-5cc602b3cc6b"
   },
   {
     "codigo": "7896000556066",
@@ -3354,9 +3354,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Concentrado Maguary Uva 500ml — Marca: MAGUARY. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129386-260-260/Suco-Concentrado-Maguary-Uva-500ml.png?v=639259608891070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129386-260-260/Suco-Concentrado-Maguary-Uva-500ml.png?v=639259608891070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129386-260-260/Suco-Concentrado-Maguary-Uva-500ml.png?v=639259608891070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000556066.png?alt=media&token=989dcc75-e650-4bce-b3ed-d12b22972633",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000556066.png?alt=media&token=989dcc75-e650-4bce-b3ed-d12b22972633",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000556066.png?alt=media&token=989dcc75-e650-4bce-b3ed-d12b22972633"
   },
   {
     "codigo": "8002270015991",
@@ -3365,9 +3365,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral S.Pellegrino com Gás Vidro 250ml — Marca: S PELLEGRINO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1136114-260-260/gua-Mineral-SPellegrino-com-Gs-Vidro-250ml.png?v=639259671498470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1136114-260-260/gua-Mineral-SPellegrino-com-Gs-Vidro-250ml.png?v=639259671498470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1136114-260-260/gua-Mineral-SPellegrino-com-Gs-Vidro-250ml.png?v=639259671498470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F8002270015991.png?alt=media&token=95aba6fc-1a3c-4bc3-b677-5147aec4e4b2",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F8002270015991.png?alt=media&token=95aba6fc-1a3c-4bc3-b677-5147aec4e4b2",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F8002270015991.png?alt=media&token=95aba6fc-1a3c-4bc3-b677-5147aec4e4b2"
   },
   {
     "codigo": "9002490295677",
@@ -3376,9 +3376,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Melancia Lata 473ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118953-260-260/Bebida-Energtica-Red-Bull-Melancia-Lata-473ml.png?v=639259508810200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118953-260-260/Bebida-Energtica-Red-Bull-Melancia-Lata-473ml.png?v=639259508810200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118953-260-260/Bebida-Energtica-Red-Bull-Melancia-Lata-473ml.png?v=639259508810200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490295677.png?alt=media&token=ea1a3506-bedd-4270-9007-4949f4c76216",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490295677.png?alt=media&token=ea1a3506-bedd-4270-9007-4949f4c76216",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490295677.png?alt=media&token=ea1a3506-bedd-4270-9007-4949f4c76216"
   },
   {
     "codigo": "9002490297855",
@@ -3387,9 +3387,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Pomelo sem Açúcar 473ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135951-260-260/Bebida-Energtica-Red-Bull-Pomelo-sem-Acar-473ml.png?v=639259668594900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135951-260-260/Bebida-Energtica-Red-Bull-Pomelo-sem-Acar-473ml.png?v=639259668594900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135951-260-260/Bebida-Energtica-Red-Bull-Pomelo-sem-Acar-473ml.png?v=639259668594900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490297855.png?alt=media&token=c8acc6c7-57f7-4b45-afbe-1755cc576e04",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490297855.png?alt=media&token=c8acc6c7-57f7-4b45-afbe-1755cc576e04",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490297855.png?alt=media&token=c8acc6c7-57f7-4b45-afbe-1755cc576e04"
   },
   {
     "codigo": "7898651400569",
@@ -3398,9 +3398,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Verde com Jabuticaba 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116246-260-260/Ch-Ya-Verde-com-Jabuticaba-1L.png?v=639259485154770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116246-260-260/Ch-Ya-Verde-com-Jabuticaba-1L.png?v=639259485154770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116246-260-260/Ch-Ya-Verde-com-Jabuticaba-1L.png?v=639259485154770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400569.png?alt=media&token=8c6d36c6-e293-4716-966d-1f8cc092457b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400569.png?alt=media&token=8c6d36c6-e293-4716-966d-1f8cc092457b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400569.png?alt=media&token=8c6d36c6-e293-4716-966d-1f8cc092457b"
   },
   {
     "codigo": "7898651400798",
@@ -3409,9 +3409,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Verde com Melancia 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135950-260-260/Ch-Ya-Verde-com-Melancia-1L.png?v=639259668591900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135950-260-260/Ch-Ya-Verde-com-Melancia-1L.png?v=639259668591900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135950-260-260/Ch-Ya-Verde-com-Melancia-1L.png?v=639259668591900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400798.png?alt=media&token=37026088-7beb-4395-8419-723889a5512c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400798.png?alt=media&token=37026088-7beb-4395-8419-723889a5512c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400798.png?alt=media&token=37026088-7beb-4395-8419-723889a5512c"
   },
   {
     "codigo": "7898651400002",
@@ -3420,9 +3420,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Verde, Laranja e Gengibre 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125757-260-260/Ch-Ya-Verde-Laranja-e-Gengibre-1L.png?v=639259578141030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125757-260-260/Ch-Ya-Verde-Laranja-e-Gengibre-1L.png?v=639259578141030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125757-260-260/Ch-Ya-Verde-Laranja-e-Gengibre-1L.png?v=639259578141030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400002.png?alt=media&token=ec9f41da-24bb-4997-a984-fa9eb4e63694",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400002.png?alt=media&token=ec9f41da-24bb-4997-a984-fa9eb4e63694",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400002.png?alt=media&token=ec9f41da-24bb-4997-a984-fa9eb4e63694"
   },
   {
     "codigo": "7898651400903",
@@ -3431,9 +3431,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Wicked Hibisco e Goiaba 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138201-260-260/Ch-Ya-Wicked-Hibisco-e-Goiaba-1L.png?v=639265615414230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138201-260-260/Ch-Ya-Wicked-Hibisco-e-Goiaba-1L.png?v=639265615414230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138201-260-260/Ch-Ya-Wicked-Hibisco-e-Goiaba-1L.png?v=639265615414230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400903.png?alt=media&token=0fc7264c-3635-4807-913d-ef077aec89fa",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400903.png?alt=media&token=0fc7264c-3635-4807-913d-ef077aec89fa",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400903.png?alt=media&token=0fc7264c-3635-4807-913d-ef077aec89fa"
   },
   {
     "codigo": "7896552908269",
@@ -3442,9 +3442,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco QualiCoco Integral 1L — Marca: QUALICOCO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1116235-260-260/gua-de-Coco-QualiCoco-Integral-1L.png?v=639259485122070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1116235-260-260/gua-de-Coco-QualiCoco-Integral-1L.png?v=639259485122070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1116235-260-260/gua-de-Coco-QualiCoco-Integral-1L.png?v=639259485122070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896552908269.png?alt=media&token=9b065898-a7bb-4d6c-905e-acbf11d06969",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896552908269.png?alt=media&token=9b065898-a7bb-4d6c-905e-acbf11d06969",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896552908269.png?alt=media&token=9b065898-a7bb-4d6c-905e-acbf11d06969"
   },
   {
     "codigo": "7896552908283",
@@ -3453,9 +3453,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco QualiCoco Integral 300ml — Marca: QUALICOCO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132567-260-260/gua-de-Coco-QualiCoco-Integral-300ml.png?v=639259639045970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132567-260-260/gua-de-Coco-QualiCoco-Integral-300ml.png?v=639259639045970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132567-260-260/gua-de-Coco-QualiCoco-Integral-300ml.png?v=639259639045970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896552908283.png?alt=media&token=4f26c336-5875-4ae9-9ea7-f716b058df81",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896552908283.png?alt=media&token=4f26c336-5875-4ae9-9ea7-f716b058df81",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896552908283.png?alt=media&token=4f26c336-5875-4ae9-9ea7-f716b058df81"
   },
   {
     "codigo": "7622202834097",
@@ -3464,9 +3464,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Joia da Ilha 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135916-260-260/Refresco-em-P-Tang-Joia-da-Ilha-18g.png?v=639259668464330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135916-260-260/Refresco-em-P-Tang-Joia-da-Ilha-18g.png?v=639259668464330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135916-260-260/Refresco-em-P-Tang-Joia-da-Ilha-18g.png?v=639259668464330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202834097.png?alt=media&token=0707d3fe-76fc-4c4f-af2e-13c88a6f4c9f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202834097.png?alt=media&token=0707d3fe-76fc-4c4f-af2e-13c88a6f4c9f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202834097.png?alt=media&token=0707d3fe-76fc-4c4f-af2e-13c88a6f4c9f"
   },
   {
     "codigo": "7898994972150",
@@ -3475,9 +3475,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Vegetal Naveia Chocolate com Aveia 1L — Marca: NAVEIA. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112804-260-260/Bebida-Vegetal-Naveia-Chocolate-com-Aveia-1L.png?v=639259455824030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112804-260-260/Bebida-Vegetal-Naveia-Chocolate-com-Aveia-1L.png?v=639259455824030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112804-260-260/Bebida-Vegetal-Naveia-Chocolate-com-Aveia-1L.png?v=639259455824030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898994972150.png?alt=media&token=dd7409d9-b6ef-4a44-965a-8c9fcef6e5c8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898994972150.png?alt=media&token=dd7409d9-b6ef-4a44-965a-8c9fcef6e5c8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898994972150.png?alt=media&token=dd7409d9-b6ef-4a44-965a-8c9fcef6e5c8"
   },
   {
     "codigo": "7898080665706",
@@ -3486,9 +3486,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Baly Kids Sonic Tutti Frutti sem Taurina sem Cafeína Lata 220ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132538-260-260/Bebida-Baly-Kids-Sonic-Tutti-Frutti-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259638924600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132538-260-260/Bebida-Baly-Kids-Sonic-Tutti-Frutti-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259638924600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132538-260-260/Bebida-Baly-Kids-Sonic-Tutti-Frutti-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259638924600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665706.png?alt=media&token=d2218c52-aad8-4a27-b2c1-338644fb8e46",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665706.png?alt=media&token=d2218c52-aad8-4a27-b2c1-338644fb8e46",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665706.png?alt=media&token=d2218c52-aad8-4a27-b2c1-338644fb8e46"
   },
   {
     "codigo": "7898651400910",
@@ -3497,9 +3497,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Wicked Hibisco e Maracujá 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112788-260-260/Ch-Ya-Wicked-Hibisco-e-Maracuj-1L.png?v=639259455760400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112788-260-260/Ch-Ya-Wicked-Hibisco-e-Maracuj-1L.png?v=639259455760400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112788-260-260/Ch-Ya-Wicked-Hibisco-e-Maracuj-1L.png?v=639259455760400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400910.png?alt=media&token=a4e43452-7887-4611-8eed-c0f895f82deb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400910.png?alt=media&token=a4e43452-7887-4611-8eed-c0f895f82deb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400910.png?alt=media&token=a4e43452-7887-4611-8eed-c0f895f82deb"
   },
   {
     "codigo": "7898651400897",
@@ -3508,9 +3508,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Wicked Hibisco e Maçã 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129150-260-260/Ch-Ya-Wicked-Hibisco-e-Ma-1L.png?v=639259607900930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129150-260-260/Ch-Ya-Wicked-Hibisco-e-Ma-1L.png?v=639259607900930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129150-260-260/Ch-Ya-Wicked-Hibisco-e-Ma-1L.png?v=639259607900930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400897.png?alt=media&token=8a462573-32c1-4fd1-a4c3-b3ef3496e727",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400897.png?alt=media&token=8a462573-32c1-4fd1-a4c3-b3ef3496e727",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400897.png?alt=media&token=8a462573-32c1-4fd1-a4c3-b3ef3496e727"
   },
   {
     "codigo": "7896023752513",
@@ -3519,9 +3519,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Spray Melagrião Própolis e Gengibre Menta 30ml — Marca: MELAGRIAO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132510-260-260/Spray-Melagrio-Prpolis-e-Gengibre-Menta-30ml.png?v=639259638821100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132510-260-260/Spray-Melagrio-Prpolis-e-Gengibre-Menta-30ml.png?v=639259638821100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132510-260-260/Spray-Melagrio-Prpolis-e-Gengibre-Menta-30ml.png?v=639259638821100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023752513.png?alt=media&token=0da13589-6cf7-4f53-8f91-af0b4d9f4102",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023752513.png?alt=media&token=0da13589-6cf7-4f53-8f91-af0b4d9f4102",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023752513.png?alt=media&token=0da13589-6cf7-4f53-8f91-af0b4d9f4102"
   },
   {
     "codigo": "7896023793349",
@@ -3530,9 +3530,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Spray Melagrião Própolis e Gengibre Laranja 30ml — Marca: MELAGRIAO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125689-260-260/Spray-Melagrio-Prpolis-e-Gengibre-Laranja-30ml.png?v=639259577883270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125689-260-260/Spray-Melagrio-Prpolis-e-Gengibre-Laranja-30ml.png?v=639259577883270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125689-260-260/Spray-Melagrio-Prpolis-e-Gengibre-Laranja-30ml.png?v=639259577883270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023793349.png?alt=media&token=8a32f638-cdff-428e-b6d4-21db26a14651",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023793349.png?alt=media&token=8a32f638-cdff-428e-b6d4-21db26a14651",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896023793349.png?alt=media&token=8a32f638-cdff-428e-b6d4-21db26a14651"
   },
   {
     "codigo": "7894900664041",
@@ -3541,9 +3541,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Del Valle Abacaxi e Tangerina 1L — Marca: DEL VALLE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132500-260-260/Nctar-Del-Valle-Abacaxi-e-Tangerina-1L.png?v=639259638786800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132500-260-260/Nctar-Del-Valle-Abacaxi-e-Tangerina-1L.png?v=639259638786800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132500-260-260/Nctar-Del-Valle-Abacaxi-e-Tangerina-1L.png?v=639259638786800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664041.png?alt=media&token=03031505-fbb0-4592-8da4-220e30639c88",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664041.png?alt=media&token=03031505-fbb0-4592-8da4-220e30639c88",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664041.png?alt=media&token=03031505-fbb0-4592-8da4-220e30639c88"
   },
   {
     "codigo": "7894900664027",
@@ -3552,9 +3552,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Limonada Del Valle Tropical Lata 290ml — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125679-260-260/Limonada-Del-Valle-Tropical-Lata-290ml.png?v=639259577842270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125679-260-260/Limonada-Del-Valle-Tropical-Lata-290ml.png?v=639259577842270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125679-260-260/Limonada-Del-Valle-Tropical-Lata-290ml.png?v=639259577842270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664027.png?alt=media&token=fe8bea70-acc0-4576-9a39-cfeafcd22b28",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664027.png?alt=media&token=fe8bea70-acc0-4576-9a39-cfeafcd22b28",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664027.png?alt=media&token=fe8bea70-acc0-4576-9a39-cfeafcd22b28"
   },
   {
     "codigo": "7894900664010",
@@ -3563,9 +3563,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Limonada Del Valle Pink Lata 290ml — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122272-260-260/Limonada-Del-Valle-Pink-Lata-290ml.png?v=639259536279100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122272-260-260/Limonada-Del-Valle-Pink-Lata-290ml.png?v=639259536279100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122272-260-260/Limonada-Del-Valle-Pink-Lata-290ml.png?v=639259536279100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664010.png?alt=media&token=821d43df-476d-4f4e-b4a8-79b261d85077",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664010.png?alt=media&token=821d43df-476d-4f4e-b4a8-79b261d85077",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664010.png?alt=media&token=821d43df-476d-4f4e-b4a8-79b261d85077"
   },
   {
     "codigo": "9002490290573",
@@ -3574,9 +3574,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Zero Lata 355ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112728-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-355ml.png?v=639259455519830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112728-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-355ml.png?v=639259455519830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112728-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-355ml.png?v=639259455519830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490290573.png?alt=media&token=37c54ec8-c42e-4c2a-acb1-6b7e6aca46eb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490290573.png?alt=media&token=37c54ec8-c42e-4c2a-acb1-6b7e6aca46eb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490290573.png?alt=media&token=37c54ec8-c42e-4c2a-acb1-6b7e6aca46eb"
   },
   {
     "codigo": "9002490291143",
@@ -3585,9 +3585,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Zero Lata 473ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112727-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-473ml.png?v=639259455515170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112727-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-473ml.png?v=639259455515170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112727-260-260/Bebida-Energtica-Red-Bull-Zero-Lata-473ml.png?v=639259455515170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490291143.png?alt=media&token=2d16872c-d422-40f7-bb12-42e79805a8cf",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490291143.png?alt=media&token=2d16872c-d422-40f7-bb12-42e79805a8cf",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490291143.png?alt=media&token=2d16872c-d422-40f7-bb12-42e79805a8cf"
   },
   {
     "codigo": "7891141035197",
@@ -3596,9 +3596,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Aurora Integral Uva Tinto Gaseificado Lata 269ml — Marca: AURORA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112721-260-260/Suco-Aurora-Integral-Uva-Tinto-Gaseificado-Lata-269ml.png?v=639259455489700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112721-260-260/Suco-Aurora-Integral-Uva-Tinto-Gaseificado-Lata-269ml.png?v=639259455489700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112721-260-260/Suco-Aurora-Integral-Uva-Tinto-Gaseificado-Lata-269ml.png?v=639259455489700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141035197.png?alt=media&token=97e54718-c4f7-4527-a50e-d8b0e00ba6da",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141035197.png?alt=media&token=97e54718-c4f7-4527-a50e-d8b0e00ba6da",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141035197.png?alt=media&token=97e54718-c4f7-4527-a50e-d8b0e00ba6da"
   },
   {
     "codigo": "7898080666154",
@@ -3607,9 +3607,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tadaly Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125633-260-260/Bebida-Energtica-Baly-Tadaly-Lata-473ml.png?v=639259577599500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125633-260-260/Bebida-Energtica-Baly-Tadaly-Lata-473ml.png?v=639259577599500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125633-260-260/Bebida-Energtica-Baly-Tadaly-Lata-473ml.png?v=639259577599500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666154.png?alt=media&token=9cd1317f-bed6-4e3b-8e82-405e3648715d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666154.png?alt=media&token=9cd1317f-bed6-4e3b-8e82-405e3648715d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080666154.png?alt=media&token=9cd1317f-bed6-4e3b-8e82-405e3648715d"
   },
   {
     "codigo": "7896204360612",
@@ -3618,9 +3618,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco CBS 100% Uva Integral Pet 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132444-260-260/Suco-CBS-100-Uva-Integral-Pet-135L.png?v=639259638536700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132444-260-260/Suco-CBS-100-Uva-Integral-Pet-135L.png?v=639259638536700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132444-260-260/Suco-CBS-100-Uva-Integral-Pet-135L.png?v=639259638536700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204360612.png?alt=media&token=70cfbe52-9155-4494-8057-446ef48cdb6e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204360612.png?alt=media&token=70cfbe52-9155-4494-8057-446ef48cdb6e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204360612.png?alt=media&token=70cfbe52-9155-4494-8057-446ef48cdb6e"
   },
   {
     "codigo": "9002490290450",
@@ -3629,9 +3629,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Maçã sem Açúcar Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112677-260-260/Bebida-Energtica-Red-Bull-Ma-sem-Acar-Lata-250ml.png?v=639259455265900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112677-260-260/Bebida-Energtica-Red-Bull-Ma-sem-Acar-Lata-250ml.png?v=639259455265900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112677-260-260/Bebida-Energtica-Red-Bull-Ma-sem-Acar-Lata-250ml.png?v=639259455265900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490290450.png?alt=media&token=74189a24-2331-4453-9e4e-2fdcacc6c57f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490290450.png?alt=media&token=74189a24-2331-4453-9e4e-2fdcacc6c57f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490290450.png?alt=media&token=74189a24-2331-4453-9e4e-2fdcacc6c57f"
   },
   {
     "codigo": "7896062802354",
@@ -3640,9 +3640,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral São Lourenço sem Gás 510ml — Marca: SAO LOURENCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135784-260-260/gua-Mineral-So-Loureno-sem-Gs-510ml.png?v=639259667906600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135784-260-260/gua-Mineral-So-Loureno-sem-Gs-510ml.png?v=639259667906600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135784-260-260/gua-Mineral-So-Loureno-sem-Gs-510ml.png?v=639259667906600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896062802354.png?alt=media&token=d46f0dbb-b5d6-4356-bf4e-c2c79cb307ed",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896062802354.png?alt=media&token=d46f0dbb-b5d6-4356-bf4e-c2c79cb307ed",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896062802354.png?alt=media&token=d46f0dbb-b5d6-4356-bf4e-c2c79cb307ed"
   },
   {
     "codigo": "7898651400538",
@@ -3651,9 +3651,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Chá Yaí Verde com Frutas Vermelhas Zero Açúcar 1L — Marca: YAI. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125589-260-260/Ch-Ya-Verde-com-Frutas-Vermelhas-Zero-Acar-1L.png?v=639259576083330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125589-260-260/Ch-Ya-Verde-com-Frutas-Vermelhas-Zero-Acar-1L.png?v=639259576083330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125589-260-260/Ch-Ya-Verde-com-Frutas-Vermelhas-Zero-Acar-1L.png?v=639259576083330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400538.png?alt=media&token=12787938-2387-4006-893c-e8222b9503f6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400538.png?alt=media&token=12787938-2387-4006-893c-e8222b9503f6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898651400538.png?alt=media&token=12787938-2387-4006-893c-e8222b9503f6"
   },
   {
     "codigo": "7891098041821",
@@ -3662,9 +3662,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Leão Guaraná Original Pet 450ml — Marca: LEAO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122176-260-260/Bebida-Mista-Leo-Guaran-Original-Pet-450ml.png?v=639259535927230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122176-260-260/Bebida-Mista-Leo-Guaran-Original-Pet-450ml.png?v=639259535927230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122176-260-260/Bebida-Mista-Leo-Guaran-Original-Pet-450ml.png?v=639259535927230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098041821.png?alt=media&token=4555c5be-24aa-4748-b28a-210dcff48ff1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098041821.png?alt=media&token=4555c5be-24aa-4748-b28a-210dcff48ff1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098041821.png?alt=media&token=4555c5be-24aa-4748-b28a-210dcff48ff1"
   },
   {
     "codigo": "7900314000754",
@@ -3673,9 +3673,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Gengibre 330ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122169-260-260/Xarope-Monin-Gengibre-330ml.png?v=639259535903200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122169-260-260/Xarope-Monin-Gengibre-330ml.png?v=639259535903200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122169-260-260/Xarope-Monin-Gengibre-330ml.png?v=639259535903200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000754.png?alt=media&token=7e0ec068-2e89-45c0-9425-de4e83168cc0",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000754.png?alt=media&token=7e0ec068-2e89-45c0-9425-de4e83168cc0",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000754.png?alt=media&token=7e0ec068-2e89-45c0-9425-de4e83168cc0"
   },
   {
     "codigo": "7900314000730",
@@ -3684,9 +3684,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Tangerina 330ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112663-260-260/Xarope-Monin-Tangerina-330ml.png?v=639259455195470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112663-260-260/Xarope-Monin-Tangerina-330ml.png?v=639259455195470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112663-260-260/Xarope-Monin-Tangerina-330ml.png?v=639259455195470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000730.png?alt=media&token=549dded1-27ad-479e-a9c4-e4844473697d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000730.png?alt=media&token=549dded1-27ad-479e-a9c4-e4844473697d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000730.png?alt=media&token=549dded1-27ad-479e-a9c4-e4844473697d"
   },
   {
     "codigo": "7900314000785",
@@ -3695,9 +3695,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Morango 330ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129019-260-260/Xarope-Monin-Morango-330ml.png?v=639259605740930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129019-260-260/Xarope-Monin-Morango-330ml.png?v=639259605740930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129019-260-260/Xarope-Monin-Morango-330ml.png?v=639259605740930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000785.png?alt=media&token=fb8535e3-8471-4849-a3ea-ee8d8ddc0bad",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000785.png?alt=media&token=fb8535e3-8471-4849-a3ea-ee8d8ddc0bad",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000785.png?alt=media&token=fb8535e3-8471-4849-a3ea-ee8d8ddc0bad"
   },
   {
     "codigo": "7900314000716",
@@ -3706,9 +3706,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Maçã Verde 330ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125583-260-260/Xarope-Monin-Ma-Verde-330ml.png?v=639259576062600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125583-260-260/Xarope-Monin-Ma-Verde-330ml.png?v=639259576062600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125583-260-260/Xarope-Monin-Ma-Verde-330ml.png?v=639259576062600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000716.png?alt=media&token=99dc6661-de90-4914-8adc-6960aed41ec7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000716.png?alt=media&token=99dc6661-de90-4914-8adc-6960aed41ec7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000716.png?alt=media&token=99dc6661-de90-4914-8adc-6960aed41ec7"
   },
   {
     "codigo": "7900314000792",
@@ -3717,9 +3717,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Limão Siciliano 330ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132399-260-260/Xarope-Monin-Limo-Siciliano-330ml.png?v=639259638380830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132399-260-260/Xarope-Monin-Limo-Siciliano-330ml.png?v=639259638380830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132399-260-260/Xarope-Monin-Limo-Siciliano-330ml.png?v=639259638380830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000792.png?alt=media&token=ee51197a-1c95-439c-8110-438f0b668b30",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000792.png?alt=media&token=ee51197a-1c95-439c-8110-438f0b668b30",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7900314000792.png?alt=media&token=ee51197a-1c95-439c-8110-438f0b668b30"
   },
   {
     "codigo": "7898760040069",
@@ -3728,9 +3728,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Vegetal Vida Veg Kids Growth Chocolate sem Açúcar Garrafa 250g — Marca: VIDA VEG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125569-260-260/Bebida-Vegetal-Vida-Veg-Kids-Growth-Chocolate-sem-Acar-Garrafa-250g.png?v=639259575996800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125569-260-260/Bebida-Vegetal-Vida-Veg-Kids-Growth-Chocolate-sem-Acar-Garrafa-250g.png?v=639259575996800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125569-260-260/Bebida-Vegetal-Vida-Veg-Kids-Growth-Chocolate-sem-Acar-Garrafa-250g.png?v=639259575996800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040069.png?alt=media&token=fc1bc27e-9478-478c-b129-6169f0fb8836",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040069.png?alt=media&token=fc1bc27e-9478-478c-b129-6169f0fb8836",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040069.png?alt=media&token=fc1bc27e-9478-478c-b129-6169f0fb8836"
   },
   {
     "codigo": "7898760040021",
@@ -3739,9 +3739,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Vegetal Vida Veg Tradutor 15g de Proteína Garrafa 500g — Marca: VIDA VEG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125568-260-260/Bebida-Vegetal-Vida-Veg-Tradutor-15g-de-Protena-Garrafa-500g.png?v=639259575992400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125568-260-260/Bebida-Vegetal-Vida-Veg-Tradutor-15g-de-Protena-Garrafa-500g.png?v=639259575992400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125568-260-260/Bebida-Vegetal-Vida-Veg-Tradutor-15g-de-Protena-Garrafa-500g.png?v=639259575992400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040021.png?alt=media&token=bcb99e70-2543-4adf-9990-f50af9ffb138",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040021.png?alt=media&token=bcb99e70-2543-4adf-9990-f50af9ffb138",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040021.png?alt=media&token=bcb99e70-2543-4adf-9990-f50af9ffb138"
   },
   {
     "codigo": "7898760040038",
@@ -3750,9 +3750,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Vegetal Vida Veg Morango 15g de Proteína Garrafa 500g — Marca: VIDA VEG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112643-260-260/Bebida-Vegetal-Vida-Veg-Morango-15g-de-Protena-Garrafa-500g.png?v=639259455104900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112643-260-260/Bebida-Vegetal-Vida-Veg-Morango-15g-de-Protena-Garrafa-500g.png?v=639259455104900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112643-260-260/Bebida-Vegetal-Vida-Veg-Morango-15g-de-Protena-Garrafa-500g.png?v=639259455104900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040038.png?alt=media&token=d374f09d-ea63-4840-bd38-c61cc5c241a4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040038.png?alt=media&token=d374f09d-ea63-4840-bd38-c61cc5c241a4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898760040038.png?alt=media&token=d374f09d-ea63-4840-bd38-c61cc5c241a4"
   },
   {
     "codigo": "7898965094560",
@@ -3761,9 +3761,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Kombucha Tao Mirtilo e Framboesa 750ml — Marca: TAO. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132366-260-260/Kombucha-Tao-Mirtilo-e-Framboesa-750ml.png?v=639259638250330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132366-260-260/Kombucha-Tao-Mirtilo-e-Framboesa-750ml.png?v=639259638250330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132366-260-260/Kombucha-Tao-Mirtilo-e-Framboesa-750ml.png?v=639259638250330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898965094560.png?alt=media&token=0a23cb87-470a-49cf-b8aa-0aebc136a404",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898965094560.png?alt=media&token=0a23cb87-470a-49cf-b8aa-0aebc136a404",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898965094560.png?alt=media&token=0a23cb87-470a-49cf-b8aa-0aebc136a404"
   },
   {
     "codigo": "8002270536472",
@@ -3772,9 +3772,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral S.Pellegrino com Gás Vidro 505ml — Marca: S PELLEGRINO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128977-260-260/gua-Mineral-SPellegrino-com-Gs-Vidro-505ml.png?v=639259605605200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128977-260-260/gua-Mineral-SPellegrino-com-Gs-Vidro-505ml.png?v=639259605605200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128977-260-260/gua-Mineral-SPellegrino-com-Gs-Vidro-505ml.png?v=639259605605200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F8002270536472.png?alt=media&token=46e33305-5a9d-4ad2-8fa6-f65de9149d45",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F8002270536472.png?alt=media&token=46e33305-5a9d-4ad2-8fa6-f65de9149d45",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F8002270536472.png?alt=media&token=46e33305-5a9d-4ad2-8fa6-f65de9149d45"
   },
   {
     "codigo": "9002490286040",
@@ -3783,9 +3783,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Nectarina Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140571-260-260/Bebida-Energtica-Red-Bull-Nectarina-Lata-250ml---0.png?v=639276954292730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140571-260-260/Bebida-Energtica-Red-Bull-Nectarina-Lata-250ml---0.png?v=639276954292730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140571-260-260/Bebida-Energtica-Red-Bull-Nectarina-Lata-250ml---0.png?v=639276954292730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490286040.png?alt=media&token=87bc6ca7-3d6a-41d4-aecf-34e27fd3c160",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490286040.png?alt=media&token=87bc6ca7-3d6a-41d4-aecf-34e27fd3c160",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490286040.png?alt=media&token=87bc6ca7-3d6a-41d4-aecf-34e27fd3c160"
   },
   {
     "codigo": "7613287922618",
@@ -3794,9 +3794,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Perrier com Gás Vidro 330ml — Marca: PERRIER. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135735-260-260/gua-Mineral-Perrier-com-Gs-Vidro-330ml.png?v=639259667731400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135735-260-260/gua-Mineral-Perrier-com-Gs-Vidro-330ml.png?v=639259667731400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135735-260-260/gua-Mineral-Perrier-com-Gs-Vidro-330ml.png?v=639259667731400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7613287922618.png?alt=media&token=ece0d724-d2fe-47dc-b261-ab5ec3b97cf7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7613287922618.png?alt=media&token=ece0d724-d2fe-47dc-b261-ab5ec3b97cf7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7613287922618.png?alt=media&token=ece0d724-d2fe-47dc-b261-ab5ec3b97cf7"
   },
   {
     "codigo": "7891000405222",
@@ -3805,9 +3805,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Láctea Nutren Protein Baunilha Zero Lactose Garrafa 260ml — Marca: NESTLE. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135653-260-260/Bebida-Lctea-Nutren-Protein-Baunilha-Zero-Lactose-Garrafa-260ml.png?v=639259665715800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135653-260-260/Bebida-Lctea-Nutren-Protein-Baunilha-Zero-Lactose-Garrafa-260ml.png?v=639259665715800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135653-260-260/Bebida-Lctea-Nutren-Protein-Baunilha-Zero-Lactose-Garrafa-260ml.png?v=639259665715800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891000405222.png?alt=media&token=6e6f5ca4-c782-4ada-bbdf-3daafba8d280",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891000405222.png?alt=media&token=6e6f5ca4-c782-4ada-bbdf-3daafba8d280",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891000405222.png?alt=media&token=6e6f5ca4-c782-4ada-bbdf-3daafba8d280"
   },
   {
     "codigo": "7891000405079",
@@ -3816,9 +3816,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Chás Prontos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Láctea Nutren Protein Chocolate Zero Lactose Garrafa 260ml — Marca: NESTLE. Categoria: Chás Prontos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132280-260-260/Bebida-Lctea-Nutren-Protein-Chocolate-Zero-Lactose-Garrafa-260ml.png?v=639259637889600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132280-260-260/Bebida-Lctea-Nutren-Protein-Chocolate-Zero-Lactose-Garrafa-260ml.png?v=639259637889600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132280-260-260/Bebida-Lctea-Nutren-Protein-Chocolate-Zero-Lactose-Garrafa-260ml.png?v=639259637889600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891000405079.png?alt=media&token=804802f4-e014-4118-8102-743b57365c84",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891000405079.png?alt=media&token=804802f4-e014-4118-8102-743b57365c84",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891000405079.png?alt=media&token=804802f4-e014-4118-8102-743b57365c84"
   },
   {
     "codigo": "7898955705179",
@@ -3827,9 +3827,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Vegetal A Tal da Castanha Choconuts 1L — Marca: A TAL DA CASTANHA. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132276-260-260/Bebida-Vegetal-A-Tal-da-Castanha-Choconuts-1L.png?v=639259637878370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132276-260-260/Bebida-Vegetal-A-Tal-da-Castanha-Choconuts-1L.png?v=639259637878370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132276-260-260/Bebida-Vegetal-A-Tal-da-Castanha-Choconuts-1L.png?v=639259637878370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898955705179.png?alt=media&token=53b6f28e-5af7-4903-b0df-e0ad5fd3e07d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898955705179.png?alt=media&token=53b6f28e-5af7-4903-b0df-e0ad5fd3e07d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898955705179.png?alt=media&token=53b6f28e-5af7-4903-b0df-e0ad5fd3e07d"
   },
   {
     "codigo": "7898080665737",
@@ -3838,9 +3838,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Baly Kids Sonic Morango sem Taurina sem Cafeína Lata 220ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121907-260-260/Bebida-Baly-Kids-Sonic-Morango-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259533418970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121907-260-260/Bebida-Baly-Kids-Sonic-Morango-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259533418970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121907-260-260/Bebida-Baly-Kids-Sonic-Morango-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259533418970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665737.png?alt=media&token=6849a395-bd0d-458f-b763-38ce4e328169",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665737.png?alt=media&token=6849a395-bd0d-458f-b763-38ce4e328169",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665737.png?alt=media&token=6849a395-bd0d-458f-b763-38ce4e328169"
   },
   {
     "codigo": "7896008112431",
@@ -3849,9 +3849,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Xopito Groselha Pet 900ml — Marca: XOPITO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112220-260-260/Xarope-Xopito-Groselha-Pet-900ml.png?v=639259451978500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112220-260-260/Xarope-Xopito-Groselha-Pet-900ml.png?v=639259451978500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112220-260-260/Xarope-Xopito-Groselha-Pet-900ml.png?v=639259451978500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896008112431.png?alt=media&token=24ea8e38-f76a-4cbf-9b92-cced82b9bd26",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896008112431.png?alt=media&token=24ea8e38-f76a-4cbf-9b92-cced82b9bd26",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896008112431.png?alt=media&token=24ea8e38-f76a-4cbf-9b92-cced82b9bd26"
   },
   {
     "codigo": "7894900666526",
@@ -3860,9 +3860,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Frutas Cítricas Pet 1,5L — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118233-260-260/Refresco-Del-Valle-Frut-Frutas-Ctricas-Pet-15L.png?v=639259502910030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118233-260-260/Refresco-Del-Valle-Frut-Frutas-Ctricas-Pet-15L.png?v=639259502910030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118233-260-260/Refresco-Del-Valle-Frut-Frutas-Ctricas-Pet-15L.png?v=639259502910030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900666526.png?alt=media&token=661c8168-717f-4f08-b71d-350f6a001b4b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900666526.png?alt=media&token=661c8168-717f-4f08-b71d-350f6a001b4b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900666526.png?alt=media&token=661c8168-717f-4f08-b71d-350f6a001b4b"
   },
   {
     "codigo": "7896452101869",
@@ -3871,9 +3871,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Perini Integral Premium Varietal 100% Uvas Lorena 1L — Marca: PERINI. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135259-260-260/Suco-Perini-Integral-Premium-Varietal-100-Uvas-Lorena-1L.png?v=639259662777300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135259-260-260/Suco-Perini-Integral-Premium-Varietal-100-Uvas-Lorena-1L.png?v=639259662777300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135259-260-260/Suco-Perini-Integral-Premium-Varietal-100-Uvas-Lorena-1L.png?v=639259662777300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896452101869.png?alt=media&token=3bed48e8-c80f-496c-b335-60fb17efd5b1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896452101869.png?alt=media&token=3bed48e8-c80f-496c-b335-60fb17efd5b1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896452101869.png?alt=media&token=3bed48e8-c80f-496c-b335-60fb17efd5b1"
   },
   {
     "codigo": "7896452100688",
@@ -3882,9 +3882,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Perini Integral Premium Varietal 100% Bordô 1L — Marca: PERINI. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118232-260-260/Suco-Perini-Integral-Premium-Varietal-100-Bord-1L.png?v=639259502906300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118232-260-260/Suco-Perini-Integral-Premium-Varietal-100-Bord-1L.png?v=639259502906300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118232-260-260/Suco-Perini-Integral-Premium-Varietal-100-Bord-1L.png?v=639259502906300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896452100688.png?alt=media&token=b0e83b2f-249c-44c8-8c73-82ee14e23074",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896452100688.png?alt=media&token=b0e83b2f-249c-44c8-8c73-82ee14e23074",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896452100688.png?alt=media&token=b0e83b2f-249c-44c8-8c73-82ee14e23074"
   },
   {
     "codigo": "7898938890045",
@@ -3893,9 +3893,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Pipeline Punch Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121582-260-260/Bebida-Energtica-Monster-Pipeline-Punch-Lata-473ml.png?v=639259530785400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121582-260-260/Bebida-Energtica-Monster-Pipeline-Punch-Lata-473ml.png?v=639259530785400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121582-260-260/Bebida-Energtica-Monster-Pipeline-Punch-Lata-473ml.png?v=639259530785400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890045.png?alt=media&token=81191d05-dc49-48b2-a477-4a77f7e39374",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890045.png?alt=media&token=81191d05-dc49-48b2-a477-4a77f7e39374",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898938890045.png?alt=media&token=81191d05-dc49-48b2-a477-4a77f7e39374"
   },
   {
     "codigo": "7891098000682",
@@ -3904,9 +3904,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Leão Guaraná Original Copo 300ml — Marca: LEAO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131614-260-260/Bebida-Mista-Leo-Guaran-Original-Copo-300ml.png?v=639259631925300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131614-260-260/Bebida-Mista-Leo-Guaran-Original-Copo-300ml.png?v=639259631925300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131614-260-260/Bebida-Mista-Leo-Guaran-Original-Copo-300ml.png?v=639259631925300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098000682.png?alt=media&token=2b0bcba8-56b9-47a3-b356-a6edb31ef59b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098000682.png?alt=media&token=2b0bcba8-56b9-47a3-b356-a6edb31ef59b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098000682.png?alt=media&token=2b0bcba8-56b9-47a3-b356-a6edb31ef59b"
   },
   {
     "codigo": "7891098041814",
@@ -3915,9 +3915,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Leão Guaraná e Açaí 450ml — Marca: LEAO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111839-260-260/Bebida-Mista-Leo-Guaran-e-Aa-450ml.png?v=639259448790270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111839-260-260/Bebida-Mista-Leo-Guaran-e-Aa-450ml.png?v=639259448790270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111839-260-260/Bebida-Mista-Leo-Guaran-e-Aa-450ml.png?v=639259448790270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098041814.png?alt=media&token=6e608c0c-8d18-411b-8b73-28722e8e13f7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098041814.png?alt=media&token=6e608c0c-8d18-411b-8b73-28722e8e13f7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891098041814.png?alt=media&token=6e608c0c-8d18-411b-8b73-28722e8e13f7"
   },
   {
     "codigo": "7896802200358",
@@ -3926,9 +3926,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Petry Zero Açúcar 1L — Marca: PETRY. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115224-260-260/gua-de-Coco-Petry-Zero-Acar-1L.png?v=639259476618970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115224-260-260/gua-de-Coco-Petry-Zero-Acar-1L.png?v=639259476618970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115224-260-260/gua-de-Coco-Petry-Zero-Acar-1L.png?v=639259476618970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896802200358.png?alt=media&token=ec9c1f6d-e5ba-48b3-b896-7da67523d3a4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896802200358.png?alt=media&token=ec9c1f6d-e5ba-48b3-b896-7da67523d3a4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896802200358.png?alt=media&token=ec9c1f6d-e5ba-48b3-b896-7da67523d3a4"
   },
   {
     "codigo": "7896436102783",
@@ -3937,9 +3937,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Frukito Limão Pet 2L — Marca: FRUKITO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131537-260-260/Bebida-Mista-Frukito-Limo-Pet-2L.png?v=639259631666500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131537-260-260/Bebida-Mista-Frukito-Limo-Pet-2L.png?v=639259631666500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131537-260-260/Bebida-Mista-Frukito-Limo-Pet-2L.png?v=639259631666500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102783.png?alt=media&token=c795c35b-54ef-490d-a9eb-a23f17756c09",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102783.png?alt=media&token=c795c35b-54ef-490d-a9eb-a23f17756c09",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102783.png?alt=media&token=c795c35b-54ef-490d-a9eb-a23f17756c09"
   },
   {
     "codigo": "7891141036194",
@@ -3948,9 +3948,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Aurora 100% Uva Branca Integral 1,5L — Marca: AURORA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111740-260-260/Suco-Aurora-100-Uva-Branca-Integral-15L.png?v=639259446701770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111740-260-260/Suco-Aurora-100-Uva-Branca-Integral-15L.png?v=639259446701770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111740-260-260/Suco-Aurora-100-Uva-Branca-Integral-15L.png?v=639259446701770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141036194.png?alt=media&token=18930c81-359f-49f4-954c-5f651515fce6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141036194.png?alt=media&token=18930c81-359f-49f4-954c-5f651515fce6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891141036194.png?alt=media&token=18930c81-359f-49f4-954c-5f651515fce6"
   },
   {
     "codigo": "7896436102813",
@@ -3959,9 +3959,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Frukito Uva Pet 2L — Marca: FRUKITO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115161-260-260/Bebida-Mista-Frukito-Uva-Pet-2L.png?v=639259476386030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115161-260-260/Bebida-Mista-Frukito-Uva-Pet-2L.png?v=639259476386030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115161-260-260/Bebida-Mista-Frukito-Uva-Pet-2L.png?v=639259476386030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102813.png?alt=media&token=34419fad-7032-4bce-b7b3-a4ba13943add",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102813.png?alt=media&token=34419fad-7032-4bce-b7b3-a4ba13943add",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102813.png?alt=media&token=34419fad-7032-4bce-b7b3-a4ba13943add"
   },
   {
     "codigo": "7896436102776",
@@ -3970,9 +3970,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Bebida Mista Frukito Frutas Cítricas Pet 500ml — Marca: FRUKITO. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134894-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-Pet-500ml.png?v=639259659986200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134894-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-Pet-500ml.png?v=639259659986200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134894-260-260/Bebida-Mista-Frukito-Frutas-Ctricas-Pet-500ml.png?v=639259659986200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102776.png?alt=media&token=927c352a-7007-42e9-822a-dd0301c757d3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102776.png?alt=media&token=927c352a-7007-42e9-822a-dd0301c757d3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436102776.png?alt=media&token=927c352a-7007-42e9-822a-dd0301c757d3"
   },
   {
     "codigo": "7897200100271",
@@ -3981,9 +3981,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Catafesta Integral Uva 500ml — Marca: CATAFESTA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111734-260-260/Suco-Catafesta-Integral-Uva-500ml.png?v=639259446683200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111734-260-260/Suco-Catafesta-Integral-Uva-500ml.png?v=639259446683200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111734-260-260/Suco-Catafesta-Integral-Uva-500ml.png?v=639259446683200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897200100271.png?alt=media&token=90e35d93-4a27-41ae-ae85-f3f792457678",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897200100271.png?alt=media&token=90e35d93-4a27-41ae-ae85-f3f792457678",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897200100271.png?alt=media&token=90e35d93-4a27-41ae-ae85-f3f792457678"
   },
   {
     "codigo": "7897015211926",
@@ -3992,9 +3992,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Del Grano Gold Uva Integral Pet 1,35L — Marca: DEL GRANO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117878-260-260/Suco-Del-Grano-Gold-Uva-Integral-Pet-135L.png?v=639259499683670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117878-260-260/Suco-Del-Grano-Gold-Uva-Integral-Pet-135L.png?v=639259499683670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117878-260-260/Suco-Del-Grano-Gold-Uva-Integral-Pet-135L.png?v=639259499683670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897015211926.png?alt=media&token=abcb6bbc-0c74-4edf-ba47-7cc9deb41b64",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897015211926.png?alt=media&token=abcb6bbc-0c74-4edf-ba47-7cc9deb41b64",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897015211926.png?alt=media&token=abcb6bbc-0c74-4edf-ba47-7cc9deb41b64"
   },
   {
     "codigo": "7622210571885",
@@ -4003,9 +4003,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Uva 18g com 15un Leve Mais, Pague Menos — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117865-260-260/Refresco-em-P-Tang-Uva-18g-com-15un-Leve-Mais-Pague-Menos.png?v=639259499642200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117865-260-260/Refresco-em-P-Tang-Uva-18g-com-15un-Leve-Mais-Pague-Menos.png?v=639259499642200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117865-260-260/Refresco-em-P-Tang-Uva-18g-com-15un-Leve-Mais-Pague-Menos.png?v=639259499642200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571885.png?alt=media&token=7765a142-1150-4b63-a009-54e978f0a4f9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571885.png?alt=media&token=7765a142-1150-4b63-a009-54e978f0a4f9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571885.png?alt=media&token=7765a142-1150-4b63-a009-54e978f0a4f9"
   },
   {
     "codigo": "7896204358817",
@@ -4014,9 +4014,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Manga 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115109-260-260/Nctar-Misto-CBS-Manga-200ml.png?v=639259476176630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115109-260-260/Nctar-Misto-CBS-Manga-200ml.png?v=639259476176630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115109-260-260/Nctar-Misto-CBS-Manga-200ml.png?v=639259476176630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358817.png?alt=media&token=ebc9e19d-54aa-4376-9060-045460926c1f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358817.png?alt=media&token=ebc9e19d-54aa-4376-9060-045460926c1f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358817.png?alt=media&token=ebc9e19d-54aa-4376-9060-045460926c1f"
   },
   {
     "codigo": "7622210571663",
@@ -4025,9 +4025,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Uva Intensa 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128073-260-260/Refresco-em-P-Tang-Uva-Intensa-18g.png?v=639259598982230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128073-260-260/Refresco-em-P-Tang-Uva-Intensa-18g.png?v=639259598982230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128073-260-260/Refresco-em-P-Tang-Uva-Intensa-18g.png?v=639259598982230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571663.png?alt=media&token=88ed4ffe-7e82-4572-9a64-297a0313f461",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571663.png?alt=media&token=88ed4ffe-7e82-4572-9a64-297a0313f461",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622210571663.png?alt=media&token=88ed4ffe-7e82-4572-9a64-297a0313f461"
   },
   {
     "codigo": "7897200100318",
@@ -4036,9 +4036,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Catafesta Integral Uva 1,5L — Marca: CATAFESTA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121141-260-260/Suco-Catafesta-Integral-Uva-15L.png?v=639259527221470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121141-260-260/Suco-Catafesta-Integral-Uva-15L.png?v=639259527221470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121141-260-260/Suco-Catafesta-Integral-Uva-15L.png?v=639259527221470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897200100318.png?alt=media&token=4ea8260e-1670-423a-b325-6e260ce0ded6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897200100318.png?alt=media&token=4ea8260e-1670-423a-b325-6e260ce0ded6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897200100318.png?alt=media&token=4ea8260e-1670-423a-b325-6e260ce0ded6"
   },
   {
     "codigo": "7896204358268",
@@ -4047,9 +4047,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Laranja 1L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1109842-260-260/Nctar-Misto-CBS-Laranja-1L.png?v=639259430722400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1109842-260-260/Nctar-Misto-CBS-Laranja-1L.png?v=639259430722400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1109842-260-260/Nctar-Misto-CBS-Laranja-1L.png?v=639259430722400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358268.png?alt=media&token=d0ae2206-6601-4a88-9dff-3104c67061f1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358268.png?alt=media&token=d0ae2206-6601-4a88-9dff-3104c67061f1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358268.png?alt=media&token=d0ae2206-6601-4a88-9dff-3104c67061f1"
   },
   {
     "codigo": "7896204358220",
@@ -4058,9 +4058,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Misto CBS Laranja 200ml — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121073-260-260/Nctar-Misto-CBS-Laranja-200ml.png?v=639259526945500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121073-260-260/Nctar-Misto-CBS-Laranja-200ml.png?v=639259526945500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121073-260-260/Nctar-Misto-CBS-Laranja-200ml.png?v=639259526945500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358220.png?alt=media&token=ed385801-e39e-4643-a094-e071eaa3572d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358220.png?alt=media&token=ed385801-e39e-4643-a094-e071eaa3572d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204358220.png?alt=media&token=ed385801-e39e-4643-a094-e071eaa3572d"
   },
   {
     "codigo": "7894900524505",
@@ -4069,9 +4069,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Smartwater com Gás 591ml — Marca: SMARTWATER. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1109422-260-260/gua-Mineral-Smartwater-com-Gs-591ml.png?v=639259427685300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1109422-260-260/gua-Mineral-Smartwater-com-Gs-591ml.png?v=639259427685300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1109422-260-260/gua-Mineral-Smartwater-com-Gs-591ml.png?v=639259427685300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900524505.png?alt=media&token=280eeb5f-6480-48ca-8428-6056253ad04f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900524505.png?alt=media&token=280eeb5f-6480-48ca-8428-6056253ad04f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900524505.png?alt=media&token=280eeb5f-6480-48ca-8428-6056253ad04f"
   },
   {
     "codigo": "7898070110841",
@@ -4080,9 +4080,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Casa Madeira Integral Uva Tinto 1L — Marca: CASA MADEIRA. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120631-260-260/Suco-Casa-Madeira-Integral-Uva-Tinto-1L.png?v=639259523667300000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120631-260-260/Suco-Casa-Madeira-Integral-Uva-Tinto-1L.png?v=639259523667300000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120631-260-260/Suco-Casa-Madeira-Integral-Uva-Tinto-1L.png?v=639259523667300000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898070110841.png?alt=media&token=cfb915ac-e046-423e-a8fc-2bc9527b5a26",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898070110841.png?alt=media&token=cfb915ac-e046-423e-a8fc-2bc9527b5a26",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898070110841.png?alt=media&token=cfb915ac-e046-423e-a8fc-2bc9527b5a26"
   },
   {
     "codigo": "7894900025019",
@@ -4091,9 +4091,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Plus Café Expresso 220ml — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113935-260-260/Refrigerante-CocaCola-Plus-Caf-Expresso-220ml.png?v=639259465150800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113935-260-260/Refrigerante-CocaCola-Plus-Caf-Expresso-220ml.png?v=639259465150800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113935-260-260/Refrigerante-CocaCola-Plus-Caf-Expresso-220ml.png?v=639259465150800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900025019.png?alt=media&token=b7c1c010-6f16-4376-ad78-53e08d2c3d77",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900025019.png?alt=media&token=b7c1c010-6f16-4376-ad78-53e08d2c3d77",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900025019.png?alt=media&token=b7c1c010-6f16-4376-ad78-53e08d2c3d77"
   },
   {
     "codigo": "7898080665539",
@@ -4102,9 +4102,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Cereja Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112387-260-260/Bebida-Energtica-Baly-Cereja-Lata-473ml.png?v=639259452623130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112387-260-260/Bebida-Energtica-Baly-Cereja-Lata-473ml.png?v=639259452623130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112387-260-260/Bebida-Energtica-Baly-Cereja-Lata-473ml.png?v=639259452623130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665539.png?alt=media&token=47000864-81c9-47cf-b4fa-8be624ffb9b6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665539.png?alt=media&token=47000864-81c9-47cf-b4fa-8be624ffb9b6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665539.png?alt=media&token=47000864-81c9-47cf-b4fa-8be624ffb9b6"
   },
   {
     "codigo": "7894900360394",
@@ -4113,9 +4113,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes Sem Açúcar Lata 220ml — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127684-260-260/Tnica-Schweppes-Sem-Acar-Lata-220ml.png?v=639259595748100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127684-260-260/Tnica-Schweppes-Sem-Acar-Lata-220ml.png?v=639259595748100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127684-260-260/Tnica-Schweppes-Sem-Acar-Lata-220ml.png?v=639259595748100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900360394.png?alt=media&token=297852a8-03e7-4d43-b548-494cbba14616",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900360394.png?alt=media&token=297852a8-03e7-4d43-b548-494cbba14616",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900360394.png?alt=media&token=297852a8-03e7-4d43-b548-494cbba14616"
   },
   {
     "codigo": "7891991014915",
@@ -4124,9 +4124,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "12UN",
     "descricao": "Refrigerante Antarctica Guaraná 200ml - Fardo 12X200ml — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/998033-260-260/Refrigerante-Antarctica-Guaran-200ml-Fardo-12X200ml.png?v=639033181559170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/998033-260-260/Refrigerante-Antarctica-Guaran-200ml-Fardo-12X200ml.png?v=639033181559170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/998033-260-260/Refrigerante-Antarctica-Guaran-200ml-Fardo-12X200ml.png?v=639033181559170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014915.png?alt=media&token=d440e077-b02d-45b0-80e5-3e8e2265cebe",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014915.png?alt=media&token=d440e077-b02d-45b0-80e5-3e8e2265cebe",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014915.png?alt=media&token=d440e077-b02d-45b0-80e5-3e8e2265cebe"
   },
   {
     "codigo": "78937765",
@@ -4135,9 +4135,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Guaraná Pet 200ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1130295-260-260/Refrigerante-Fanta-Guaran-Pet-200ml.png?v=639259620177630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1130295-260-260/Refrigerante-Fanta-Guaran-Pet-200ml.png?v=639259620177630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1130295-260-260/Refrigerante-Fanta-Guaran-Pet-200ml.png?v=639259620177630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78937765.png?alt=media&token=aee6134f-d717-4fa5-aadc-f3eb9361cb7d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78937765.png?alt=media&token=aee6134f-d717-4fa5-aadc-f3eb9361cb7d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F78937765.png?alt=media&token=aee6134f-d717-4fa5-aadc-f3eb9361cb7d"
   },
   {
     "codigo": "7894900093278",
@@ -4146,9 +4146,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Guaraná Pet 1,5L — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140057-260-260/Refrigerante-Fanta-Guaran-Pet-15L---0.png?v=639272562245230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140057-260-260/Refrigerante-Fanta-Guaran-Pet-15L---0.png?v=639272562245230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140057-260-260/Refrigerante-Fanta-Guaran-Pet-15L---0.png?v=639272562245230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093278.png?alt=media&token=0868f19c-9bb7-4ca7-8c79-2dd914a477e1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093278.png?alt=media&token=0868f19c-9bb7-4ca7-8c79-2dd914a477e1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900093278.png?alt=media&token=0868f19c-9bb7-4ca7-8c79-2dd914a477e1"
   },
   {
     "codigo": "7894900094022",
@@ -4157,9 +4157,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Guaraná Zero Pet 2L — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1126754-260-260/Refrigerante-Fanta-Guaran-Zero-Pet-2L.png?v=639259587061800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1126754-260-260/Refrigerante-Fanta-Guaran-Zero-Pet-2L.png?v=639259587061800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1126754-260-260/Refrigerante-Fanta-Guaran-Zero-Pet-2L.png?v=639259587061800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900094022.png?alt=media&token=de5f6ef3-96a8-43a5-b2d9-f48080fa30ff",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900094022.png?alt=media&token=de5f6ef3-96a8-43a5-b2d9-f48080fa30ff",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900094022.png?alt=media&token=de5f6ef3-96a8-43a5-b2d9-f48080fa30ff"
   },
   {
     "codigo": "7896204304555",
@@ -4168,9 +4168,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco CBS Integral Uva 1,5L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113785-260-260/Suco-CBS-Integral-Uva-15L.png?v=639259464535030000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113785-260-260/Suco-CBS-Integral-Uva-15L.png?v=639259464535030000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113785-260-260/Suco-CBS-Integral-Uva-15L.png?v=639259464535030000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204304555.png?alt=media&token=c8abed76-4ea9-4cf0-a87d-b38b005e1b27",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204304555.png?alt=media&token=c8abed76-4ea9-4cf0-a87d-b38b005e1b27",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204304555.png?alt=media&token=c8abed76-4ea9-4cf0-a87d-b38b005e1b27"
   },
   {
     "codigo": "7896828000482",
@@ -4179,9 +4179,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Kero Coco 100% de Coco Verde Brasileiro 330ml — Marca: KERO COCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132964-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-330ml.png?v=639259643756770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132964-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-330ml.png?v=639259643756770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132964-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-330ml.png?v=639259643756770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000482.png?alt=media&token=e6553a64-9614-4a05-9070-4e83c54554d3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000482.png?alt=media&token=e6553a64-9614-4a05-9070-4e83c54554d3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000482.png?alt=media&token=e6553a64-9614-4a05-9070-4e83c54554d3"
   },
   {
     "codigo": "7891999941879",
@@ -4190,9 +4190,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Vigor Minions Laranja Adoçado 200ml — Marca: VIGOR. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138926-260-260/Nctar-Vigor-Minions-Laranja-Adoado-200ml.png?v=639267991803830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138926-260-260/Nctar-Vigor-Minions-Laranja-Adoado-200ml.png?v=639267991803830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138926-260-260/Nctar-Vigor-Minions-Laranja-Adoado-200ml.png?v=639267991803830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999941879.png?alt=media&token=00a3532e-7099-43f8-af74-0c5b0159e75b",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999941879.png?alt=media&token=00a3532e-7099-43f8-af74-0c5b0159e75b",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999941879.png?alt=media&token=00a3532e-7099-43f8-af74-0c5b0159e75b"
   },
   {
     "codigo": "7896828000017",
@@ -4201,9 +4201,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Kero Coco 100% de Coco Verde Brasileiro 200ml — Marca: KERO COCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129413-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-200ml.png?v=639259610736600000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129413-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-200ml.png?v=639259610736600000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129413-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-200ml.png?v=639259610736600000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000017.png?alt=media&token=110c06cc-9952-4b98-9fa2-77d0170241c1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000017.png?alt=media&token=110c06cc-9952-4b98-9fa2-77d0170241c1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000017.png?alt=media&token=110c06cc-9952-4b98-9fa2-77d0170241c1"
   },
   {
     "codigo": "7891999100023",
@@ -4212,9 +4212,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Vigor Minions Maracujá Adoçado 200ml — Marca: VIGOR. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138923-260-260/Nctar-Vigor-Minions-Maracuj-Adoado-200ml.png?v=639267991795270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138923-260-260/Nctar-Vigor-Minions-Maracuj-Adoado-200ml.png?v=639267991795270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138923-260-260/Nctar-Vigor-Minions-Maracuj-Adoado-200ml.png?v=639267991795270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100023.png?alt=media&token=f776843f-db6c-4760-886c-0f97f2c27c33",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100023.png?alt=media&token=f776843f-db6c-4760-886c-0f97f2c27c33",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100023.png?alt=media&token=f776843f-db6c-4760-886c-0f97f2c27c33"
   },
   {
     "codigo": "7891999340108",
@@ -4223,9 +4223,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Vigor Minions Morango Adoçado 200ml — Marca: VIGOR. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138922-260-260/Nctar-Vigor-Minions-Morango-Adoado-200ml.png?v=639267991793070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138922-260-260/Nctar-Vigor-Minions-Morango-Adoado-200ml.png?v=639267991793070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138922-260-260/Nctar-Vigor-Minions-Morango-Adoado-200ml.png?v=639267991793070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999340108.png?alt=media&token=f41bd61c-71cc-4e21-bf9d-9cffe6dfd2dd",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999340108.png?alt=media&token=f41bd61c-71cc-4e21-bf9d-9cffe6dfd2dd",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999340108.png?alt=media&token=f41bd61c-71cc-4e21-bf9d-9cffe6dfd2dd"
   },
   {
     "codigo": "7891999100016",
@@ -4234,9 +4234,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Vigor Minions Maçã Adoçado 200ml — Marca: VIGOR. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138921-260-260/Nctar-Vigor-Minions-Ma-Adoado-200ml.png?v=639267991790070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138921-260-260/Nctar-Vigor-Minions-Ma-Adoado-200ml.png?v=639267991790070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138921-260-260/Nctar-Vigor-Minions-Ma-Adoado-200ml.png?v=639267991790070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100016.png?alt=media&token=7c52cb28-17bd-4345-8d1a-5b25558a7d66",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100016.png?alt=media&token=7c52cb28-17bd-4345-8d1a-5b25558a7d66",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100016.png?alt=media&token=7c52cb28-17bd-4345-8d1a-5b25558a7d66"
   },
   {
     "codigo": "7891999100047",
@@ -4245,9 +4245,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Vigor Minions Uva Adoçado 200ml — Marca: VIGOR. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140635-260-260/Nctar-Vigor-Minions-Uva-Adoado-200ml---0.png?v=639277407538130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140635-260-260/Nctar-Vigor-Minions-Uva-Adoado-200ml---0.png?v=639277407538130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140635-260-260/Nctar-Vigor-Minions-Uva-Adoado-200ml---0.png?v=639277407538130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100047.png?alt=media&token=e0b28099-7afb-4dbd-bd71-c94c46ffa35d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100047.png?alt=media&token=e0b28099-7afb-4dbd-bd71-c94c46ffa35d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891999100047.png?alt=media&token=e0b28099-7afb-4dbd-bd71-c94c46ffa35d"
   },
   {
     "codigo": "7892840808068",
@@ -4256,9 +4256,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Gatorade Maracujá Pet 500ml — Marca: GATORADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1113032-260-260/Isotnico-Gatorade-Maracuj-Pet-500ml.png?v=639259458473070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1113032-260-260/Isotnico-Gatorade-Maracuj-Pet-500ml.png?v=639259458473070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1113032-260-260/Isotnico-Gatorade-Maracuj-Pet-500ml.png?v=639259458473070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808068.png?alt=media&token=8817232a-60bd-4bfa-92e1-9916a71c08ad",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808068.png?alt=media&token=8817232a-60bd-4bfa-92e1-9916a71c08ad",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840808068.png?alt=media&token=8817232a-60bd-4bfa-92e1-9916a71c08ad"
   },
   {
     "codigo": "7896828000239",
@@ -4267,9 +4267,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Kero Coco 100% de Coco Verde Brasileiro 1L — Marca: KERO COCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1119137-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-1L.png?v=639259509675000000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1119137-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-1L.png?v=639259509675000000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1119137-260-260/gua-de-Coco-Kero-Coco-100-de-Coco-Verde-Brasileiro-1L.png?v=639259509675000000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000239.png?alt=media&token=0bd30540-01ca-4621-b27d-c82489272aca",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000239.png?alt=media&token=0bd30540-01ca-4621-b27d-c82489272aca",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896828000239.png?alt=media&token=0bd30540-01ca-4621-b27d-c82489272aca"
   },
   {
     "codigo": "7896000550064",
@@ -4278,9 +4278,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Concentrado Maguary Laranja 500ml — Marca: MAGUARY. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122478-260-260/Suco-Concentrado-Maguary-Laranja-500ml.png?v=639259539123070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122478-260-260/Suco-Concentrado-Maguary-Laranja-500ml.png?v=639259539123070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122478-260-260/Suco-Concentrado-Maguary-Laranja-500ml.png?v=639259539123070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000550064.png?alt=media&token=2860decd-c421-4c19-9a64-d57cb131d825",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000550064.png?alt=media&token=2860decd-c421-4c19-9a64-d57cb131d825",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896000550064.png?alt=media&token=2860decd-c421-4c19-9a64-d57cb131d825"
   },
   {
     "codigo": "7896062801050",
@@ -4289,9 +4289,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral São Lourenço com Gás 510ml — Marca: SAO LOURENCO. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122391-260-260/gua-Mineral-So-Loureno-com-Gs-510ml.png?v=639259538797100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122391-260-260/gua-Mineral-So-Loureno-com-Gs-510ml.png?v=639259538797100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122391-260-260/gua-Mineral-So-Loureno-com-Gs-510ml.png?v=639259538797100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896062801050.png?alt=media&token=e7320d97-8514-4755-9d8a-660485431465",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896062801050.png?alt=media&token=e7320d97-8514-4755-9d8a-660485431465",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896062801050.png?alt=media&token=e7320d97-8514-4755-9d8a-660485431465"
   },
   {
     "codigo": "7894900509809",
@@ -4300,9 +4300,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Cool Citrus Contra-Ataque Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122273-260-260/Isotnico-Powerade-Cool-Citrus-ContraAtaque-Pet-500ml.png?v=639259536283930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122273-260-260/Isotnico-Powerade-Cool-Citrus-ContraAtaque-Pet-500ml.png?v=639259536283930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122273-260-260/Isotnico-Powerade-Cool-Citrus-ContraAtaque-Pet-500ml.png?v=639259536283930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509809.png?alt=media&token=f1abe367-b030-40c0-8e78-b88167f5aa25",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509809.png?alt=media&token=f1abe367-b030-40c0-8e78-b88167f5aa25",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509809.png?alt=media&token=f1abe367-b030-40c0-8e78-b88167f5aa25"
   },
   {
     "codigo": "7894900509700",
@@ -4311,9 +4311,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Citrus-Kick Ataque Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112767-260-260/Isotnico-Powerade-CitrusKick-Ataque-Pet-500ml.png?v=639259455681800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112767-260-260/Isotnico-Powerade-CitrusKick-Ataque-Pet-500ml.png?v=639259455681800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112767-260-260/Isotnico-Powerade-CitrusKick-Ataque-Pet-500ml.png?v=639259455681800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509700.png?alt=media&token=3216a26e-8775-4249-879d-0a57fbb78e80",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509700.png?alt=media&token=3216a26e-8775-4249-879d-0a57fbb78e80",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509700.png?alt=media&token=3216a26e-8775-4249-879d-0a57fbb78e80"
   },
   {
     "codigo": "7894900664003",
@@ -4322,9 +4322,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Limonada Del Valle Classic Lata 290ml — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139332-260-260/Limonada-Del-Valle-Classic-Lata-290ml.png?v=639269107481770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139332-260-260/Limonada-Del-Valle-Classic-Lata-290ml.png?v=639269107481770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139332-260-260/Limonada-Del-Valle-Classic-Lata-290ml.png?v=639269107481770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664003.png?alt=media&token=c3ef0109-28dd-43d2-99f4-382f6a8edfd8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664003.png?alt=media&token=c3ef0109-28dd-43d2-99f4-382f6a8edfd8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900664003.png?alt=media&token=c3ef0109-28dd-43d2-99f4-382f6a8edfd8"
   },
   {
     "codigo": "7898770420042",
@@ -4333,9 +4333,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster The Doctor Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122250-260-260/Bebida-Energtica-Monster-The-Doctor-Lata-473ml.png?v=639259536184630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122250-260-260/Bebida-Energtica-Monster-The-Doctor-Lata-473ml.png?v=639259536184630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122250-260-260/Bebida-Energtica-Monster-The-Doctor-Lata-473ml.png?v=639259536184630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898770420042.png?alt=media&token=a174c5cc-3066-4846-9dfc-1fcea5f16056",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898770420042.png?alt=media&token=a174c5cc-3066-4846-9dfc-1fcea5f16056",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898770420042.png?alt=media&token=a174c5cc-3066-4846-9dfc-1fcea5f16056"
   },
   {
     "codigo": "7896436105401",
@@ -4344,9 +4344,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fruki Guaraná P4ass1on Lata 350ml — Marca: FRUKI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122248-260-260/Refrigerante-Fruki-Guaran-P4ass1on-Lata-350ml.png?v=639259536175230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122248-260-260/Refrigerante-Fruki-Guaran-P4ass1on-Lata-350ml.png?v=639259536175230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122248-260-260/Refrigerante-Fruki-Guaran-P4ass1on-Lata-350ml.png?v=639259536175230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105401.png?alt=media&token=ad3e2e89-1c47-479f-89d9-86fea935e08a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105401.png?alt=media&token=ad3e2e89-1c47-479f-89d9-86fea935e08a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105401.png?alt=media&token=ad3e2e89-1c47-479f-89d9-86fea935e08a"
   },
   {
     "codigo": "7894900530278",
@@ -4355,9 +4355,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Crystal sem Gás 1,5L Leve Mais e Pague Menos — Marca: CRYSTAL. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139093-260-260/gua-Mineral-Crystal-sem-Gs-15L-Leve-Mais-e-Pague-Menos.png?v=639268045890630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139093-260-260/gua-Mineral-Crystal-sem-Gs-15L-Leve-Mais-e-Pague-Menos.png?v=639268045890630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139093-260-260/gua-Mineral-Crystal-sem-Gs-15L-Leve-Mais-e-Pague-Menos.png?v=639268045890630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530278.png?alt=media&token=2f4d5353-263a-410f-8338-9e0e6ca3a6a5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530278.png?alt=media&token=2f4d5353-263a-410f-8338-9e0e6ca3a6a5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900530278.png?alt=media&token=2f4d5353-263a-410f-8338-9e0e6ca3a6a5"
   },
   {
     "codigo": "7896436105197",
@@ -4366,9 +4366,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra sem Gás 500ml Leve 12, Pague 10 — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1129022-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-500ml-Leve-12-Pague-10.png?v=639259605749200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1129022-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-500ml-Leve-12-Pague-10.png?v=639259605749200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1129022-260-260/gua-Mineral-gua-da-Pedra-sem-Gs-500ml-Leve-12-Pague-10.png?v=639259605749200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105197.png?alt=media&token=6722d56c-0ed3-49d2-a43a-a9e2bfc16b8e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105197.png?alt=media&token=6722d56c-0ed3-49d2-a43a-a9e2bfc16b8e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105197.png?alt=media&token=6722d56c-0ed3-49d2-a43a-a9e2bfc16b8e"
   },
   {
     "codigo": "7896436105203",
@@ -4377,9 +4377,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Água da Pedra com Gás 500ml Leve 12, Pague 10 — Marca: AGUA DA PEDRA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1112656-260-260/gua-Mineral-gua-da-Pedra-com-Gs-500ml-Leve-12-Pague-10.png?v=639259455172430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1112656-260-260/gua-Mineral-gua-da-Pedra-com-Gs-500ml-Leve-12-Pague-10.png?v=639259455172430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1112656-260-260/gua-Mineral-gua-da-Pedra-com-Gs-500ml-Leve-12-Pague-10.png?v=639259455172430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105203.png?alt=media&token=e1dfe6f5-ab44-4c17-a119-99a5f6331642",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105203.png?alt=media&token=e1dfe6f5-ab44-4c17-a119-99a5f6331642",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896436105203.png?alt=media&token=e1dfe6f5-ab44-4c17-a119-99a5f6331642"
   },
   {
     "codigo": "7894900095203",
@@ -4388,9 +4388,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Fanta Mistério Chucky Punch Lata 350ml — Marca: FANTA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1122149-260-260/Refrigerante-Fanta-Mistrio-Chucky-Punch-Lata-350ml.png?v=639259535807270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1122149-260-260/Refrigerante-Fanta-Mistrio-Chucky-Punch-Lata-350ml.png?v=639259535807270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1122149-260-260/Refrigerante-Fanta-Mistrio-Chucky-Punch-Lata-350ml.png?v=639259535807270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900095203.png?alt=media&token=5961665c-8802-40a6-94c8-474b78c684c7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900095203.png?alt=media&token=5961665c-8802-40a6-94c8-474b78c684c7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900095203.png?alt=media&token=5961665c-8802-40a6-94c8-474b78c684c7"
   },
   {
     "codigo": "7898939126198",
@@ -4399,9 +4399,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba sem Gás 350ml — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139208-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-350ml.png?v=639268243522870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139208-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-350ml.png?v=639268243522870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139208-260-260/gua-Mineral-Fonte-da-Lomba-sem-Gs-350ml.png?v=639268243522870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126198.png?alt=media&token=afff761a-caf8-4565-80d3-9d9c512bdab6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126198.png?alt=media&token=afff761a-caf8-4565-80d3-9d9c512bdab6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126198.png?alt=media&token=afff761a-caf8-4565-80d3-9d9c512bdab6"
   },
   {
     "codigo": "7898939126204",
@@ -4410,9 +4410,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Fonte da Lomba Com Gás 350ml — Marca: FONTE DA LOMBA. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139092-260-260/gua-Mineral-Fonte-da-Lomba-Com-Gs-350ml.png?v=639268045886430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139092-260-260/gua-Mineral-Fonte-da-Lomba-Com-Gs-350ml.png?v=639268045886430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139092-260-260/gua-Mineral-Fonte-da-Lomba-Com-Gs-350ml.png?v=639268045886430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126204.png?alt=media&token=1910189e-162e-43e8-9aa4-fa80f3508ead",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126204.png?alt=media&token=1910189e-162e-43e8-9aa4-fa80f3508ead",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126204.png?alt=media&token=1910189e-162e-43e8-9aa4-fa80f3508ead"
   },
   {
     "codigo": "7894900509601",
@@ -4421,9 +4421,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Isotônicos & Esportivos",
     "unidade_medida": "1UN",
     "descricao": "Isotônico Powerade Sour Maçã Verde Pet 500ml — Marca: POWERADE. Categoria: Isotônicos & Esportivos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132341-260-260/Isotnico-Powerade-Sour-Ma-Verde-Pet-500ml.png?v=639259638142770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132341-260-260/Isotnico-Powerade-Sour-Ma-Verde-Pet-500ml.png?v=639259638142770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132341-260-260/Isotnico-Powerade-Sour-Ma-Verde-Pet-500ml.png?v=639259638142770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509601.png?alt=media&token=bcb2219b-c63a-4c96-8ecf-f4df739467f8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509601.png?alt=media&token=bcb2219b-c63a-4c96-8ecf-f4df739467f8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900509601.png?alt=media&token=bcb2219b-c63a-4c96-8ecf-f4df739467f8"
   },
   {
     "codigo": "7622202347535",
@@ -4432,9 +4432,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Tang Azul Espacial 18g — Marca: TANG. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118668-260-260/Refresco-em-P-Tang-Azul-Espacial-18g.png?v=639259505932200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118668-260-260/Refresco-em-P-Tang-Azul-Espacial-18g.png?v=639259505932200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118668-260-260/Refresco-em-P-Tang-Azul-Espacial-18g.png?v=639259505932200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202347535.png?alt=media&token=64455452-c4bc-4476-9a4b-3f01c960258e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202347535.png?alt=media&token=64455452-c4bc-4476-9a4b-3f01c960258e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7622202347535.png?alt=media&token=64455452-c4bc-4476-9a4b-3f01c960258e"
   },
   {
     "codigo": "682430611751",
@@ -4443,9 +4443,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Voss com Gás Vidro 375ml — Marca: VOSS. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1118637-260-260/gua-Mineral-Voss-com-Gs-Vidro-375ml.png?v=639259505831830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1118637-260-260/gua-Mineral-Voss-com-Gs-Vidro-375ml.png?v=639259505831830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1118637-260-260/gua-Mineral-Voss-com-Gs-Vidro-375ml.png?v=639259505831830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F682430611751.png?alt=media&token=fc4e15f6-7e6d-4d62-b50e-01681b4d0966",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F682430611751.png?alt=media&token=fc4e15f6-7e6d-4d62-b50e-01681b4d0966",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F682430611751.png?alt=media&token=fc4e15f6-7e6d-4d62-b50e-01681b4d0966"
   },
   {
     "codigo": "682430611737",
@@ -4454,9 +4454,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Voss sem Gás Vidro 375ml — Marca: VOSS. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125428-260-260/gua-Mineral-Voss-sem-Gs-Vidro-375ml.png?v=639259575482400000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125428-260-260/gua-Mineral-Voss-sem-Gs-Vidro-375ml.png?v=639259575482400000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125428-260-260/gua-Mineral-Voss-sem-Gs-Vidro-375ml.png?v=639259575482400000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F682430611737.png?alt=media&token=db641386-3045-4d4b-8926-2d5fcdf5c366",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F682430611737.png?alt=media&token=db641386-3045-4d4b-8926-2d5fcdf5c366",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F682430611737.png?alt=media&token=db641386-3045-4d4b-8926-2d5fcdf5c366"
   },
   {
     "codigo": "7898080665409",
@@ -4465,9 +4465,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Tradicional sem Açúcar Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132248-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-2L.png?v=639259637741370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132248-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-2L.png?v=639259637741370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132248-260-260/Bebida-Energtica-Baly-Tradicional-sem-Acar-Pet-2L.png?v=639259637741370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665409.png?alt=media&token=2e75c6ad-2696-4966-966c-e175c8dfbae0",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665409.png?alt=media&token=2e75c6ad-2696-4966-966c-e175c8dfbae0",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665409.png?alt=media&token=2e75c6ad-2696-4966-966c-e175c8dfbae0"
   },
   {
     "codigo": "9002490284329",
@@ -4476,9 +4476,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Blueberry e Baunilha Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138912-260-260/Bebida-Energtica-Red-Bull-Blueberry-e-Baunilha-Lata-250ml.png?v=639267991753770000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138912-260-260/Bebida-Energtica-Red-Bull-Blueberry-e-Baunilha-Lata-250ml.png?v=639267991753770000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138912-260-260/Bebida-Energtica-Red-Bull-Blueberry-e-Baunilha-Lata-250ml.png?v=639267991753770000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490284329.png?alt=media&token=9a84291e-1452-48ca-abd2-f32c3b91ea25",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490284329.png?alt=media&token=9a84291e-1452-48ca-abd2-f32c3b91ea25",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490284329.png?alt=media&token=9a84291e-1452-48ca-abd2-f32c3b91ea25"
   },
   {
     "codigo": "7898942775628",
@@ -4487,9 +4487,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco OQ Integral 300ml — Marca: OQ. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138905-260-260/gua-de-Coco-OQ-Integral-300ml.png?v=639267991733330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138905-260-260/gua-de-Coco-OQ-Integral-300ml.png?v=639267991733330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138905-260-260/gua-de-Coco-OQ-Integral-300ml.png?v=639267991733330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898942775628.png?alt=media&token=23472fec-4995-4ed5-be4b-991b40c4d52c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898942775628.png?alt=media&token=23472fec-4995-4ed5-be4b-991b40c4d52c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898942775628.png?alt=media&token=23472fec-4995-4ed5-be4b-991b40c4d52c"
   },
   {
     "codigo": "7898942775604",
@@ -4498,9 +4498,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco OQ Integral 1L — Marca: OQ. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128756-260-260/gua-de-Coco-OQ-Integral-1L.png?v=639259604823930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128756-260-260/gua-de-Coco-OQ-Integral-1L.png?v=639259604823930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128756-260-260/gua-de-Coco-OQ-Integral-1L.png?v=639259604823930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898942775604.png?alt=media&token=3c5ac304-1ebc-4147-ba3b-3edd692f96e9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898942775604.png?alt=media&token=3c5ac304-1ebc-4147-ba3b-3edd692f96e9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898942775604.png?alt=media&token=3c5ac304-1ebc-4147-ba3b-3edd692f96e9"
   },
   {
     "codigo": "7896204359951",
@@ -4509,9 +4509,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS Bergamota Pet 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135443-260-260/Suco-Misto-100-CBS-Bergamota-Pet-135L.png?v=639259665039830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135443-260-260/Suco-Misto-100-CBS-Bergamota-Pet-135L.png?v=639259665039830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135443-260-260/Suco-Misto-100-CBS-Bergamota-Pet-135L.png?v=639259665039830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359951.png?alt=media&token=54ec318e-2ed6-4c78-8db5-84f27dffa019",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359951.png?alt=media&token=54ec318e-2ed6-4c78-8db5-84f27dffa019",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359951.png?alt=media&token=54ec318e-2ed6-4c78-8db5-84f27dffa019"
   },
   {
     "codigo": "7896204359944",
@@ -4520,9 +4520,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS Laranja Pet 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125229-260-260/Suco-Misto-100-CBS-Laranja-Pet-135L.png?v=639259574759870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125229-260-260/Suco-Misto-100-CBS-Laranja-Pet-135L.png?v=639259574759870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125229-260-260/Suco-Misto-100-CBS-Laranja-Pet-135L.png?v=639259574759870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359944.png?alt=media&token=6d4a7026-2cc5-4ee8-9567-c82328e4ceb4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359944.png?alt=media&token=6d4a7026-2cc5-4ee8-9567-c82328e4ceb4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359944.png?alt=media&token=6d4a7026-2cc5-4ee8-9567-c82328e4ceb4"
   },
   {
     "codigo": "7896204359937",
@@ -4531,9 +4531,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS Maracujá Pet 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128657-260-260/Suco-Misto-100-CBS-Maracuj-Pet-135L.png?v=639259602870170000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128657-260-260/Suco-Misto-100-CBS-Maracuj-Pet-135L.png?v=639259602870170000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128657-260-260/Suco-Misto-100-CBS-Maracuj-Pet-135L.png?v=639259602870170000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359937.png?alt=media&token=6f02fdcd-82d1-4de8-af0c-f1d3f403709e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359937.png?alt=media&token=6f02fdcd-82d1-4de8-af0c-f1d3f403709e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359937.png?alt=media&token=6f02fdcd-82d1-4de8-af0c-f1d3f403709e"
   },
   {
     "codigo": "7896204359920",
@@ -4542,9 +4542,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS Manga Pet 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132059-260-260/Suco-Misto-100-CBS-Manga-Pet-135L.png?v=639259635384130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132059-260-260/Suco-Misto-100-CBS-Manga-Pet-135L.png?v=639259635384130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132059-260-260/Suco-Misto-100-CBS-Manga-Pet-135L.png?v=639259635384130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359920.png?alt=media&token=b4792a5d-48a1-4eed-86d3-759d6488ec8c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359920.png?alt=media&token=b4792a5d-48a1-4eed-86d3-759d6488ec8c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359920.png?alt=media&token=b4792a5d-48a1-4eed-86d3-759d6488ec8c"
   },
   {
     "codigo": "7896204359913",
@@ -4553,9 +4553,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Misto 100% CBS Uva Pet 1,35L — Marca: CBS. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1132058-260-260/Suco-Misto-100-CBS-Uva-Pet-135L.png?v=639259635380900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1132058-260-260/Suco-Misto-100-CBS-Uva-Pet-135L.png?v=639259635380900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1132058-260-260/Suco-Misto-100-CBS-Uva-Pet-135L.png?v=639259635380900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359913.png?alt=media&token=3f6132f2-e393-4cb9-bc27-3d2cb7b5f89a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359913.png?alt=media&token=3f6132f2-e393-4cb9-bc27-3d2cb7b5f89a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359913.png?alt=media&token=3f6132f2-e393-4cb9-bc27-3d2cb7b5f89a"
   },
   {
     "codigo": "7898080664846",
@@ -4564,9 +4564,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Summer Loko Manga Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128638-260-260/Bebida-Energtica-Baly-Summer-Loko-Manga-Lata-473ml.png?v=639259602805700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128638-260-260/Bebida-Energtica-Baly-Summer-Loko-Manga-Lata-473ml.png?v=639259602805700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128638-260-260/Bebida-Energtica-Baly-Summer-Loko-Manga-Lata-473ml.png?v=639259602805700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664846.png?alt=media&token=495cc817-fcc4-41bd-881f-df00d6f73732",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664846.png?alt=media&token=495cc817-fcc4-41bd-881f-df00d6f73732",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664846.png?alt=media&token=495cc817-fcc4-41bd-881f-df00d6f73732"
   },
   {
     "codigo": "7898080665805",
@@ -4575,9 +4575,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Champanhe Lata 250ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125200-260-260/Bebida-Energtica-Baly-Champanhe-Lata-250ml.png?v=639259573039800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125200-260-260/Bebida-Energtica-Baly-Champanhe-Lata-250ml.png?v=639259573039800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125200-260-260/Bebida-Energtica-Baly-Champanhe-Lata-250ml.png?v=639259573039800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665805.png?alt=media&token=40c5a3e0-dcf6-478e-888d-f59d3860ef85",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665805.png?alt=media&token=40c5a3e0-dcf6-478e-888d-f59d3860ef85",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665805.png?alt=media&token=40c5a3e0-dcf6-478e-888d-f59d3860ef85"
   },
   {
     "codigo": "9002490271107",
@@ -4586,9 +4586,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Pera e Canela Lata 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121733-260-260/Bebida-Energtica-Red-Bull-Pera-e-Canela-Lata-250ml.png?v=639259532753430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121733-260-260/Bebida-Energtica-Red-Bull-Pera-e-Canela-Lata-250ml.png?v=639259532753430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121733-260-260/Bebida-Energtica-Red-Bull-Pera-e-Canela-Lata-250ml.png?v=639259532753430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490271107.png?alt=media&token=dccba704-7eec-4289-8fb2-569fe1726b64",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490271107.png?alt=media&token=dccba704-7eec-4289-8fb2-569fe1726b64",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490271107.png?alt=media&token=dccba704-7eec-4289-8fb2-569fe1726b64"
   },
   {
     "codigo": "7898692300873",
@@ -4597,9 +4597,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Suplemento Alimentar Liquído Jungle Low Carb Morango e Limão 500ml — Marca: JUNGLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1125121-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Morango-e-Limo-500ml.png?v=639259572733900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1125121-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Morango-e-Limo-500ml.png?v=639259572733900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1125121-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Morango-e-Limo-500ml.png?v=639259572733900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300873.png?alt=media&token=3beb57b4-c2dc-490e-b927-7ef3ccf0f923",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300873.png?alt=media&token=3beb57b4-c2dc-490e-b927-7ef3ccf0f923",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300873.png?alt=media&token=3beb57b4-c2dc-490e-b927-7ef3ccf0f923"
   },
   {
     "codigo": "7898692300859",
@@ -4608,9 +4608,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Suplemento Alimentar Liquído Jungle Low Carb Limonada 500ml — Marca: JUNGLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115611-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Limonada-500ml.png?v=639259479711470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115611-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Limonada-500ml.png?v=639259479711470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115611-260-260/Suplemento-Alimentar-Liqudo-Jungle-Low-Carb-Limonada-500ml.png?v=639259479711470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300859.png?alt=media&token=8676e90f-2827-4c1d-8637-c30d09965e9e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300859.png?alt=media&token=8676e90f-2827-4c1d-8637-c30d09965e9e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898692300859.png?alt=media&token=8676e90f-2827-4c1d-8637-c30d09965e9e"
   },
   {
     "codigo": "7898638067488",
@@ -4619,9 +4619,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Plenno Limonada Resfriado 1,35L — Marca: PLENNO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139259-260-260/Nctar-Plenno-Limonada-Resfriado-135L.png?v=639268801465270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139259-260-260/Nctar-Plenno-Limonada-Resfriado-135L.png?v=639268801465270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139259-260-260/Nctar-Plenno-Limonada-Resfriado-135L.png?v=639268801465270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898638067488.png?alt=media&token=8ece8809-5bed-40d0-a2d1-0e5528cb7ba4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898638067488.png?alt=media&token=8ece8809-5bed-40d0-a2d1-0e5528cb7ba4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898638067488.png?alt=media&token=8ece8809-5bed-40d0-a2d1-0e5528cb7ba4"
   },
   {
     "codigo": "7891991306379",
@@ -4630,9 +4630,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Fusion Frutas Tropicais Lata 473ml — Marca: FUSION. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131934-260-260/Bebida-Energtica-Fusion-Frutas-Tropicais-Lata-473ml.png?v=639259634969330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131934-260-260/Bebida-Energtica-Fusion-Frutas-Tropicais-Lata-473ml.png?v=639259634969330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131934-260-260/Bebida-Energtica-Fusion-Frutas-Tropicais-Lata-473ml.png?v=639259634969330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991306379.png?alt=media&token=02d63931-8020-4c3f-915f-7a035ac1c4b6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991306379.png?alt=media&token=02d63931-8020-4c3f-915f-7a035ac1c4b6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991306379.png?alt=media&token=02d63931-8020-4c3f-915f-7a035ac1c4b6"
   },
   {
     "codigo": "7898960761023",
@@ -4641,9 +4641,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Água de Coco Puri Integral 1L — Marca: PURI. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135236-260-260/gua-de-Coco-Puri-Integral-1L.png?v=639259662703870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135236-260-260/gua-de-Coco-Puri-Integral-1L.png?v=639259662703870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135236-260-260/gua-de-Coco-Puri-Integral-1L.png?v=639259662703870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898960761023.png?alt=media&token=6acfd3db-c6df-475b-a652-5ac864cf3e17",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898960761023.png?alt=media&token=6acfd3db-c6df-475b-a652-5ac864cf3e17",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898960761023.png?alt=media&token=6acfd3db-c6df-475b-a652-5ac864cf3e17"
   },
   {
     "codigo": "7898080665355",
@@ -4652,9 +4652,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Abacaxi e Hortelã Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135202-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Pet-2L.png?v=639259662593830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135202-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Pet-2L.png?v=639259662593830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135202-260-260/Bebida-Energtica-Baly-Abacaxi-e-Hortel-Pet-2L.png?v=639259662593830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665355.png?alt=media&token=3955b46a-9747-407c-ab62-87bbd35057c4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665355.png?alt=media&token=3955b46a-9747-407c-ab62-87bbd35057c4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665355.png?alt=media&token=3955b46a-9747-407c-ab62-87bbd35057c4"
   },
   {
     "codigo": "7896045112418",
@@ -4663,9 +4663,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Frisco Salada de Frutas 18g — Marca: FRISCO. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121575-260-260/Refresco-em-P-Frisco-Salada-de-Frutas-18g.png?v=639259530739130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121575-260-260/Refresco-em-P-Frisco-Salada-de-Frutas-18g.png?v=639259530739130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121575-260-260/Refresco-em-P-Frisco-Salada-de-Frutas-18g.png?v=639259530739130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112418.png?alt=media&token=165a4d74-5705-4e8c-9629-70728caa0729",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112418.png?alt=media&token=165a4d74-5705-4e8c-9629-70728caa0729",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896045112418.png?alt=media&token=165a4d74-5705-4e8c-9629-70728caa0729"
   },
   {
     "codigo": "7898080665324",
@@ -4674,9 +4674,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Baly Kids Laranja sem Taurina sem Cafeína Lata 220ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121568-260-260/Bebida-Baly-Kids-Laranja-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259530693430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121568-260-260/Bebida-Baly-Kids-Laranja-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259530693430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121568-260-260/Bebida-Baly-Kids-Laranja-sem-Taurina-sem-Cafena-Lata-220ml.png?v=639259530693430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665324.png?alt=media&token=a770a16b-16d7-450a-a74a-1c3e59e92f5f",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665324.png?alt=media&token=a770a16b-16d7-450a-a74a-1c3e59e92f5f",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665324.png?alt=media&token=a770a16b-16d7-450a-a74a-1c3e59e92f5f"
   },
   {
     "codigo": "7896004008714",
@@ -4685,9 +4685,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco em Pó Trink Laranja Bahia 15g — Marca: TRINK. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124868-260-260/Refresco-em-P-Trink-Laranja-Bahia-15g.png?v=639259571720500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124868-260-260/Refresco-em-P-Trink-Laranja-Bahia-15g.png?v=639259571720500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124868-260-260/Refresco-em-P-Trink-Laranja-Bahia-15g.png?v=639259571720500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008714.png?alt=media&token=edbb4d70-6e46-4646-a4bf-2ca0943708de",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008714.png?alt=media&token=edbb4d70-6e46-4646-a4bf-2ca0943708de",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896004008714.png?alt=media&token=edbb4d70-6e46-4646-a4bf-2ca0943708de"
   },
   {
     "codigo": "7896204359340",
@@ -4696,9 +4696,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Valore Integral Uva Branca Pet 1,35L — Marca: VALORE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128270-260-260/Suco-Valore-Integral-Uva-Branca-Pet-135L.png?v=639259599785470000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128270-260-260/Suco-Valore-Integral-Uva-Branca-Pet-135L.png?v=639259599785470000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128270-260-260/Suco-Valore-Integral-Uva-Branca-Pet-135L.png?v=639259599785470000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359340.png?alt=media&token=83840b0d-f01b-4357-88f0-3902f40c56b8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359340.png?alt=media&token=83840b0d-f01b-4357-88f0-3902f40c56b8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359340.png?alt=media&token=83840b0d-f01b-4357-88f0-3902f40c56b8"
   },
   {
     "codigo": "7896204359333",
@@ -4707,9 +4707,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Valore Integral Uva Pet 1,35L — Marca: VALORE. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124833-260-260/Suco-Valore-Integral-Uva-Pet-135L.png?v=639259569972430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124833-260-260/Suco-Valore-Integral-Uva-Pet-135L.png?v=639259569972430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124833-260-260/Suco-Valore-Integral-Uva-Pet-135L.png?v=639259569972430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359333.png?alt=media&token=f2d0ac99-2d43-4395-a3ab-792912e0537d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359333.png?alt=media&token=f2d0ac99-2d43-4395-a3ab-792912e0537d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7896204359333.png?alt=media&token=f2d0ac99-2d43-4395-a3ab-792912e0537d"
   },
   {
     "codigo": "3052911376269",
@@ -4718,9 +4718,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Cranberry 250ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121385-260-260/Xarope-Monin-Cranberry-250ml.png?v=639259530042700000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121385-260-260/Xarope-Monin-Cranberry-250ml.png?v=639259530042700000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121385-260-260/Xarope-Monin-Cranberry-250ml.png?v=639259530042700000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F3052911376269.png?alt=media&token=6008ec16-add4-4983-a781-b799dd683be9",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F3052911376269.png?alt=media&token=6008ec16-add4-4983-a781-b799dd683be9",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F3052911376269.png?alt=media&token=6008ec16-add4-4983-a781-b799dd683be9"
   },
   {
     "codigo": "3052911188879",
@@ -4729,9 +4729,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Monin Morango Silvestre 250ml — Marca: MONIN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1135003-260-260/Xarope-Monin-Morango-Silvestre-250ml.png?v=639259661864200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1135003-260-260/Xarope-Monin-Morango-Silvestre-250ml.png?v=639259661864200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1135003-260-260/Xarope-Monin-Morango-Silvestre-250ml.png?v=639259661864200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F3052911188879.png?alt=media&token=4d1062d9-d340-4dd3-ac5e-c4b9c7b38003",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F3052911188879.png?alt=media&token=4d1062d9-d340-4dd3-ac5e-c4b9c7b38003",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F3052911188879.png?alt=media&token=4d1062d9-d340-4dd3-ac5e-c4b9c7b38003"
   },
   {
     "codigo": "1220000250406",
@@ -4740,9 +4740,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Peach Dragon Ice Tea Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134951-260-260/Bebida-Energtica-Monster-Peach-Dragon-Ice-Tea-Lata-473ml.png?v=639259661651970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134951-260-260/Bebida-Energtica-Monster-Peach-Dragon-Ice-Tea-Lata-473ml.png?v=639259661651970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134951-260-260/Bebida-Energtica-Monster-Peach-Dragon-Ice-Tea-Lata-473ml.png?v=639259661651970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250406.png?alt=media&token=fd52677c-db7f-466b-8439-b66d694ecf19",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250406.png?alt=media&token=fd52677c-db7f-466b-8439-b66d694ecf19",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250406.png?alt=media&token=fd52677c-db7f-466b-8439-b66d694ecf19"
   },
   {
     "codigo": "7898132842123",
@@ -4751,9 +4751,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Amazoo Smoothie Original Açaí e Banana 1L — Marca: AMAZOO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134917-260-260/Nctar-Amazoo-Smoothie-Original-Aa-e-Banana-1L.png?v=639259660050570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134917-260-260/Nctar-Amazoo-Smoothie-Original-Aa-e-Banana-1L.png?v=639259660050570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134917-260-260/Nctar-Amazoo-Smoothie-Original-Aa-e-Banana-1L.png?v=639259660050570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898132842123.png?alt=media&token=d22a9dda-76de-44e2-b772-1caa55b1fbdf",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898132842123.png?alt=media&token=d22a9dda-76de-44e2-b772-1caa55b1fbdf",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898132842123.png?alt=media&token=d22a9dda-76de-44e2-b772-1caa55b1fbdf"
   },
   {
     "codigo": "7898911931123",
@@ -4762,9 +4762,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Juxx Cranberry Zero Adição de Açúcares 1L — Marca: JUXX. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1140587-260-260/Suco-Juxx-Cranberry-Zero-Adio-de-Acares-1L---0.png?v=639277407399200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1140587-260-260/Suco-Juxx-Cranberry-Zero-Adio-de-Acares-1L---0.png?v=639277407399200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1140587-260-260/Suco-Juxx-Cranberry-Zero-Adio-de-Acares-1L---0.png?v=639277407399200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898911931123.png?alt=media&token=8dfc54ab-3890-4d2c-8150-34d2dd57fa1e",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898911931123.png?alt=media&token=8dfc54ab-3890-4d2c-8150-34d2dd57fa1e",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898911931123.png?alt=media&token=8dfc54ab-3890-4d2c-8150-34d2dd57fa1e"
   },
   {
     "codigo": "7898132842116",
@@ -4773,9 +4773,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Néctar Amazoo Smoothie Original Açaí 1L — Marca: AMAZOO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117903-260-260/Nctar-Amazoo-Smoothie-Original-Aa-1L.png?v=639259499807730000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117903-260-260/Nctar-Amazoo-Smoothie-Original-Aa-1L.png?v=639259499807730000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117903-260-260/Nctar-Amazoo-Smoothie-Original-Aa-1L.png?v=639259499807730000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898132842116.png?alt=media&token=4827a3fc-7577-436f-8daa-31673d338389",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898132842116.png?alt=media&token=4827a3fc-7577-436f-8daa-31673d338389",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898132842116.png?alt=media&token=4827a3fc-7577-436f-8daa-31673d338389"
   },
   {
     "codigo": "7898911931116",
@@ -4784,9 +4784,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Juxx Cranberry 1L — Marca: JUXX. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138890-260-260/Suco-Juxx-Cranberry-1L.png?v=639267991687130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138890-260-260/Suco-Juxx-Cranberry-1L.png?v=639267991687130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138890-260-260/Suco-Juxx-Cranberry-1L.png?v=639267991687130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898911931116.png?alt=media&token=7d87531d-02a2-4453-bb68-c808481b17f3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898911931116.png?alt=media&token=7d87531d-02a2-4453-bb68-c808481b17f3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898911931116.png?alt=media&token=7d87531d-02a2-4453-bb68-c808481b17f3"
   },
   {
     "codigo": "7898939126112",
@@ -4795,9 +4795,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Mountain sem Gás 500ml — Marca: MOUNTAIN. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1115176-260-260/gua-Mineral-Mountain-sem-Gs-500ml.png?v=639259476431800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1115176-260-260/gua-Mineral-Mountain-sem-Gs-500ml.png?v=639259476431800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1115176-260-260/gua-Mineral-Mountain-sem-Gs-500ml.png?v=639259476431800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126112.png?alt=media&token=9f9daf29-5778-4732-b776-0afd2c2657e4",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126112.png?alt=media&token=9f9daf29-5778-4732-b776-0afd2c2657e4",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126112.png?alt=media&token=9f9daf29-5778-4732-b776-0afd2c2657e4"
   },
   {
     "codigo": "7898939126129",
@@ -4806,9 +4806,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Águas Minerais",
     "unidade_medida": "1UN",
     "descricao": "Água Mineral Mountain com Gás 500ml — Marca: MOUNTAIN. Categoria: Águas Minerais. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121292-260-260/gua-Mineral-Mountain-com-Gs-500ml.png?v=639259527789070000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121292-260-260/gua-Mineral-Mountain-com-Gs-500ml.png?v=639259527789070000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121292-260-260/gua-Mineral-Mountain-com-Gs-500ml.png?v=639259527789070000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126129.png?alt=media&token=e3d93ab0-4b84-4a52-8e94-fc34c4ce2bf8",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126129.png?alt=media&token=e3d93ab0-4b84-4a52-8e94-fc34c4ce2bf8",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898939126129.png?alt=media&token=e3d93ab0-4b84-4a52-8e94-fc34c4ce2bf8"
   },
   {
     "codigo": "7898080664563",
@@ -4817,9 +4817,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Maçã Verde Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1138888-260-260/Bebida-Energtica-Baly-Ma-Verde-Pet-2L.png?v=639267991681200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1138888-260-260/Bebida-Energtica-Baly-Ma-Verde-Pet-2L.png?v=639267991681200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1138888-260-260/Bebida-Energtica-Baly-Ma-Verde-Pet-2L.png?v=639267991681200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664563.png?alt=media&token=ff42bf5f-2e3c-4c7f-a157-ca54837a59da",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664563.png?alt=media&token=ff42bf5f-2e3c-4c7f-a157-ca54837a59da",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664563.png?alt=media&token=ff42bf5f-2e3c-4c7f-a157-ca54837a59da"
   },
   {
     "codigo": "7897015211933",
@@ -4828,9 +4828,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Del Grano 100% Uva Pet 1,35L — Marca: DEL GRANO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1128124-260-260/Suco-Del-Grano-100-Uva-Pet-135L.png?v=639259599182230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1128124-260-260/Suco-Del-Grano-100-Uva-Pet-135L.png?v=639259599182230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1128124-260-260/Suco-Del-Grano-100-Uva-Pet-135L.png?v=639259599182230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897015211933.png?alt=media&token=d08109ab-63c8-4658-9246-34e840370216",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897015211933.png?alt=media&token=d08109ab-63c8-4658-9246-34e840370216",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897015211933.png?alt=media&token=d08109ab-63c8-4658-9246-34e840370216"
   },
   {
     "codigo": "7898080665010",
@@ -4839,9 +4839,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Morango e Pêssego Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1121177-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-Pet-2L.png?v=639259527340200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1121177-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-Pet-2L.png?v=639259527340200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1121177-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-Pet-2L.png?v=639259527340200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665010.png?alt=media&token=55a858ed-9cb6-4504-8e21-833982c6cbc7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665010.png?alt=media&token=55a858ed-9cb6-4504-8e21-833982c6cbc7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665010.png?alt=media&token=55a858ed-9cb6-4504-8e21-833982c6cbc7"
   },
   {
     "codigo": "7898080665003",
@@ -4850,9 +4850,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Morango e Pêssego Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1117786-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-Lata-473ml.png?v=639259497855370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1117786-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-Lata-473ml.png?v=639259497855370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1117786-260-260/Bebida-Energtica-Baly-Morango-e-Pssego-Lata-473ml.png?v=639259497855370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665003.png?alt=media&token=c5a2bd1d-291d-4abd-b3b9-7c062997a094",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665003.png?alt=media&token=c5a2bd1d-291d-4abd-b3b9-7c062997a094",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080665003.png?alt=media&token=c5a2bd1d-291d-4abd-b3b9-7c062997a094"
   },
   {
     "codigo": "7892840819156",
@@ -4861,9 +4861,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Lata 310ml — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134720-260-260/Refrigerante-Pepsi-Lata-310ml.png?v=639259659145930000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134720-260-260/Refrigerante-Pepsi-Lata-310ml.png?v=639259659145930000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134720-260-260/Refrigerante-Pepsi-Lata-310ml.png?v=639259659145930000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840819156.png?alt=media&token=df2e4d8e-ae05-45f7-b0c6-10b9984a14ee",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840819156.png?alt=media&token=df2e4d8e-ae05-45f7-b0c6-10b9984a14ee",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840819156.png?alt=media&token=df2e4d8e-ae05-45f7-b0c6-10b9984a14ee"
   },
   {
     "codigo": "7894900027358",
@@ -4872,9 +4872,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Coca-Cola Original Pet 2L + 01 Refrigerante Sprite Pet 2L Leve Mais, Pague Menos — Marca: COCA COLA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1007489-260-260/Refrigerante-CocaCola-Original-Pet-2L-01-Refrigerante-Sprite-Pet-2L-Leve-Mais-Pague-Menos.png?v=639033777340830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1007489-260-260/Refrigerante-CocaCola-Original-Pet-2L-01-Refrigerante-Sprite-Pet-2L-Leve-Mais-Pague-Menos.png?v=639033777340830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1007489-260-260/Refrigerante-CocaCola-Original-Pet-2L-01-Refrigerante-Sprite-Pet-2L-Leve-Mais-Pague-Menos.png?v=639033777340830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027358.png?alt=media&token=62e1578f-be7d-40d9-b2d6-94d350316bd1",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027358.png?alt=media&token=62e1578f-be7d-40d9-b2d6-94d350316bd1",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900027358.png?alt=media&token=62e1578f-be7d-40d9-b2d6-94d350316bd1"
   },
   {
     "codigo": "9002490250270",
@@ -4883,9 +4883,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Red Bull Pitaya 250ml — Marca: RED BULL. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127879-260-260/Bebida-Energtica-Red-Bull-Pitaya-250ml.png?v=639259596467200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127879-260-260/Bebida-Energtica-Red-Bull-Pitaya-250ml.png?v=639259596467200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127879-260-260/Bebida-Energtica-Red-Bull-Pitaya-250ml.png?v=639259596467200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490250270.png?alt=media&token=947840eb-fd96-42a1-9db1-c2debf8e86a3",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490250270.png?alt=media&token=947840eb-fd96-42a1-9db1-c2debf8e86a3",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F9002490250270.png?alt=media&token=947840eb-fd96-42a1-9db1-c2debf8e86a3"
   },
   {
     "codigo": "7898912572028",
@@ -4894,9 +4894,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Hugo Pietro Integral Uva Branco 1L — Marca: HUGO PIETRO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134588-260-260/Suco-Hugo-Pietro-Integral-Uva-Branco-1L.png?v=639259657166270000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134588-260-260/Suco-Hugo-Pietro-Integral-Uva-Branco-1L.png?v=639259657166270000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134588-260-260/Suco-Hugo-Pietro-Integral-Uva-Branco-1L.png?v=639259657166270000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898912572028.png?alt=media&token=b1149d4e-94cd-42bb-a5b3-64aa473e2ffc",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898912572028.png?alt=media&token=b1149d4e-94cd-42bb-a5b3-64aa473e2ffc",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898912572028.png?alt=media&token=b1149d4e-94cd-42bb-a5b3-64aa473e2ffc"
   },
   {
     "codigo": "7898912572011",
@@ -4905,9 +4905,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Sucos & Néctares",
     "unidade_medida": "1UN",
     "descricao": "Suco Hugo Pietro Integral Uva 1L — Marca: HUGO PIETRO. Categoria: Sucos & Néctares. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1114871-260-260/Suco-Hugo-Pietro-Integral-Uva-1L.png?v=639259473765100000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1114871-260-260/Suco-Hugo-Pietro-Integral-Uva-1L.png?v=639259473765100000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1114871-260-260/Suco-Hugo-Pietro-Integral-Uva-1L.png?v=639259473765100000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898912572011.png?alt=media&token=f45d071d-537f-4d89-96e8-132af1055364",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898912572011.png?alt=media&token=f45d071d-537f-4d89-96e8-132af1055364",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898912572011.png?alt=media&token=f45d071d-537f-4d89-96e8-132af1055364"
   },
   {
     "codigo": "7898080664396",
@@ -4916,9 +4916,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Coco e Açaí Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127826-260-260/Bebida-Energtica-Baly-Coco-e-Aa-Lata-473ml.png?v=639259596280130000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127826-260-260/Bebida-Energtica-Baly-Coco-e-Aa-Lata-473ml.png?v=639259596280130000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127826-260-260/Bebida-Energtica-Baly-Coco-e-Aa-Lata-473ml.png?v=639259596280130000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664396.png?alt=media&token=5e2d0f34-6032-42c7-824f-1579319d6c54",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664396.png?alt=media&token=5e2d0f34-6032-42c7-824f-1579319d6c54",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664396.png?alt=media&token=5e2d0f34-6032-42c7-824f-1579319d6c54"
   },
   {
     "codigo": "7898080664273",
@@ -4927,9 +4927,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Frutas Tropicais Lata 473ml — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111407-260-260/Bebida-Energtica-Baly-Frutas-Tropicais-Lata-473ml.png?v=639259445481800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111407-260-260/Bebida-Energtica-Baly-Frutas-Tropicais-Lata-473ml.png?v=639259445481800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111407-260-260/Bebida-Energtica-Baly-Frutas-Tropicais-Lata-473ml.png?v=639259445481800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664273.png?alt=media&token=afa957f0-8968-4eaf-9db3-9b8e6571ab27",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664273.png?alt=media&token=afa957f0-8968-4eaf-9db3-9b8e6571ab27",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664273.png?alt=media&token=afa957f0-8968-4eaf-9db3-9b8e6571ab27"
   },
   {
     "codigo": "7898080664389",
@@ -4938,9 +4938,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Melancia Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131152-260-260/Bebida-Energtica-Baly-Melancia-Pet-2L.png?v=639259628675870000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131152-260-260/Bebida-Energtica-Baly-Melancia-Pet-2L.png?v=639259628675870000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131152-260-260/Bebida-Energtica-Baly-Melancia-Pet-2L.png?v=639259628675870000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664389.png?alt=media&token=1b3010c0-46a8-473f-a21b-7ecc6a83f118",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664389.png?alt=media&token=1b3010c0-46a8-473f-a21b-7ecc6a83f118",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664389.png?alt=media&token=1b3010c0-46a8-473f-a21b-7ecc6a83f118"
   },
   {
     "codigo": "7894900087123",
@@ -4949,9 +4949,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida à Base de Soja Ades Uva 1L — Marca: ADES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120891-260-260/Bebida-Base-de-Soja-Ades-Uva-1L.png?v=639259524639900000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120891-260-260/Bebida-Base-de-Soja-Ades-Uva-1L.png?v=639259524639900000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120891-260-260/Bebida-Base-de-Soja-Ades-Uva-1L.png?v=639259524639900000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087123.png?alt=media&token=8cf361e3-5059-4619-94ab-a4990c730d3c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087123.png?alt=media&token=8cf361e3-5059-4619-94ab-a4990c730d3c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087123.png?alt=media&token=8cf361e3-5059-4619-94ab-a4990c730d3c"
   },
   {
     "codigo": "7894900087062",
@@ -4960,9 +4960,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida à Base de Soja Ades Maçã 1L — Marca: ADES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124298-260-260/Bebida-Base-de-Soja-Ades-Ma-1L.png?v=639259564002570000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124298-260-260/Bebida-Base-de-Soja-Ades-Ma-1L.png?v=639259564002570000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124298-260-260/Bebida-Base-de-Soja-Ades-Ma-1L.png?v=639259564002570000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087062.png?alt=media&token=c8ec3d4a-ebef-4990-afaa-984aca366228",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087062.png?alt=media&token=c8ec3d4a-ebef-4990-afaa-984aca366228",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087062.png?alt=media&token=c8ec3d4a-ebef-4990-afaa-984aca366228"
   },
   {
     "codigo": "7894900087048",
@@ -4971,9 +4971,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida à Base de Soja Ades Laranja 1L — Marca: ADES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1111346-260-260/Bebida-Base-de-Soja-Ades-Laranja-1L.png?v=639259443645970000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1111346-260-260/Bebida-Base-de-Soja-Ades-Laranja-1L.png?v=639259443645970000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1111346-260-260/Bebida-Base-de-Soja-Ades-Laranja-1L.png?v=639259443645970000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087048.png?alt=media&token=65272778-c424-4ce5-aa34-68d6a109437c",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087048.png?alt=media&token=65272778-c424-4ce5-aa34-68d6a109437c",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087048.png?alt=media&token=65272778-c424-4ce5-aa34-68d6a109437c"
   },
   {
     "codigo": "7894900087000",
@@ -4982,9 +4982,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Bebida à Base de Soja Ades Abacaxi 1L — Marca: ADES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1109649-260-260/Bebida-Base-de-Soja-Ades-Abacaxi-1L.png?v=639259428534630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1109649-260-260/Bebida-Base-de-Soja-Ades-Abacaxi-1L.png?v=639259428534630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1109649-260-260/Bebida-Base-de-Soja-Ades-Abacaxi-1L.png?v=639259428534630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087000.png?alt=media&token=a65d24d3-180b-4d78-9e5d-710a5e415155",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087000.png?alt=media&token=a65d24d3-180b-4d78-9e5d-710a5e415155",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900087000.png?alt=media&token=a65d24d3-180b-4d78-9e5d-710a5e415155"
   },
   {
     "codigo": "7894900666502",
@@ -4993,9 +4993,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Refresco Del Valle Frut Frutas Cítricas Pet 450ml — Marca: DEL VALLE. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1124279-260-260/Refresco-Del-Valle-Frut-Frutas-Ctricas-Pet-450ml.png?v=639259563942430000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1124279-260-260/Refresco-Del-Valle-Frut-Frutas-Ctricas-Pet-450ml.png?v=639259563942430000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1124279-260-260/Refresco-Del-Valle-Frut-Frutas-Ctricas-Pet-450ml.png?v=639259563942430000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900666502.png?alt=media&token=c1cc5a14-5bac-4d26-9e7f-5dc11f8bec0d",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900666502.png?alt=media&token=c1cc5a14-5bac-4d26-9e7f-5dc11f8bec0d",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900666502.png?alt=media&token=c1cc5a14-5bac-4d26-9e7f-5dc11f8bec0d"
   },
   {
     "codigo": "7892840800604",
@@ -5004,9 +5004,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Pepsi Pet 3L — Marca: PEPSI. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134453-260-260/Refrigerante-Pepsi-Pet-3L.png?v=639259656699830000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134453-260-260/Refrigerante-Pepsi-Pet-3L.png?v=639259656699830000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134453-260-260/Refrigerante-Pepsi-Pet-3L.png?v=639259656699830000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800604.png?alt=media&token=03702e9b-990a-4df5-a37a-348a09860e89",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800604.png?alt=media&token=03702e9b-990a-4df5-a37a-348a09860e89",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840800604.png?alt=media&token=03702e9b-990a-4df5-a37a-348a09860e89"
   },
   {
     "codigo": "7891991014861",
@@ -5015,9 +5015,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Antarctica Guaraná Pet 3L — Marca: ANTARCTICA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1127688-260-260/Refrigerante-Antarctica-Guaran-Pet-3L.png?v=639259595763670000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1127688-260-260/Refrigerante-Antarctica-Guaran-Pet-3L.png?v=639259595763670000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1127688-260-260/Refrigerante-Antarctica-Guaran-Pet-3L.png?v=639259595763670000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014861.png?alt=media&token=51cad0f0-19dc-46e1-9b24-651f2b3413a5",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014861.png?alt=media&token=51cad0f0-19dc-46e1-9b24-651f2b3413a5",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7891991014861.png?alt=media&token=51cad0f0-19dc-46e1-9b24-651f2b3413a5"
   },
   {
     "codigo": "1220000250055",
@@ -5026,9 +5026,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Suplemento Alimentar Liquído Reign Lemon Hdz Zero Açúcar Lata 473ml — Marca: REIGN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1139586-260-260/Suplemento-Alimentar-Liqudo-Reign-Lemon-Hdz-Zero-Acar-Lata-473ml.png?v=639270493409800000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1139586-260-260/Suplemento-Alimentar-Liqudo-Reign-Lemon-Hdz-Zero-Acar-Lata-473ml.png?v=639270493409800000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1139586-260-260/Suplemento-Alimentar-Liqudo-Reign-Lemon-Hdz-Zero-Acar-Lata-473ml.png?v=639270493409800000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250055.png?alt=media&token=40c25b46-2fe9-4ba4-b216-e32205e1cabb",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250055.png?alt=media&token=40c25b46-2fe9-4ba4-b216-e32205e1cabb",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250055.png?alt=media&token=40c25b46-2fe9-4ba4-b216-e32205e1cabb"
   },
   {
     "codigo": "1220000250079",
@@ -5037,9 +5037,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Suplemento Alimentar Liquído Reign Melon Mania Lata 473ml — Marca: REIGN. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1120831-260-260/Suplemento-Alimentar-Liqudo-Reign-Melon-Mania-Lata-473ml.png?v=639259524417200000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1120831-260-260/Suplemento-Alimentar-Liqudo-Reign-Melon-Mania-Lata-473ml.png?v=639259524417200000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1120831-260-260/Suplemento-Alimentar-Liqudo-Reign-Melon-Mania-Lata-473ml.png?v=639259524417200000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250079.png?alt=media&token=eceecb81-6bd2-4e56-92ce-2263482247b7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250079.png?alt=media&token=eceecb81-6bd2-4e56-92ce-2263482247b7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250079.png?alt=media&token=eceecb81-6bd2-4e56-92ce-2263482247b7"
   },
   {
     "codigo": "1220000250000",
@@ -5048,9 +5048,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Ultra Paradise Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1109575-260-260/Bebida-Energtica-Monster-Ultra-Paradise-Lata-473ml.png?v=639259428271370000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1109575-260-260/Bebida-Energtica-Monster-Ultra-Paradise-Lata-473ml.png?v=639259428271370000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1109575-260-260/Bebida-Energtica-Monster-Ultra-Paradise-Lata-473ml.png?v=639259428271370000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250000.png?alt=media&token=d56b6d27-2353-4022-8211-ea6fd09ce3f7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250000.png?alt=media&token=d56b6d27-2353-4022-8211-ea6fd09ce3f7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F1220000250000.png?alt=media&token=d56b6d27-2353-4022-8211-ea6fd09ce3f7"
   },
   {
     "codigo": "7894900180022",
@@ -5059,9 +5059,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Tônica Schweppes Girger Ale Lata 220ml — Marca: SCHWEPPES. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131064-260-260/Tnica-Schweppes-Girger-Ale-Lata-220ml.png?v=639259626872500000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131064-260-260/Tnica-Schweppes-Girger-Ale-Lata-220ml.png?v=639259626872500000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131064-260-260/Tnica-Schweppes-Girger-Ale-Lata-220ml.png?v=639259626872500000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180022.png?alt=media&token=07d7f0a3-67e8-4649-9226-6b7b50a5ce25",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180022.png?alt=media&token=07d7f0a3-67e8-4649-9226-6b7b50a5ce25",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900180022.png?alt=media&token=07d7f0a3-67e8-4649-9226-6b7b50a5ce25"
   },
   {
     "codigo": "7894900850017",
@@ -5070,9 +5070,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Charrua Guaraná Lata 350ml — Marca: CHARRUA. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1131031-260-260/Refrigerante-Charrua-Guaran-Lata-350ml.png?v=639259626768330000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1131031-260-260/Refrigerante-Charrua-Guaran-Lata-350ml.png?v=639259626768330000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1131031-260-260/Refrigerante-Charrua-Guaran-Lata-350ml.png?v=639259626768330000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900850017.png?alt=media&token=5ba62037-7c44-4294-bfbf-10a38a59da8a",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900850017.png?alt=media&token=5ba62037-7c44-4294-bfbf-10a38a59da8a",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7894900850017.png?alt=media&token=5ba62037-7c44-4294-bfbf-10a38a59da8a"
   },
   {
     "codigo": "70847034803",
@@ -5081,9 +5081,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Monster Dragon Ice Tea Lata 473ml — Marca: MONSTER. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134281-260-260/Bebida-Energtica-Monster-Dragon-Ice-Tea-Lata-473ml.png?v=639259656039530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134281-260-260/Bebida-Energtica-Monster-Dragon-Ice-Tea-Lata-473ml.png?v=639259656039530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134281-260-260/Bebida-Energtica-Monster-Dragon-Ice-Tea-Lata-473ml.png?v=639259656039530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847034803.png?alt=media&token=5772e246-8e8b-4be1-a04d-5c18ffe50471",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847034803.png?alt=media&token=5772e246-8e8b-4be1-a04d-5c18ffe50471",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F70847034803.png?alt=media&token=5772e246-8e8b-4be1-a04d-5c18ffe50471"
   },
   {
     "codigo": "7898080664112",
@@ -5092,9 +5092,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Energéticos",
     "unidade_medida": "1UN",
     "descricao": "Bebida Energética Baly Frutas Tropicais Pet 2L — Marca: BALY. Categoria: Energéticos. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134244-260-260/Bebida-Energtica-Baly-Frutas-Tropicais-Pet-2L.png?v=639259655902530000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134244-260-260/Bebida-Energtica-Baly-Frutas-Tropicais-Pet-2L.png?v=639259655902530000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134244-260-260/Bebida-Energtica-Baly-Frutas-Tropicais-Pet-2L.png?v=639259655902530000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664112.png?alt=media&token=562d7a33-fb4a-44e7-9e5c-c904e5273ea6",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664112.png?alt=media&token=562d7a33-fb4a-44e7-9e5c-c904e5273ea6",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7898080664112.png?alt=media&token=562d7a33-fb4a-44e7-9e5c-c904e5273ea6"
   },
   {
     "codigo": "7897736403983",
@@ -5103,9 +5103,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Bebidas Não Alcoólicas",
     "unidade_medida": "1UN",
     "descricao": "Xarope Ted Groselha Pet 870ml — Marca: TED. Categoria: Bebidas Não Alcoólicas. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1134231-260-260/Xarope-Ted-Groselha-Pet-870ml.png?v=639259655826630000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1134231-260-260/Xarope-Ted-Groselha-Pet-870ml.png?v=639259655826630000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1134231-260-260/Xarope-Ted-Groselha-Pet-870ml.png?v=639259655826630000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897736403983.png?alt=media&token=2a6ca12b-1b54-49fe-b7ae-0743e1a405e7",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897736403983.png?alt=media&token=2a6ca12b-1b54-49fe-b7ae-0743e1a405e7",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7897736403983.png?alt=media&token=2a6ca12b-1b54-49fe-b7ae-0743e1a405e7"
   },
   {
     "codigo": "7892840801519",
@@ -5114,9 +5114,9 @@ export const CATALOGO_RISSUL_BEBIDAS_OFICIAL: ProdutoCatalogo[] = [
     "categoria": "Refrigerantes",
     "unidade_medida": "1UN",
     "descricao": "Refrigerante Teem Limão Pet 2L — Marca: TEEM. Categoria: Refrigerantes. Procedência: Rissul Bebidas Não Alcoólicas.",
-    "imagem": "https://superrissul.vteximg.com.br/arquivos/ids/1114374-260-260/Refrigerante-Teem-Limo-Pet-2L.png?v=639259470125230000",
-    "foto": "https://superrissul.vteximg.com.br/arquivos/ids/1114374-260-260/Refrigerante-Teem-Limo-Pet-2L.png?v=639259470125230000",
-    "foto_url": "https://superrissul.vteximg.com.br/arquivos/ids/1114374-260-260/Refrigerante-Teem-Limo-Pet-2L.png?v=639259470125230000"
+    "imagem": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840801519.png?alt=media&token=498d3d05-6270-4295-9368-b764acf18043",
+    "foto": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840801519.png?alt=media&token=498d3d05-6270-4295-9368-b764acf18043",
+    "foto_url": "https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F7892840801519.png?alt=media&token=498d3d05-6270-4295-9368-b764acf18043"
   }
 ];
 

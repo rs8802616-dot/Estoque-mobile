@@ -104,6 +104,18 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 27]
+- **Migração e Armazenamento Próprio de 100% das 849 Imagens no Firebase Storage (`adega-delivery-pdv`):**
+  - **Solicitação do Usuário:** Salvar todas as fotos de produtos dentro do seu próprio bucket do Firebase Storage, garantindo independência total de servidores de terceiros e imunidade contra links externos quebrados.
+  - **Execução Realizada com Sucesso:**
+    - Testada e ativada a conexão com o bucket oficial `adega-delivery-pdv.firebasestorage.app`.
+    - Executado robô de migração que baixou os 849 arquivos de imagem compactados em 260x260px (~8KB a 14KB cada) e fez o upload de cada um para `produtos_catalogo/{codigo}.{webp|jpg|png}` com controle de cache estático (`public, max-age=31536000`).
+    - Taxa de sucesso: **849 de 849 fotos enviadas com sucesso (0 falhas)**.
+    - Todos os 849 documentos no Firestore (`catalogo_global`) foram atualizados com as URLs permanentes do Firebase Storage próprio (`https://firebasestorage.googleapis.com/v0/b/adega-delivery-pdv.firebasestorage.app/o/produtos_catalogo%2F...`).
+    - Todos os 5 arquivos locais de catálogo (`catalogoAmbev.ts`, `catalogoAdegaMix.ts`, `catalogoZeDeliveryMix.ts`, `catalogoChoppBrahmaExpress.ts` e `catalogoRissulBebidas.ts`) foram sincronizados com as novas URLs do Firebase Storage.
+  - **Atualização do Service Worker:**
+    - Versão do cache do PWA elevada para `estoque-mobile-pwa-v31` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 26]
 - **Integração em Massa do Catálogo de Bebidas Não Alcoólicas Rissul Supermercados (465 Novos Produtos, Totalizando 849 Itens no Banco de Dados Global):**
   - **Solicitação do Usuário:** Varrer o catálogo oficial da categoria de bebidas não alcoólicas do Rissul Supermercados (`https://www.rissul.com.br/bebidas/bebidas-nao-alcoolicas`), identificar todos os produtos que não existiam no app e cadastrar todos com dados completos, códigos de barra EAN oficiais e fotos compactadas.
