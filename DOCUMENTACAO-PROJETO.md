@@ -334,6 +334,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
+### [2026-10-24 - Atualização 18]
+- **Isolamento e Armazenamento 100% Interno no Catálogo Geral do Aplicativo:**
+  - **Remoção de Gravação Externa no Firestore:**
+    - Ajustadas as funções de importação do Catálogo Ambev e do Mix de Adega em [`catalogoAmbev.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAmbev.ts) e [`catalogoAdegaMix.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAdegaMix.ts) para `sincronizarCatalogoAmbevLocalmente` e `sincronizarCatalogoAdegaLocalmente`.
+    - Os **257 produtos cadastrados** (Ambev + Whiskies, Vinhos, Snacks, Balas e Cigarros) são mantidos estritamente dentro da memória e armazenamento local seguro do próprio aplicativo (`catalogoGlobal` / LocalStorage / IndexedDB), sem enviar dados para bancos externos ou de outros aplicativos.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v22` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 17]
 - **Pesquisa e Integração do Mix Completo de Adega (Whiskies, Vinhos, Salgados, Bomboniere, Tabacaria, Carvão e Gelo):**
   - **Pesquisa de Mercado de Adegas:**
@@ -394,6 +401,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 18]
+- **Isolamento e Armazenamento 100% Interno no Catálogo Geral do Aplicativo:**
+  - **Remoção de Gravação Externa no Firestore:**
+    - Ajustadas as funções de importação do Catálogo Ambev e do Mix de Adega em [`catalogoAmbev.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAmbev.ts) e [`catalogoAdegaMix.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAdegaMix.ts) para `sincronizarCatalogoAmbevLocalmente` e `sincronizarCatalogoAdegaLocalmente`.
+    - Os **257 produtos cadastrados** (Ambev + Whiskies, Vinhos, Snacks, Balas e Cigarros) são mantidos estritamente dentro da memória e armazenamento local seguro do próprio aplicativo (`catalogoGlobal` / LocalStorage / IndexedDB), sem enviar dados para bancos externos ou de outros aplicativos.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v22` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 17]
 - **Pesquisa e Integração do Mix Completo de Adega (Whiskies, Vinhos, Salgados, Bomboniere, Tabacaria, Carvão e Gelo):**
@@ -468,6 +482,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 18]
+- **Isolamento e Armazenamento 100% Interno no Catálogo Geral do Aplicativo:**
+  - **Remoção de Gravação Externa no Firestore:**
+    - Ajustadas as funções de importação do Catálogo Ambev e do Mix de Adega em [`catalogoAmbev.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAmbev.ts) e [`catalogoAdegaMix.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAdegaMix.ts) para `sincronizarCatalogoAmbevLocalmente` e `sincronizarCatalogoAdegaLocalmente`.
+    - Os **257 produtos cadastrados** (Ambev + Whiskies, Vinhos, Snacks, Balas e Cigarros) são mantidos estritamente dentro da memória e armazenamento local seguro do próprio aplicativo (`catalogoGlobal` / LocalStorage / IndexedDB), sem enviar dados para bancos externos ou de outros aplicativos.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v22` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 17]
 - **Pesquisa e Integração do Mix Completo de Adega (Whiskies, Vinhos, Salgados, Bomboniere, Tabacaria, Carvão e Gelo):**

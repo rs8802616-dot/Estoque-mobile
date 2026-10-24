@@ -88,13 +88,13 @@ import {
 import {
   CATALOGO_AMBEV_OFICIAL,
   garantirCatalogoAmbevNoBancoGlobal,
-  sincronizarCatalogoAmbevComFirestore,
+  sincronizarCatalogoAmbevLocalmente,
   isProdutoAmbev,
 } from './lib/catalogoAmbev';
 import {
   CATALOGO_ADEGA_MIX_OFICIAL,
   garantirCatalogoAdegaNoBancoGlobal,
-  sincronizarCatalogoAdegaComFirestore,
+  sincronizarCatalogoAdegaLocalmente,
 } from './lib/catalogoAdegaMix';
 import {
   tocarBeepCaixa,
@@ -358,9 +358,6 @@ export default function App() {
     } catch (e) {}
     return catalogoCompleto;
   });
-
-  const [sincronizandoAmbev, setSincronizandoAmbev] = useState<boolean>(false);
-  const [statusAmbevSync, setStatusAmbevSync] = useState<string | null>(null);
 
   const [estoque, setEstoque] = useState<ItemEstoque[]>(() => {
     const currentStoreId = localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
@@ -1117,18 +1114,6 @@ export default function App() {
 
         setCatalogoGlobal(catalogoCompleto);
         safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
-
-        // Se houver novos itens ou dados enriquecidos pendentes no Firestore remoto, grava em segundo plano
-        if (novosAmbev.length > 0 || atAmbev.length > 0) {
-          sincronizarCatalogoAmbevComFirestore(catalogoCompleto).catch((e) =>
-            console.warn('Sync automático do portfólio Ambev com Firestore:', e)
-          );
-        }
-        if (novosAdega.length > 0 || atAdega.length > 0) {
-          sincronizarCatalogoAdegaComFirestore(catalogoCompleto).catch((e) =>
-            console.warn('Sync automático do Mix Adega com Firestore:', e)
-          );
-        }
 
         // 1. Reconciliar o estoque da loja ativa imediatamente
         setEstoque((prevEstoque) => {
@@ -3857,39 +3842,25 @@ export default function App() {
     setModalCadastroVisivel(true);
   };
 
-  const handleSincronizarAmbev = async () => {
-    setSincronizandoAmbev(true);
-    setStatusAmbevSync('Verificando produtos Ambev no banco...');
+  const handleSincronizarAmbev = () => {
     try {
-      const res = await sincronizarCatalogoAmbevComFirestore(catalogoGlobal, (atual, total) => {
-        setStatusAmbevSync(`Salvando Ambev no Firebase: ${atual}/${total}...`);
-      });
+      const res = sincronizarCatalogoAmbevLocalmente(catalogoGlobal);
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
-      alert(`🍺 Catálogo Ambev Sincronizado com Sucesso!\n\n• Novos produtos Ambev cadastrados: ${res.totalNovos}\n• Produtos com dados enriquecidos: ${res.totalAtualizados}\n• Total de produtos no seu Banco Global: ${res.catalogoFinal.length}`);
+      alert(`🍺 Catálogo Ambev Atualizado no App!\n\n• Novos produtos adicionados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.`);
     } catch (err: any) {
-      alert(`Erro ao sincronizar portfólio Ambev: ${err?.message || err}`);
-    } finally {
-      setSincronizandoAmbev(false);
-      setStatusAmbevSync(null);
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
   };
 
-  const handleSincronizarMixAdega = async () => {
-    setSincronizandoAmbev(true);
-    setStatusAmbevSync('Verificando Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria...');
+  const handleSincronizarMixAdega = () => {
     try {
-      const res = await sincronizarCatalogoAdegaComFirestore(catalogoGlobal, (atual, total) => {
-        setStatusAmbevSync(`Salvando Mix de Adega no Firebase: ${atual}/${total}...`);
-      });
+      const res = sincronizarCatalogoAdegaLocalmente(catalogoGlobal);
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
-      alert(`🥃 Mix de Adega Sincronizado com Sucesso!\n\n• Novos produtos cadastrados: ${res.totalNovos}\n• Produtos com dados enriquecidos: ${res.totalAtualizados}\n• Total de produtos no seu Banco Global: ${res.catalogoFinal.length}`);
+      alert(`🥃 Mix de Adega Atualizado no App!\n\n• Novos produtos adicionados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.`);
     } catch (err: any) {
-      alert(`Erro ao sincronizar Mix de Adega: ${err?.message || err}`);
-    } finally {
-      setSincronizandoAmbev(false);
-      setStatusAmbevSync(null);
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
   };
 
@@ -8555,30 +8526,21 @@ export default function App() {
                   <button
                     className="btn-acao-rel"
                     style={{ background: '#d97706', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    disabled={sincronizandoAmbev}
                     onClick={handleSincronizarAmbev}
-                    title="Sincroniza todos os 173 produtos oficiais da Ambev no seu Banco Global"
+                    title="Carrega todos os 173 produtos oficiais da Ambev no seu Catálogo Geral interno do app"
                   >
-                    {sincronizandoAmbev ? '⏳ Sincronizando...' : '🍺 Sincronizar Ambev (173)'}
+                    🍺 Catálogo Ambev (173 Itens)
                   </button>
                   <button
                     className="btn-acao-rel"
                     style={{ background: '#7c3aed', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    disabled={sincronizandoAmbev}
                     onClick={handleSincronizarMixAdega}
-                    title="Sincroniza todos os 84 produtos essenciais de adega (Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria) no seu Banco Global"
+                    title="Carrega todos os 84 produtos essenciais de adega (Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria) no seu Catálogo Geral interno do app"
                   >
-                    {sincronizandoAmbev ? '⏳ Sincronizando...' : '🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)'}
+                    🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)
                   </button>
                 </div>
               </div>
-
-              {statusAmbevSync && (
-                <div style={{ padding: '10px 14px', background: '#fef3c7', color: '#92400e', borderRadius: '8px', fontSize: '0.84rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>🍺</span>
-                  <span>{statusAmbevSync}</span>
-                </div>
-              )}
 
               {/* TABELA DE ITENS DO BANCO DE DADOS */}
               <div className="tabela-relatorio">

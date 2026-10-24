@@ -1,6 +1,5 @@
 // Catálogo Essencial de Adega, Tabacaria e Conveniência (Whiskies, Vinhos, Salgadinhos, Bomboniere e Cigarros)
 import { ProdutoCatalogo } from '../types';
-import { salvarProdutoCatalogoFirestore } from './firestoreSync';
 
 export const CATALOGO_ADEGA_MIX_OFICIAL: ProdutoCatalogo[] = [
   {
@@ -819,38 +818,18 @@ export function garantirCatalogoAdegaNoBancoGlobal(catalogoAtual: ProdutoCatalog
 }
 
 /**
- * Sincroniza em lote os itens essenciais de adega com o Firestore (coleção 'produtos_catalogo')
+ * Insere os itens essenciais de adega no catálogo interno do aplicativo (armazenamento local)
+ * sem tocar em banco de dados externo ou Firestore.
  */
-export async function sincronizarCatalogoAdegaComFirestore(
-  catalogoAtual: ProdutoCatalogo[],
-  onProgresso?: (atual: number, total: number) => void
-): Promise<{ totalNovos: number; totalAtualizados: number; catalogoFinal: ProdutoCatalogo[] }> {
+export function sincronizarCatalogoAdegaLocalmente(
+  catalogoAtual: ProdutoCatalogo[]
+): { totalNovos: number; totalAtualizados: number; catalogoFinal: ProdutoCatalogo[] } {
   const { catalogoCompleto, novosInseridos, atualizados } = garantirCatalogoAdegaNoBancoGlobal(catalogoAtual);
-  const itensParaSalvar = [...novosInseridos, ...atualizados];
 
   try {
     localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
   } catch (err) {
-    console.warn('Erro ao salvar catalogoGlobalFirebase:', err);
-  }
-
-  let processados = 0;
-  const total = itensParaSalvar.length;
-  const BATCH_SIZE = 5;
-
-  for (let i = 0; i < itensParaSalvar.length; i += BATCH_SIZE) {
-    const lote = itensParaSalvar.slice(i, i + BATCH_SIZE);
-    await Promise.all(
-      lote.map(async (item) => {
-        try {
-          await salvarProdutoCatalogoFirestore(item);
-        } catch (e) {
-          console.warn('Erro ao salvar item de adega no Firestore:', item.codigo, e);
-        }
-      })
-    );
-    processados += lote.length;
-    if (onProgresso) onProgresso(Math.min(processados, total), total);
+    console.warn('Erro ao salvar localmente:', err);
   }
 
   return {
