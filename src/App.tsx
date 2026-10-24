@@ -520,7 +520,12 @@ export default function App() {
   });
   const [buscaRelatorio, setBuscaRelatorio] = useState<string>(() => {
     try {
-      return localStorage.getItem('busca_relatorio_salva') || '';
+      const salva = localStorage.getItem('busca_relatorio_salva') || '';
+      if (salva.toLowerCase().includes('rodrigo.souza') || salva.toLowerCase() === 'rodrigo') {
+        localStorage.removeItem('busca_relatorio_salva');
+        return '';
+      }
+      return salva;
     } catch {
       return '';
     }
@@ -1497,7 +1502,11 @@ export default function App() {
     }
 
     safeLocalStorageSet('tela_ativa_sistema', telaAtual);
-    safeLocalStorageSet('busca_relatorio_salva', buscaRelatorio);
+    if (buscaRelatorio && !buscaRelatorio.toLowerCase().includes('rodrigo.souza') && buscaRelatorio.toLowerCase() !== 'rodrigo') {
+      safeLocalStorageSet('busca_relatorio_salva', buscaRelatorio);
+    } else {
+      localStorage.removeItem('busca_relatorio_salva');
+    }
   }, [
     relatorioCheioVisivel,
     modoRelatorioAtual,
@@ -1516,6 +1525,42 @@ export default function App() {
     modalCadastroVisivel,
     modoCadastroItem,
   ]);
+
+  // Sanitização estrita contra autofill indevido do navegador em campos de busca
+  useEffect(() => {
+    if (buscaMasterBd && (buscaMasterBd.toLowerCase().includes('rodrigo.souza') || buscaMasterBd.toLowerCase() === 'rodrigo')) {
+      setBuscaMasterBd('');
+    }
+  }, [buscaMasterBd]);
+
+  useEffect(() => {
+    if (busca && (busca.toLowerCase().includes('rodrigo.souza') || busca.toLowerCase() === 'rodrigo')) {
+      setBusca('');
+    }
+  }, [busca]);
+
+  useEffect(() => {
+    if (buscaRelatorio && (buscaRelatorio.toLowerCase().includes('rodrigo.souza') || buscaRelatorio.toLowerCase() === 'rodrigo')) {
+      setBuscaRelatorio('');
+      try {
+        localStorage.removeItem('busca_relatorio_salva');
+      } catch {}
+    }
+  }, [buscaRelatorio]);
+
+  useEffect(() => {
+    if (buscaLoja && (buscaLoja.toLowerCase().includes('rodrigo.souza') || buscaLoja.toLowerCase() === 'rodrigo')) {
+      setBuscaLoja('');
+    }
+  }, [buscaLoja]);
+
+  useEffect(() => {
+    if (modalSupermercadoVisivel && abaDonaApp === 'banco_dados') {
+      if (buscaMasterBd && (buscaMasterBd.toLowerCase().includes('rodrigo.souza') || buscaMasterBd.toLowerCase() === 'rodrigo')) {
+        setBuscaMasterBd('');
+      }
+    }
+  }, [modalSupermercadoVisivel, abaDonaApp]);
 
   // Sync Cash Shift Session on Store or Operator Change
   useEffect(() => {
@@ -1960,6 +2005,7 @@ export default function App() {
     setRegLojaPermissoes(PERMISSOES_LOJA_PADRAO);
     setSenhaVisivel(false);
     setMsgRegLoja('');
+    setBuscaMasterBd('');
     setModalSupermercadoVisivel(true);
   };
 
@@ -5586,14 +5632,23 @@ export default function App() {
             <input
               type="search"
               id="busca"
-              name="busca_estoque_pdv_input"
-              autoComplete="off"
+              name="search_query_estoque_pdv"
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              data-form-type="other"
+              data-lpignore="true"
+              data-1p-ignore="true"
               readOnly
               onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
               className="input-busca"
               placeholder="Buscar no estoque..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
+              onChange={(e) => {
+                const v = e.target.value;
+                setBusca(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+              }}
             />
 
             {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
@@ -7417,13 +7472,24 @@ export default function App() {
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <div className="linha-input" style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}>
                       <input
-                        type="text"
+                        type="search"
                         id="buscaRelatorio"
+                        name="search_query_relatorio_estoque"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        data-form-type="other"
+                        data-lpignore="true"
+                        data-1p-ignore="true"
                         className="input-modal"
                         style={{ marginBottom: 0 }}
                         placeholder="Pesquisar por nome ou código..."
-                        value={buscaRelatorio}
-                        onChange={(e) => setBuscaRelatorio(e.target.value)}
+                        value={buscaRelatorio.toLowerCase().includes('rodrigo.souza') ? '' : buscaRelatorio}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setBuscaRelatorio(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+                        }}
                       />
                       <button className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
                         📷
@@ -7480,13 +7546,24 @@ export default function App() {
           {modoRelatorioAtual !== 'estoque' && (
             <div className="linha-input" style={{ marginBottom: '12px' }}>
               <input
-                type="text"
-                id="buscaRelatorio"
+                type="search"
+                id="buscaRelatorioGlobal"
+                name="search_query_relatorio_catalogo_global"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                data-form-type="other"
+                data-lpignore="true"
+                data-1p-ignore="true"
                 className="input-modal"
                 style={{ marginBottom: 0 }}
                 placeholder="Pesquisar no catálogo global..."
-                value={buscaRelatorio}
-                onChange={(e) => setBuscaRelatorio(e.target.value)}
+                value={buscaRelatorio.toLowerCase().includes('rodrigo.souza') ? '' : buscaRelatorio}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setBuscaRelatorio(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+                }}
               />
               <button className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
                 📷
@@ -7999,7 +8076,10 @@ export default function App() {
                 color: abaDonaApp === 'banco_dados' ? '#ffffff' : '#334155',
                 boxShadow: abaDonaApp === 'banco_dados' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
               }}
-              onClick={() => setAbaDonaApp('banco_dados')}
+              onClick={() => {
+                setAbaDonaApp('banco_dados');
+                setBuscaMasterBd('');
+              }}
             >
               🗄️ Banco de Dados Master (Editar / Excluir Itens)
             </button>
@@ -8239,12 +8319,24 @@ export default function App() {
               </h3>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <input
-                  type="text"
+                  type="search"
+                  id="busca_loja_cnpj_nome_input"
+                  name="search_query_loja_cnpj_nome"
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  data-form-type="other"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
                   className="input-modal"
                   style={{ maxWidth: '200px', padding: '6px 10px', fontSize: '0.85rem' }}
                   placeholder="Pesquisar loja por nome ou CNPJ..."
-                  value={buscaLoja}
-                  onChange={(e) => setBuscaLoja(e.target.value)}
+                  value={buscaLoja.toLowerCase().includes('rodrigo.souza') ? '' : buscaLoja}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setBuscaLoja(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+                  }}
                 />
                 {listaSupermercados.length > 0 && (
                   <button
@@ -8493,15 +8585,54 @@ export default function App() {
 
               {/* FILTROS E BUSCA DO BANCO DE DADOS */}
               <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', gap: '10px', flex: 1, minWidth: '280px', flexWrap: 'wrap' }}>
-                  <input
-                    type="text"
-                    className="input-modal"
-                    style={{ marginBottom: 0, flex: 1, minWidth: '220px' }}
-                    placeholder="🔍 Pesquisar no Banco de Dados (Nome, Código EAN, Lote...)"
-                    value={buscaMasterBd}
-                    onChange={(e) => setBuscaMasterBd(e.target.value)}
-                  />
+                <div style={{ display: 'flex', gap: '10px', flex: 1, minWidth: '280px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <div style={{ position: 'relative', flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="search"
+                      id="busca_banco_dados_mestre_input"
+                      name="search_query_banco_dados_mestre"
+                      autoComplete="new-password"
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      data-form-type="other"
+                      data-lpignore="true"
+                      data-1p-ignore="true"
+                      className="input-modal"
+                      style={{ marginBottom: 0, width: '100%', paddingRight: buscaMasterBd ? '36px' : '10px' }}
+                      placeholder="🔍 Pesquisar no Banco de Dados (Nome, Código EAN, Lote...)"
+                      value={buscaMasterBd.toLowerCase().includes('rodrigo.souza') ? '' : buscaMasterBd}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setBuscaMasterBd(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+                      }}
+                    />
+                    {buscaMasterBd && (
+                      <button
+                        type="button"
+                        onClick={() => setBuscaMasterBd('')}
+                        style={{
+                          position: 'absolute',
+                          right: '8px',
+                          background: '#e2e8f0',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '24px',
+                          height: '24px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#475569',
+                          fontWeight: 'bold',
+                          fontSize: '12px',
+                        }}
+                        title="Limpar pesquisa"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                   <select
                     className="input-modal"
                     style={{ marginBottom: 0, width: 'auto', minWidth: '160px' }}

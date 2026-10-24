@@ -50,10 +50,17 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
   const [categoriasApi, setCategoriasApi] = useState<BomJawaKitCategoria[]>([]);
 
   useEffect(() => {
-    if (termoBusca) {
+    if (termoBusca && !termoBusca.toLowerCase().includes('rodrigo.souza')) {
       setTermoLocal(termoBusca);
     }
   }, [termoBusca]);
+
+  // Anti-autofill sanitization
+  useEffect(() => {
+    if (termoLocal && (termoLocal.toLowerCase().includes('rodrigo.souza') || termoLocal.toLowerCase() === 'rodrigo')) {
+      setTermoLocal('');
+    }
+  }, [termoLocal]);
 
   useEffect(() => {
     if (visivel && categoriasApi.length === 0) {
@@ -193,9 +200,21 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', flex: '1 1 240px' }}>
               <input
-                type="text"
-                value={termoLocal}
-                onChange={(e) => setTermoLocal(e.target.value)}
+                type="search"
+                id="busca_consulta_produtos_modal_input"
+                name="search_query_consulta_produtos"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                data-form-type="other"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                value={termoLocal.toLowerCase().includes('rodrigo.souza') ? '' : termoLocal}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setTermoLocal(val.toLowerCase().includes('rodrigo.souza') ? '' : val);
+                }}
                 placeholder="Digite nome do produto (ex: cerveja, agua com gas) ou código de barras..."
                 style={{
                   width: '100%',

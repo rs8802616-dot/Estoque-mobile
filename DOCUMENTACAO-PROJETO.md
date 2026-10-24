@@ -104,6 +104,23 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 22]
+- **Eliminação Completa de Preenchimento Automático (Autofill Indevido) nos Filtros de Busca e Catálogo:**
+  - **Problema Solucionado:** Ao entrar no Catálogo Geral / Banco de Dados Master ou no Relatório de Estoque, o navegador (Chrome/Edge) preenchia automaticamente as credenciais salvas do usuário (`rodrigo.souza`) no campo de pesquisa, filtrando a lista indevidamente e exibindo a mensagem "Nenhum produto cadastrado no banco de dados mestre ainda". Adicionalmente, o estado de busca anterior era salvo no `localStorage` sob a chave `busca_relatorio_salva`, mantendo o filtro ativo mesmo após reloads.
+  - **Ações Implementadas:**
+    1. **Atributos Anti-Autofill Estritos em Todos os Inputs de Busca (`src/App.tsx` e `src/components/ConsultaProdutosModal.tsx`):**
+       - Substituído `type="text"` por `type="search"`.
+       - Adicionados atributos anti-preenchimento: `autoComplete="new-password"`, `autoCorrect="off"`, `autoCapitalize="none"`, `spellCheck={false}`, `data-form-type="other"`, `data-lpignore="true"` e `data-1p-ignore="true"`.
+       - Nomes específicos de query de busca adicionados (`search_query_banco_dados_mestre`, `search_query_relatorio_estoque`, `search_query_estoque_pdv`, `search_query_consulta_produtos`).
+    2. **Sanitização Reativa de Estado:**
+       - Hooks de `useEffect` adicionados para limpar automaticamente qualquer termo que contenha `rodrigo.souza` ou nomes de login em `buscaMasterBd`, `buscaRelatorio`, `buscaLoja`, `busca` e `termoLocal`.
+       - Limpeza automática do `buscaMasterBd` ao abrir o painel da dona do aplicativo e ao alternar para a aba do Banco de Dados Master.
+       - Botão visual "✕" de limpeza instantânea de busca adicionado dentro da barra de pesquisa do Banco de Dados Master.
+    3. **Limpeza do `localStorage` (`busca_relatorio_salva`):**
+       - Prevenção de persistência de credenciais e remoção automática da chave caso contenha termos de login.
+    4. **Atualização de Cache do Service Worker:**
+       - PWA atualizado para a versão `estoque-mobile-pwa-v26` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 15]
 - **Inversão de Prioridade do Motor Duplo: 1º API Bluesoft Cosmos (Principal) + 2º API BomJawaKit (Contingência):**
   - Atendendo à solicitação do usuário, a **API Bluesoft Cosmos** (`https://api.cosmos.bluesoft.com.br` com `X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg`) foi configurada como **1ª Prioridade (API Principal)** em `src/lib/bomJawaKitApi.ts`, `api/consultar-produto-codigo.js`, `api/buscar-produtos-externos.js`, `server.ts` e `src/components/ConsultaProdutosModal.tsx`.
