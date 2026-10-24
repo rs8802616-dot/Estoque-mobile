@@ -104,6 +104,18 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 14]
+- **Motor Duplo de Consulta de Produtos (Dual-API: BomJawaKit + Bluesoft Cosmos API):**
+  - **Integração Conjunta das 2 APIs (`src/lib/bomJawaKitApi.ts`, `server.ts`, `api/consultar-produto-codigo.js`, `api/buscar-produtos-externos.js`):**
+    1. **API 1 (BomJawaKit):** `https://produtos.bomjawakit.com.br/api/v1` autenticada via header `X-API-Key: sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU`.
+    2. **API 2 (Bluesoft Cosmos API):** `https://api.cosmos.bluesoft.com.br` (`/gtins/{gtin}.json` e `/products?query={query}`) autenticada via header `X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg` e `User-Agent: Cosmos-API-Request`.
+  - **Funcionamento em Conjunto (Contingência de Limite + Complemento de Dados):**
+    - **Se atingir o limite (HTTP 429/403):** Caso uma das APIs atinja o limite diário/mensal de requisições ou apresente instabilidade, a outra API assume automaticamente sem interromper o cadastro.
+    - **Se não tiver em uma, busca na outra:** Quando um código de barras não é encontrado na API 1, o sistema consulta imediatamente a API 2 (Bluesoft Cosmos).
+    - **Enriquecimento e Fotos:** Caso um produto exista na API 1 mas esteja sem marca, categoria ou foto (`tem_imagem: false`), o sistema complementa automaticamente os dados e utiliza o CDN de imagens da Bluesoft Cosmos (`https://cdn-cosmos.bluesoft.com.br/products/{ean}`).
+    - **Serverless Functions para Vercel (`api/consultar-produto-codigo.js` e `api/buscar-produtos-externos.js`):** Criadas funções serverless Node.js na pasta `/api` para que as chamadas ao Bluesoft Cosmos rodem no backend da Vercel sem bloqueio de CORS do navegador.
+  - Atualizado o cache do Service Worker para `estoque-mobile-pwa-v18` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 13]
 - **Correção do Erro de Runtime `Cannot read properties of null (reading 'toFixed')`:**
   - **Causa Raiz Identificada:** No salvamento de produto no Modo Master (`salvarProduto` em `src/App.tsx`), a expressão `typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco) || 0` gerava `NaN` quando o campo de preço estava vazio (`""`), e `JSON.stringify` convertia `NaN` para `null` ao salvar no `localStorage` e no Firestore (`preco_venda: null`, `preco_custo: null`). Na leitura inicial da tela, `p.preco_venda.toFixed(2)` lançava `TypeError: Cannot read properties of null (reading 'toFixed')`.

@@ -160,10 +160,10 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-                Catálogo Oficial de Produtos & Códigos EAN
+                Catálogo Oficial Multi-API de Produtos & Códigos EAN
               </h2>
               <p style={{ margin: 0, fontSize: '0.76rem', opacity: 0.92 }}>
-                Conectado à API <b>produtos.bomjawakit.com.br/api/v1</b> • Mais de 26.000 produtos com fotos e NCM
+                Motor Duplo Ativo: <b>API 1 (BomJawaKit)</b> + <b>API 2 (Bluesoft Cosmos)</b> • Contingência e complemento automático
               </p>
             </div>
           </div>
@@ -345,10 +345,10 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>⏳</div>
               <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>
-                Consultando API produtos.bomjawakit.com.br...
+                Consultando APIs em conjunto (BomJawaKit + Bluesoft Cosmos)...
               </div>
               <div style={{ fontSize: '0.84rem' }}>
-                Buscando produtos, fotos oficiais em PNG, códigos de barras e NCM.
+                Se não existir em uma ou atingir o limite, a segunda API assume automaticamente.
               </div>
             </div>
           ) : resultados.length === 0 ? (
@@ -412,7 +412,16 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                             objectFit: 'contain',
                           }}
                           onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
+                            const imgEl = e.target as HTMLImageElement;
+                            const fallbackCosmos = prod.ean
+                              ? `https://cdn-cosmos.bluesoft.com.br/products/${prod.ean.trim()}`
+                              : '';
+                            if (fallbackCosmos && imgEl.src !== fallbackCosmos && !imgEl.dataset.triedCosmos) {
+                              imgEl.dataset.triedCosmos = 'true';
+                              imgEl.src = fallbackCosmos;
+                            } else {
+                              imgEl.style.display = 'none';
+                            }
                           }}
                         />
                       ) : (
