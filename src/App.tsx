@@ -2532,16 +2532,26 @@ export default function App() {
 
     setTelaLoginVisivel(false);
 
-    // Verificar se o usuário já aceitou o Termo de Concordância e Sigilo
-    const userChaveTermo =
+    // Verificar se o Termo de Uso já foi aceito na primeira vez que o login conectou neste dispositivo
+    const idContaLogin =
       sessao.tipo === 'dona_app'
-        ? 'termo_aceito_dona_master'
+        ? 'dona_master'
         : sessao.tipo === 'admin_loja'
-        ? `termo_aceito_loja_${sessao.lojaId}`
-        : `termo_aceito_op_${sessao.operadorId}_${sessao.lojaId}`;
+        ? `loja_${sessao.lojaId || 'padrao'}`
+        : `op_${sessao.operadorId || 'caixa'}_${sessao.lojaId || 'padrao'}`;
 
-    const termoAceito = localStorage.getItem(userChaveTermo);
+    const userChaveTermo = `termo_aceito_${idContaLogin}`;
+    const chaveTermoDispositivoLogin = `termo_unico_dispositivo_${idContaLogin}`;
+    const chaveTermoDispositivoGeral = 'termo_uso_aceito_dispositivo_v1';
+
+    const termoAceito =
+      localStorage.getItem(userChaveTermo) ||
+      localStorage.getItem(chaveTermoDispositivoLogin) ||
+      localStorage.getItem(chaveTermoDispositivoGeral);
+
     if (!termoAceito) {
+      localStorage.setItem('ultima_chave_termo_pendente', userChaveTermo);
+      localStorage.setItem('ultima_chave_termo_disp_pendente', chaveTermoDispositivoLogin);
       setTermoApenasLeitura(false);
       setModalTermoVisivel(true);
     }
@@ -5817,6 +5827,7 @@ export default function App() {
             temPermissaoOperador('ver_relatorios', 'relatorios')) && (
             <div
               style={{
+                flexShrink: 0,
                 border: grupoMenuAberto === 'caixa' ? '1px solid #bfdbfe' : '1px solid #e2e8f0',
                 borderRadius: '14px',
                 overflow: 'hidden',
@@ -5832,7 +5843,7 @@ export default function App() {
                 onClick={() => alternarGrupoMenu('caixa')}
                 style={{
                   padding: '11px 12px',
-                  background: grupoMenuAberto === 'caixa' ? '#f8fafc' : '#ffffff',
+                  background: grupoMenuAberto === 'caixa' ? '#eff6ff' : '#ffffff',
                   color: '#0f172a',
                   display: 'flex',
                   alignItems: 'center',
@@ -5937,12 +5948,12 @@ export default function App() {
               {grupoMenuAberto === 'caixa' && (
                 <div
                   style={{
-                    margin: '2px 10px 10px 26px',
-                    paddingLeft: '10px',
-                    borderLeft: '2px solid #dbeafe',
+                    padding: '8px 10px 10px 10px',
+                    background: '#f8fafc',
+                    borderTop: '1px solid #dbeafe',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '4px',
+                    gap: '6px',
                   }}
                 >
                   {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
@@ -6030,6 +6041,7 @@ export default function App() {
             perfilAtivo === 'dona_app') && (
             <div
               style={{
+                flexShrink: 0,
                 border: grupoMenuAberto === 'estoque' ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
                 borderRadius: '14px',
                 overflow: 'hidden',
@@ -6045,7 +6057,7 @@ export default function App() {
                 onClick={() => alternarGrupoMenu('estoque')}
                 style={{
                   padding: '11px 12px',
-                  background: grupoMenuAberto === 'estoque' ? '#f8fafc' : '#ffffff',
+                  background: grupoMenuAberto === 'estoque' ? '#ecfdf5' : '#ffffff',
                   color: '#0f172a',
                   display: 'flex',
                   alignItems: 'center',
@@ -6089,18 +6101,18 @@ export default function App() {
               {grupoMenuAberto === 'estoque' && (
                 <div
                   style={{
-                    margin: '2px 10px 10px 26px',
-                    paddingLeft: '10px',
-                    borderLeft: '2px solid #a7f3d0',
+                    padding: '8px 10px 10px 10px',
+                    background: '#f8fafc',
+                    borderTop: '1px solid #a7f3d0',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '4px',
+                    gap: '6px',
                   }}
                 >
                   {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
                     <div
                       className="sidebar-item"
-                      style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #d1fae5' }}
+                      style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0' }}
                       onClick={() => {
                         abrirCadastro('estoque');
                         fecharMenu();
@@ -6181,6 +6193,7 @@ export default function App() {
           {/* 3. DELIVERY */}
           <div
             style={{
+              flexShrink: 0,
               border: grupoMenuAberto === 'delivery' ? '1px solid #fcd34d' : '1px solid #e2e8f0',
               borderRadius: '14px',
               overflow: 'hidden',
@@ -6196,7 +6209,7 @@ export default function App() {
               onClick={() => alternarGrupoMenu('delivery')}
               style={{
                 padding: '11px 12px',
-                background: grupoMenuAberto === 'delivery' ? '#f8fafc' : '#ffffff',
+                background: grupoMenuAberto === 'delivery' ? '#fffbeb' : '#ffffff',
                 color: '#0f172a',
                 display: 'flex',
                 alignItems: 'center',
@@ -6259,17 +6272,17 @@ export default function App() {
             {grupoMenuAberto === 'delivery' && (
               <div
                 style={{
-                  margin: '2px 10px 10px 26px',
-                  paddingLeft: '10px',
-                  borderLeft: '2px solid #fde68a',
+                  padding: '8px 10px 10px 10px',
+                  background: '#f8fafc',
+                  borderTop: '1px solid #fde68a',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '4px',
+                  gap: '6px',
                 }}
               >
                 <div
                   className="sidebar-item"
-                  style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fde68a' }}
+                  style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fcd34d' }}
                   onClick={() => {
                     setColunaDeliveryFixaVisivel(true);
                     abrirGestaoDelivery();
@@ -6345,6 +6358,7 @@ export default function App() {
             temPermissaoOperador('ver_graficos', 'graficos')) && (
             <div
               style={{
+                flexShrink: 0,
                 border: grupoMenuAberto === 'relatorios' ? '1px solid #ddd6fe' : '1px solid #e2e8f0',
                 borderRadius: '14px',
                 overflow: 'hidden',
@@ -6360,7 +6374,7 @@ export default function App() {
                 onClick={() => alternarGrupoMenu('relatorios')}
                 style={{
                   padding: '11px 12px',
-                  background: grupoMenuAberto === 'relatorios' ? '#f8fafc' : '#ffffff',
+                  background: grupoMenuAberto === 'relatorios' ? '#f5f3ff' : '#ffffff',
                   color: '#0f172a',
                   display: 'flex',
                   alignItems: 'center',
@@ -6404,18 +6418,18 @@ export default function App() {
               {grupoMenuAberto === 'relatorios' && (
                 <div
                   style={{
-                    margin: '2px 10px 10px 26px',
-                    paddingLeft: '10px',
-                    borderLeft: '2px solid #ddd6fe',
+                    padding: '8px 10px 10px 10px',
+                    background: '#f8fafc',
+                    borderTop: '1px solid #ddd6fe',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '4px',
+                    gap: '6px',
                   }}
                 >
                   {temPermissaoOperador('ver_relatorios', 'relatorios') && (
                     <div
                       className="sidebar-item"
-                      style={{ background: '#f5f3ff', color: '#5b21b6', border: '1px solid #ede9fe' }}
+                      style={{ background: '#f5f3ff', color: '#5b21b6', border: '1px solid #ddd6fe' }}
                       onClick={() => {
                         abrirCentralRelatorios('faturamento');
                         fecharMenu();
@@ -6463,6 +6477,7 @@ export default function App() {
           {/* 5. CONFIGURAÇÕES & EQUIPE */}
           <div
             style={{
+              flexShrink: 0,
               border: grupoMenuAberto === 'config' ? '1px solid #cbd5e1' : '1px solid #e2e8f0',
               borderRadius: '14px',
               overflow: 'hidden',
@@ -6478,7 +6493,7 @@ export default function App() {
               onClick={() => alternarGrupoMenu('config')}
               style={{
                 padding: '11px 12px',
-                background: grupoMenuAberto === 'config' ? '#f8fafc' : '#ffffff',
+                background: grupoMenuAberto === 'config' ? '#f1f5f9' : '#ffffff',
                 color: '#0f172a',
                 display: 'flex',
                 alignItems: 'center',
@@ -6522,12 +6537,12 @@ export default function App() {
             {grupoMenuAberto === 'config' && (
               <div
                 style={{
-                  margin: '2px 10px 10px 26px',
-                  paddingLeft: '10px',
-                  borderLeft: '2px solid #cbd5e1',
+                  padding: '8px 10px 10px 10px',
+                  background: '#f8fafc',
+                  borderTop: '1px solid #e2e8f0',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '4px',
+                  gap: '6px',
                 }}
               >
                 {temPermissaoOperador('gerenciar_equipe', 'usuarios') && (
@@ -6593,31 +6608,18 @@ export default function App() {
                 {temPermissaoOperador('ver_manual_usuario', 'manual_ajuda') && (
                   <div
                     className="sidebar-item"
+                    style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
                     onClick={() => {
                       setModalManualVisivel(true);
                       fecharMenu();
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <BookOpen size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
-                      <span>Manual do Usuário</span>
+                      <BookOpen size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                      <span>Tutorial & Manual do Aplicativo</span>
                     </span>
                   </div>
                 )}
-
-                <div
-                  className="sidebar-item"
-                  onClick={() => {
-                    setTermoApenasLeitura(true);
-                    setModalTermoVisivel(true);
-                    fecharMenu();
-                  }}
-                >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <FileCheck2 size={15} style={{ color: '#64748b', flexShrink: 0 }} />
-                    <span>Termo de Sigilo & Uso</span>
-                  </span>
-                </div>
               </div>
             )}
           </div>
@@ -10207,16 +10209,22 @@ export default function App() {
         onRegistrarPagamento={handleRegistrarPagamentoFiado}
       />
 
-      {/* MODAL DO TERMO DE CONCORDÂNCIA E SIGILO DO USUÁRIO */}
+      {/* MODAL DO TERMO DE CONCORDÂNCIA E SIGILO DO USUÁRIO (APARECE APENAS 1 VEZ NO PRIMEIRO LOGIN DO DISPOSITIVO) */}
       <TermoConcordanciaModal
         visivel={modalTermoVisivel}
+        onFechar={() => setModalTermoVisivel(false)}
         onAceitar={(registro) => {
-          const userChaveTermo =
+          const idContaLogin =
             perfilAtivo === 'dona_app'
-              ? 'termo_aceito_dona_master'
+              ? 'dona_master'
               : perfilAtivo === 'admin_loja'
-              ? `termo_aceito_loja_${supermercadoAtual}`
-              : `termo_aceito_op_${operadorAtivoId}_${supermercadoAtual}`;
+              ? `loja_${supermercadoAtual || 'padrao'}`
+              : `op_${operadorAtivoId || 'caixa'}_${supermercadoAtual || 'padrao'}`;
+
+          const userChaveTermo = `termo_aceito_${idContaLogin}`;
+          const chaveTermoDispositivoLogin = `termo_unico_dispositivo_${idContaLogin}`;
+          const chavePendente1 = localStorage.getItem('ultima_chave_termo_pendente');
+          const chavePendente2 = localStorage.getItem('ultima_chave_termo_disp_pendente');
 
           const nomeUsuarioValido =
             registro?.usuarioNome ||
@@ -10230,9 +10238,16 @@ export default function App() {
           const versaoValida = registro?.versaoTermo || '2026.2-PROD';
           const dataValida = registro?.dataAceite || new Date().toLocaleDateString('pt-BR');
 
-          if (registro) {
-            safeLocalStorageSet(userChaveTermo, JSON.stringify(registro));
-          }
+          const valorSalvar = JSON.stringify(registro || { aceitou: true, dataAceite: dataValida });
+          try {
+            localStorage.setItem(userChaveTermo, valorSalvar);
+            localStorage.setItem(chaveTermoDispositivoLogin, 'true');
+            localStorage.setItem('termo_uso_aceito_dispositivo_v1', 'true');
+            if (chavePendente1) localStorage.setItem(chavePendente1, valorSalvar);
+            if (chavePendente2) localStorage.setItem(chavePendente2, 'true');
+          } catch {}
+          safeLocalStorageSet(userChaveTermo, valorSalvar);
+
           setModalTermoVisivel(false);
           registrarLogAuditoria(
             'Termo de Concordância Aceito',

@@ -104,6 +104,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-23 - Atualização 9]
+- **Correção de Layout do Acordeão do Menu Lateral, Tutorial Passo a Passo Completo e Exibição Única do Termo de Uso:**
+  - **Correção do Layout do Menu Lateral (`src/index.css` e `src/App.tsx`):**
+    - Adicionado `flex-shrink: 0` em todos os grupos do `.sidebar-menu` para evitar que o Flexbox esmagasse os grupos fechados quando um grupo com vários itens era expandido.
+    - Padronizados os sub-itens dentro de cada grupo expandido como botões completos (`background: #ffffff`, `border: 1px solid #e2e8f0`, `border-radius: 10px`) ocupando toda a largura útil do card.
+  - **Termo de Uso Exibido Somente 1 Única Vez no 1º Login do Dispositivo (`src/App.tsx`):**
+    - Removido o atalho do Termo de Uso do menu lateral.
+    - Gravada a aceitação tanto na chave do login quanto na chave persistente do dispositivo (`termo_uso_aceito_dispositivo_v1` e `termo_unico_dispositivo_${idContaLogin}`), garantindo que o modal apareça exclusivamente na primeira vez em que o login conecta no aparelho.
+  - **Tutorial Passo a Passo & Manual do Sistema (`src/components/ManualUsuarioModal.tsx`):**
+    - Reformulado com **Passo 1: Como Funciona o Aplicativo (Rotina Diária dos 5 Passos e Mapa dos 5 Grupos do Menu)**, **Passo 2: Delivery Completo (Link Exclusivo do Cardápio, Baixa FEFO ao Aceitar, Comanda Térmica, Link Motoboy com Rota Google Maps e PIN de 4 dígitos)**, **Passo 3: Frente de Caixa (PDV), Leitor USB/Bluetooth, Câmera e Balança**, **Passo 4: Gestão de Caixa**, **Passo 5: Cadastro de Estoque, Lotes FEFO vs. Produtos Internos**, **Passo 6: Central de Relatórios & Lucro Líquido Real (4 Abas)**, **Passo 7: Alertas de Validade e Etiquetas**, **Passo 8: Caderneta de Fiado** e **Passo 9: Equipe, Permissões e Modo 100% Offline**, com botões de navegação `⬅️ Passo Anterior` e `Próximo Passo ➡️`.
+
 ### [2026-10-23 - Atualização 8]
 - **Redesign Moderno do Menu Lateral em 5 Grupos Retráteis (Acordeão) (`src/App.tsx` e `src/index.css`):**
   - Substituídos os emojis antigos e caixas pesadas por um design moderno estilo SaaS:

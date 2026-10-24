@@ -183,26 +183,32 @@
     -webkit-overflow-scrolling: touch;
 }
 
+.sidebar-menu > div {
+    flex-shrink: 0;
+}
+
 .sidebar-item {
-    padding: 9px 11px; 
+    padding: 10px 12px; 
     border-radius: 10px; 
-    color: #334155; 
+    color: #1e293b; 
     text-decoration: none;
     font-weight: 600; 
-    font-size: 0.82rem; 
+    font-size: 0.83rem; 
     display: flex; 
     align-items: center; 
     justify-content: space-between;
     gap: 8px;
-    background: transparent; 
+    background: #ffffff; 
     cursor: pointer; 
-    border: 1px solid transparent;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
     transition: all 0.15s ease;
     user-select: none;
 }
 
 .sidebar-item:hover {
     background: #f1f5f9;
+    border-color: #cbd5e1;
     color: #0f172a;
 }
 

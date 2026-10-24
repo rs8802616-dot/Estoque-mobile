@@ -14,6 +14,7 @@ interface ManualUsuarioModalProps {
 
 interface TopicoManual {
   id: string;
+  passoNumero: number;
   icone: string;
   titulo: string;
   categoria: string;
@@ -32,145 +33,245 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
   nomeOperador,
 }) => {
   const [termoBusca, setTermoBusca] = useState('');
-  const [topicoSelecionadoId, setTopicoSelecionadoId] = useState<string>('pdv_vendas');
+  const [topicoSelecionadoId, setTopicoSelecionadoId] = useState<string>('guia_inicial_fluxo');
 
   const tipoUsuario = perfilAtivo || sessao?.tipo || 'caixa';
   const isDono = tipoUsuario === 'dona_app';
   const isAdminLoja = tipoUsuario === 'admin_loja';
   const isCaixa = tipoUsuario === 'caixa' || (!isDono && !isAdminLoja);
 
-  // Geração dinâmica e estritamente filtrada por permissões dos tópicos do manual
   const topicos = useMemo(() => {
     const lista: TopicoManual[] = [];
+    let contador = 1;
 
     // =========================================================================
-    // 1. FRENTE DE CAIXA (PDV & VENDAS)
+    // 1. PASSO A PASSO INICIAL: COMO FUNCIONA O APLICATIVO DO ZERO
+    // =========================================================================
+    lista.push({
+      id: 'guia_inicial_fluxo',
+      passoNumero: contador++,
+      icone: '🚀',
+      titulo: 'Como Funciona o Aplicativo (Passo a Passo Completo)',
+      categoria: '1. Comece Aqui (Visão Geral)',
+      destaque: 'Rotina diária do início ao fim do expediente',
+      conteudo: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)', border: '1px solid #93c5fd', borderRadius: '14px', padding: '16px', color: '#1e3a8a' }}>
+            <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>🎯</span>
+              <span>Bem-vindo ao Tutorial Completo do Sistema!</span>
+            </div>
+            <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.55 }}>
+              Este aplicativo reúne <strong>Frente de Caixa (PDV)</strong>, <strong>Controle de Estoque por Lotes e Validades</strong>, <strong>Delivery Completo estilo Zé Delivery / AtendeJá</strong> e <strong>Central de Lucro Líquido Real</strong> em um só lugar. Veja abaixo a ordem exata de como usar no seu dia a dia:
+            </p>
+          </div>
+
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '0.98rem', color: '#0f172a', fontWeight: 800 }}>
+              📋 Os 5 Passos da Rotina Diária da Loja:
+            </h4>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f8fafc', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #2563eb' }}>
+              <span style={{ background: '#2563eb', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>1</span>
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Cadastrar o Estoque da Loja (Menu ☰ → Estoque & Produtos)</div>
+                <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px', lineHeight: 1.5 }}>
+                  Bipe ou digite o código de barras do produto, informe o <strong>Preço de Custo</strong>, o <strong>Preço de Venda</strong>, a <strong>Quantidade</strong>, o <strong>Lote</strong> e a <strong>Data de Validade</strong>. Se for um produto de produção própria sem controle de lote (ex: gelo, combo, porção), marque como <em>Cadastro Interno / Estoque Ilimitado</em>.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f8fafc', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #059669' }}>
+              <span style={{ background: '#059669', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>2</span>
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Abrir o Turno do Caixa (Menu ☰ → Caixa & Vendas → Gestão de Caixa)</div>
+                <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px', lineHeight: 1.5 }}>
+                  Antes de iniciar as vendas do dia, informe o <strong>Fundo de Troco Inicial</strong> (dinheiro em espécie que está na gaveta). O status mudará de <strong style={{ color: '#e11d48' }}>Fechado</strong> para <strong style={{ color: '#059669' }}>Aberto</strong>.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f8fafc', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #0284c7' }}>
+              <span style={{ background: '#0284c7', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>3</span>
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Atender no Balcão (PDV Principal)</div>
+                <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px', lineHeight: 1.5 }}>
+                  Na tela principal, bipe os produtos com o leitor USB/Bluetooth, câmera ou clique no card do produto. Escolha a forma de pagamento (Dinheiro com cálculo automático de troco, PIX, Cartão ou Fiado) e finalize emitindo o cupom térmico.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#fffbeb', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #d97706' }}>
+              <span style={{ background: '#d97706', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>4</span>
+              <div>
+                <div style={{ fontWeight: 800, color: '#92400e', fontSize: '0.9rem' }}>Receber e Despachar Pedidos de Delivery (Coluna Lateral ou Menu Delivery)</div>
+                <div style={{ fontSize: '0.84rem', color: '#78350f', marginTop: '3px', lineHeight: 1.5 }}>
+                  Envie o <strong>Link do Cardápio</strong> para seus clientes. Quando um pedido chega, o sistema toca um alerta sonoro. Ao clicar em <strong>Aceitar Pedido</strong>, o estoque é baixado automaticamente (do lote que vence primeiro) e a venda entra no caixa. Use o botão <strong>🛵 Link Motoboy</strong> para enviar a rota do Google Maps no WhatsApp do entregador e confirme a entrega com o <strong>PIN de 4 dígitos</strong> do cliente.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f5f3ff', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #7c3aed' }}>
+              <span style={{ background: '#7c3aed', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>5</span>
+              <div>
+                <div style={{ fontWeight: 800, color: '#5b21b6', fontSize: '0.9rem' }}>Fechar o Caixa e Conferir o Lucro Líquido Real (Menu ☰ → Relatórios)</div>
+                <div style={{ fontSize: '0.84rem', color: '#4c1d95', marginTop: '3px', lineHeight: 1.5 }}>
+                  Ao fim do expediente, faça a conferência de fechamento da gaveta e acesse a <strong>Central de Relatórios & Lucro</strong> para ver exatamente quanto vendeu, qual foi o custo dos produtos vendidos e quanto sobrou de <strong>Lucro Líquido Real no bolso</strong>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px' }}>
+            <h4 style={{ margin: '0 0 10px 0', fontSize: '0.96rem', color: '#0f172a', fontWeight: 800 }}>
+              🗂️ Como é Organizado o Menu Lateral (Botão ☰ no Topo Esquerdo):
+            </h4>
+            <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#475569' }}>
+              O menu lateral está dividido em <strong>5 grupos inteligentes</strong> que abrem e fecham com um clique:
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '8px', fontSize: '0.82rem' }}>
+              <div style={{ padding: '10px', borderRadius: '8px', background: '#eff6ff', border: '1px solid #bfdbfe', color: '#1e3a8a' }}>
+                <strong>1. Caixa & Vendas:</strong> Gestão de Caixa/Turno, Devedores/Fiado e Histórico de Vendas & Cupons.
+              </div>
+              <div style={{ padding: '10px', borderRadius: '8px', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46' }}>
+                <strong>2. Estoque & Produtos:</strong> Adicionar Item, Posição de Estoque & Validades, Etiquetas e Catálogo Global.
+              </div>
+              <div style={{ padding: '10px', borderRadius: '8px', background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e' }}>
+                <strong>3. Delivery:</strong> Painel de Pedidos, Ver Cardápio do Cliente e Copiar Link do Cardápio.
+              </div>
+              <div style={{ padding: '10px', borderRadius: '8px', background: '#f5f3ff', border: '1px solid #ddd6fe', color: '#5b21b6' }}>
+                <strong>4. Relatórios:</strong> Central Unificada de Relatórios & Lucro Real (4 Abas) e Gráficos.
+              </div>
+              <div style={{ padding: '10px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155' }}>
+                <strong>5. Configurações & Equipe:</strong> Caixas & Permissões, Lojas, Alertas WhatsApp e este Tutorial.
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    });
+
+    // =========================================================================
+    // 2. MÓDULO DE DELIVERY COMPLETO (CARDÁPIO, PAINEL, MOTOBOY & PIN)
+    // =========================================================================
+    lista.push({
+      id: 'modulo_delivery_completo',
+      passoNumero: contador++,
+      icone: '🛵',
+      titulo: 'Delivery Completo: Cardápio do Cliente, Painel, Motoboy e PIN',
+      categoria: '2. Delivery & Pedidos Online',
+      destaque: 'Link da Loja, Baixa FEFO, Rota Maps e PIN de 4 dígitos',
+      conteudo: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '14px', padding: '15px 16px', color: '#92400e' }}>
+            <div style={{ fontWeight: 800, fontSize: '0.96rem', marginBottom: '4px' }}>
+              🛵 Como Funciona o Seu Delivery Próprio (Sem Taxas de Aplicativos)
+            </div>
+            <p style={{ margin: 0, fontSize: '0.86rem', lineHeight: 1.5 }}>
+              Sua loja possui um <strong>Cardápio Digital Exclusivo</strong> integrado em tempo real com o seu estoque físico e com o seu caixa.
+            </p>
+          </div>
+
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a', fontWeight: 800 }}>
+              1️⃣ Como Enviar o Cardápio para os Clientes
+            </h4>
+            <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.86rem', color: '#334155' }}>
+              <li>
+                Abra o <strong>Menu Lateral (☰) → Delivery → Copiar Link do Cardápio</strong> (ou clique no botão de compartilhar dentro do Painel Delivery).
+              </li>
+              <li>
+                Coloque esse link na bio do Instagram, no status do WhatsApp ou na mensagem automática do WhatsApp da loja.
+              </li>
+              <li>
+                <strong>Isolamento Total de Segurança:</strong> Quando o cliente abre o link (<code>/?loja=...</code>), ele vê <strong>exclusivamente o cardápio de compras</strong>. Não existe nenhum botão de acesso administrativo para o cliente.
+              </li>
+              <li>
+                <strong>Estoque Inteligente no Cardápio:</strong> Produtos com estoque zerado (<code>0 un</code>) ou vencidos <strong>somem automaticamente</strong> para o cliente. E se um produto tiver vários lotes diferentes na loja, o cardápio une tudo em <strong>um único card</strong> somando as quantidades disponíveis.
+              </li>
+            </ul>
+          </div>
+
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a', fontWeight: 800 }}>
+              2️⃣ Como Atender e Despachar o Pedido no Caixa / PDV
+            </h4>
+            <ol style={{ paddingLeft: '20px', lineHeight: 1.65, margin: 0, fontSize: '0.86rem', color: '#334155' }}>
+              <li style={{ marginBottom: '8px' }}>
+                <strong>Alerta Sonoro de Novo Pedido:</strong> Assim que o cliente envia o pedido, o card aparece com borda vermelha na aba <strong>Novos</strong> e o sistema toca uma campainha contínua até você aceitar.
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                <strong>Aceitar Pedido (Baixa Automática no Estoque):</strong> Clique em <strong style={{ color: '#059669' }}>✓ Aceitar Pedido</strong>. O sistema desconta automaticamente as unidades do seu estoque (começando pelo lote de validade mais próxima - FEFO) e já registra a venda no turno do caixa!
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                <strong>🖨️ Imprimir Comanda:</strong> Clique no ícone da impressora (<code>🖨️</code>) no rodapé do pedido para imprimir a comanda de separação e entrega na impressora térmica.
+              </li>
+              <li style={{ marginBottom: '8px' }}>
+                <strong>🛵 Link Motoboy (WhatsApp + Google Maps):</strong> Clique no botão roxo <strong style={{ color: '#9333ea' }}>🛵 Link Motoboy</strong>. O sistema abre o WhatsApp com os dados do pedido, valor a cobrar/troco, telefone do cliente e o <strong>link direto da rota no Google Maps</strong> para o entregador abrir no celular com 1 toque.
+              </li>
+              <li>
+                <strong>🔐 Confirmar Entrega com PIN de 4 Dígitos:</strong> Ao entregar o pedido, o cliente informa o código PIN de 4 dígitos gerado no celular dele. Digite o PIN para concluir a entrega com 100% de segurança.
+              </li>
+            </ol>
+          </div>
+        </div>
+      ),
+    });
+
+    // =========================================================================
+    // 3. FRENTE DE CAIXA (PDV & VENDAS)
     // =========================================================================
     const temPermissaoVenda = isDono || isAdminLoja || (permissoesLoja?.caixa !== false && permissoesOperador?.vender !== false);
     if (temPermissaoVenda) {
       lista.push({
         id: 'pdv_vendas',
+        passoNumero: contador++,
         icone: '🛒',
-        titulo: 'Frente de Caixa (PDV) & Registro de Vendas',
-        categoria: 'Frente de Caixa (PDV)',
-        destaque: 'Bipagem, Balança e Operação',
+        titulo: 'Frente de Caixa (PDV), Leitor de Código de Barras & Balança',
+        categoria: '3. Frente de Caixa & Vendas',
+        destaque: 'Bipagem contínua, Câmera, Balança e Pagamentos',
         conteudo: (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '12px', padding: '14px 16px', color: '#0369a1' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.95rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>💡</span>
-                <span>Visão Geral do PDV</span>
-              </div>
-              <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-                O módulo de Frente de Caixa foi projetado para máxima velocidade e agilidade no atendimento de balcão. Ele funciona de forma sincronizada e contínua em computadores com leitores USB, celulares ou tablets.
-              </p>
-            </div>
-
             <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#0284c7', color: '#fff', width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 800 }}>1</span>
-                <span>Como Adicionar Itens ao Carrinho (3 Maneiras)</span>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '0.96rem', color: '#0f172a', fontWeight: 800 }}>
+                1️⃣ 3 Formas de Passar Produtos no Caixa
               </h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
+              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.86rem', color: '#334155' }}>
                 <li style={{ marginBottom: '8px' }}>
-                  <strong>🔫 Leitor de Código de Barras Físico (USB / Bluetooth):</strong> O cursor permanece pronto no campo de bipagem. Ao passar o leitor no produto, o item entra no carrinho instantaneamente com foto, preço e cálculo de subtotal.
+                  <strong>🔫 Pistola Leitora de Código de Barras (USB ou Bluetooth):</strong> Não precisa clicar em nenhum campo antes! Basta apontar o leitor e bipar:
+                  <ul style={{ marginTop: '4px', paddingLeft: '18px' }}>
+                    <li>Se bipar o <strong>mesmo produto várias vezes</strong>, o sistema soma <code>+1 unidade</code> automaticamente na mesma linha e recalcula o total;</li>
+                    <li>Se bipar <strong>produtos diferentes</strong>, cada um entra em sua linha no carrinho;</li>
+                    <li>Se o produto tiver mais de um lote, o sistema dá baixa automaticamente no lote que vence primeiro (<strong>FEFO</strong>).</li>
+                  </ul>
                 </li>
                 <li style={{ marginBottom: '8px' }}>
-                  <strong>📷 Câmera Integrada de Bipagem Contínua:</strong> Clique no botão <em>"📷 Abrir Câmera"</em>. A câmera permanece aberta e ativa na tela permitindo bipar múltiplos produtos seguidos com lanterna/flash, virar câmera e som de bipe de caixa a cada leitura.
+                  <strong>📷 Câmera do Celular / Tablet:</strong> Clique no ícone da câmera na barra de pesquisa para ler códigos de barras usando a câmera com suporte a lanterna e zoom.
                 </li>
                 <li>
-                  <strong>🔍 Busca Manual Inteligente:</strong> Digite o nome, marca, categoria ou código do produto no campo de busca para selecioná-lo rapidamente com um toque.
+                  <strong>🔍 Pesquisa Rápida ou Clique Direto no Card:</strong> Digite qualquer parte do nome, marca ou código na barra de pesquisa superior ou clique diretamente sobre o card do produto na grade para abrir a janela de venda.
                 </li>
               </ul>
             </div>
 
             <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#0284c7', color: '#fff', width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 800 }}>2</span>
-                <span>Produtos Pesáveis & Etiquetas de Balança (KG)</span>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '0.96rem', color: '#0f172a', fontWeight: 800 }}>
+                2️⃣ Etiquetas Inteligentes de Balança (Padrão 2xxxx)
               </h4>
-              <p style={{ margin: '0 0 8px 0', fontSize: '0.88rem', color: '#334155', lineHeight: 1.5 }}>
-                O sistema possui decodificador nativo de balança no padrão nacional <strong>EAN-13 iniciado em '2'</strong> (Toledo, Filizola, Elgin, Urano):
+              <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: 1.55 }}>
+                Ao bipar etiquetas geradas por balanças (Toledo, Filizola, Elgin, Urano iniciadas pelo dígito <code>2</code>), o sistema identifica automaticamente o produto pesável e calcula o peso/preço exato na hora.
               </p>
-              <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.84rem', color: '#1e293b' }}>
-                ⚖️ Ao bipar uma etiqueta de balança (ex: queijo, carnes, pães, frios), o PDV identifica o código interno do item no estoque, calcula o peso líquido em gramas e insere o valor total exato na compra automaticamente.
-              </div>
-            </div>
-
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#0284c7', color: '#fff', width: '24px', height: '24px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 800 }}>3</span>
-                <span>Ajuste de Quantidades, Exclusão de Itens e Descontos</span>
-              </h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li><strong>Multiplicar Quantidade:</strong> Use os botões <code>[+]</code> e <code>[-]</code> ou digite o número exato no carrinho.</li>
-                <li><strong>Remover Item:</strong> Clique no botão 🗑️ ao lado do produto se o cliente desistir do item.</li>
-                {(!isCaixa || permissoesOperador?.dar_desconto) && (
-                  <li><strong>Conceder Desconto:</strong> É possível aplicar desconto percentual (%) ou valor em reais (R$) antes de finalizar.</li>
-                )}
-              </ul>
-            </div>
-          </div>
-        ),
-      });
-
-      lista.push({
-        id: 'formas_pagamento',
-        icone: '💳',
-        titulo: 'Formas de Pagamento, Troco & Emissão de Comprovante',
-        categoria: 'Frente de Caixa (PDV)',
-        destaque: 'Dinheiro, PIX, Cartão e Cupom',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', color: '#0f172a' }}>Como Finalizar a Venda no Caixa:</h4>
-            <p style={{ margin: 0, fontSize: '0.88rem', color: '#334155', lineHeight: 1.5 }}>
-              Após bipar todos os produtos do cliente, selecione o meio de pagamento desejado:
-            </p>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px' }}>
-                <div style={{ fontWeight: 800, color: '#16a34a', fontSize: '0.9rem', marginBottom: '4px' }}>💵 Dinheiro (Espécie)</div>
-                <div style={{ fontSize: '0.82rem', color: '#475569' }}>
-                  Digite o valor em cédulas entregue pelo cliente. O sistema calcula e destaca o <strong>Troco Exato</strong> em verde na tela.
-                </div>
-              </div>
-
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px' }}>
-                <div style={{ fontWeight: 800, color: '#0284c7', fontSize: '0.9rem', marginBottom: '4px' }}>📱 PIX Instantâneo</div>
-                <div style={{ fontSize: '0.82rem', color: '#475569' }}>
-                  Apresenta o valor exato a ser cobrado. O operador confere a notificação no aplicativo bancário e confirma a venda.
-                </div>
-              </div>
-
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '12px' }}>
-                <div style={{ fontWeight: 800, color: '#7c3aed', fontSize: '0.9rem', marginBottom: '4px' }}>💳 Cartão de Crédito / Débito</div>
-                <div style={{ fontSize: '0.82rem', color: '#475569' }}>
-                  Insira ou aproxime o cartão na maquininha física da sua loja e confirme a transação no PDV.
-                </div>
-              </div>
-
-              {(!isCaixa || permissoesOperador?.gerenciar_devedores) && (
-                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '12px' }}>
-                  <div style={{ fontWeight: 800, color: '#dc2626', fontSize: '0.9rem', marginBottom: '4px' }}>📝 Compra em Fiado</div>
-                  <div style={{ fontSize: '0.82rem', color: '#991b1b' }}>
-                    Vincula a compra ao cliente cadastrado. O sistema valida o limite de crédito e lança o débito na caderneta.
-                  </div>
-                </div>
-              )}
             </div>
 
             <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '12px', padding: '14px 16px', color: '#065f46' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>🖨️</span>
-                <span>Emissão e Impressão de Cupom Térmico (58mm / 80mm)</span>
+              <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px' }}>
+                💳 Formas de Pagamento, Troco & Impressão de Cupom
               </div>
-              <p style={{ margin: 0, fontSize: '0.86rem', lineHeight: 1.5 }}>
-                Ao concluir a venda, o cupom é gerado na tela com a relação de itens, subtotais, forma de pagamento e dados do supermercado. É possível:
-              </p>
-              <ul style={{ paddingLeft: '18px', marginTop: '6px', marginBottom: 0, fontSize: '0.84rem' }}>
-                <li><strong>Imprimir na Impressora Térmica:</strong> Compatível com qualquer impressora de bobina USB, Wi-Fi ou Bluetooth.</li>
-                <li><strong>Salvar em PDF:</strong> Guarda uma cópia digital do comprovante.</li>
-                <li><strong>Enviar por WhatsApp:</strong> Envia o cupom formatado diretamente para o número do cliente.</li>
+              <ul style={{ paddingLeft: '18px', margin: 0, fontSize: '0.85rem', lineHeight: 1.55 }}>
+                <li><strong>Dinheiro:</strong> Informe o valor recebido do cliente e veja o <strong>Troco Exato</strong> calculado na hora.</li>
+                <li><strong>PIX, Cartão de Crédito e Cartão de Débito:</strong> Registro separado para bater centavo por centavo no fechamento do turno.</li>
+                <li><strong>Fiado / Caderneta:</strong> Lança o valor diretamente na conta do cliente cadastrado.</li>
+                <li><strong>Comprovante / Cupom:</strong> Ao finalizar, imprima em bobina térmica (58mm/80mm) ou envie pelo WhatsApp do cliente.</li>
               </ul>
             </div>
           </div>
@@ -179,54 +280,45 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     }
 
     // =========================================================================
-    // 2. GESTÃO DE CAIXA E TURNOS (APENAS SE PERMITIDO)
+    // 4. GESTÃO DE CAIXA E TURNOS
     // =========================================================================
     const temPermissaoCaixaTurno = isDono || isAdminLoja || (permissoesLoja?.gestao_caixa !== false && permissoesOperador?.gestao_caixa !== false);
     if (temPermissaoCaixaTurno) {
       lista.push({
         id: 'gestao_caixa_turnos',
+        passoNumero: contador++,
         icone: '💵',
-        titulo: 'Abertura, Sangria, Suprimento e Fechamento de Caixa',
-        categoria: 'Gestão de Caixa & Gaveta',
-        destaque: 'Conferência Cega e Fundo de Troco',
+        titulo: 'Gestão de Caixa: Abertura, Sangria, Suprimento e Fechamento',
+        categoria: '3. Frente de Caixa & Vendas',
+        destaque: 'Controle de gaveta, troco e conferência',
         conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '14px 16px', color: '#166534' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px' }}>🔒 Controle Rigoroso de Gaveta</div>
-              <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-                Cada operador tem seu turno individual e isolado. O sistema controla todas as entradas e saídas de valores para garantir total transparência no fechamento.
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px' }}>
-                <h5 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', color: '#0f172a', fontWeight: 800 }}>1. Abertura do Turno de Caixa</h5>
-                <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: 1.5 }}>
-                  Ao iniciar o dia de trabalho, acesse <strong>"💵 Caixa / Turno"</strong>, informe o valor físico do <em>Fundo de Troco Inicial</em> (ex: R$ 100,00) que está na gaveta e confirme com seu PIN.
-                </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>🟢 1. Abertura de Caixa</div>
+                <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '2px' }}>
+                  Acesse <strong>Menu ☰ → Caixa & Vendas → Gestão de Caixa & Turno</strong> e digite o valor em dinheiro disponível na gaveta para troco no início do turno.
+                </div>
               </div>
-
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px' }}>
-                <h5 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', color: '#0f172a', fontWeight: 800 }}>2. Sangria (Retirada de Dinheiro)</h5>
-                <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: 1.5 }}>
-                  Quando a gaveta acumular muitas notas, lance uma sangria com o valor retirado e a justificativa (ex: <em>"Envio ao cofre da gerência"</em>). O valor é subtraído do saldo em espécie da gaveta.
-                </p>
+              <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>📤 2. Sangria (Retirada de Valor da Gaveta)</div>
+                <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '2px' }}>
+                  Sempre que retirar dinheiro da gaveta (para pagar fornecedor ou guardar no cofre), registre uma <strong>Sangria</strong> com o valor e o motivo. Isso desconta do saldo esperado em dinheiro.
+                </div>
               </div>
-
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px' }}>
-                <h5 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', color: '#0f172a', fontWeight: 800 }}>3. Suprimento (Entrada de Troco Extra)</h5>
-                <p style={{ margin: 0, fontSize: '0.86rem', color: '#334155', lineHeight: 1.5 }}>
-                  Utilize sempre que a gerência fornecer moedas ou notas extras de troco durante o expediente.
-                </p>
+              <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>📥 3. Suprimento (Reforço de Troco)</div>
+                <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '2px' }}>
+                  Quando colocar mais moedas ou notas de troco na gaveta durante o dia, registre um <strong>Suprimento</strong>.
+                </div>
               </div>
-
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '14px' }}>
-                <h5 style={{ margin: '0 0 6px 0', fontSize: '0.92rem', color: '#0f172a', fontWeight: 800 }}>4. Fechamento de Caixa (Conferência Cega)</h5>
-                <p style={{ margin: '0 0 6px 0', fontSize: '0.86rem', color: '#334155', lineHeight: 1.5 }}>
-                  No final do dia, conte fisicamente as cédulas, moedas e canhotos de cartão. Digite os valores conferidos. O sistema compara o valor esperado pelo sistema com o valor digitado e emite o resumo com sobras ou faltas.
-                </p>
-                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', padding: '8px 12px', borderRadius: '6px', fontSize: '0.82rem', color: '#92400e' }}>
-                  ⚠️ <strong>Regra de Segurança:</strong> O sistema não permite deslogar ou sair do terminal enquanto o caixa estiver aberto para evitar perda de controle da gaveta.
+              <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+              <div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>🔴 4. Fechamento de Turno (Conferência)</div>
+                <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '2px' }}>
+                  No fim do expediente, conte o dinheiro físico da gaveta e informe os valores. O sistema mostra se o caixa bateu exato ou se houve sobra/falta.
                 </div>
               </div>
             </div>
@@ -236,40 +328,45 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     }
 
     // =========================================================================
-    // 3. CONTROLE DE ESTOQUE & LOTES (APENAS SE PERMITIDO)
+    // 5. CONTROLE DE ESTOQUE, LOTES & PRODUTOS INTERNOS
     // =========================================================================
     const temPermissaoEstoque = isDono || isAdminLoja || (permissoesLoja?.estoque !== false && (permissoesOperador?.cadastrar_produtos !== false || permissoesOperador?.alterar_preco !== false));
     if (temPermissaoEstoque) {
       lista.push({
         id: 'estoque_cadastro_lotes',
+        passoNumero: contador++,
         icone: '📦',
-        titulo: 'Cadastro de Produtos, Lotes, Fotos & Margem de Lucro',
-        categoria: 'Estoque & Mercadorias',
-        destaque: 'Múltiplos Lotes e Catálogo Global',
+        titulo: 'Cadastro de Estoque, Lotes (FEFO) & Produtos Internos',
+        categoria: '4. Estoque, Validades & Etiquetas',
+        destaque: 'Como cadastrar lotes, validades, fotos e margem',
         conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a' }}>Como Cadastrar e Gerenciar Produtos no Estoque</h4>
-              <ol style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Código de Barras (EAN):</strong> Bipe o código de barras com o leitor ou digite o número. Se for um produto conhecido, o sistema preenche o nome e a foto do <em>Catálogo Global</em> automaticamente.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Preço de Custo e Preço de Venda:</strong> Ao preencher o custo e a venda, o sistema calcula a <strong>Margem de Lucro (%)</strong> e o lucro bruto em reais instantaneamente.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Múltiplos Lotes e Validades:</strong> Um mesmo produto pode ter lotes separados com datas de vencimento diferentes (ex: Lote 1 vence em 10 dias, Lote 2 vence em 90 dias).
-                </li>
-                <li>
-                  <strong>Fotos do Produto:</strong> Adicione fotos pela câmera do celular, galeria ou aproveite a foto do banco master.
-                </li>
-              </ol>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '0.95rem', color: '#0f172a', fontWeight: 800 }}>
+                Diferença entre Produto Padrão (Com Lote) e Produto Interno:
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px' }}>
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '12px' }}>
+                  <div style={{ fontWeight: 800, color: '#166534', fontSize: '0.88rem', marginBottom: '4px' }}>🏷️ Produto Industrial / Com Lote</div>
+                  <div style={{ fontSize: '0.82rem', color: '#14532d', lineHeight: 1.5 }}>
+                    Controla quantidade exata e data de validade. Se você comprar um lote novo do mesmo produto com outra validade, cadastre normalmente: o sistema <strong>soma as quantidades em um único card</strong> e sempre dá baixa primeiro no lote que vence mais cedo (FEFO).
+                  </div>
+                </div>
+                <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '10px', padding: '12px' }}>
+                  <div style={{ fontWeight: 800, color: '#92400e', fontSize: '0.88rem', marginBottom: '4px' }}>♾️ Produto Interno / Produção Contínua</div>
+                  <div style={{ fontSize: '0.82rem', color: '#78350f', lineHeight: 1.5 }}>
+                    Ideal para itens preparados na hora, gelo, copões, combos ou produtos sem validade fixa. Não exige código de barras externo e possui <strong>estoque contínuo/ilimitado</strong>.
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 16px' }}>
-              <strong style={{ color: '#0f172a', fontSize: '0.9rem' }}>📦 Estoque Mínimo e Reposição</strong>
-              <p style={{ margin: '6px 0 0 0', fontSize: '0.86rem', color: '#475569', lineHeight: 1.5 }}>
-                Defina a quantidade mínima de segurança para cada mercadoria. Quando o estoque atingir esse patamar, o sistema sinaliza com alerta amarelo para que novas compras sejam feitas antes da ruptura.
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#0f172a', fontWeight: 800 }}>
+                📦 Tela "Posição de Estoque & Validades"
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.55 }}>
+                Em <strong>Menu ☰ → Estoque & Produtos → Posição de Estoque & Validades</strong>, você vê todos os lotes detalhados, edita preços ou quantidades com 1 clique, exclui lotes zerados e exporta a planilha completa do inventário.
               </p>
             </div>
           </div>
@@ -278,80 +375,80 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     }
 
     // =========================================================================
-    // 4. PAINEL DE VALIDADES & ALERTAS (APENAS SE PERMITIDO)
+    // 6. CENTRAL DE RELATÓRIOS & LUCRO REAL (HUB UNIFICADO DE 4 ABAS)
+    // =========================================================================
+    const temPermissaoRelatorios = isDono || isAdminLoja || (permissoesLoja?.relatorios !== false && permissoesOperador?.ver_relatorios !== false);
+    if (temPermissaoRelatorios) {
+      lista.push({
+        id: 'central_relatorios_lucro',
+        passoNumero: contador++,
+        icone: '📊',
+        titulo: 'Central de Relatórios & Lucro Líquido Real (Hub 4 Abas)',
+        categoria: '5. Relatórios, Fiado & Gestão',
+        destaque: 'Faturamento Bruto, Custo (CMV) e Só Lucro Real',
+        conteudo: (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: '12px', padding: '14px 16px', color: '#5b21b6' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.94rem', marginBottom: '4px' }}>
+                💎 Como Saber Exatamente Quanto Você Lucrou (Retirando o Custo)
+              </div>
+              <p style={{ margin: 0, fontSize: '0.86rem', lineHeight: 1.5 }}>
+                Em <strong>Menu ☰ → Relatórios → Central de Relatórios & Lucro</strong>, todos os indicadores financeiros da loja estão reunidos em 4 abas:
+              </p>
+            </div>
+
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem', color: '#334155' }}>
+              <div>
+                <strong style={{ color: '#0f172a' }}>📊 Aba 1 — Faturamento & Lucro Real:</strong> Exibe lado a lado a <em>Receita Bruta Vendida</em>, o <em>Custo Total dos Produtos (CMV)</em> e o card em destaque <strong>💎 Só Lucro Real (Sem Custo)</strong> com a margem líquida real da loja.
+              </div>
+              <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+              <div>
+                <strong style={{ color: '#0f172a' }}>🧾 Aba 2 — Histórico de Vendas & Cupons:</strong> Lista cada venda de Balcão e de Delivery, mostra o custo e o lucro de cada item vendido, permite <strong>reimprimir 2ª via do cupom</strong>, exportar Excel (CSV) e realizar <strong>Estorno</strong> (devolvendo os itens automaticamente ao estoque).
+              </div>
+              <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+              <div>
+                <strong style={{ color: '#0f172a' }}>📦 Aba 3 — Posição de Estoque & Validades:</strong> Mostra quanto dinheiro você tem investido nas prateleiras (preço de custo), quanto vai apurar ao vender tudo e quais lotes vencem nos próximos 7, 15 ou 30 dias.
+              </div>
+              <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+              <div>
+                <strong style={{ color: '#0f172a' }}>🛵 Aba 4 — Inteligência Delivery:</strong> Total faturado no delivery, total de taxas de entrega por bairro e ranking dos produtos mais pedidos pelos clientes.
+              </div>
+            </div>
+          </div>
+        ),
+      });
+    }
+
+    // =========================================================================
+    // 7. ALERTAS DE VALIDADE, BAIXAS DE PERDA & ETIQUETAS
     // =========================================================================
     const temPermissaoAlertas = isDono || isAdminLoja || permissoesLoja?.alertas !== false;
     if (temPermissaoAlertas) {
       lista.push({
-        id: 'validades_alertas',
+        id: 'validades_etiquetas_baixas',
+        passoNumero: contador++,
         icone: '🔔',
-        titulo: 'Monitor de Validades Próximas & Prevenção de Prejuízos',
-        categoria: 'Validades & Prevenção de Perdas',
-        destaque: '15, 30 e 60 Dias para Vencer',
+        titulo: 'Alertas de Validade, Baixas de Perda & Etiquetas de Prateleira',
+        categoria: '4. Estoque, Validades & Etiquetas',
+        destaque: 'Prevenção de vencidos, WhatsApp e impressão de preços',
         conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <p style={{ margin: 0, fontSize: '0.88rem', color: '#334155', lineHeight: 1.5 }}>
-              O sistema classifica automaticamente todas as mercadorias por proximidade de vencimento:
-            </p>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
-              <div style={{ background: '#fef2f2', border: '1.5px solid #fecaca', borderRadius: '10px', padding: '12px', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', marginBottom: '4px' }}>🚨</div>
-                <div style={{ fontWeight: 800, color: '#dc2626', fontSize: '0.92rem' }}>Até 15 Dias</div>
-                <div style={{ fontSize: '0.78rem', color: '#991b1b', marginTop: '4px' }}>
-                  <strong>Ação Imediata:</strong> Colocar em gôndola de promoção relâmpago ou negociar troca com o fornecedor.
-                </div>
-              </div>
-
-              <div style={{ background: '#fffbeb', border: '1.5px solid #fde68a', borderRadius: '10px', padding: '12px', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', marginBottom: '4px' }}>⚠️</div>
-                <div style={{ fontWeight: 800, color: '#d97706', fontSize: '0.92rem' }}>Até 30 Dias</div>
-                <div style={{ fontSize: '0.78rem', color: '#92400e', marginTop: '4px' }}>
-                  <strong>Atenção:</strong> Reposicionar na frente da prateleira (conceito PEPS: Primeiro que Vence, Primeiro que Sai).
-                </div>
-              </div>
-
-              <div style={{ background: '#eff6ff', border: '1.5px solid #bfdbfe', borderRadius: '10px', padding: '12px', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.4rem', marginBottom: '4px' }}>📅</div>
-                <div style={{ fontWeight: 800, color: '#2563eb', fontSize: '0.92rem' }}>Até 60 Dias</div>
-                <div style={{ fontSize: '0.78rem', color: '#1e40af', marginTop: '4px' }}>
-                  <strong>Planejamento:</strong> Monitoramento de giro e ajuste nos pedidos de compras futuras.
-                </div>
-              </div>
-            </div>
-          </div>
-        ),
-      });
-    }
-
-    // =========================================================================
-    // 5. BAIXA MANUAL DE ESTOQUE (APENAS SE PERMITIDO)
-    // =========================================================================
-    const temPermissaoBaixa = isDono || isAdminLoja || (permissoesLoja?.baixa_estoque !== false && permissoesOperador?.baixa_estoque !== false);
-    if (temPermissaoBaixa) {
-      lista.push({
-        id: 'baixa_manual_estoque',
-        icone: '🗑️',
-        titulo: 'Baixa Manual de Estoque (Perdas, Avarias & Vencidos)',
-        categoria: 'Estoque & Mercadorias',
-        destaque: 'Auditoria de Perdas',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '12px', padding: '14px 16px', color: '#991b1b' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px' }}>🗑️ Registro Oficial de Baixas</div>
-              <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-                Quando uma mercadoria quebrar, sofrer avaria ou atingir a data de validade, ela deve ter sua baixa registrada no sistema para manter o inventário 100% fiel ao estoque físico.
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#0f172a', fontWeight: 800 }}>
+                🔔 Sininho de Notificações & Alertas por WhatsApp
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.55 }}>
+                O ícone de sino no topo da tela avisa automaticamente sobre produtos vencidos, que vencem em até 15/30 dias ou que estão com estoque baixo. Em <strong>Configurações & Equipe → Alertas WhatsApp</strong>, você pode disparar o relatório de validades direto para o WhatsApp da gerência.
               </p>
             </div>
 
             <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#0f172a' }}>Motivos Disponíveis para Lançamento:</h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li><strong>Produto Vencido:</strong> Item atingiu a data de validade e foi descartado.</li>
-                <li><strong>Embalagem Avariada / Quebrada:</strong> Dano físico que inviabiliza a venda ao consumidor.</li>
-                <li><strong>Consumo Interno:</strong> Material utilizado pela própria equipe ou padaria/cozinha da loja.</li>
-                <li><strong>Extravio / Furto:</strong> Divergência identificada durante contagem de inventário.</li>
-              </ul>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95rem', color: '#0f172a', fontWeight: 800 }}>
+                🏷️ Impressão de Etiquetas de Prateleira
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#334155', lineHeight: 1.55 }}>
+                Em <strong>Menu ☰ → Estoque & Produtos → Etiquetas de Prateleira</strong>, selecione os produtos para imprimir etiquetas de gôndola com código de barras e preço atualizado em impressoras térmicas ou folhas A4.
+              </p>
             </div>
           </div>
         ),
@@ -359,32 +456,29 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     }
 
     // =========================================================================
-    // 6. CADERNETA DE FIADO (APENAS SE PERMITIDO)
+    // 8. CADERNETA DE FIADO
     // =========================================================================
     const temPermissaoFiado = isDono || isAdminLoja || (permissoesLoja?.devedores !== false && permissoesOperador?.gerenciar_devedores !== false);
     if (temPermissaoFiado) {
       lista.push({
         id: 'caderneta_fiado',
-        icone: '📖',
-        titulo: 'Caderneta Digital de Fiado & Cobrança WhatsApp',
-        categoria: 'Clientes & Fiado',
-        destaque: 'Limite de Crédito e Extrato',
+        passoNumero: contador++,
+        icone: '💳',
+        titulo: 'Caderneta de Clientes Devedores (Fiado) & Cobrança WhatsApp',
+        categoria: '5. Relatórios, Fiado & Gestão',
+        destaque: 'Limites de crédito, amortização parcial e extrato',
         conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a' }}>Controle Seguro de Compras a Prazo</h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
+              <ul style={{ paddingLeft: '20px', lineHeight: 1.65, margin: 0, fontSize: '0.86rem', color: '#334155' }}>
                 <li style={{ marginBottom: '8px' }}>
-                  <strong>Cadastro do Cliente:</strong> Registre Nome, Telefone com WhatsApp, CPF e o <strong>Limite Máximo de Fiado</strong> autorizado para o cliente.
+                  <strong>Cadastro com Limite de Crédito:</strong> Em <strong>Menu ☰ → Caixa & Vendas → Devedores / Fiado</strong>, cadastre o cliente com Nome, Telefone, CPF e limite máximo autorizado.
                 </li>
                 <li style={{ marginBottom: '8px' }}>
-                  <strong>Venda no Fiado:</strong> No momento da venda, selecione "Fiado" e escolha o cliente. O saldo devedor atualiza instantaneamente. Se a compra ultrapassar o limite, o sistema emite um alerta de confirmação.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Baixa e Recebimento de Pagamentos:</strong> Quando o cliente comparecer para pagar, clique em <em>"Registrar Pagamento"</em> e informe o valor recebido (parcial ou quitação total). O comprovante de quitação é emitido na hora.
+                  <strong>Recebimento Parcial ou Total:</strong> Quando o cliente vier pagar parte da dívida ou quitar tudo, clique em <em>Registrar Pagamento</em> para abater do saldo e emitir recibo.
                 </li>
                 <li>
-                  <strong>📲 Lembrete Amigável por WhatsApp:</strong> Clique no botão do WhatsApp ao lado do cliente para enviar o extrato detalhado com as compras e o saldo devido em apenas 1 clique.
+                  <strong>Cobrança em 1 Clique no WhatsApp:</strong> Envie o extrato detalhado dos itens comprados e o saldo atualizado diretamente para o WhatsApp do cliente.
                 </li>
               </ul>
             </div>
@@ -394,318 +488,41 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     }
 
     // =========================================================================
-    // 7. IMPRESSÃO DE ETIQUETAS (APENAS SE PERMITIDO)
-    // =========================================================================
-    const temPermissaoEtiquetas = isDono || isAdminLoja || (permissoesLoja?.etiquetas !== false && permissoesOperador?.imprimir_etiquetas !== false);
-    if (temPermissaoEtiquetas) {
-      lista.push({
-        id: 'etiquetas_gondola',
-        icone: '🏷️',
-        titulo: 'Impressão de Etiquetas de Gôndola & Cartazes',
-        categoria: 'Etiquetas & Preços',
-        destaque: 'Impressoras Térmicas e Folhas A4',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#0f172a' }}>Padronização dos Preços nas Prateleiras</h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Modelos Disponíveis:</strong> Etiqueta de Gôndola Pequena, Etiqueta Média com Código de Barras e Cartaz Grande de Oferta Promocional.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Seleção em Massa:</strong> Filtre por categoria ou selecione os itens que tiveram reajuste recente de preço para imprimir apenas as etiquetas alteradas.
-                </li>
-                <li>
-                  <strong>Compatibilidade:</strong> Imprime diretamente em impressoras térmicas de etiqueta (Zebra, Elgin, Argox) ou em folhas adesivas comuns A4 (Pimaco).
-                </li>
-              </ul>
-            </div>
-          </div>
-        ),
-      });
-    }
-
-    // =========================================================================
-    // 8. RELATÓRIOS GERENCIAIS & CURVA ABC (APENAS SE PERMITIDO)
-    // =========================================================================
-    const temPermissaoRelatorios = isDono || isAdminLoja || (permissoesLoja?.relatorios !== false && permissoesOperador?.ver_relatorios !== false);
-    if (temPermissaoRelatorios) {
-      lista.push({
-        id: 'relatorios_faturamento',
-        icone: '📊',
-        titulo: 'Relatórios de Vendas, Faturamento, Curva ABC & Estornos',
-        categoria: 'Gestão & Relatórios',
-        destaque: 'Faturamento, Lucratividade e Estorno',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a' }}>Recursos do Módulo de Relatórios:</h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Filtro por Período:</strong> Consulte o faturamento de Hoje, dos últimos 7 dias, do Mês ou defina um intervalo de datas personalizado.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Divisão por Forma de Pagamento:</strong> Veja o total arrecadado discriminado por Dinheiro, PIX, Cartão de Crédito, Débito e Fiado.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Curva ABC (Mais Vendidos):</strong> Identifique com precisão quais são os produtos responsáveis pela maior parte do faturamento e do lucro da sua loja.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Exportação em Excel (.CSV):</strong> Baixe planilhas completas com um clique para enviar ao escritório de contabilidade.
-                </li>
-                {(isDono || isAdminLoja || permissoesOperador?.estornar_venda) && (
-                  <li>
-                    <strong>↩️ Estorno e Cancelamento de Vendas:</strong> Permite cancelar uma venda com erro. Ao confirmar o estorno, os produtos retornam automaticamente ao estoque e um log de auditoria é gravado com o nome do operador e motivo.
-                  </li>
-                )}
-              </ul>
-            </div>
-          </div>
-        ),
-      });
-    }
-
-    // =========================================================================
-    // 9. INTELIGÊNCIA DE ESTOQUE (APENAS SE PERMITIDO)
-    // =========================================================================
-    const temPermissaoInteligencia = isDono || isAdminLoja || (permissoesLoja?.inteligencia_estoque !== false && permissoesOperador?.inteligencia_estoque !== false);
-    if (temPermissaoInteligencia) {
-      lista.push({
-        id: 'inteligencia_compras',
-        icone: '💡',
-        titulo: 'Inteligência de Compras, Giro de Estoque & Sugestão de Pedidos',
-        categoria: 'Inteligência & Giro',
-        destaque: 'Previsão de Ruptura',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '14px 16px', color: '#166534' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px' }}>💡 Compras Otimizadas Sem Prejuízo</div>
-              <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-                O algoritmo analisa o histórico de vendas diárias e prevê com quantos dias o estoque de cada mercadoria irá se esgotar.
-              </p>
-            </div>
-
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Sugestão Automática de Reposição:</strong> Calcula a quantidade exata que você deve pedir ao fornecedor para manter a loja abastecida pelo período desejado.
-                </li>
-                <li>
-                  <strong>Alerta de Itens Parados (Sem Giro):</strong> Detecta mercadorias com estoque alto e pouca saída para que você faça promoções e recupere o capital de giro.
-                </li>
-              </ul>
-            </div>
-          </div>
-        ),
-      });
-    }
-
-    // =========================================================================
-    // 10. GESTÃO DE EQUIPE & PERMISSÕES (APENAS SE PERMITIDO)
-    // =========================================================================
-    const temPermissaoEquipe = isDono || isAdminLoja || (permissoesLoja?.usuarios !== false && permissoesOperador?.gerenciar_equipe !== false);
-    if (temPermissaoEquipe) {
-      lista.push({
-        id: 'gestao_equipe_permissoes',
-        icone: '👥',
-        titulo: 'Cadastro de Operadores & Controle de Permissões Granulares',
-        categoria: 'Equipe & Usuários',
-        destaque: 'RBAC e Segurança de Acesso',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a' }}>Como Gerenciar Acessos dos Funcionários:</h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Cadastro de Operador:</strong> Clique em <em>"👥 Operadores / Equipe"</em>, informe o Nome, CPF ou Login e defina a Senha/PIN de 4 dígitos.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Perfis Prontos (1 Clique):</strong> Aplique modelos automáticos como <em>Operador de Caixa</em>, <em>Repositor</em>, <em>Supervisor</em> ou <em>Administrador</em>.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Permissões Específicas:</strong> Habilite ou restrinja recursos sensíveis (ex: aplicar descontos, abrir/fechar caixa, estornar vendas, dar baixa em perdas, ver relatórios financeiros).
-                </li>
-                <li>
-                  <strong>Bloqueio Imediato:</strong> Ao inativar um operador, o acesso dele é revogado instantaneamente em qualquer terminal.
-                </li>
-              </ul>
-            </div>
-          </div>
-        ),
-      });
-    }
-
-    // =========================================================================
-    // 11. SESSÃO ÚNICA POR DISPOSITIVO (TODOS OS USUÁRIOS)
+    // 9. EQUIPE, SESSÃO ÚNICA, MODO OFFLINE & ÁREA MASTER
     // =========================================================================
     lista.push({
-      id: 'sessao_unica_dispositivo',
-      icone: '📱',
-      titulo: 'Sessão Única por Conta & Desconexão Automática Multi-Aparelhos',
-      categoria: 'Segurança & Acesso',
-      destaque: 'Proteção Anti-Fraude e Sessão Ativa',
-      conteudo: (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ background: '#fffbeb', border: '1.5px solid #fde68a', borderRadius: '12px', padding: '14px 16px', color: '#92400e' }}>
-            <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span>🔐</span>
-              <span>Como Funciona a Desconexão Automática de Segurança</span>
-            </div>
-            <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-              Para garantir total integridade nas vendas, responsabilidade financeira do operador de caixa e segurança das senhas, o sistema aplica a <strong>Regra de Sessão Única Concorrente</strong>.
-            </p>
-          </div>
-
-          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-            <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', color: '#0f172a' }}>Exemplo Prático de Funcionamento:</h4>
-            <ol style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-              <li style={{ marginBottom: '8px' }}>
-                Você faz login com o seu usuário e senha no <strong>Celular</strong>. O celular passa a ser o dispositivo ativo.
-              </li>
-              <li style={{ marginBottom: '8px' }}>
-                Posteriormente, você vai até o <strong>Computador</strong> e entra com a <em>mesma conta de usuário e mesma senha</em>.
-              </li>
-              <li>
-                <strong>Desconexão Imediata:</strong> O sistema detecta o novo acesso e <strong>encerra automaticamente a sessão do Celular</strong>, exibindo na tela do celular a mensagem informativa: <em>"Sessão Conectada em Outro Aparelho"</em>.
-              </li>
-            </ol>
-          </div>
-
-          <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px 14px', fontSize: '0.84rem', color: '#334155' }}>
-            🛡️ <strong>Proteção Contra Força Bruta:</strong> Após 5 tentativas incorretas consecutivas de senha, o sistema bloqueia tentativas pelo período de 5 minutos com contador regressivo em tempo real.
-          </div>
-        </div>
-      ),
-    });
-
-    // =========================================================================
-    // 12. MODO 100% OFFLINE & NUVEM FIREBASE (TODOS OS USUÁRIOS)
-    // =========================================================================
-    lista.push({
-      id: 'modo_offline_nuvem',
-      icone: '📶',
-      titulo: 'Funcionamento 100% Offline & Sincronização em Nuvem Firebase',
-      categoria: 'Conexão & Nuvem',
-      destaque: 'Fila Prioritária de Sincronização',
-      conteudo: (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '14px 16px', color: '#166534' }}>
-            <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px' }}>✅ O Supermercado Nunca Para!</div>
-            <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-              Mesmo em casos de queda no provedor de internet, corte de sinal de Wi-Fi ou instabilidades na rede, o sistema continua registrando vendas, bipando produtos e calculando troco normalmente.
-            </p>
-          </div>
-
-          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-            <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a' }}>Ciclo da Sincronização Automática:</h4>
-            <ol style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-              <li style={{ marginBottom: '8px' }}>
-                <strong>Durante a Ausência de Internet:</strong> As vendas são salvas na memória local criptografada do dispositivo com status <em>"Pendente de Sincronização"</em>.
-              </li>
-              <li style={{ marginBottom: '8px' }}>
-                <strong>Ao Retornar o Sinal:</strong> O sistema detecta a conexão em segundo plano e processa a <strong>Fila Prioritária</strong>, enviando todas as vendas acumuladas para a nuvem Firebase sem travar o operador.
-              </li>
-              <li>
-                <strong>Indicador de Status:</strong> O ícone no cabeçalho sinaliza em verde (Online & Sincronizado) ou em laranja (Offline / Sincronizando fila pendente).
-              </li>
-            </ol>
-          </div>
-        </div>
-      ),
-    });
-
-    // =========================================================================
-    // 13. ATALHOS DE TECLADO NO PDV (TODOS OS USUÁRIOS)
-    // =========================================================================
-    lista.push({
-      id: 'atalhos_teclado',
-      icone: '⌨️',
-      titulo: 'Guia Rápido de Teclas de Atalho no PDV',
-      categoria: 'Agilidade & Atalhos',
-      destaque: 'Atendimento Rápido no Balcão',
+      id: 'equipe_seguranca_offline',
+      passoNumero: contador++,
+      icone: '🛡️',
+      titulo: 'Equipe, Permissões, Modo Offline & Segurança',
+      categoria: '6. Segurança, Equipe & Conexão',
+      destaque: 'Operadores de caixa, nuvem Firebase e sessão única',
       conteudo: (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <p style={{ margin: 0, fontSize: '0.88rem', color: '#334155', lineHeight: 1.5 }}>
-            Utilize os atalhos de teclado para agilizar o atendimento nas filas do caixa:
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <div>
-                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>Focar Campo de Código de Barras / Bipar</div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Coloca o cursor no campo para receber leitura da pistola</div>
-              </div>
-              <kbd style={{ background: '#0284c7', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 800, fontSize: '0.82rem' }}>Enter ou F2</kbd>
+          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem', color: '#334155' }}>
+            <div>
+              <strong style={{ color: '#0f172a' }}>👥 Cadastro de Caixas e Permissões:</strong> Em <strong>Configurações & Equipe → Caixas & Permissões</strong>, crie logins individuais para cada funcionário e escolha exatamente o que cada um pode acessar (ex: bloquear acesso a relatórios de lucro ou estornos).
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <div>
-                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>Finalizar Venda / Ir para Pagamento</div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Abre o modal de seleção de forma de pagamento</div>
-              </div>
-              <kbd style={{ background: '#16a34a', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 800, fontSize: '0.82rem' }}>F4 ou Espaço</kbd>
+            <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+            <div>
+              <strong style={{ color: '#0f172a' }}>📶 Funcionamento 100% Offline + Sincronização Automática:</strong> Se a internet cair, você continua vendendo normalmente. Todas as operações ficam salvas no aparelho e sincronizam com a nuvem automaticamente assim que a conexão voltar.
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <div>
-                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>Buscar Produto por Nome / Catálogo</div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Abre o catálogo de busca rápida</div>
-              </div>
-              <kbd style={{ background: '#7c3aed', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 800, fontSize: '0.82rem' }}>F3</kbd>
+            <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+            <div>
+              <strong style={{ color: '#0f172a' }}>🔐 Sessão Única e Termo no 1º Acesso:</strong> Se a mesma conta fizer login em outro aparelho, o aparelho anterior é desconectado por segurança. O Termo de Uso é solicitado apenas uma única vez quando o login conecta pela primeira vez no dispositivo.
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <div>
-                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>Cancelar Venda Atual / Fechar Modal</div>
-                <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Cancela os itens bipados ou fecha a tela aberta</div>
-              </div>
-              <kbd style={{ background: '#dc2626', color: '#fff', padding: '4px 10px', borderRadius: '6px', fontWeight: 800, fontSize: '0.82rem' }}>Esc</kbd>
-            </div>
+            {isDono && (
+              <>
+                <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: 0 }} />
+                <div>
+                  <strong style={{ color: '#7c3aed' }}>👑 Funções Exclusivas da Dona do Aplicativo:</strong> Cadastro e gerenciamento de múltiplas lojas, bloqueio/desbloqueio remoto de estabelecimentos, alimentação do Catálogo Global Master e alteração de senha master.
+                </div>
+              </>
+            )}
           </div>
         </div>
       ),
     });
-
-    // =========================================================================
-    // 14. EXCLUSIVO: DONA DO APLICATIVO (RODRIGO SOUZA / MASTER)
-    // =========================================================================
-    if (isDono) {
-      lista.push({
-        id: 'gestao_master_lojas',
-        icone: '👑',
-        titulo: 'Licenciamento Multi-Lojas, Bloqueio Remoto & Catálogo Master',
-        categoria: 'Área Master (Proprietária)',
-        destaque: 'Exclusivo Proprietário(a) do App',
-        conteudo: (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ background: '#fdf4ff', border: '1px solid #f0abfc', borderRadius: '12px', padding: '14px 16px', color: '#86198f' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.92rem', marginBottom: '4px' }}>👑 Gestão Central de Todos os Supermercados</div>
-              <p style={{ margin: 0, fontSize: '0.88rem', lineHeight: 1.5 }}>
-                Como administradora geral do sistema, você possui acesso total a todos os módulos, controle de franquias e gestão do banco central de dados.
-              </p>
-            </div>
-
-            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '1rem', color: '#0f172a' }}>Funções Exclusivas Master:</h4>
-              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Cadastrar Supermercado Parceiro:</strong> Crie novas contas de lojas com Nome, CNPJ, limites de caixas contratados e módulos liberados.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Bloqueio e Desbloqueio Remoto:</strong> Suspenda o acesso de qualquer supermercado inadimplente com 1 clique. O bloqueio propaga em tempo real impedindo acessos de toda a equipe daquela loja.
-                </li>
-                <li style={{ marginBottom: '8px' }}>
-                  <strong>Catálogo Global de Produtos:</strong> Cadastre produtos de referência com fotos e códigos de barras pré-configurados que ficam automaticamente disponíveis para todos os clientes.
-                </li>
-                <li>
-                  <strong>Alterar Credenciais Master:</strong> Atualize seu usuário e senha master no menu <em>"🔑 Alterar Senha Master"</em>.
-                </li>
-              </ul>
-            </div>
-          </div>
-        ),
-      });
-    }
 
     return lista;
   }, [isDono, isAdminLoja, isCaixa, permissoesLoja, permissoesOperador]);
@@ -728,6 +545,11 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     if (achou) return achou;
     return topicosFiltrados.length > 0 ? topicosFiltrados[0] : null;
   }, [topicos, topicoSelecionadoId, topicosFiltrados]);
+
+  const indiceAtivo = useMemo(() => {
+    if (!topicoAtivo) return 0;
+    return topicos.findIndex((t) => t.id === topicoAtivo.id);
+  }, [topicos, topicoAtivo]);
 
   // Agrupamento por categorias
   const categorias = useMemo(() => {
@@ -764,7 +586,7 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
         style={{
           background: '#ffffff',
           width: '100%',
-          maxWidth: '980px',
+          maxWidth: '1020px',
           height: '90vh',
           borderRadius: '18px',
           boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
@@ -777,7 +599,7 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
         {/* CABEÇALHO DO MANUAL */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
             padding: '16px 20px',
             color: '#ffffff',
             display: 'flex',
@@ -785,28 +607,31 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
             alignItems: 'center',
             gap: '12px',
             flexShrink: 0,
+            borderBottom: '1px solid rgba(255,255,255,0.1)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span style={{ fontSize: '1.8rem' }}>📘</span>
             <div>
-              <h2 style={{ fontSize: '1.18rem', fontWeight: 800, margin: 0, letterSpacing: '-0.01em', color: '#ffffff' }}>
-                Manual do Usuário & Guia Operacional
+              <h2 style={{ fontSize: '1.12rem', fontWeight: 800, margin: 0, letterSpacing: '-0.01em', color: '#ffffff' }}>
+                Tutorial Passo a Passo & Manual do Sistema
               </h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '3px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
                 <span
                   style={{
-                    background: 'rgba(255, 255, 255, 0.22)',
+                    background: 'rgba(59, 130, 246, 0.25)',
+                    border: '1px solid rgba(96, 165, 250, 0.4)',
+                    color: '#93c5fd',
                     padding: '2px 8px',
                     borderRadius: '12px',
-                    fontSize: '0.74rem',
+                    fontSize: '0.72rem',
                     fontWeight: 700,
                   }}
                 >
                   {isDono ? '👑 Dono do App (Master)' : isAdminLoja ? '🏢 Administrador da Loja' : '🛒 Operador de Caixa'}
                 </span>
-                {nomeOperador && <span style={{ fontSize: '0.76rem', color: '#e0f2fe' }}>• {nomeOperador}</span>}
-                {nomeLoja && <span style={{ fontSize: '0.76rem', color: '#bae6fd' }}>({nomeLoja})</span>}
+                {nomeOperador && <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>• {nomeOperador}</span>}
+                {nomeLoja && <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>({nomeLoja})</span>}
               </div>
             </div>
           </div>
@@ -814,39 +639,40 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
           <button
             onClick={onFechar}
             style={{
-              background: 'rgba(255,255,255,0.2)',
-              border: 'none',
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.2)',
               color: '#fff',
               width: '34px',
               height: '34px',
-              borderRadius: '50%',
+              borderRadius: '10px',
               cursor: 'pointer',
-              fontSize: '1.1rem',
+              fontSize: '1rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 700,
             }}
-            title="Fechar Manual"
+            title="Fechar Tutorial"
           >
             ✕
           </button>
         </div>
 
-        {/* CAMPO DE BUSCA RÁPIDA */}
-        <div style={{ padding: '12px 18px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', flexShrink: 0 }}>
+        {/* BARRA DE BUSCA + ATALHOS RÁPIDOS DE PASSOS */}
+        <div style={{ padding: '10px 16px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ position: 'relative' }}>
             <input
-              type="text"
-              placeholder="🔍 Digite para pesquisar tópicos no manual (ex: bipar, troco, caixa, balança, offline, sessão)..."
+              type="search"
+              autoComplete="off"
+              placeholder="🔍 Pesquisar no tutorial (ex: como começar, delivery, motoboy, leitor, caixa, lucro, lotes)..."
               value={termoBusca}
               onChange={(e) => setTermoBusca(e.target.value)}
               style={{
                 width: '100%',
                 padding: '9px 12px 9px 36px',
-                borderRadius: '8px',
+                borderRadius: '10px',
                 border: '1px solid #cbd5e1',
-                fontSize: '0.88rem',
+                fontSize: '0.85rem',
                 outline: 'none',
                 background: '#ffffff',
               }}
@@ -854,43 +680,53 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
             <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
               🔍
             </span>
-            {termoBusca && (
-              <button
-                type="button"
-                onClick={() => setTermoBusca('')}
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: '#e2e8f0',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '20px',
-                  height: '20px',
-                  fontSize: '0.7rem',
-                  cursor: 'pointer',
-                  fontWeight: 800,
-                }}
-              >
-                ✕
-              </button>
-            )}
+          </div>
+
+          {/* PÍLULAS HORIZONTAIS PARA NAVEGAÇÃO RÁPIDA EM TELAS MENORES E DESKTOP */}
+          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+            {topicosFiltrados.map((topico) => {
+              const ativo = topicoAtivo?.id === topico.id;
+              return (
+                <button
+                  key={`pill_${topico.id}`}
+                  type="button"
+                  onClick={() => setTopicoSelecionadoId(topico.id)}
+                  style={{
+                    background: ativo ? '#2563eb' : '#ffffff',
+                    color: ativo ? '#ffffff' : '#334155',
+                    border: ativo ? '1px solid #2563eb' : '1px solid #cbd5e1',
+                    borderRadius: '9999px',
+                    padding: '5px 11px',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    flexShrink: 0,
+                  }}
+                >
+                  <span>{topico.icone}</span>
+                  <span>Passo {topico.passoNumero}: {topico.titulo.split(':')[0]}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* CORPO DO MANUAL: BARRA LATERAL + CONTEÚDO */}
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-          {/* BARRA LATERAL DE TÓPICOS */}
+          {/* BARRA LATERAL DE TÓPICOS (VISÍVEL EM TELAS MAIORES) */}
           <div
+            className="hidden md:flex"
             style={{
-              width: '320px',
+              width: '300px',
               borderRight: '1px solid #e2e8f0',
               overflowY: 'auto',
               background: '#f8fafc',
-              padding: '10px',
+              padding: '12px',
               flexShrink: 0,
-              display: 'flex',
               flexDirection: 'column',
               gap: '12px',
             }}
@@ -902,10 +738,10 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
             ) : (
               categorias.map(([catNome, itens]) => (
                 <div key={catNome}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '4px 8px', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '4px 8px', letterSpacing: '0.5px' }}>
                     {catNome}
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '2px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '4px' }}>
                     {itens.map((topico) => {
                       const ativo = topicoAtivo?.id === topico.id;
                       return (
@@ -914,27 +750,27 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
                           type="button"
                           onClick={() => setTopicoSelecionadoId(topico.id)}
                           style={{
-                            background: ativo ? '#0284c7' : '#ffffff',
+                            background: ativo ? '#2563eb' : '#ffffff',
                             color: ativo ? '#ffffff' : '#1e293b',
-                            border: ativo ? '1px solid #0284c7' : '1px solid #e2e8f0',
-                            borderRadius: '8px',
-                            padding: '8px 10px',
+                            border: ativo ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '9px 10px',
                             textAlign: 'left',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
                             transition: 'all 0.15s',
-                            boxShadow: ativo ? '0 2px 6px rgba(2, 132, 199, 0.25)' : 'none',
+                            boxShadow: ativo ? '0 3px 8px rgba(37, 99, 235, 0.25)' : 'none',
                           }}
                         >
-                          <span style={{ fontSize: '1.1rem' }}>{topico.icone}</span>
+                          <span style={{ fontSize: '1.15rem' }}>{topico.icone}</span>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '0.82rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {topico.titulo}
+                            <div style={{ fontSize: '0.8rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {topico.passoNumero}. {topico.titulo}
                             </div>
                             {topico.destaque && (
-                              <div style={{ fontSize: '0.7rem', color: ativo ? '#e0f2fe' : '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              <div style={{ fontSize: '0.68rem', color: ativo ? '#dbeafe' : '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {topico.destaque}
                               </div>
                             )}
@@ -949,24 +785,73 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
           </div>
 
           {/* ÁREA DE LEITURA DO TÓPICO ATIVO */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#ffffff' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', background: '#ffffff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '20px' }}>
             {topicoAtivo ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
-                  <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#0284c7', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    {topicoAtivo.categoria}
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
+                    <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {topicoAtivo.categoria} • Passo {topicoAtivo.passoNumero} de {topicos.length}
+                    </div>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', margin: '4px 0 0 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>{topicoAtivo.icone}</span>
+                      <span>{topicoAtivo.titulo}</span>
+                    </h3>
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: '4px 0 0 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span>{topicoAtivo.icone}</span>
-                    <span>{topicoAtivo.titulo}</span>
-                  </h3>
+
+                  <div>{topicoAtivo.conteudo}</div>
                 </div>
 
-                <div>{topicoAtivo.conteudo}</div>
-              </div>
+                {/* BOTÕES DE NAVEGAÇÃO PASSO A PASSO */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '14px', borderTop: '1px solid #e2e8f0', gap: '10px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    disabled={indiceAtivo <= 0}
+                    onClick={() => {
+                      if (indiceAtivo > 0) setTopicoSelecionadoId(topicos[indiceAtivo - 1].id);
+                    }}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: indiceAtivo <= 0 ? '#f8fafc' : '#ffffff',
+                      color: indiceAtivo <= 0 ? '#94a3b8' : '#334155',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: indiceAtivo <= 0 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    ⬅️ Passo Anterior
+                  </button>
+
+                  <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                    Passo {indiceAtivo + 1} de {topicos.length}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={indiceAtivo >= topicos.length - 1}
+                    onClick={() => {
+                      if (indiceAtivo < topicos.length - 1) setTopicoSelecionadoId(topicos[indiceAtivo + 1].id);
+                    }}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: indiceAtivo >= topicos.length - 1 ? '#e2e8f0' : '#2563eb',
+                      color: indiceAtivo >= topicos.length - 1 ? '#94a3b8' : '#ffffff',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: indiceAtivo >= topicos.length - 1 ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Próximo Passo ➡️
+                  </button>
+                </div>
+              </>
             ) : (
               <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                Selecione um tópico na barra lateral para ler as instruções.
+                Selecione um tópico para ler as instruções.
               </div>
             )}
           </div>
@@ -975,7 +860,7 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
         {/* RODAPÉ DO MANUAL */}
         <div
           style={{
-            background: '#f1f5f9',
+            background: '#f8fafc',
             borderTop: '1px solid #e2e8f0',
             padding: '10px 18px',
             display: 'flex',
@@ -987,24 +872,24 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
           }}
         >
           <div>
-            <span>Manual atualizado • </span>
-            <strong style={{ color: '#0f172a' }}>{topicos.length} módulos disponíveis</strong> para seu perfil
+            <span>Guia interativo completo • </span>
+            <strong style={{ color: '#0f172a' }}>{topicos.length} passos explicativos</strong>
           </div>
           <button
             type="button"
             onClick={onFechar}
             style={{
-              background: '#0284c7',
+              background: '#0f172a',
               color: '#ffffff',
               border: 'none',
-              padding: '6px 16px',
-              borderRadius: '6px',
+              padding: '7px 18px',
+              borderRadius: '8px',
               fontSize: '0.82rem',
               fontWeight: 700,
               cursor: 'pointer',
             }}
           >
-            Fechar Manual
+            Concluir Leitura
           </button>
         </div>
       </div>
