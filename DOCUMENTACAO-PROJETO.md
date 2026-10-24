@@ -334,6 +334,24 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
+### [2026-10-24 - Atualização 17]
+- **Pesquisa e Integração do Mix Completo de Adega (Whiskies, Vinhos, Salgados, Bomboniere, Tabacaria, Carvão e Gelo):**
+  - **Pesquisa de Mercado de Adegas:**
+    - Uma adega/distribuidora de conveniência opera tipicamente com **150 a 300 itens** (versão express de bairro) ou **350 a 700 itens** (adega completa).
+    - O mix essencial abrange as categorias de maior giro: Cervejas e Bebidas Ambev (173 itens), Whiskies e Destilados de Alto Giro, Vinhos Nacionais e Importados, Salgadinhos e Snacks (Doritos, Ruffles, Torcida), Balas e Doces (Halls, Trident, Bis, Mentos) e Tabacaria (Marlboro, Chesterfield, Sedas, Isqueiros, Carvão e Gelo).
+  - **Módulo Dedicado (`src/lib/catalogoAdegaMix.ts`):**
+    - Criado banco com **84 produtos essenciais de alta demanda**:
+      - **Whiskies & Destilados:** *Johnnie Walker Red Label 1L, Black Label 1L, Jack Daniel's 1L, Chivas Regal 12 Anos 1L, Ballantine's Finest 1L, White Horse 1L, Jameson 750ml, Passport Scotch 1L, Old Parr 12 Anos 1L, Buchanan's 12 Anos 1L, Natu Nobilis 1L, Teacher's 1L, Vodka Smirnoff 998ml, Vodka Absolut 1L, Vodka Askov Tradicional e Frutas Vermelhas 900ml, Vodka Orloff 1L, Gin Tanqueray 750ml, Gin Gordon's 750ml, Gin Rock's 995ml, Campari 900ml, Jurupinga 975ml, Cachaça 51 965ml, Velho Barreiro 910ml, Pitú 965ml, Jägermeister 700ml, Licor Amarula 750ml*.
+      - **Vinhos & Espumantes:** *Pérgola Tinto Suave 1L, Pérgola Tinto Seco 1L, Campo Largo Tinto Suave 750ml, Casillero del Diablo Cabernet Sauvignon 750ml, Reservado Concha y Toro 750ml, Quinta do Morgado 1L, Cantina da Serra 880ml, San Martin 750ml, Santa Helena 750ml, Espumante Chandon Brut 750ml*.
+      - **Salgadinhos & Snacks:** *Doritos Queijo Nacho (140g, 53g), Batata Ruffles (Original 76g, Cebola e Salsa 76g), Cheetos Requeijão 115g, Fandangos Presunto 115g, Torcida (Queijo 70g, Churrasco 70g, Pimenta Mexicana 70g), Pringles (Original 114g, Cebola 114g), Amendoim Dori Japonês 120g, Amendoim Santa Helena Mendorato 120g, Ovinhos de Amendoim 65g, Salamitos Sadia 36g*.
+      - **Doces, Balas & Bomboniere:** *Halls (Extra Forte 28g, Prata Mentol 28g, Cereja 28g), Chiclete Trident (Menta, Hortelã, Melancia 25.2g), Bala Mentos (Fruit, Mint 37.5g), Freegells Cereja 27.6g, Chocolate Bis (Ao Leite 126g, Branco 126g), Kit Kat 41.5g, Barra Lacta Diamante Negro 90g, Barra Lacta Laka Branco 90g, Barra Nestlé Classic Ao Leite 90g, Paçoca Rolha Santa Helena 15g*.
+      - **Tabacaria, Carvão & Gelo:** *Cigarro Marlboro (Red Box, Gold Box), Chesterfield (Original Box, Blue Box), Lucky Strike Blue Box, Winston Red Box, Rothmans Azul Box, Dunhill Carlton Box, Camel Blue Box, Seda Smoking King Size, Seda Zomo Slim King Size, Isqueiro BIC (Grande Maxi, Mini), Palheiro Souza Paiol, Carvão Vegetal para Churrasco 3kg, Gelo em Cubos Filtrado 5kg*.
+  - **Integração no Banco Global e Firestore (`src/App.tsx` & `src/lib/catalogoAdegaMix.ts`):**
+    - Unificação de catálogo: O sistema agora garante automaticamente **257 produtos cadastrados com fotos, categorias, marcas e descrições completas** no `catalogoGlobal` do lojista (173 da Ambev + 84 do Mix de Adega).
+    - Botão **`🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)`** adicionado no Banco de Dados Mestre para sincronização sob demanda com a nuvem Firestore.
+    - Todos os itens possuem botão **`+ Estoque`** e descrições detalhadas.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v21` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 16]
 - **Integração e Sincronização do Catálogo Completo Oficial da Ambev no Banco Global:**
   - **Módulo Dedicado (`src/lib/catalogoAmbev.ts`):**
@@ -376,6 +394,24 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 17]
+- **Pesquisa e Integração do Mix Completo de Adega (Whiskies, Vinhos, Salgados, Bomboniere, Tabacaria, Carvão e Gelo):**
+  - **Pesquisa de Mercado de Adegas:**
+    - Uma adega/distribuidora de conveniência opera tipicamente com **150 a 300 itens** (versão express de bairro) ou **350 a 700 itens** (adega completa).
+    - O mix essencial abrange as categorias de maior giro: Cervejas e Bebidas Ambev (173 itens), Whiskies e Destilados de Alto Giro, Vinhos Nacionais e Importados, Salgadinhos e Snacks (Doritos, Ruffles, Torcida), Balas e Doces (Halls, Trident, Bis, Mentos) e Tabacaria (Marlboro, Chesterfield, Sedas, Isqueiros, Carvão e Gelo).
+  - **Módulo Dedicado (`src/lib/catalogoAdegaMix.ts`):**
+    - Criado banco com **84 produtos essenciais de alta demanda**:
+      - **Whiskies & Destilados:** *Johnnie Walker Red Label 1L, Black Label 1L, Jack Daniel's 1L, Chivas Regal 12 Anos 1L, Ballantine's Finest 1L, White Horse 1L, Jameson 750ml, Passport Scotch 1L, Old Parr 12 Anos 1L, Buchanan's 12 Anos 1L, Natu Nobilis 1L, Teacher's 1L, Vodka Smirnoff 998ml, Vodka Absolut 1L, Vodka Askov Tradicional e Frutas Vermelhas 900ml, Vodka Orloff 1L, Gin Tanqueray 750ml, Gin Gordon's 750ml, Gin Rock's 995ml, Campari 900ml, Jurupinga 975ml, Cachaça 51 965ml, Velho Barreiro 910ml, Pitú 965ml, Jägermeister 700ml, Licor Amarula 750ml*.
+      - **Vinhos & Espumantes:** *Pérgola Tinto Suave 1L, Pérgola Tinto Seco 1L, Campo Largo Tinto Suave 750ml, Casillero del Diablo Cabernet Sauvignon 750ml, Reservado Concha y Toro 750ml, Quinta do Morgado 1L, Cantina da Serra 880ml, San Martin 750ml, Santa Helena 750ml, Espumante Chandon Brut 750ml*.
+      - **Salgadinhos & Snacks:** *Doritos Queijo Nacho (140g, 53g), Batata Ruffles (Original 76g, Cebola e Salsa 76g), Cheetos Requeijão 115g, Fandangos Presunto 115g, Torcida (Queijo 70g, Churrasco 70g, Pimenta Mexicana 70g), Pringles (Original 114g, Cebola 114g), Amendoim Dori Japonês 120g, Amendoim Santa Helena Mendorato 120g, Ovinhos de Amendoim 65g, Salamitos Sadia 36g*.
+      - **Doces, Balas & Bomboniere:** *Halls (Extra Forte 28g, Prata Mentol 28g, Cereja 28g), Chiclete Trident (Menta, Hortelã, Melancia 25.2g), Bala Mentos (Fruit, Mint 37.5g), Freegells Cereja 27.6g, Chocolate Bis (Ao Leite 126g, Branco 126g), Kit Kat 41.5g, Barra Lacta Diamante Negro 90g, Barra Lacta Laka Branco 90g, Barra Nestlé Classic Ao Leite 90g, Paçoca Rolha Santa Helena 15g*.
+      - **Tabacaria, Carvão & Gelo:** *Cigarro Marlboro (Red Box, Gold Box), Chesterfield (Original Box, Blue Box), Lucky Strike Blue Box, Winston Red Box, Rothmans Azul Box, Dunhill Carlton Box, Camel Blue Box, Seda Smoking King Size, Seda Zomo Slim King Size, Isqueiro BIC (Grande Maxi, Mini), Palheiro Souza Paiol, Carvão Vegetal para Churrasco 3kg, Gelo em Cubos Filtrado 5kg*.
+  - **Integração no Banco Global e Firestore (`src/App.tsx` & `src/lib/catalogoAdegaMix.ts`):**
+    - Unificação de catálogo: O sistema agora garante automaticamente **257 produtos cadastrados com fotos, categorias, marcas e descrições completas** no `catalogoGlobal` do lojista (173 da Ambev + 84 do Mix de Adega).
+    - Botão **`🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)`** adicionado no Banco de Dados Mestre para sincronização sob demanda com a nuvem Firestore.
+    - Todos os itens possuem botão **`+ Estoque`** e descrições detalhadas.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v21` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 16]
 - **Integração e Sincronização do Catálogo Completo Oficial da Ambev no Banco Global:**
@@ -432,6 +468,24 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 17]
+- **Pesquisa e Integração do Mix Completo de Adega (Whiskies, Vinhos, Salgados, Bomboniere, Tabacaria, Carvão e Gelo):**
+  - **Pesquisa de Mercado de Adegas:**
+    - Uma adega/distribuidora de conveniência opera tipicamente com **150 a 300 itens** (versão express de bairro) ou **350 a 700 itens** (adega completa).
+    - O mix essencial abrange as categorias de maior giro: Cervejas e Bebidas Ambev (173 itens), Whiskies e Destilados de Alto Giro, Vinhos Nacionais e Importados, Salgadinhos e Snacks (Doritos, Ruffles, Torcida), Balas e Doces (Halls, Trident, Bis, Mentos) e Tabacaria (Marlboro, Chesterfield, Sedas, Isqueiros, Carvão e Gelo).
+  - **Módulo Dedicado (`src/lib/catalogoAdegaMix.ts`):**
+    - Criado banco com **84 produtos essenciais de alta demanda**:
+      - **Whiskies & Destilados:** *Johnnie Walker Red Label 1L, Black Label 1L, Jack Daniel's 1L, Chivas Regal 12 Anos 1L, Ballantine's Finest 1L, White Horse 1L, Jameson 750ml, Passport Scotch 1L, Old Parr 12 Anos 1L, Buchanan's 12 Anos 1L, Natu Nobilis 1L, Teacher's 1L, Vodka Smirnoff 998ml, Vodka Absolut 1L, Vodka Askov Tradicional e Frutas Vermelhas 900ml, Vodka Orloff 1L, Gin Tanqueray 750ml, Gin Gordon's 750ml, Gin Rock's 995ml, Campari 900ml, Jurupinga 975ml, Cachaça 51 965ml, Velho Barreiro 910ml, Pitú 965ml, Jägermeister 700ml, Licor Amarula 750ml*.
+      - **Vinhos & Espumantes:** *Pérgola Tinto Suave 1L, Pérgola Tinto Seco 1L, Campo Largo Tinto Suave 750ml, Casillero del Diablo Cabernet Sauvignon 750ml, Reservado Concha y Toro 750ml, Quinta do Morgado 1L, Cantina da Serra 880ml, San Martin 750ml, Santa Helena 750ml, Espumante Chandon Brut 750ml*.
+      - **Salgadinhos & Snacks:** *Doritos Queijo Nacho (140g, 53g), Batata Ruffles (Original 76g, Cebola e Salsa 76g), Cheetos Requeijão 115g, Fandangos Presunto 115g, Torcida (Queijo 70g, Churrasco 70g, Pimenta Mexicana 70g), Pringles (Original 114g, Cebola 114g), Amendoim Dori Japonês 120g, Amendoim Santa Helena Mendorato 120g, Ovinhos de Amendoim 65g, Salamitos Sadia 36g*.
+      - **Doces, Balas & Bomboniere:** *Halls (Extra Forte 28g, Prata Mentol 28g, Cereja 28g), Chiclete Trident (Menta, Hortelã, Melancia 25.2g), Bala Mentos (Fruit, Mint 37.5g), Freegells Cereja 27.6g, Chocolate Bis (Ao Leite 126g, Branco 126g), Kit Kat 41.5g, Barra Lacta Diamante Negro 90g, Barra Lacta Laka Branco 90g, Barra Nestlé Classic Ao Leite 90g, Paçoca Rolha Santa Helena 15g*.
+      - **Tabacaria, Carvão & Gelo:** *Cigarro Marlboro (Red Box, Gold Box), Chesterfield (Original Box, Blue Box), Lucky Strike Blue Box, Winston Red Box, Rothmans Azul Box, Dunhill Carlton Box, Camel Blue Box, Seda Smoking King Size, Seda Zomo Slim King Size, Isqueiro BIC (Grande Maxi, Mini), Palheiro Souza Paiol, Carvão Vegetal para Churrasco 3kg, Gelo em Cubos Filtrado 5kg*.
+  - **Integração no Banco Global e Firestore (`src/App.tsx` & `src/lib/catalogoAdegaMix.ts`):**
+    - Unificação de catálogo: O sistema agora garante automaticamente **257 produtos cadastrados com fotos, categorias, marcas e descrições completas** no `catalogoGlobal` do lojista (173 da Ambev + 84 do Mix de Adega).
+    - Botão **`🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)`** adicionado no Banco de Dados Mestre para sincronização sob demanda com a nuvem Firestore.
+    - Todos os itens possuem botão **`+ Estoque`** e descrições detalhadas.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v21` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 16]
 - **Integração e Sincronização do Catálogo Completo Oficial da Ambev no Banco Global:**
