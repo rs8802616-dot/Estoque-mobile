@@ -334,6 +334,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
+### [2026-10-24 - Atualização 20]
+- **Verificação, População e Enriquecimento Total do Novo Banco (`adega-delivery-pdv`):**
+  - **Catálogo Completo com 263 Produtos:**
+    - Verificados e gravados todos os produtos desenvolvidos hoje na coleção `produtos_catalogo` do novo banco `adega-delivery-pdv`:
+      - **173 Produtos Ambev:** Skol, Brahma, Antarctica, Original, Spaten, Corona, Stella Artois, Budweiser, Bohemia, Colorado, Patagonia, Beck's, Michelob, Beats, Guaraná Antarctica, Pepsi, Sukita, H2OH!, Gatorade, Fusion, Lipton.
+      - **90 Produtos Mix Adega & Conveniência:** Whiskies (Red Label, Black Label, Jack Daniel's, Chivas, Ballantine's, White Horse, Jameson, Passport, Old Parr, Buchanan's), Vodkas (Smirnoff, Absolut, Askov, Orloff), Gins (Tanqueray, Gordon's, Rock's), Vinhos (Pérgola, Campo Largo, Casillero, Concha y Toro, Quinta do Morgado, Cantina da Serra, San Martin, Santa Helena, Chandon), Salgadinhos (Doritos, Ruffles, Cheetos, Fandangos, Torcida, Pringles, Amendoins, Ovinhos, Salamitos), Bomboniere (Halls, Trident, Mentos, Freegells, Bis, Kit Kat, Lacta, Nestlé, Paçoca), Tabacaria (Marlboro, Chesterfield, Lucky Strike, Winston, Rothmans, Dunhill, Camel, Sedas Smoking/Zomo, Isqueiros BIC, Palheiros, Carvão e Gelo) e Cervejas do Grupo Heineken (Heineken Long Neck, Lata, 600ml, 0.0, Amstel e Eisenbahn).
+    - Cada produto está no Firestore com `codigo` (EAN-13), `nome`, `marca`, `categoria`, `unidade_medida`, `imagem` oficial em alta resolução e `descricao`.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v24` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 19]
 - **Conexão e Configuração do Novo Banco de Dados Dedicado (`adega-delivery-pdv`):**
   - **Novo Projeto Firebase Independente:**
@@ -416,6 +425,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 20]
+- **Verificação, População e Enriquecimento Total do Novo Banco (`adega-delivery-pdv`):**
+  - **Catálogo Completo com 263 Produtos:**
+    - Verificados e gravados todos os produtos desenvolvidos hoje na coleção `produtos_catalogo` do novo banco `adega-delivery-pdv`:
+      - **173 Produtos Ambev:** Skol, Brahma, Antarctica, Original, Spaten, Corona, Stella Artois, Budweiser, Bohemia, Colorado, Patagonia, Beck's, Michelob, Beats, Guaraná Antarctica, Pepsi, Sukita, H2OH!, Gatorade, Fusion, Lipton.
+      - **90 Produtos Mix Adega & Conveniência:** Whiskies (Red Label, Black Label, Jack Daniel's, Chivas, Ballantine's, White Horse, Jameson, Passport, Old Parr, Buchanan's), Vodkas (Smirnoff, Absolut, Askov, Orloff), Gins (Tanqueray, Gordon's, Rock's), Vinhos (Pérgola, Campo Largo, Casillero, Concha y Toro, Quinta do Morgado, Cantina da Serra, San Martin, Santa Helena, Chandon), Salgadinhos (Doritos, Ruffles, Cheetos, Fandangos, Torcida, Pringles, Amendoins, Ovinhos, Salamitos), Bomboniere (Halls, Trident, Mentos, Freegells, Bis, Kit Kat, Lacta, Nestlé, Paçoca), Tabacaria (Marlboro, Chesterfield, Lucky Strike, Winston, Rothmans, Dunhill, Camel, Sedas Smoking/Zomo, Isqueiros BIC, Palheiros, Carvão e Gelo) e Cervejas do Grupo Heineken (Heineken Long Neck, Lata, 600ml, 0.0, Amstel e Eisenbahn).
+    - Cada produto está no Firestore com `codigo` (EAN-13), `nome`, `marca`, `categoria`, `unidade_medida`, `imagem` oficial em alta resolução e `descricao`.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v24` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 19]
 - **Conexão e Configuração do Novo Banco de Dados Dedicado (`adega-delivery-pdv`):**
@@ -512,6 +530,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 20]
+- **Verificação, População e Enriquecimento Total do Novo Banco (`adega-delivery-pdv`):**
+  - **Catálogo Completo com 263 Produtos:**
+    - Verificados e gravados todos os produtos desenvolvidos hoje na coleção `produtos_catalogo` do novo banco `adega-delivery-pdv`:
+      - **173 Produtos Ambev:** Skol, Brahma, Antarctica, Original, Spaten, Corona, Stella Artois, Budweiser, Bohemia, Colorado, Patagonia, Beck's, Michelob, Beats, Guaraná Antarctica, Pepsi, Sukita, H2OH!, Gatorade, Fusion, Lipton.
+      - **90 Produtos Mix Adega & Conveniência:** Whiskies (Red Label, Black Label, Jack Daniel's, Chivas, Ballantine's, White Horse, Jameson, Passport, Old Parr, Buchanan's), Vodkas (Smirnoff, Absolut, Askov, Orloff), Gins (Tanqueray, Gordon's, Rock's), Vinhos (Pérgola, Campo Largo, Casillero, Concha y Toro, Quinta do Morgado, Cantina da Serra, San Martin, Santa Helena, Chandon), Salgadinhos (Doritos, Ruffles, Cheetos, Fandangos, Torcida, Pringles, Amendoins, Ovinhos, Salamitos), Bomboniere (Halls, Trident, Mentos, Freegells, Bis, Kit Kat, Lacta, Nestlé, Paçoca), Tabacaria (Marlboro, Chesterfield, Lucky Strike, Winston, Rothmans, Dunhill, Camel, Sedas Smoking/Zomo, Isqueiros BIC, Palheiros, Carvão e Gelo) e Cervejas do Grupo Heineken (Heineken Long Neck, Lata, 600ml, 0.0, Amstel e Eisenbahn).
+    - Cada produto está no Firestore com `codigo` (EAN-13), `nome`, `marca`, `categoria`, `unidade_medida`, `imagem` oficial em alta resolução e `descricao`.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v24` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 19]
 - **Conexão e Configuração do Novo Banco de Dados Dedicado (`adega-delivery-pdv`):**

@@ -758,6 +758,60 @@ export const CATALOGO_ADEGA_MIX_OFICIAL: ProdutoCatalogo[] = [
     "unidade_medida": "5KG",
     "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898910000019.png",
     "descricao": "Gelo em Cubos Filtrado para Bebidas Pacote 5kg — Produto de alta demanda e giro rápido para adegas, distribuidoras e conveniências. Marca: Gelo Cristal. Categoria: Carvão & Gelo. Apresentação: 5KG. NCM: 2201.90.00."
+  },
+  {
+    "codigo": "7896045505014",
+    "nome": "Cerveja Puro Malte Heineken Long Neck 330ml",
+    "marca": "Heineken",
+    "categoria": "Bebidas Alcoólicas",
+    "unidade_medida": "330ML",
+    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896045505014.png",
+    "descricao": "Cerveja Puro Malte Heineken Long Neck 330ml — Cerveja Premium líder de vendas em adegas e conveniências."
+  },
+  {
+    "codigo": "7896045505410",
+    "nome": "Cerveja Puro Malte Heineken Lata Sleek 350ml",
+    "marca": "Heineken",
+    "categoria": "Bebidas Alcoólicas",
+    "unidade_medida": "350ML",
+    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896045505410.png",
+    "descricao": "Cerveja Puro Malte Heineken Lata Sleek 350ml — Cerveja Premium líder de vendas em adegas e conveniências."
+  },
+  {
+    "codigo": "7896045505212",
+    "nome": "Cerveja Puro Malte Heineken Garrafa 600ml",
+    "marca": "Heineken",
+    "categoria": "Bebidas Alcoólicas",
+    "unidade_medida": "600ML",
+    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896045505212.png",
+    "descricao": "Cerveja Puro Malte Heineken Garrafa 600ml — Cerveja Premium líder de vendas em adegas e conveniências."
+  },
+  {
+    "codigo": "7896045505809",
+    "nome": "Cerveja Puro Malte Heineken 0.0 Álcool Long Neck 330ml",
+    "marca": "Heineken",
+    "categoria": "Bebidas Alcoólicas",
+    "unidade_medida": "330ML",
+    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896045505809.png",
+    "descricao": "Cerveja Heineken 0.0 Álcool Long Neck 330ml — Versão sem álcool da cerveja Heineken."
+  },
+  {
+    "codigo": "7896045506011",
+    "nome": "Cerveja Puro Malte Amstel Lager Lata 350ml",
+    "marca": "Amstel",
+    "categoria": "Bebidas Alcoólicas",
+    "unidade_medida": "350ML",
+    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896045506011.png",
+    "descricao": "Cerveja Puro Malte Amstel Lager Lata 350ml — Cerveja puro malte leve e refrescante."
+  },
+  {
+    "codigo": "7896045506219",
+    "nome": "Cerveja Puro Malte Eisenbahn Pilsen Long Neck 355ml",
+    "marca": "Eisenbahn",
+    "categoria": "Bebidas Alcoólicas",
+    "unidade_medida": "355ML",
+    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896045506219.png",
+    "descricao": "Cerveja Especial Puro Malte Eisenbahn Pilsen Long Neck 355ml."
   }
 ];
 
@@ -819,29 +873,7 @@ export function garantirCatalogoAdegaNoBancoGlobal(catalogoAtual: ProdutoCatalog
 }
 
 /**
- * Insere os itens essenciais de adega no catálogo interno do aplicativo (armazenamento local)
- * sem tocar em banco de dados externo ou Firestore.
- */
-export function sincronizarCatalogoAdegaLocalmente(
-  catalogoAtual: ProdutoCatalogo[]
-): { totalNovos: number; totalAtualizados: number; catalogoFinal: ProdutoCatalogo[] } {
-  const { catalogoCompleto, novosInseridos, atualizados } = garantirCatalogoAdegaNoBancoGlobal(catalogoAtual);
-
-  try {
-    localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
-  } catch (err) {
-    console.warn('Erro ao salvar localmente:', err);
-  }
-
-  return {
-    totalNovos: novosInseridos.length,
-    totalAtualizados: atualizados.length,
-    catalogoFinal: catalogoCompleto
-  };
-}
-
-/**
- * Sincroniza em lote os itens essenciais de adega com o Firestore do novo projeto 'adega-delivery-pdv'
+ * Sincroniza em lote os itens essenciais de adega com o Firestore (coleção 'produtos_catalogo')
  */
 export async function sincronizarCatalogoAdegaComFirestore(
   catalogoAtual: ProdutoCatalogo[],
@@ -853,7 +885,7 @@ export async function sincronizarCatalogoAdegaComFirestore(
   try {
     localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
   } catch (err) {
-    console.warn('Erro ao salvar localmente:', err);
+    console.warn('Erro ao salvar catalogoGlobalFirebase:', err);
   }
 
   let processados = 0;
