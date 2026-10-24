@@ -542,32 +542,6 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
           {/* ======================================================== */}
           {etapa === 'vitrine' && (
             <div className="space-y-3.5">
-              
-              {/* INDICADOR DE ENTREGA DELIVERY + SELETOR DE BAIRRO */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                <div className="sm:col-span-5 flex items-center justify-center gap-2 bg-emerald-600 text-white py-2.5 px-4 rounded-2xl text-xs font-black shadow-2xs">
-                  <Bike className="w-4 h-4 shrink-0" />
-                  <span>🛵 Entrega Rápida (Somente Delivery)</span>
-                </div>
-
-                <div className="sm:col-span-7 flex items-center gap-2 bg-white px-3 py-1.5 rounded-2xl border border-stone-200 shadow-2xs">
-                  <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <label className="text-[10px] font-bold text-stone-500 block leading-none">Bairro de Entrega:</label>
-                    <select
-                      value={bairroSelecionadoId}
-                      onChange={(e) => setBairroSelecionadoId(e.target.value)}
-                      className="w-full bg-transparent text-xs font-bold text-stone-900 focus:outline-none cursor-pointer mt-0.5 truncate"
-                    >
-                      {listaBairros.map((b) => (
-                        <option key={b.id} value={b.id}>
-                          {b.nome} — R$ {b.taxa.toFixed(2)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
 
               {/* BARRA DE PESQUISA RÁPIDA (SEM AUTOFILL INDESEJADO) */}
               <div className="relative w-full">

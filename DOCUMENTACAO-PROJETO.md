@@ -104,6 +104,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-23 - Atualização 10]
+- **Remoção da Barra Superior de Indicador de Entrega e Seletor de Bairro na Vitrine do Cardápio (`src/components/CardapioClienteDeliveryModal.tsx`):**
+  - Removida a faixa superior com os blocos `🛵 Entrega Rápida (Somente Delivery)` e `📍 Bairro de Entrega: ...` que aparecia acima da barra de pesquisa na vitrine de produtos (`etapa === 'vitrine'`).
+  - O cardápio agora abre diretamente na barra de busca rápida, filtros de categoria e grade de produtos, mantendo a seleção do bairro e cálculo da taxa de entrega na etapa de Checkout / Endereço (`etapa === 'checkout'`).
+  - Atualizado o cache do Service Worker para `estoque-mobile-pwa-v14` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-23 - Atualização 9]
 - **Correção de Layout do Acordeão do Menu Lateral, Tutorial Passo a Passo Completo e Exibição Única do Termo de Uso:**
   - **Correção do Layout do Menu Lateral (`src/index.css` e `src/App.tsx`):**
