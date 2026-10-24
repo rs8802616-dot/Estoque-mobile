@@ -104,6 +104,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 23]
+- **Enriquecimento e Cobertura 100% de Fotos nos 263 Produtos do Catálogo Global e Adega Mix:**
+  - **Problema Solucionado:** Dos 263 produtos cadastrados no Banco de Dados Global, os 90 produtos do mix essencial de adega (Whiskies Red Label, Black Label, Old Parr, Buchanan's, Jameson, Passport; Vodkas Absolut, Smirnoff, Orloff, Askov; Gins Tanqueray, Gordon's; Cervejas Heineken, Amstel, Eisenbahn; Vinhos Casillero, Pergola, Concha y Toro; Salgadinhos Doritos, Ruffles, Cheetos, Torcida, Pringles; Chocolates Bis, Kit Kat, Lacta; Tabacaria, Isqueiros BIC, Sedas, Carvão e Gelo) estavam com links de fotos quebrados (retornando erro 404).
+  - **Ações Implementadas:**
+    1. **Varredura e Validação Automatizada de Imagens:**
+       - Executado robô automatizado de pesquisa que localizou fotos de produto de alta definição em CDNs globais estáveis (Bing/DDG CDN, Imigrantes Bebidas, fabricantes oficiais).
+       - Todas as imagens passaram por teste de validação HTTP HEAD/GET (100% das 263 fotos retornando status `200 OK`).
+    2. **Atualização Imediata no Firestore (`catalogo_global` e `estoque`):**
+       - Todos os 90 documentos no Firestore `catalogo_global` foram atualizados com as URLs definitivas das fotos nos campos `imagem`, `foto` e `foto_url`.
+       - Itens em estoque vinculados a esses códigos tiveram suas fotos sincronizadas automaticamente no banco de dados.
+    3. **Atualização no Código-Fonte Local:**
+       - Arquivo [`src/lib/catalogoAdegaMix.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoAdegaMix.ts) atualizado com os novos links permanentes das imagens.
+    4. **Atualização de Cache do Service Worker:**
+       - PWA atualizado para a versão `estoque-mobile-pwa-v27` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 22]
 - **Eliminação Completa de Preenchimento Automático (Autofill Indevido) nos Filtros de Busca e Catálogo:**
   - **Problema Solucionado:** Ao entrar no Catálogo Geral / Banco de Dados Master ou no Relatório de Estoque, o navegador (Chrome/Edge) preenchia automaticamente as credenciais salvas do usuário (`rodrigo.souza`) no campo de pesquisa, filtrando a lista indevidamente e exibindo a mensagem "Nenhum produto cadastrado no banco de dados mestre ainda". Adicionalmente, o estado de busca anterior era salvo no `localStorage` sob a chave `busca_relatorio_salva`, mantendo o filtro ativo mesmo após reloads.
