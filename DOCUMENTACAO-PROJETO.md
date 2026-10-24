@@ -334,6 +334,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
+### [2026-10-24 - Atualização 19]
+- **Conexão e Configuração do Novo Banco de Dados Dedicado (`adega-delivery-pdv`):**
+  - **Novo Projeto Firebase Independente:**
+    - Atualizado o arquivo de configuração [`firebase-applet-config.json`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/firebase-applet-config.json) com o novo projeto criado pelo usuário:
+      - `projectId`: `"adega-delivery-pdv"`
+      - `authDomain`: `"adega-delivery-pdv.firebaseapp.com"`
+      - `storageBucket`: `"adega-delivery-pdv.firebasestorage.app"`
+      - `appId`: `"1:120526498592:web:4c975e296bb8765ee08545"`
+    - O aplicativo anterior de produção (`estoque-mobile-sepia.vercel.app`) fica 100% isolado e protegido em seu próprio banco anterior, sem qualquer risco de interferência.
+  - **Regras de Segurança do Firestore (`firestore.rules`):**
+    - Adicionada regra explícita para a coleção `pedidos_delivery` (`match /pedidos_delivery/{pedidoId} { allow read, write: if true; }`).
+  - **Sincronização em Lote de Produtos:**
+    - Conectadas as funções `sincronizarCatalogoAmbevComFirestore` e `sincronizarCatalogoAdegaComFirestore` para gravar os 257 produtos diretamente no novo banco `adega-delivery-pdv`.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v23` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 18]
 - **Isolamento e Armazenamento 100% Interno no Catálogo Geral do Aplicativo:**
   - **Remoção de Gravação Externa no Firestore:**
@@ -401,6 +416,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 19]
+- **Conexão e Configuração do Novo Banco de Dados Dedicado (`adega-delivery-pdv`):**
+  - **Novo Projeto Firebase Independente:**
+    - Atualizado o arquivo de configuração [`firebase-applet-config.json`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/firebase-applet-config.json) com o novo projeto criado pelo usuário:
+      - `projectId`: `"adega-delivery-pdv"`
+      - `authDomain`: `"adega-delivery-pdv.firebaseapp.com"`
+      - `storageBucket`: `"adega-delivery-pdv.firebasestorage.app"`
+      - `appId`: `"1:120526498592:web:4c975e296bb8765ee08545"`
+    - O aplicativo anterior de produção (`estoque-mobile-sepia.vercel.app`) fica 100% isolado e protegido em seu próprio banco anterior, sem qualquer risco de interferência.
+  - **Regras de Segurança do Firestore (`firestore.rules`):**
+    - Adicionada regra explícita para a coleção `pedidos_delivery` (`match /pedidos_delivery/{pedidoId} { allow read, write: if true; }`).
+  - **Sincronização em Lote de Produtos:**
+    - Conectadas as funções `sincronizarCatalogoAmbevComFirestore` e `sincronizarCatalogoAdegaComFirestore` para gravar os 257 produtos diretamente no novo banco `adega-delivery-pdv`.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v23` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 18]
 - **Isolamento e Armazenamento 100% Interno no Catálogo Geral do Aplicativo:**
@@ -482,6 +512,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 19]
+- **Conexão e Configuração do Novo Banco de Dados Dedicado (`adega-delivery-pdv`):**
+  - **Novo Projeto Firebase Independente:**
+    - Atualizado o arquivo de configuração [`firebase-applet-config.json`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/firebase-applet-config.json) com o novo projeto criado pelo usuário:
+      - `projectId`: `"adega-delivery-pdv"`
+      - `authDomain`: `"adega-delivery-pdv.firebaseapp.com"`
+      - `storageBucket`: `"adega-delivery-pdv.firebasestorage.app"`
+      - `appId`: `"1:120526498592:web:4c975e296bb8765ee08545"`
+    - O aplicativo anterior de produção (`estoque-mobile-sepia.vercel.app`) fica 100% isolado e protegido em seu próprio banco anterior, sem qualquer risco de interferência.
+  - **Regras de Segurança do Firestore (`firestore.rules`):**
+    - Adicionada regra explícita para a coleção `pedidos_delivery` (`match /pedidos_delivery/{pedidoId} { allow read, write: if true; }`).
+  - **Sincronização em Lote de Produtos:**
+    - Conectadas as funções `sincronizarCatalogoAmbevComFirestore` e `sincronizarCatalogoAdegaComFirestore` para gravar os 257 produtos diretamente no novo banco `adega-delivery-pdv`.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v23` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-24 - Atualização 18]
 - **Isolamento e Armazenamento 100% Interno no Catálogo Geral do Aplicativo:**

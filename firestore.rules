@@ -171,6 +171,13 @@ service cloud.firestore {
     }
 
     // =========================================================================
+    // 12. PEDIDOS DE DELIVERY & ATENDEJÁ
+    // =========================================================================
+    match /pedidos_delivery/{pedidoId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
     // BLOQUEIO PADRÃO PARA TODAS AS OUTRAS COLEÇÕES (Princípio do Menor Privilégio)
     // =========================================================================
     match /{document=**} {

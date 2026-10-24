@@ -89,12 +89,14 @@ import {
   CATALOGO_AMBEV_OFICIAL,
   garantirCatalogoAmbevNoBancoGlobal,
   sincronizarCatalogoAmbevLocalmente,
+  sincronizarCatalogoAmbevComFirestore,
   isProdutoAmbev,
 } from './lib/catalogoAmbev';
 import {
   CATALOGO_ADEGA_MIX_OFICIAL,
   garantirCatalogoAdegaNoBancoGlobal,
   sincronizarCatalogoAdegaLocalmente,
+  sincronizarCatalogoAdegaComFirestore,
 } from './lib/catalogoAdegaMix';
 import {
   tocarBeepCaixa,
@@ -3842,23 +3844,23 @@ export default function App() {
     setModalCadastroVisivel(true);
   };
 
-  const handleSincronizarAmbev = () => {
+  const handleSincronizarAmbev = async () => {
     try {
-      const res = sincronizarCatalogoAmbevLocalmente(catalogoGlobal);
+      const res = await sincronizarCatalogoAmbevComFirestore(catalogoGlobal);
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
-      alert(`🍺 Catálogo Ambev Atualizado no App!\n\n• Novos produtos adicionados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.`);
+      alert(`🍺 Catálogo Ambev Sincronizado no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
     } catch (err: any) {
       alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
   };
 
-  const handleSincronizarMixAdega = () => {
+  const handleSincronizarMixAdega = async () => {
     try {
-      const res = sincronizarCatalogoAdegaLocalmente(catalogoGlobal);
+      const res = await sincronizarCatalogoAdegaComFirestore(catalogoGlobal);
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
-      alert(`🥃 Mix de Adega Atualizado no App!\n\n• Novos produtos adicionados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.`);
+      alert(`🥃 Mix de Adega Sincronizado no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
     } catch (err: any) {
       alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }

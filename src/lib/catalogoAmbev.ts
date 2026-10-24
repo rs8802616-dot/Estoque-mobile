@@ -1,5 +1,6 @@
 // Catálogo Oficial Ambev com Códigos EAN reais, Marcas, Categorias, Descrições completas e Imagens
 import { ProdutoCatalogo } from '../types';
+import { salvarProdutoCatalogoFirestore } from './firestoreSync';
 
 export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
   {
@@ -1668,6 +1669,48 @@ export function sincronizarCatalogoAmbevLocalmente(
     localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
   } catch (err) {
     console.warn('Erro ao salvar catalogo interno:', err);
+  }
+
+  return {
+    totalNovos: novosInseridos.length,
+    totalAtualizados: atualizados.length,
+    catalogoFinal: catalogoCompleto
+  };
+}
+
+/**
+ * Sincroniza em lote os produtos da Ambev com o Firestore do novo projeto 'adega-delivery-pdv'
+ */
+export async function sincronizarCatalogoAmbevComFirestore(
+  catalogoAtual: ProdutoCatalogo[],
+  onProgresso?: (atual: number, total: number) => void
+): Promise<{ totalNovos: number; totalAtualizados: number; catalogoFinal: ProdutoCatalogo[] }> {
+  const { catalogoCompleto, novosInseridos, atualizados } = garantirCatalogoAmbevNoBancoGlobal(catalogoAtual);
+  const itensParaSalvar = [...novosInseridos, ...atualizados];
+
+  try {
+    localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
+  } catch (err) {
+    console.warn('Erro ao salvar localmente:', err);
+  }
+
+  let processados = 0;
+  const total = itensParaSalvar.length;
+  const BATCH_SIZE = 5;
+
+  for (let i = 0; i < itensParaSalvar.length; i += BATCH_SIZE) {
+    const lote = itensParaSalvar.slice(i, i + BATCH_SIZE);
+    await Promise.all(
+      lote.map(async (item) => {
+        try {
+          await salvarProdutoCatalogoFirestore(item);
+        } catch (e) {
+          console.warn('Erro ao salvar produto Ambev no Firestore:', item.codigo, e);
+        }
+      })
+    );
+    processados += lote.length;
+    if (onProgresso) onProgresso(Math.min(processados, total), total);
   }
 
   return {

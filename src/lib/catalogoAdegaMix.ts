@@ -1,5 +1,6 @@
 // Catálogo Essencial de Adega, Tabacaria e Conveniência (Whiskies, Vinhos, Salgadinhos, Bomboniere e Cigarros)
 import { ProdutoCatalogo } from '../types';
+import { salvarProdutoCatalogoFirestore } from './firestoreSync';
 
 export const CATALOGO_ADEGA_MIX_OFICIAL: ProdutoCatalogo[] = [
   {
@@ -830,6 +831,48 @@ export function sincronizarCatalogoAdegaLocalmente(
     localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
   } catch (err) {
     console.warn('Erro ao salvar localmente:', err);
+  }
+
+  return {
+    totalNovos: novosInseridos.length,
+    totalAtualizados: atualizados.length,
+    catalogoFinal: catalogoCompleto
+  };
+}
+
+/**
+ * Sincroniza em lote os itens essenciais de adega com o Firestore do novo projeto 'adega-delivery-pdv'
+ */
+export async function sincronizarCatalogoAdegaComFirestore(
+  catalogoAtual: ProdutoCatalogo[],
+  onProgresso?: (atual: number, total: number) => void
+): Promise<{ totalNovos: number; totalAtualizados: number; catalogoFinal: ProdutoCatalogo[] }> {
+  const { catalogoCompleto, novosInseridos, atualizados } = garantirCatalogoAdegaNoBancoGlobal(catalogoAtual);
+  const itensParaSalvar = [...novosInseridos, ...atualizados];
+
+  try {
+    localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
+  } catch (err) {
+    console.warn('Erro ao salvar localmente:', err);
+  }
+
+  let processados = 0;
+  const total = itensParaSalvar.length;
+  const BATCH_SIZE = 5;
+
+  for (let i = 0; i < itensParaSalvar.length; i += BATCH_SIZE) {
+    const lote = itensParaSalvar.slice(i, i + BATCH_SIZE);
+    await Promise.all(
+      lote.map(async (item) => {
+        try {
+          await salvarProdutoCatalogoFirestore(item);
+        } catch (e) {
+          console.warn('Erro ao salvar item de adega no Firestore:', item.codigo, e);
+        }
+      })
+    );
+    processados += lote.length;
+    if (onProgresso) onProgresso(Math.min(processados, total), total);
   }
 
   return {

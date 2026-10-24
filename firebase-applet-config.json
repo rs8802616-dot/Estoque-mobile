@@ -1,10 +1,10 @@
 {
-  "projectId": "appestoqueprodutos-bb92d",
-  "appId": "1:429639063552:web:6f3369c149b32ee39b20e5",
-  "apiKey": "AIzaSyCF28plPBv7N_FxV54bF2jv-JxyBaLW3x0",
-  "authDomain": "appestoqueprodutos-bb92d.firebaseapp.com",
+  "projectId": "adega-delivery-pdv",
+  "appId": "1:120526498592:web:4c975e296bb8765ee08545",
+  "apiKey": "AIzaSyCHr0xEmgY8qQG41xyYU7T4AK8Y3ALvDnY",
+  "authDomain": "adega-delivery-pdv.firebaseapp.com",
   "firestoreDatabaseId": "(default)",
-  "storageBucket": "appestoqueprodutos-bb92d.firebasestorage.app",
-  "messagingSenderId": "429639063552",
-  "measurementId": "G-RENV5PD5X0"
+  "storageBucket": "adega-delivery-pdv.firebasestorage.app",
+  "messagingSenderId": "120526498592",
+  "measurementId": "G-BP9TZ7SWJP"
 }
