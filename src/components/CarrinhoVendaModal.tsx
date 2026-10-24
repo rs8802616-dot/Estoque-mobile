@@ -391,10 +391,10 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
       setUltimoItemScaneado({
         nome: achou.nome,
         codigo: codLimpo,
-        preco: achou.preco_venda,
+        preco: Number(achou.preco_venda || 0),
         quantidade: qtdNoCarrinho,
         status: 'sucesso',
-        mensagem: `+1 Adicionado! (R$ ${achou.preco_venda.toFixed(2)})`,
+        mensagem: `+1 Adicionado! (R$ ${Number(achou.preco_venda || 0).toFixed(2)})`,
         timestamp: Date.now(),
       });
     } else {
@@ -1059,7 +1059,7 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
                         </div>
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
                           <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#0284c7' }}>
-                            R$ {item.preco_venda.toFixed(2)}
+                            R$ {Number(item.preco_venda || 0).toFixed(2)}
                           </div>
                           <span
                             style={{
@@ -1192,7 +1192,7 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
                               {item.nome}
                             </div>
                             <div style={{ fontSize: '0.7rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              Unit: <b>R$ {item.preco_unitario.toFixed(2)}</b> • Val: {formatarData(item.validade)}
+                              Unit: <b>R$ {Number(item.preco_unitario || 0).toFixed(2)}</b> • Val: {formatarData(item.validade)}
                             </div>
                           </div>
                         </div>
@@ -1200,7 +1200,7 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
                         {/* Subtotal do Item & Botão Remover */}
                         <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                           <div style={{ fontWeight: 900, fontSize: '0.92rem', color: '#0f172a' }}>
-                            R$ {item.subtotal.toFixed(2)}
+                            R$ {Number(item.subtotal || 0).toFixed(2)}
                           </div>
                           <button
                             type="button"

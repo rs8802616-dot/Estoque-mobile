@@ -709,8 +709,8 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                             </div>
 
                             <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '3px', lineHeight: 1.4 }}>
-                              Cód: <b>{prod.codigo}</b> | Venda: <b>R$ {prod.preco_venda.toFixed(2)}</b>
-                              {prod.preco_custo ? ` | Custo: R$ ${prod.preco_custo.toFixed(2)}` : ''}
+                              Cód: <b>{prod.codigo}</b> | Venda: <b>R$ {Number(prod.preco_venda || 0).toFixed(2)}</b>
+                              {prod.preco_custo ? ` | Custo: R$ ${Number(prod.preco_custo || 0).toFixed(2)}` : ''}
                             </div>
 
                             {/* BARRA INDICADORA DE ESTOQUE */}

@@ -72,6 +72,19 @@ export function subscribeSupermercados(callback: (lojas: Supermercado[]) => void
   );
 }
 
+export function sanitizarItemEstoque(item: ItemEstoque): ItemEstoque {
+  return {
+    ...item,
+    codigo: String(item?.codigo || item?.codigo_barras || '').trim(),
+    nome: String(item?.nome || 'Produto').trim(),
+    quantidade: Number.isFinite(Number(item?.quantidade)) ? Number(item.quantidade) : 0,
+    preco_venda: Number.isFinite(Number(item?.preco_venda)) ? Number(item.preco_venda) : 0,
+    preco_custo: Number.isFinite(Number(item?.preco_custo)) ? Number(item.preco_custo) : 0,
+    validade: String(item?.validade || '2099-12-31').trim(),
+    lote: String(item?.lote || '').trim(),
+  };
+}
+
 // Real-time listener for Estoque com proteção Offline-First (nunca apaga dados locais)
 export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]) => void) {
   if (!lojaId) return () => {};
@@ -83,8 +96,8 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
       const itensRemotos: ItemEstoque[] = [];
       snapshot.forEach((docSnap) => {
         const data = docSnap.data() as ItemEstoque;
-        if (data && data.codigo) {
-          itensRemotos.push(data);
+        if (data && (data.codigo || data.codigo_barras)) {
+          itensRemotos.push(sanitizarItemEstoque(data));
         }
       });
 
@@ -92,7 +105,12 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
       let itensLocais: ItemEstoque[] = [];
       try {
         const salvo = localStorage.getItem(`estoque_${lojaId}`);
-        if (salvo) itensLocais = JSON.parse(salvo);
+        if (salvo) {
+          const parsed = JSON.parse(salvo);
+          if (Array.isArray(parsed)) {
+            itensLocais = parsed.filter((x) => x && (x.codigo || x.codigo_barras)).map(sanitizarItemEstoque);
+          }
+        }
       } catch (e) {}
 
       const mapaLocal = new Map<string, ItemEstoque>();
@@ -134,10 +152,12 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
           salvarImagemIndexedDB(remoto.codigo, remoto.foto).catch(() => {});
         }
 
-        return {
+        return sanitizarItemEstoque({
           ...remoto,
+          preco_venda: Number(remoto.preco_venda) || Number(local?.preco_venda) || 0,
+          preco_custo: Number(remoto.preco_custo) || Number(local?.preco_custo) || 0,
           foto: fotoFinal,
-        };
+        });
       });
 
       // Atualiza o cache local para refletir as exclusões com exatidão
@@ -154,7 +174,7 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
         if (salvo) {
           const itensLocais = JSON.parse(salvo);
           if (Array.isArray(itensLocais) && itensLocais.length > 0) {
-            callback(itensLocais);
+            callback(itensLocais.filter((x) => x && (x.codigo || x.codigo_barras)).map(sanitizarItemEstoque));
           }
         }
       } catch (e) {}
@@ -454,13 +474,14 @@ export async function salvarSupermercadoFirestore(loja: Supermercado) {
 // Save or Update Item no Estoque
 export async function salvarItemEstoqueFirestore(item: ItemEstoque, lojaId: string) {
   try {
+    const itemLimpo = sanitizarItemEstoque(item);
     const safeLojaId = sanitizarIdDoc(lojaId || 'loja_padrao');
-    const safeCod = sanitizarIdDoc(item.codigo || 'semcod');
-    const safeVal = sanitizarIdDoc(item.validade || 'semval');
-    const safeLote = sanitizarIdDoc(item.lote || 'semlote');
+    const safeCod = sanitizarIdDoc(itemLimpo.codigo || 'semcod');
+    const safeVal = sanitizarIdDoc(itemLimpo.validade || 'semval');
+    const safeLote = sanitizarIdDoc(itemLimpo.lote || 'semlote');
     const docId = `${safeLojaId}_${safeCod}_${safeVal}_${safeLote}`;
     const docRef = doc(db, 'estoque', docId);
-    await setDoc(docRef, limparUndefined({ ...item, lojaId }), { merge: true });
+    await setDoc(docRef, limparUndefined({ ...itemLimpo, lojaId }), { merge: true });
   } catch (err: any) {
     if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
       console.warn('Aviso: Permissão de escrita pendente no Firestore para itens de estoque.');

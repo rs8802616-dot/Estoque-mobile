@@ -54,7 +54,7 @@ export const AlertasWhatsAppModal: React.FC<AlertasWhatsAppModalProps> = ({
       mensagemWhatsApp += `${idx + 1}. *${p.nome}*\n`;
       mensagemWhatsApp += `   • Cód: ${p.codigo} | Qtd: ${p.quantidade} un\n`;
       mensagemWhatsApp += `   • Validade: ${p.validade} (${statusVal})\n`;
-      mensagemWhatsApp += `   • Preço Venda: R$ ${p.preco_venda.toFixed(2)}\n\n`;
+      mensagemWhatsApp += `   • Preço Venda: R$ ${Number(p.preco_venda || 0).toFixed(2)}\n\n`;
     });
 
     mensagemWhatsApp += `-----------------------------------\n`;

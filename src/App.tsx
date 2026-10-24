@@ -144,6 +144,7 @@ import {
   migrarDiretamenteDoBancoAntigoParaNovo,
   salvarLogAuditoriaFirestore,
   subscribeLogsAuditoria,
+  sanitizarItemEstoque,
 } from './lib/firestoreSync';
 import {
   gerarSessaoToken,
@@ -350,7 +351,7 @@ export default function App() {
     if (salvo) {
       try {
         const parsed = JSON.parse(salvo);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(sanitizarItemEstoque);
       } catch (e) {}
     }
     // Salva estoque inicial com bebidas geladas caso esteja vazio
@@ -1273,7 +1274,7 @@ export default function App() {
       try {
         const parsed = JSON.parse(estSalvoImediato);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setEstoque(parsed);
+          setEstoque(parsed.map(sanitizarItemEstoque));
         }
       } catch (e) {}
     }
@@ -1296,7 +1297,8 @@ export default function App() {
           if (c.codigo) mapaCat.set(c.codigo, c);
         });
 
-        const itensReconciliados = itens.map((it) => {
+        const itensReconciliados = itens.map((itOrig) => {
+          const it = sanitizarItemEstoque(itOrig);
           const codLimpo = it.codigo ? String(it.codigo).trim() : '';
           const cat = codLimpo ? mapaCat.get(codLimpo) : undefined;
           const fotoCache = codLimpo ? (obterFotoCache(codLimpo) || '') : '';
@@ -1326,7 +1328,7 @@ export default function App() {
           try {
             const parsed = JSON.parse(salvo);
             if (Array.isArray(parsed) && parsed.length > 0) {
-              setEstoque(parsed);
+              setEstoque(parsed.map(sanitizarItemEstoque));
               return;
             }
           } catch (e) {}
@@ -1864,7 +1866,16 @@ export default function App() {
     setNomeSupermercadoAtivo(storeName);
 
     const estSalvo = localStorage.getItem(`estoque_${storeId}`);
-    setEstoque(estSalvo ? JSON.parse(estSalvo) : []);
+    if (estSalvo) {
+      try {
+        const parsed = JSON.parse(estSalvo);
+        setEstoque(Array.isArray(parsed) ? parsed.map(sanitizarItemEstoque) : []);
+      } catch {
+        setEstoque([]);
+      }
+    } else {
+      setEstoque([]);
+    }
 
     const vendSalvo = localStorage.getItem(`vendas_${storeId}`);
     if (vendSalvo) {
@@ -2025,7 +2036,16 @@ export default function App() {
     localStorage.setItem('supermercadoNome', nome);
 
     const estSalvo = localStorage.getItem(`estoque_${idLoja}`);
-    setEstoque(estSalvo ? JSON.parse(estSalvo) : []);
+    if (estSalvo) {
+      try {
+        const parsed = JSON.parse(estSalvo);
+        setEstoque(Array.isArray(parsed) ? parsed.map(sanitizarItemEstoque) : []);
+      } catch {
+        setEstoque([]);
+      }
+    } else {
+      setEstoque([]);
+    }
 
     setMsgRegLoja(<span style={{ color: 'var(--sucesso)' }}>✅ Supermercado salvo com suas permissões!</span>);
     notificarSincronizacao();
@@ -2513,7 +2533,16 @@ export default function App() {
       localStorage.setItem('supermercadoNome', sessao.lojaNome || 'Supermercado');
 
       const estSalvo = localStorage.getItem(`estoque_${sessao.lojaId}`);
-      setEstoque(estSalvo ? JSON.parse(estSalvo) : []);
+      if (estSalvo) {
+        try {
+          const parsed = JSON.parse(estSalvo);
+          setEstoque(Array.isArray(parsed) ? parsed.map(sanitizarItemEstoque) : []);
+        } catch {
+          setEstoque([]);
+        }
+      } else {
+        setEstoque([]);
+      }
 
       const opSalvo = localStorage.getItem(`operadores_caixa_${sessao.lojaId}`);
       if (opSalvo) {
@@ -2722,7 +2751,16 @@ export default function App() {
     localStorage.setItem('supermercadoNome', loja.nome);
 
     const estSalvo = localStorage.getItem(`estoque_${loja.id}`);
-    setEstoque(estSalvo ? JSON.parse(estSalvo) : []);
+    if (estSalvo) {
+      try {
+        const parsed = JSON.parse(estSalvo);
+        setEstoque(Array.isArray(parsed) ? parsed.map(sanitizarItemEstoque) : []);
+      } catch {
+        setEstoque([]);
+      }
+    } else {
+      setEstoque([]);
+    }
     notificarSincronizacao();
   };
 
@@ -2816,7 +2854,7 @@ export default function App() {
       }
       adicionarAoCarrinho(achou, 1);
       tocarBeepCaixa();
-      const msg = `⚡ Leitor USB: +1 ${achou.nome} (R$ ${achou.preco_venda.toFixed(2)}) no carrinho!`;
+      const msg = `⚡ Leitor USB: +1 ${achou.nome} (R$ ${Number(achou.preco_venda || 0).toFixed(2)}) no carrinho!`;
       setUltimoItemBipadoToast(msg);
       setTimeout(() => setUltimoItemBipadoToast(''), 3500);
     } else {
@@ -2945,14 +2983,14 @@ export default function App() {
         setUltimoItemScaneadoInfo({
           nome: achou.nome,
           codigo: codLimpo,
-          preco: achou.preco_venda,
+          preco: Number(achou.preco_venda || 0),
           quantidadeNoCarrinho: qtdAtualNoCarrinho,
           estoqueDisponivel: achou.quantidade,
           status: 'sucesso',
-          mensagem: `Adicionado ao Carrinho! R$ ${achou.preco_venda.toFixed(2)}`,
+          mensagem: `Adicionado ao Carrinho! R$ ${Number(achou.preco_venda || 0).toFixed(2)}`,
           timestamp: Date.now(),
         });
-        setUltimoItemBipadoToast(`+1 ${achou.nome} (R$ ${achou.preco_venda.toFixed(2)}) no carrinho!`);
+        setUltimoItemBipadoToast(`+1 ${achou.nome} (R$ ${Number(achou.preco_venda || 0).toFixed(2)}) no carrinho!`);
       } else {
         tocarSomAlerta();
         const noCatalogo = catalogoGlobal.find((c) => c.codigo === codLimpo);
@@ -3922,8 +3960,8 @@ export default function App() {
           await Promise.all(promisesSalvar);
         } else {
           // Se o item não existia no estoque da loja ativa, cria um registro inicial para aparecer na Área de Vendas / Adega
-          const precoVendaNum = typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco) || 0;
-          const precoCustoNum = typeof cadCusto === 'string' ? parseFloat(cadCusto.replace(',', '.')) : Number(cadCusto) || 0;
+          const precoVendaNum = (typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco)) || 0;
+          const precoCustoNum = (typeof cadCusto === 'string' ? parseFloat(cadCusto.replace(',', '.')) : Number(cadCusto)) || 0;
           const qtdNum = parseInt(String(cadQtd).replace(/\D/g, ''), 10) || 0;
           
           const novoItemEstoque: ItemEstoque = {
@@ -4404,14 +4442,14 @@ export default function App() {
         return;
       }
 
-      const valorTotalCompra = prodAtual.preco_venda * qtdNumerica;
+      const valorTotalCompra = Number(prodAtual.preco_venda || 0) * qtdNumerica;
       if (
         clienteFiadoEncontrado.limiteFiado &&
         clienteFiadoEncontrado.limiteFiado > 0 &&
-        clienteFiadoEncontrado.saldoDevedorTotal + valorTotalCompra > clienteFiadoEncontrado.limiteFiado
+        Number(clienteFiadoEncontrado.saldoDevedorTotal || 0) + valorTotalCompra > clienteFiadoEncontrado.limiteFiado
       ) {
         const confirmarExcesso = window.confirm(
-          `⚠️ ATENÇÃO: O valor desta compra (R$ ${valorTotalCompra.toFixed(2)}) ultrapassa o limite de fiado do cliente ${clienteFiadoEncontrado.nome} (R$ ${clienteFiadoEncontrado.limiteFiado.toFixed(2)}).\n\nSaldo devedor atual: R$ ${clienteFiadoEncontrado.saldoDevedorTotal.toFixed(2)}\n\nDeseja autorizar a compra em fiado mesmo assim?`
+          `⚠️ ATENÇÃO: O valor desta compra (R$ ${Number(valorTotalCompra || 0).toFixed(2)}) ultrapassa o limite de fiado do cliente ${clienteFiadoEncontrado.nome} (R$ ${Number(clienteFiadoEncontrado.limiteFiado || 0).toFixed(2)}).\n\nSaldo devedor atual: R$ ${Number(clienteFiadoEncontrado.saldoDevedorTotal || 0).toFixed(2)}\n\nDeseja autorizar a compra em fiado mesmo assim?`
         );
         if (!confirmarExcesso) return;
       }
@@ -5421,7 +5459,7 @@ export default function App() {
         codigo: codLimpo,
         nome: nomeFinal,
         foto: fotoFinal,
-        preco_venda: p.preco_venda,
+        preco_venda: Number(p.preco_venda) || 0,
         qtdTotal: 0,
         lotes: [],
         tipoCadastro: p.tipoCadastro,
@@ -5431,8 +5469,8 @@ export default function App() {
     } else if (agrupados[codLimpo].nome !== nomeFinal && nomeFinal) {
       agrupados[codLimpo].nome = nomeFinal;
     }
-    agrupados[codLimpo].qtdTotal += p.quantidade;
-    agrupados[codLimpo].lotes.push({ validade: p.validade, qtd: p.quantidade, lote: p.lote });
+    agrupados[codLimpo].qtdTotal += Number(p.quantidade) || 0;
+    agrupados[codLimpo].lotes.push({ validade: p.validade, qtd: Number(p.quantidade) || 0, lote: p.lote });
   });
 
   const listaAgrupada = Object.values(agrupados).sort((a, b) => {
@@ -7141,7 +7179,7 @@ export default function App() {
                             )}
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-                            <div className="detalhe preco-destaque">R$ {p.preco_venda.toFixed(2)}</div>
+                            <div className="detalhe preco-destaque">R$ {Number(p.preco_venda || 0).toFixed(2)}</div>
                             {itemCompleto && (
                               <button
                                 type="button"
@@ -7458,7 +7496,7 @@ export default function App() {
                         Qtd: <b>{p.quantidade} un</b>
                       </span>
                       <br />
-                      <span className="preco-destaque">R$ {p.preco_venda.toFixed(2)}</span>
+                      <span className="preco-destaque">R$ {Number(p.preco_venda || 0).toFixed(2)}</span>
                       <div className="acoes-relatorio">
                         <button
                           className="btn-acao-rel btn-editar-rel"
@@ -7592,7 +7630,7 @@ export default function App() {
                   ✅ +1 {ultimoItemScaneadoInfo.nome}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: '#a7f3d0', marginTop: '2px' }}>
-                  R$ {ultimoItemScaneadoInfo.preco.toFixed(2)} | No Carrinho: <b>{ultimoItemScaneadoInfo.quantidadeNoCarrinho} un</b>
+                  R$ {Number(ultimoItemScaneadoInfo.preco || 0).toFixed(2)} | No Carrinho: <b>{ultimoItemScaneadoInfo.quantidadeNoCarrinho} un</b>
                 </div>
               </div>
             ) : (
@@ -8544,7 +8582,7 @@ export default function App() {
                                   </span>
                                 </div>
                                 <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                                  Cód: <b>{p.codigo}</b> | Qtd: <b style={{ color: '#0f172a' }}>{p.quantidade} un</b> | Venda: <b style={{ color: '#16a34a' }}>R$ {p.preco_venda.toFixed(2)}</b> | Custo: R$ {(p.preco_custo || 0).toFixed(2)}
+                                  Cód: <b>{p.codigo}</b> | Qtd: <b style={{ color: '#0f172a' }}>{p.quantidade} un</b> | Venda: <b style={{ color: '#16a34a' }}>R$ {Number(p.preco_venda || 0).toFixed(2)}</b> | Custo: R$ {Number(p.preco_custo || 0).toFixed(2)}
                                 </div>
                                 <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '1px' }}>
                                   Validade: <b>{p.validade || 'N/A'}</b> {p.lote ? `| Lote: ${p.lote}` : ''}
@@ -9700,7 +9738,7 @@ export default function App() {
                   )}
                 </p>
                 <p style={{ fontSize: '0.85rem', margin: '4px 0' }}>
-                  Venda: <b>R$ {prodAtual.preco_venda.toFixed(2)}</b> | Estoque:{' '}
+                  Venda: <b>R$ {Number(prodAtual.preco_venda || 0).toFixed(2)}</b> | Estoque:{' '}
                   <b>
                     {prodAtual.tipoCadastro === 'interno' || prodAtual.estoqueIlimitado
                       ? '♾️ Ilimitado (Contínuo)'
@@ -9804,7 +9842,7 @@ export default function App() {
                     <option value="">-- Selecione o Cliente Devedor --</option>
                     {clientesDevedores.map((c, cIdx) => (
                       <option key={`cli_dev_${c.id || cIdx}_${cIdx}`} value={c.id}>
-                        {c.nome} {c.cpfCnpj ? `(${c.cpfCnpj})` : ''} - Saldo Dev: R$ {c.saldoDevedorTotal.toFixed(2)}
+                        {c.nome} {c.cpfCnpj ? `(${c.cpfCnpj})` : ''} - Saldo Dev: R$ {Number(c.saldoDevedorTotal || 0).toFixed(2)}
                       </option>
                     ))}
                   </select>
@@ -9819,8 +9857,8 @@ export default function App() {
                     return (
                       <div style={{ fontSize: '0.78rem', color: '#7f1d1d', marginTop: '6px', background: '#fff', padding: '6px 10px', borderRadius: '6px' }}>
                         <div><b>Telefone:</b> {cli.telefone || 'N/D'}</div>
-                        <div><b>Saldo Devedor Atual:</b> R$ {cli.saldoDevedorTotal.toFixed(2)}</div>
-                        <div><b>Limite de Fiado:</b> {cli.limiteFiado ? `R$ ${cli.limiteFiado.toFixed(2)}` : 'Sem limite'}</div>
+                        <div><b>Saldo Devedor Atual:</b> R$ {Number(cli.saldoDevedorTotal || 0).toFixed(2)}</div>
+                        <div><b>Limite de Fiado:</b> {cli.limiteFiado ? `R$ ${Number(cli.limiteFiado || 0).toFixed(2)}` : 'Sem limite'}</div>
                       </div>
                     );
                   })()}
@@ -9858,7 +9896,7 @@ export default function App() {
                 Total: R${' '}
                 <span id="total-v">
                   {(
-                    prodAtual.preco_venda *
+                    Number(prodAtual.preco_venda || 0) *
                     (typeof qtdBaixa === 'number' ? qtdBaixa : parseInt(qtdBaixa, 10) || 0)
                   )
                     .toFixed(2)

@@ -106,7 +106,7 @@ export const EtiquetasModal: React.FC<EtiquetasModalProps> = ({
                     <div>
                       <strong style={{ fontSize: '0.88rem', display: 'block', color: '#0f172a' }}>{prod.nome}</strong>
                       <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                        Cód: {prod.codigo} | R$ {prod.preco_venda.toFixed(2)}
+                        Cód: {prod.codigo} | R$ {Number(prod.preco_venda || 0).toFixed(2)}
                       </span>
                     </div>
                     <button
@@ -152,7 +152,7 @@ export const EtiquetasModal: React.FC<EtiquetasModalProps> = ({
                       <div>
                         <strong style={{ fontSize: '0.85rem' }}>{itemObj.item.nome}</strong>
                         <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 600 }}>
-                          R$ {itemObj.item.preco_venda.toFixed(2)}
+                          R$ {Number(itemObj.item.preco_venda || 0).toFixed(2)}
                         </div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -198,7 +198,7 @@ export const EtiquetasModal: React.FC<EtiquetasModalProps> = ({
                     <div className="etiqueta-prod-nome">{itemObj.item.nome}</div>
                     <div className="etiqueta-preco-box">
                       <span className="etiqueta-rs">R$</span>
-                      <span className="etiqueta-valor">{itemObj.item.preco_venda.toFixed(2)}</span>
+                      <span className="etiqueta-valor">{Number(itemObj.item.preco_venda || 0).toFixed(2)}</span>
                     </div>
                     <div className="etiqueta-barcode">
                       <div className="barcode-bars">||||| | |||| || ||| |||||| |</div>

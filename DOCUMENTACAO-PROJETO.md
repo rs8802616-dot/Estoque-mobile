@@ -104,6 +104,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 13]
+- **Correção do Erro de Runtime `Cannot read properties of null (reading 'toFixed')`:**
+  - **Causa Raiz Identificada:** No salvamento de produto no Modo Master (`salvarProduto` em `src/App.tsx`), a expressão `typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco) || 0` gerava `NaN` quando o campo de preço estava vazio (`""`), e `JSON.stringify` convertia `NaN` para `null` ao salvar no `localStorage` e no Firestore (`preco_venda: null`, `preco_custo: null`). Na leitura inicial da tela, `p.preco_venda.toFixed(2)` lançava `TypeError: Cannot read properties of null (reading 'toFixed')`.
+  - **Correções Aplicadas:**
+    - Criada a função `sanitizarItemEstoque` em `src/lib/firestoreSync.ts` e aplicada em todas as leituras e escritas do Firestore e `localStorage` (`subscribeEstoque`, `salvarItemEstoqueFirestore` e todos os inicializadores de `estoque` em `src/App.tsx`), convertendo automaticamente qualquer valor `null`, `undefined` ou `NaN` em número finito seguro (`0`).
+    - Corrigida a precedência do operador ternário em `salvarProduto` (`src/App.tsx`).
+    - Blindadas todas as chamadas `.toFixed(2)` em `src/App.tsx`, `src/components/CardapioClienteDeliveryModal.tsx`, `src/components/CarrinhoVendaModal.tsx`, `src/components/EtiquetasModal.tsx`, `src/components/AlertasWhatsAppModal.tsx` e `src/components/CentroNotificacoesModal.tsx` com `Number(... || 0).toFixed(2)`.
+  - Atualizado o cache do Service Worker para `estoque-mobile-pwa-v17` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 12]
 - **Integração com a API Oficial de Produtos BomJawaKit (`https://produtos.bomjawakit.com.br/api/v1`) com `X-API-Key`:**
   - Criado o módulo dedicado `src/lib/bomJawaKitApi.ts` configurado com a chave de API `sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU` no header `X-API-Key` em todas as requisições.

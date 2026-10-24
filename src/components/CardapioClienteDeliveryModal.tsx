@@ -132,8 +132,8 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   const taxaEntregaCalculada = useMemo(() => {
     if (tipoPedido === 'retirada') return 0;
     const bairroEncontrado = listaBairros.find((b) => b.id === bairroSelecionadoId || b.nome.toLowerCase() === (endereco.bairro || '').toLowerCase());
-    if (bairroEncontrado) return bairroEncontrado.taxa;
-    return configDelivery.taxaEntregaFixa || loja?.taxa_entrega || 6.00;
+    if (bairroEncontrado) return Number(bairroEncontrado.taxa) || 0;
+    return Number(configDelivery?.taxaEntregaFixa ?? loja?.taxa_entrega ?? 6.00) || 0;
   }, [tipoPedido, listaBairros, bairroSelecionadoId, endereco.bairro, configDelivery, loja]);
 
   // Atualizar bairro selecionado no endereço
@@ -176,6 +176,8 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
           codigo: codLimpo || p.codigo,
           nome: nomeResolvido || p.nome,
           foto: fotoResolvida || p.foto,
+          preco_venda: Number(p.preco_venda) || 0,
+          preco_custo: Number(p.preco_custo) || 0,
           quantidade: isIlimitado ? 99999 : qtdValidaLote,
           estoqueIlimitado: isIlimitado,
         });
@@ -188,7 +190,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
           ...existente,
           nome: existente.nome || nomeResolvido,
           foto: existente.foto || fotoResolvida,
-          preco_venda: Number(existente.preco_venda) > 0 ? existente.preco_venda : p.preco_venda,
+          preco_venda: Number(existente.preco_venda) > 0 ? Number(existente.preco_venda) : (Number(p.preco_venda) || 0),
           quantidade: ilimitadoCombinado
             ? 99999
             : (Number(existente.quantidade) || 0) + qtdValidaLote,
@@ -294,9 +296,9 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
 
   // Cálculos do carrinho
   const itensCarrinho: ItemCarrinhoCliente[] = Object.values(carrinho);
-  const totalItensQtd: number = itensCarrinho.reduce((acc, cur) => acc + cur.qtd, 0);
-  const subtotalCarrinho: number = itensCarrinho.reduce((acc, cur) => acc + (cur.item.preco_venda * cur.qtd), 0);
-  const valorTotalFinal: number = subtotalCarrinho + (totalItensQtd > 0 ? taxaEntregaCalculada : 0);
+  const totalItensQtd: number = itensCarrinho.reduce((acc, cur) => acc + (Number(cur.qtd) || 0), 0);
+  const subtotalCarrinho: number = itensCarrinho.reduce((acc, cur) => acc + ((Number(cur.item.preco_venda) || 0) * (Number(cur.qtd) || 0)), 0);
+  const valorTotalFinal: number = subtotalCarrinho + (totalItensQtd > 0 ? (Number(taxaEntregaCalculada) || 0) : 0);
 
   // Copiar chave PIX
   const handleCopiarPix = (chave: string) => {
@@ -889,7 +891,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                         <div className="min-w-0">
                           <h4 className="font-bold text-xs text-stone-900 truncate">{item.nome}</h4>
                           <span className="text-xs text-emerald-700 font-black font-mono">
-                            R$ {(item.preco_venda * qtd).toFixed(2)}
+                            R$ {((Number(item.preco_venda) || 0) * (Number(qtd) || 0)).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -1038,7 +1040,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                         >
                           {listaBairros.map((b) => (
                             <option key={b.id} value={b.id}>
-                              {b.nome} (R$ {b.taxa.toFixed(2)})
+                              {b.nome} (R$ {Number(b.taxa || 0).toFixed(2)})
                             </option>
                           ))}
                         </select>
@@ -1287,13 +1289,13 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                 {pedidoAtivoRastreio.itens.map((it, i) => (
                   <div key={i} className="flex justify-between text-stone-700">
                     <span>{it.quantidade}x {it.nome}</span>
-                    <span className="font-mono font-bold text-stone-900">R$ {it.subtotal.toFixed(2)}</span>
+                    <span className="font-mono font-bold text-stone-900">R$ {Number(it.subtotal || 0).toFixed(2)}</span>
                   </div>
                 ))}
                 <div className="flex justify-between font-bold text-stone-900 pt-2 border-t border-stone-100">
                   <span>Total ({pedidoAtivoRastreio.tipo_pedido === 'retirada' ? 'Retirada' : 'com taxa'}):</span>
                   <span className="text-emerald-700 text-sm font-black font-mono">
-                    R$ {pedidoAtivoRastreio.valorTotal.toFixed(2)}
+                    R$ {Number(pedidoAtivoRastreio.valorTotal || 0).toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -1366,7 +1368,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                       </div>
 
                       <div className="text-stone-500 text-[11px] font-mono">
-                        Data: {p.data} às {p.hora} • Total: <strong className="text-stone-900">R$ {p.valorTotal.toFixed(2)}</strong>
+                        Data: {p.data} às {p.hora} • Total: <strong className="text-stone-900">R$ {Number(p.valorTotal || 0).toFixed(2)}</strong>
                       </div>
 
                       <button
