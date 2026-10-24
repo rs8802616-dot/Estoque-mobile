@@ -104,6 +104,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-23 - Atualização 11]
+- **Correção do Cabeçalho Responsivo no Celular (`src/components/CardapioClienteDeliveryModal.tsx`):**
+  - Corrigido o esmagamento horizontal do cabeçalho em telas de celular onde o nome da loja cortava (`A...`) e os textos de tempo (`25-45 min`) e taxa (`Taxa: R$ 5.00`) quebravam em 3 linhas verticais.
+  - No celular, a primeira linha agora é dedicada 100% ao nome da loja (`flex-1 min-w-0 truncate`), enquanto a segunda linha agrupa com `whitespace-nowrap` os indicadores `● Aberto • 🕒 25-45 min • Taxa: R$ 5.00` sem quebrar palavras ao meio.
+  - Removido o botão de cadeado (`Lock`) e ocultado o botão `✕` quando o cardápio está aberto via link público em tela cheia (`modoTelaCheia`), liberando espaço útil no topo do celular.
+  - Atualizado o cache do Service Worker para `estoque-mobile-pwa-v15` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-23 - Atualização 10]
 - **Remoção da Barra Superior de Indicador de Entrega e Seletor de Bairro na Vitrine do Cardápio (`src/components/CardapioClienteDeliveryModal.tsx`):**
   - Removida a faixa superior com os blocos `🛵 Entrega Rápida (Somente Delivery)` e `📍 Bairro de Entrega: ...` que aparecia acima da barra de pesquisa na vitrine de produtos (`etapa === 'vitrine'`).

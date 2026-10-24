@@ -437,52 +437,63 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
         }
       >
         
-        {/* HEADER MODERNO ESTILO PDV */}
-        <div className="bg-white border-b border-stone-200 px-4 py-3 flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* HEADER MODERNO ESTILO PDV (OTIMIZADO PARA CELULAR E DESKTOP) */}
+        <div className="bg-white border-b border-stone-200 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
             {loja?.logo_url ? (
               <img
                 src={loja.logo_url}
                 alt={loja.nome}
-                className="w-10 h-10 rounded-2xl object-cover border border-stone-200 shadow-2xs shrink-0"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl object-cover border border-stone-200 shadow-2xs shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black text-lg shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black text-base sm:text-lg shrink-0">
                 🛵
               </div>
             )}
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="font-black text-sm sm:text-base text-stone-900 truncate">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <h1 className="font-black text-sm sm:text-base text-stone-900 truncate leading-tight">
                   {loja?.marca || loja?.nome || 'Cardápio Digital'}
                 </h1>
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                <span className="hidden sm:inline-flex text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 items-center gap-1 shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Aberto
                 </span>
               </div>
-              <p className="text-[11px] text-stone-500 flex items-center gap-1.5 leading-none mt-0.5">
-                <Clock className="w-3 h-3 text-stone-400" />
-                <span>{loja?.tempo_estimado_entrega || `${configDelivery.tempoMinimoMinutos || 25}-${configDelivery.tempoMaximoMinutos || 45} min`}</span>
-                <span>•</span>
-                <span>Taxa: {tipoPedido === 'retirada' ? 'Grátis (Retirada)' : `R$ ${taxaEntregaCalculada.toFixed(2)}`}</span>
-              </p>
+
+              <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0.5 text-[11px] text-stone-500 leading-tight mt-0.5">
+                <span className="inline-flex sm:hidden items-center gap-1 text-[10px] font-extrabold text-emerald-700 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Aberto
+                </span>
+                <span className="sm:hidden text-stone-300">•</span>
+                <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                  <Clock className="w-3 h-3 text-stone-400 shrink-0" />
+                  <span>{loja?.tempo_estimado_entrega || `${configDelivery.tempoMinimoMinutos || 25}-${configDelivery.tempoMaximoMinutos || 45} min`}</span>
+                </span>
+                <span className="text-stone-300">•</span>
+                <span className="whitespace-nowrap font-medium text-stone-600">
+                  Taxa: R$ {taxaEntregaCalculada.toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Meus Pedidos */}
             <button
               type="button"
               onClick={() => setEtapa('meus_pedidos')}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+              title="Meus Pedidos"
+              className={`h-9 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 etapa === 'meus_pedidos'
                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
                   : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-50'
               }`}
             >
-              <Clock className="w-3.5 h-3.5" />
+              <Clock className="w-4 h-4 shrink-0" />
               <span className="hidden sm:inline">Meus Pedidos</span>
               {pedidosDoCliente.length > 0 && (
                 <span className="w-4 h-4 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center">
@@ -495,13 +506,14 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
             <button
               type="button"
               onClick={() => setEtapa(etapa === 'carrinho' ? 'vitrine' : 'carrinho')}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-2xs ${
+              title="Sacola de Compras"
+              className={`h-9 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs ${
                 totalItensQtd > 0
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600'
                   : 'bg-white border-stone-200 text-stone-700 hover:bg-stone-50'
               }`}
             >
-              <ShoppingCart className="w-3.5 h-3.5" />
+              <ShoppingCart className="w-4 h-4 shrink-0" />
               <span className="hidden sm:inline">Sacola</span>
               {totalItensQtd > 0 && (
                 <span className="px-1.5 py-0.2 rounded-full bg-white text-emerald-800 text-[10px] font-black">
@@ -510,27 +522,17 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
               )}
             </button>
 
-            {/* Botão Acesso Funcionário / PDV */}
-            {onTrocarParaFuncionario && (
+            {/* Fechar (Exibido apenas quando aberto como modal dentro do PDV) */}
+            {!modoTelaCheia && (
               <button
                 type="button"
-                onClick={onTrocarParaFuncionario}
-                className="p-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs transition cursor-pointer"
-                title="Acesso Funcionário / PDV"
+                onClick={onFechar}
+                className="w-9 h-9 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs transition flex items-center justify-center cursor-pointer"
+                title="Fechar Cardápio"
               >
-                <Lock className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
               </button>
             )}
-
-            {/* Fechar */}
-            <button
-              type="button"
-              onClick={onFechar}
-              className="p-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs transition cursor-pointer"
-              title="Fechar Cardápio"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
         </div>
 
@@ -757,13 +759,13 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                               )}
                             </div>
 
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px', gap: '6px' }}>
-                              <div className="detalhe preco-destaque">R$ {Number(prod.preco_venda).toFixed(2)}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px', gap: '4px', flexWrap: 'wrap' }}>
+                              <div className="detalhe preco-destaque" style={{ whiteSpace: 'nowrap' }}>R$ {Number(prod.preco_venda).toFixed(2)}</div>
 
                               {esgotado ? (
                                 <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700 }}>Esgotado</span>
                               ) : qtdNoCarrinho > 0 ? (
-                                <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-0.5 font-black shadow-2xs">
+                                <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-0.5 font-black shadow-2xs shrink-0">
                                   <button
                                     type="button"
                                     onClick={() => removerDoCarrinho(prod.codigo)}
@@ -789,13 +791,14 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                                     color: '#0369a1',
                                     border: '1px solid #7dd3fc',
                                     borderRadius: '6px',
-                                    padding: '4px 8px',
-                                    fontSize: '0.76rem',
+                                    padding: '4px 7px',
+                                    fontSize: '0.74rem',
                                     fontWeight: 700,
                                     cursor: 'pointer',
                                     display: 'inline-flex',
                                     alignItems: 'center',
                                     gap: '3px',
+                                    whiteSpace: 'nowrap',
                                   }}
                                   title="Adicionar produto à sacola"
                                 >
