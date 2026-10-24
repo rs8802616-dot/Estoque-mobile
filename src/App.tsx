@@ -86,6 +86,12 @@ import {
   buscarProdutosBomJawaKit,
 } from './lib/bomJawaKitApi';
 import {
+  CATALOGO_AMBEV_OFICIAL,
+  garantirCatalogoAmbevNoBancoGlobal,
+  sincronizarCatalogoAmbevComFirestore,
+  isProdutoAmbev,
+} from './lib/catalogoAmbev';
+import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
   tocarSomAlerta,
@@ -330,20 +336,25 @@ export default function App() {
 
   const [catalogoGlobal, setCatalogoGlobal] = useState<ProdutoCatalogo[]>(() => {
     const salvo = localStorage.getItem('catalogoGlobalFirebase');
-    return salvo
-      ? JSON.parse(salvo)
-      : [
-          {
-            codigo: '7891000100102',
-            nome: 'Arroz Integral 1kg',
-            marca: 'Marca Exemplo',
-            categoria: 'Grãos',
-            unidade_medida: 'kg',
-            imagem: '',
-            descricao: 'Arroz integral',
-          },
-        ];
+    let listaBase: ProdutoCatalogo[] = [];
+    if (salvo) {
+      try {
+        const parsed = JSON.parse(salvo);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          listaBase = parsed;
+        }
+      } catch (e) {}
+    }
+    // Garante que todo o catálogo oficial da Ambev esteja presente e enriquecido
+    const { catalogoCompleto } = garantirCatalogoAmbevNoBancoGlobal(listaBase);
+    try {
+      localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
+    } catch (e) {}
+    return catalogoCompleto;
   });
+
+  const [sincronizandoAmbev, setSincronizandoAmbev] = useState<boolean>(false);
+  const [statusAmbevSync, setStatusAmbevSync] = useState<string | null>(null);
 
   const [estoque, setEstoque] = useState<ItemEstoque[]>(() => {
     const currentStoreId = localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
@@ -1094,9 +1105,18 @@ export default function App() {
           }
         });
         const listaUnica = Array.from(mapaProds.values());
+        // Auto-reconcilia com o catálogo oficial Ambev garantindo que todos os 173 itens estejam presentes
+        const { catalogoCompleto, novosInseridos, atualizados } = garantirCatalogoAmbevNoBancoGlobal(listaUnica);
 
-        setCatalogoGlobal(listaUnica);
-        safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(listaUnica));
+        setCatalogoGlobal(catalogoCompleto);
+        safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
+
+        // Se houver novos itens da Ambev ou dados enriquecidos pendentes no Firestore remoto, grava em segundo plano
+        if (novosInseridos.length > 0 || atualizados.length > 0) {
+          sincronizarCatalogoAmbevComFirestore(catalogoCompleto).catch((e) =>
+            console.warn('Sync automático do portfólio Ambev com Firestore:', e)
+          );
+        }
 
         // 1. Reconciliar o estoque da loja ativa imediatamente
         setEstoque((prevEstoque) => {
@@ -3821,6 +3841,46 @@ export default function App() {
     setCadNome('');
     setCadCusto('');
     setCadPreco('');
+    setMsgCad('');
+    setModalCadastroVisivel(true);
+  };
+
+  const handleSincronizarAmbev = async () => {
+    setSincronizandoAmbev(true);
+    setStatusAmbevSync('Verificando produtos Ambev no banco...');
+    try {
+      const res = await sincronizarCatalogoAmbevComFirestore(catalogoGlobal, (atual, total) => {
+        setStatusAmbevSync(`Salvando Ambev no Firebase: ${atual}/${total}...`);
+      });
+      setCatalogoGlobal(res.catalogoFinal);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
+      alert(`🍺 Catálogo Ambev Sincronizado com Sucesso!\n\n• Novos produtos Ambev cadastrados: ${res.totalNovos}\n• Produtos com dados enriquecidos: ${res.totalAtualizados}\n• Total de produtos no seu Banco Global: ${res.catalogoFinal.length}`);
+    } catch (err: any) {
+      alert(`Erro ao sincronizar portfólio Ambev: ${err?.message || err}`);
+    } finally {
+      setSincronizandoAmbev(false);
+      setStatusAmbevSync(null);
+    }
+  };
+
+  const abrirCadastroComProdutoCatalogo = (cat: ProdutoCatalogo) => {
+    fecharMenu();
+    setModoCadastroItem('estoque');
+    setTipoProdutoCadastro('padrao');
+    setCadEstoqueIlimitado(false);
+    setCodigoEditando(null);
+    setCadCod(cat.codigo || '');
+    setCadNome(cat.nome || '');
+    setCadMarca(cat.marca || '');
+    setCadCategoria(cat.categoria || '');
+    setFotoTemp(cat.imagem || '');
+    setCadQtd('1');
+    setCadLote('LOTE01');
+    const d = new Date();
+    d.setMonth(d.getMonth() + 6);
+    setCadVal(d.toISOString().slice(0, 10));
+    setCadCusto(cat.preco_custo !== undefined && cat.preco_custo !== null ? String(cat.preco_custo) : '');
+    setCadPreco(cat.preco_venda !== undefined && cat.preco_venda !== null ? String(cat.preco_venda) : '');
     setMsgCad('');
     setModalCadastroVisivel(true);
   };
@@ -8451,17 +8511,35 @@ export default function App() {
                   </select>
                 </div>
 
-                <button
-                  className="btn-acao-rel"
-                  style={{ background: 'var(--primario)', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                  onClick={() => {
-                    setModalSupermercadoVisivel(false);
-                    abrirCadastro('master');
-                  }}
-                >
-                  ➕ Cadastrar Novo Item no Banco de Dados
-                </button>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: 'var(--primario)', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    onClick={() => {
+                      setModalSupermercadoVisivel(false);
+                      abrirCadastro('master');
+                    }}
+                  >
+                    ➕ Cadastrar Novo Item
+                  </button>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: '#d97706', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    disabled={sincronizandoAmbev}
+                    onClick={handleSincronizarAmbev}
+                    title="Sincroniza todos os 173 produtos oficiais da Ambev (Brahma, Skol, Antarctica, Spaten, Corona, Stella, Budweiser, Colorado, Guaraná, Pepsi, H2OH, Gatorade...) no seu Banco Global"
+                  >
+                    {sincronizandoAmbev ? '⏳ Sincronizando Ambev...' : '🍺 Sincronizar Catálogo Ambev (173 Itens)'}
+                  </button>
+                </div>
               </div>
+
+              {statusAmbevSync && (
+                <div style={{ padding: '10px 14px', background: '#fef3c7', color: '#92400e', borderRadius: '8px', fontSize: '0.84rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>🍺</span>
+                  <span>{statusAmbevSync}</span>
+                </div>
+              )}
 
               {/* TABELA DE ITENS DO BANCO DE DADOS */}
               <div className="tabela-relatorio">
@@ -8524,14 +8602,35 @@ export default function App() {
                                 <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
                                   🌐 Catálogo Global
                                 </span>
+                                {(isProdutoAmbev(cat.codigo) || isProdutoAmbev(cat.nome) || (cat.marca && isProdutoAmbev(cat.marca))) && (
+                                  <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700, border: '1px solid #fde68a' }}>
+                                    🍺 Ambev
+                                  </span>
+                                )}
                               </div>
                               <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                                Cód. EAN: <b>{cat.codigo}</b> | Categoria: <b>{cat.categoria || 'Geral'}</b> {cat.marca ? `| Marca: ${cat.marca}` : ''}
+                                Cód. EAN: <b>{cat.codigo}</b> | Categoria: <b>{cat.categoria || 'Geral'}</b> {cat.marca ? `| Marca: ${cat.marca}` : ''} {cat.unidade_medida ? `| Un: ${cat.unidade_medida}` : ''}
                               </div>
+                              {cat.descricao && (
+                                <div style={{ fontSize: '0.73rem', color: '#475569', marginTop: '3px', lineHeight: 1.35, background: '#f8fafc', padding: '4px 8px', borderRadius: '4px', border: '1px solid #f1f5f9' }}>
+                                  📝 {cat.descricao}
+                                </div>
+                              )}
                             </div>
                           </div>
 
                           <div className="acoes-relatorio" style={{ gap: '6px' }}>
+                            <button
+                              className="btn-acao-rel"
+                              style={{ background: '#059669', color: '#fff', fontSize: '0.78rem', padding: '6px 10px', borderRadius: '6px' }}
+                              onClick={() => {
+                                setModalSupermercadoVisivel(false);
+                                abrirCadastroComProdutoCatalogo(cat);
+                              }}
+                              title="Adicionar este produto ao Estoque da Loja/Adega"
+                            >
+                              + Estoque
+                            </button>
                             <button
                               className="btn-acao-rel btn-editar-rel"
                               onClick={() => {

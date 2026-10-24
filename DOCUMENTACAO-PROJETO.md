@@ -334,6 +334,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
 
+### [2026-10-24 - Atualização 16]
+- **Integração e Sincronização do Catálogo Completo Oficial da Ambev no Banco Global:**
+  - **Módulo Dedicado (`src/lib/catalogoAmbev.ts`):**
+    - Criado banco com **173 produtos oficiais da Ambev** cobrindo todas as marcas líderes: Skol, Brahma, Antarctica, Antarctica Original, Spaten, Corona, Stella Artois, Budweiser, Bohemia, Colorado, Patagonia, Beck's, Michelob Ultra, Hoegaarden, Beats, Guaraná Antarctica, Pepsi, Sukita, H2OH!, Gatorade, Tônica Antarctica, Fusion Energy Drink e Lipton Ice Tea.
+    - Cada produto possui Código de Barras EAN real e validado, Nome completo, Marca padronizada, Categoria correta de supermercado/adega, Unidade de Medida/Volume extraído e formatado, Imagens oficiais em alta resolução (via CDN R2 / Cosmos CDN) e Descrição detalhada do produto.
+  - **Auto-Reconciliação e Persistência no Firebase Firestore (`src/App.tsx` & `src/lib/catalogoAmbev.ts`):**
+    - Implementadas as funções `garantirCatalogoAmbevNoBancoGlobal` e `sincronizarCatalogoAmbevComFirestore` que cruzam automaticamente o catálogo do usuário com a base da Ambev.
+    - Novos produtos da Ambev são inseridos no catálogo global e produtos já existentes sem foto, marca ou descrição são enriquecidos automaticamente sem sobrescrever personalizações do lojista.
+    - Sincronização em lotes em segundo plano com a coleção `produtos_catalogo` e espelhamento em `catalogo_global` no Firestore.
+  - **Interface no Painel do Banco de Dados Mestre (`src/App.tsx`):**
+    - Adicionado o botão **`🍺 Sincronizar Catálogo Ambev (173 Itens)`** no topo do modal do Banco de Dados com feedback de progresso e relatório de itens inseridos/atualizados.
+    - Adicionada a tag dourada visual **`🍺 Ambev`** em cada item pertencente ao catálogo da fabricante.
+    - Exibição de descrição do produto formatada e botão direto **`+ Estoque`** para que o comerciante adicione qualquer produto do portfólio Ambev diretamente ao estoque de sua loja com 1 clique.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v20` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-22 - Atualização 2]
 - **Renderização Exclusiva do CustomerDeliveryView e Coluna CaixaView do AtendeJá:**
   - **Acesso ao Link (`/?loja=` ou `/?delivery=true`):**
@@ -361,6 +376,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 16]
+- **Integração e Sincronização do Catálogo Completo Oficial da Ambev no Banco Global:**
+  - **Módulo Dedicado (`src/lib/catalogoAmbev.ts`):**
+    - Criado banco com **173 produtos oficiais da Ambev** cobrindo todas as marcas líderes: Skol, Brahma, Antarctica, Antarctica Original, Spaten, Corona, Stella Artois, Budweiser, Bohemia, Colorado, Patagonia, Beck's, Michelob Ultra, Hoegaarden, Beats, Guaraná Antarctica, Pepsi, Sukita, H2OH!, Gatorade, Tônica Antarctica, Fusion Energy Drink e Lipton Ice Tea.
+    - Cada produto possui Código de Barras EAN real e validado, Nome completo, Marca padronizada, Categoria correta de supermercado/adega, Unidade de Medida/Volume extraído e formatado, Imagens oficiais em alta resolução (via CDN R2 / Cosmos CDN) e Descrição detalhada do produto.
+  - **Auto-Reconciliação e Persistência no Firebase Firestore (`src/App.tsx` & `src/lib/catalogoAmbev.ts`):**
+    - Implementadas as funções `garantirCatalogoAmbevNoBancoGlobal` e `sincronizarCatalogoAmbevComFirestore` que cruzam automaticamente o catálogo do usuário com a base da Ambev.
+    - Novos produtos da Ambev são inseridos no catálogo global e produtos já existentes sem foto, marca ou descrição são enriquecidos automaticamente sem sobrescrever personalizações do lojista.
+    - Sincronização em lotes em segundo plano com a coleção `produtos_catalogo` e espelhamento em `catalogo_global` no Firestore.
+  - **Interface no Painel do Banco de Dados Mestre (`src/App.tsx`):**
+    - Adicionado o botão **`🍺 Sincronizar Catálogo Ambev (173 Itens)`** no topo do modal do Banco de Dados com feedback de progresso e relatório de itens inseridos/atualizados.
+    - Adicionada a tag dourada visual **`🍺 Ambev`** em cada item pertencente ao catálogo da fabricante.
+    - Exibição de descrição do produto formatada e botão direto **`+ Estoque`** para que o comerciante adicione qualquer produto do portfólio Ambev diretamente ao estoque de sua loja com 1 clique.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v20` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-22 - Atualização 2]
 - **Fidelidade Visual Total ao Modelo AtendeJá no Painel de Delivery do PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
@@ -402,6 +432,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
   - **Navegação do Menu Lateral & Relatórios (`CentralRelatoriosModal.tsx` e `App.tsx`):**
     - Corrigido o `useEffect` para escutar e alternar de forma reativa a aba ativa (`abaInicial`) da Central de Relatórios (`faturamento`, `vendas`, `estoque`), garantindo que todos os links do menu lateral abram instantaneamente na aba correta.
     - Removidas menções a "Zé Delivery" no menu lateral em favor de "Painel Delivery" e "Ver Cardápio do Cliente".
+
+### [2026-10-24 - Atualização 16]
+- **Integração e Sincronização do Catálogo Completo Oficial da Ambev no Banco Global:**
+  - **Módulo Dedicado (`src/lib/catalogoAmbev.ts`):**
+    - Criado banco com **173 produtos oficiais da Ambev** cobrindo todas as marcas líderes: Skol, Brahma, Antarctica, Antarctica Original, Spaten, Corona, Stella Artois, Budweiser, Bohemia, Colorado, Patagonia, Beck's, Michelob Ultra, Hoegaarden, Beats, Guaraná Antarctica, Pepsi, Sukita, H2OH!, Gatorade, Tônica Antarctica, Fusion Energy Drink e Lipton Ice Tea.
+    - Cada produto possui Código de Barras EAN real e validado, Nome completo, Marca padronizada, Categoria correta de supermercado/adega, Unidade de Medida/Volume extraído e formatado, Imagens oficiais em alta resolução (via CDN R2 / Cosmos CDN) e Descrição detalhada do produto.
+  - **Auto-Reconciliação e Persistência no Firebase Firestore (`src/App.tsx` & `src/lib/catalogoAmbev.ts`):**
+    - Implementadas as funções `garantirCatalogoAmbevNoBancoGlobal` e `sincronizarCatalogoAmbevComFirestore` que cruzam automaticamente o catálogo do usuário com a base da Ambev.
+    - Novos produtos da Ambev são inseridos no catálogo global e produtos já existentes sem foto, marca ou descrição são enriquecidos automaticamente sem sobrescrever personalizações do lojista.
+    - Sincronização em lotes em segundo plano com a coleção `produtos_catalogo` e espelhamento em `catalogo_global` no Firestore.
+  - **Interface no Painel do Banco de Dados Mestre (`src/App.tsx`):**
+    - Adicionado o botão **`🍺 Sincronizar Catálogo Ambev (173 Itens)`** no topo do modal do Banco de Dados com feedback de progresso e relatório de itens inseridos/atualizados.
+    - Adicionada a tag dourada visual **`🍺 Ambev`** em cada item pertencente ao catálogo da fabricante.
+    - Exibição de descrição do produto formatada e botão direto **`+ Estoque`** para que o comerciante adicione qualquer produto do portfólio Ambev diretamente ao estoque de sua loja com 1 clique.
+  - **Versionamento de Cache PWA:** Atualizado para `estoque-mobile-pwa-v20` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-10-22 - Atualização 2]
 - **Fidelidade Visual Total ao Modelo AtendeJá no Painel de Delivery do PDV (`CaixaDeliveryPanel.tsx` e `App.tsx`):**
