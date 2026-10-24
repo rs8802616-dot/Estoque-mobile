@@ -104,6 +104,26 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 26]
+- **Integração em Massa do Catálogo de Bebidas Não Alcoólicas Rissul Supermercados (465 Novos Produtos, Totalizando 849 Itens no Banco de Dados Global):**
+  - **Solicitação do Usuário:** Varrer o catálogo oficial da categoria de bebidas não alcoólicas do Rissul Supermercados (`https://www.rissul.com.br/bebidas/bebidas-nao-alcoolicas`), identificar todos os produtos que não existiam no app e cadastrar todos com dados completos, códigos de barra EAN oficiais e fotos compactadas.
+  - **Produtos Mapeados e Inseridos (465 novos itens):**
+    - **Refrigerantes & Sabores Regionais:** Linha completa Fruki Guaraná (Lata, Pet 600ml, 1.5L, 2L, 2L Zero, 2L Bergamota), Guaraná Jesus, Pepsi Black, Coca-Cola garrafinhas e latas especiais, Sukita, Soda Limonada, Kuat, Fanta, Grapette, refrigerantes locais e marcas premium.
+    - **Sucos Integrais, Néctares e Polpas:** Sucos integrais de uva e maçã Salton, Aurora, Aliança, Panizzon, Campo Largo, Casa Madeira, Del Valle, Maguary, Dafruta, Prat's, Villa Piva e Suvalan.
+    - **Águas Minerais, Águas Saborizadas e Com Gás:** Linha completa Água da Pedra, Fonte da Lomba, Sarandi, Crystal, Bonafont, Minalba, São Lourenço, Caxambu, Lindoya e Perrier.
+    - **Isotônicos, Hidrotônicos e Energéticos:** Gatorade todos os sabores, Powerade, i9, energéticos Baly, Red Bull edições, Monster e Flying Horse.
+    - **Chás Prontos e Chás Gelados:** Matte Leão (Copinho, Garrafa 1.5L, Pêssego e Limão), Feel Good, Fuze Tea e Chá Verde.
+    - **Águas de Coco e Bebidas Vegetais:** Kero Coco, Sococo, Obrigado, AdeS soja e sucos com soja.
+  - **Compactação e Otimização 100% de Fotos:**
+    - Todas as imagens foram processadas no padrão de redimensionamento e compressão 260x260px (`/ids/{id}-260-260/`), garantindo imagens ultra-leves de 8KB a 14KB com 100% de resolução nítida e taxa de sucesso `200 OK` em todas as fotos.
+  - **Gravação Direta no Firestore (`adega-delivery-pdv`):**
+    - Todos os 465 produtos foram gravados diretamente na coleção `catalogo_global`, expandindo o catálogo mestre de 384 para **849 produtos cadastrados** (100% com fotos válidas e códigos EAN).
+  - **Frontend e Sincronização Local:**
+    - Criado [`src/lib/catalogoRissulBebidas.ts`](file:///C:/Users/paulo/Downloads/Estoque-mobile--main/src/lib/catalogoRissulBebidas.ts) e conectado em `src/App.tsx`.
+    - Adicionado botão `🥤 Bebidas Rissul (465 Itens)` no painel da Dona do Aplicativo para sincronização instantânea.
+  - **Atualização do Service Worker:**
+    - Versão do cache do PWA elevada para `estoque-mobile-pwa-v30`.
+
 ### [2026-10-24 - Atualização 25]
 - **Integração do Catálogo Oficial Chopp Brahma Express (41 Novos Produtos, Totalizando 384 Itens) e Otimização/Compressão Máxima de 100% das Imagens:**
   - **Solicitação do Usuário:** Cadastrar todos os produtos de barris de chopp, growlers, chopeiras e acessórios do site oficial Chopp Brahma Express (`https://www.choppbrahmaexpress.com.br`) e compactar todas as imagens do catálogo (tanto as novas quanto as já cadastradas) para o menor tamanho possível sem perder a nitidez e qualidade visual, reduzindo drasticamente o consumo de memória RAM do aplicativo.

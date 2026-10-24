@@ -109,6 +109,11 @@ import {
   sincronizarCatalogoChoppBrahmaComFirestore,
 } from './lib/catalogoChoppBrahmaExpress';
 import {
+  CATALOGO_RISSUL_BEBIDAS_OFICIAL,
+  garantirCatalogoRissulNoBancoGlobal,
+  sincronizarCatalogoRissulComFirestore,
+} from './lib/catalogoRissulBebidas';
+import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
   tocarSomAlerta,
@@ -362,11 +367,12 @@ export default function App() {
         }
       } catch (e) {}
     }
-    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery e Chopp Brahma Express estejam presentes
+    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express e Bebidas Rissul estejam presentes
     const { catalogoCompleto: comAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaBase);
     const { catalogoCompleto: comAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
     const { catalogoCompleto: comZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
-    const { catalogoCompleto } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
+    const { catalogoCompleto: comChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
+    const { catalogoCompleto } = garantirCatalogoRissulNoBancoGlobal(comChopp);
     try {
       localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
     } catch (e) {}
@@ -1127,11 +1133,12 @@ export default function App() {
           }
         });
         const listaUnica = Array.from(mapaProds.values());
-        // Auto-reconcilia com o catálogo oficial Ambev, Mix Essencial de Adega, Mix Zé Delivery e Chopp Brahma Express
+        // Auto-reconcilia com o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express e Bebidas Rissul
         const { catalogoCompleto: comAmbev, novosInseridos: novosAmbev, atualizados: atAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaUnica);
         const { catalogoCompleto: comAdega, novosInseridos: novosAdega, atualizados: atAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
         const { catalogoCompleto: comZe, novosInseridos: novosZe, atualizados: atZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
-        const { catalogoCompleto, novosInseridos: novosChopp, atualizados: atChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
+        const { catalogoCompleto: comChopp, novosInseridos: novosChopp, atualizados: atChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
+        const { catalogoCompleto, novosInseridos: novosRissul, atualizados: atRissul } = garantirCatalogoRissulNoBancoGlobal(comChopp);
 
         setCatalogoGlobal(catalogoCompleto);
         safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
@@ -3944,6 +3951,17 @@ export default function App() {
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
       alert(`🍻 Chopp Brahma Express Sincronizado no Novo Banco!\n\n• Novos barris/equipamentos gravados: ${res.totalNovos}\n• Produtos enriquecidos com fotos compactas: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
+    } catch (err: any) {
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
+    }
+  };
+
+  const handleSincronizarRissulBebidas = async () => {
+    try {
+      const res = await sincronizarCatalogoRissulComFirestore(catalogoGlobal);
+      setCatalogoGlobal(res.catalogoFinal);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
+      alert(`🥤 Bebidas Rissul Sincronizadas no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos com fotos 260x260: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
     } catch (err: any) {
       alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
@@ -8724,6 +8742,14 @@ export default function App() {
                     title="Carrega os 41 produtos oficiais do Chopp Brahma Express (Barris 30L/50L, Growlers, Chopeiras, Cilindros CO2, Copos e Calderetas)"
                   >
                     🍻 Chopp Brahma Express (41 Itens)
+                  </button>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: '#0284c7', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    onClick={handleSincronizarRissulBebidas}
+                    title="Carrega os 465 produtos de bebidas não alcoólicas do Rissul (Refrigerantes, Sucos Integrais, Águas Minerais, Chás, Isotônicos)"
+                  >
+                    🥤 Bebidas Rissul (465 Itens)
                   </button>
                 </div>
               </div>
