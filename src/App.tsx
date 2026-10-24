@@ -104,6 +104,11 @@ import {
   sincronizarCatalogoZeDeliveryComFirestore,
 } from './lib/catalogoZeDeliveryMix';
 import {
+  CATALOGO_CHOPP_BRAHMA_EXPRESS_OFICIAL,
+  garantirCatalogoChoppBrahmaNoBancoGlobal,
+  sincronizarCatalogoChoppBrahmaComFirestore,
+} from './lib/catalogoChoppBrahmaExpress';
+import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
   tocarSomAlerta,
@@ -133,7 +138,7 @@ import {
   salvarImagemIndexedDB,
   subscreverCacheImagens,
 } from './lib/imageIndexedDB';
-import { comprimirImagemParaArmazenamento, calcularTamanhoImagemKB } from './lib/imageCompressor';
+import { comprimirImagemParaArmazenamento, calcularTamanhoImagemKB, otimizarUrlImagem } from './lib/imageCompressor';
 import { screenWakeLockManager } from './lib/screenWakeLock';
 import {
   subscribeSupermercados,
@@ -357,10 +362,11 @@ export default function App() {
         }
       } catch (e) {}
     }
-    // Garante que o catálogo oficial Ambev, Mix Adega e Mix Zé Delivery estejam presentes
+    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery e Chopp Brahma Express estejam presentes
     const { catalogoCompleto: comAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaBase);
     const { catalogoCompleto: comAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
-    const { catalogoCompleto } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
+    const { catalogoCompleto: comZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
+    const { catalogoCompleto } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
     try {
       localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
     } catch (e) {}
@@ -1121,10 +1127,11 @@ export default function App() {
           }
         });
         const listaUnica = Array.from(mapaProds.values());
-        // Auto-reconcilia com o catálogo oficial Ambev (173 itens), Mix Essencial de Adega (90 itens) e Mix Zé Delivery (80 itens)
+        // Auto-reconcilia com o catálogo oficial Ambev, Mix Essencial de Adega, Mix Zé Delivery e Chopp Brahma Express
         const { catalogoCompleto: comAmbev, novosInseridos: novosAmbev, atualizados: atAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaUnica);
         const { catalogoCompleto: comAdega, novosInseridos: novosAdega, atualizados: atAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
-        const { catalogoCompleto, novosInseridos: novosZe, atualizados: atZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
+        const { catalogoCompleto: comZe, novosInseridos: novosZe, atualizados: atZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
+        const { catalogoCompleto, novosInseridos: novosChopp, atualizados: atChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
 
         setCatalogoGlobal(catalogoCompleto);
         safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
@@ -3718,47 +3725,48 @@ export default function App() {
     return nomeItem || 'Produto sem nome';
   };
 
-  // Obter foto do produto de forma centralizada e ultra-resiliente
+  // Obter foto do produto de forma centralizada, ultra-resiliente e com compressão máxima de memória
   const obterFotoProduto = (codigo?: string, fotoItem?: string): string => {
+    let fotoBruta = '';
     if (fotoItem && typeof fotoItem === 'string' && fotoItem.trim().length > 5) {
-      return fotoItem.trim();
-    }
-    if (!codigo) return '';
-    const codLimpo = String(codigo).trim();
+      fotoBruta = fotoItem.trim();
+    } else if (codigo) {
+      const codLimpo = String(codigo).trim();
 
-    // 0. Cache em memória do IndexedDB (ultra-resiliente e imune a sobrescrita)
-    const fotoCache = obterFotoCache(codLimpo);
-    if (fotoCache && typeof fotoCache === 'string' && fotoCache.trim().length > 5) {
-      return fotoCache.trim();
-    }
-
-    // 1. Busca no catálogo compartilhado em memória
-    const cat = catalogoGlobal.find((c) => c.codigo === codLimpo);
-    if (cat?.imagem && cat.imagem.trim().length > 5) {
-      return cat.imagem.trim();
-    }
-
-    // 2. Busca em qualquer outro lote ou item com o mesmo código no estoque
-    const itemEstoqueComFoto = estoque.find(
-      (e) => e.codigo === codLimpo && e.foto && typeof e.foto === 'string' && e.foto.trim().length > 5
-    );
-    if (itemEstoqueComFoto?.foto) {
-      return itemEstoqueComFoto.foto.trim();
-    }
-
-    // 3. Fallback no cache local do catálogo do navegador
-    try {
-      const salvo = localStorage.getItem('catalogoGlobalFirebase');
-      if (salvo) {
-        const parsed: ProdutoCatalogo[] = JSON.parse(salvo);
-        const achouLocal = parsed.find((p) => p.codigo === codLimpo);
-        if (achouLocal?.imagem && achouLocal.imagem.trim().length > 5) {
-          return achouLocal.imagem.trim();
+      // 0. Cache em memória do IndexedDB (ultra-resiliente e imune a sobrescrita)
+      const fotoCache = obterFotoCache(codLimpo);
+      if (fotoCache && typeof fotoCache === 'string' && fotoCache.trim().length > 5) {
+        fotoBruta = fotoCache.trim();
+      } else {
+        // 1. Busca no catálogo compartilhado em memória
+        const cat = catalogoGlobal.find((c) => c.codigo === codLimpo);
+        if (cat?.imagem && cat.imagem.trim().length > 5) {
+          fotoBruta = cat.imagem.trim();
+        } else {
+          // 2. Busca em qualquer outro lote ou item com o mesmo código no estoque
+          const itemEstoqueComFoto = estoque.find(
+            (e) => e.codigo === codLimpo && e.foto && typeof e.foto === 'string' && e.foto.trim().length > 5
+          );
+          if (itemEstoqueComFoto?.foto) {
+            fotoBruta = itemEstoqueComFoto.foto.trim();
+          } else {
+            // 3. Fallback no cache local do catálogo do navegador
+            try {
+              const salvo = localStorage.getItem('catalogoGlobalFirebase');
+              if (salvo) {
+                const parsed: ProdutoCatalogo[] = JSON.parse(salvo);
+                const achouLocal = parsed.find((p) => p.codigo === codLimpo);
+                if (achouLocal?.imagem && achouLocal.imagem.trim().length > 5) {
+                  fotoBruta = achouLocal.imagem.trim();
+                }
+              }
+            } catch {}
+          }
         }
       }
-    } catch {}
+    }
 
-    return '';
+    return otimizarUrlImagem(fotoBruta);
   };
 
   // Product Catalog Look Up & Auto-fill (Memória Local + Firestore Direto)
@@ -3925,6 +3933,17 @@ export default function App() {
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
       alert(`🛵 Mix Zé Delivery Sincronizado no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
+    } catch (err: any) {
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
+    }
+  };
+
+  const handleSincronizarChoppBrahma = async () => {
+    try {
+      const res = await sincronizarCatalogoChoppBrahmaComFirestore(catalogoGlobal);
+      setCatalogoGlobal(res.catalogoFinal);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
+      alert(`🍻 Chopp Brahma Express Sincronizado no Novo Banco!\n\n• Novos barris/equipamentos gravados: ${res.totalNovos}\n• Produtos enriquecidos com fotos compactas: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
     } catch (err: any) {
       alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
@@ -7704,7 +7723,7 @@ export default function App() {
                         }}
                       >
                         {c.imagem ? (
-                          <img src={c.imagem} alt={c.nome} referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                          <img src={otimizarUrlImagem(c.imagem)} alt={c.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         ) : (
                           'Foto'
                         )}
@@ -8698,6 +8717,14 @@ export default function App() {
                   >
                     🛵 Mix Zé Delivery (80 Itens Campeões)
                   </button>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: '#b91c1c', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    onClick={handleSincronizarChoppBrahma}
+                    title="Carrega os 41 produtos oficiais do Chopp Brahma Express (Barris 30L/50L, Growlers, Chopeiras, Cilindros CO2, Copos e Calderetas)"
+                  >
+                    🍻 Chopp Brahma Express (41 Itens)
+                  </button>
                 </div>
               </div>
 
@@ -8751,7 +8778,7 @@ export default function App() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
                             <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               {cat.imagem ? (
-                                <img src={cat.imagem} alt={cat.nome} referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={otimizarUrlImagem(cat.imagem)} alt={cat.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               ) : (
                                 <span style={{ fontSize: '1.2rem' }}>📦</span>
                               )}
@@ -8827,7 +8854,7 @@ export default function App() {
                                 {(() => {
                                   const fotoLinha = obterFotoProduto(p.codigo, p.foto);
                                   return fotoLinha ? (
-                                    <img src={fotoLinha} alt={nomeExibicao} referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <img src={fotoLinha} alt={nomeExibicao} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                   ) : (
                                     <span style={{ fontSize: '1.2rem' }}>🛒</span>
                                   );
@@ -9980,7 +10007,7 @@ export default function App() {
                   {(() => {
                     const fotoModal = obterFotoProduto(prodAtual.codigo, prodAtual.foto);
                     return fotoModal ? (
-                      <img src={fotoModal} alt={prodAtual.nome} referrerPolicy="no-referrer" />
+                      <img src={fotoModal} alt={prodAtual.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" />
                     ) : (
                       'Sem imagem'
                     );

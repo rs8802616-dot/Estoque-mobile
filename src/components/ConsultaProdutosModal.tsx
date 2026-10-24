@@ -425,6 +425,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                           alt={prod.nomeProduto}
                           referrerPolicy="no-referrer"
                           loading="lazy"
+                          decoding="async"
                           style={{
                             width: '100%',
                             height: '100%',

@@ -9,7 +9,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304863.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.RO1-esfciHOFTcoZBQutuwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Beb.mista Skol Beats Caipirinha L.neck 269ml — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2208.90.00."
   },
   {
@@ -18,7 +18,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307994.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.S11NyRBNgbFax3JrT0Z0MAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Beb.mista Skol Beats Green Mix Lt 269ml — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2206.00.90."
   },
   {
@@ -27,7 +27,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "313ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991296472.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.K215klKdiHM1B422ffKjnQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Bebida Mista Alcoólica Gin & Tônica Skol Beats Gt Garrafa 313ml — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas (Bebidas Alcoolicas). Apresentação/Volume: 313ML. NCM: 2208.90.00."
   },
   {
@@ -36,7 +36,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "313ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149105588.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.x-W574olL4eWu7PWsRlRQwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Bebida Mista Alcoólica Skol Beats Senses Garrafa 313ml — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 313ML. NCM: 2208.90.00."
   },
   {
@@ -45,7 +45,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "300ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149108404.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.RohcEB3qyk1rNOuy_qS5GQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv.skol Puro Malte 300ml — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 300ML. NCM: 2203.00.00."
   },
   {
@@ -54,7 +54,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "355G",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149106608.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.spbEYkMF7cOoZNT2lWiu4wHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Skol Beats Spirit Long Neck 355g Skol — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 355G. NCM: 2208.90.00."
   },
   {
@@ -63,7 +63,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149105045.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.8FHz1zKg0-OHUmROZOEiUgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Skol Pack 12x269ml — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -72,7 +72,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/60008855.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.9BllwHXu8lRXObuuvo3F5QHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Skol Puro Malte Sleek Lt 350ml Data — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -81,7 +81,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307680.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.YAp0Ygy-8cbpfNYoGRTzZAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Pack Cerveja Pilsen Skol Lata 12 Unidades 350ml Cada — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -90,7 +90,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Skol (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "310ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991299879.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.JxUnn1Ku-FKdRAOrf2okjQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Pack Cerveja Pilsen Skol Lata 6 Unidades 310ml Cada Embalagem Econômica — Produto oficial do catálogo Ambev. Marca: Skol (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 310ML. NCM: 2203.00.00."
   },
   {
@@ -108,7 +108,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "410ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991299763.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.P1IqofFNla1rPjEE14UM2AHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Brahma Chopp lata 410 ml pack com 15 unidades — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 410ML. NCM: 2203.00.00."
   },
   {
@@ -117,7 +117,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305501.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.Qriyj0tkefMOsAJOgZB9OgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Brahma D Malte Escura Lt Slek 350ml Sh12 — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -126,7 +126,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305525.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.m9dL5oqFcDUwH1A9X6oGqwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Brahma Duplo Malte Tostada Lata 350 ml pack com 12 unidades — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -135,7 +135,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305167.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.0dJyGamE2zQGa4woi70rwQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Brahma Duplo Malte Trigo Lata 350 ml pack com 12 unidades — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -144,7 +144,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149030309.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.aqYrTN1fFvCM-qDI1gWtjQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Brahma Pilsen Long Neck 1 Unidade — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -153,7 +153,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991294508.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.BKg2K-adH4yfG_N9STPuJQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv Brahma 473ml Chopp Pack Com 12 — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -162,7 +162,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149107018.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.LIYHMk9f_MT3WmCJQUfgWwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv.brahma Extra Lager Lt.350ml — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -171,7 +171,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303880.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.VhYI3rSOGpxEhYgIQMf81wHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Black Pilsner Duplo Malte Brahma Lata 350ml — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -180,7 +180,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307345.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.zHNZt_8MUbcHCbdXnwAE0AHaFj?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Brahma Chopp Pilsen Multipack Com 12 Lt 350ml — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -189,7 +189,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "300ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991295185.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.vZQprFWPDgX6BlcV9WJ46gHaOv?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Brahma D Malte 300ml Traz Vasilhame — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 300ML. NCM: 2203.00.00."
   },
   {
@@ -198,7 +198,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "310ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991300308.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.2lkuxgU00b0IOsRnnLur0AHaFE?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Brahma Duplo Malte 310ml Lt Pack Com 20 — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 310ML. NCM: 2203.00.00."
   },
   {
@@ -207,7 +207,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/60008053.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.dlsQqnzA-Kn86G7EPBQHIgAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Brahma Duplo Malte Trigo 350ml Data — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -216,7 +216,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149106486.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.zN18Ea0HZzO4e9lri23WWgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja L.neck Brahma Extra Red Lager — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -225,7 +225,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305518.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.MJ54bsXEf72WWrRSONzj3AAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Pilsner Duplo Malte Tostada Brahma Lata 350ml — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -234,7 +234,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305150.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.k00do_zcWiHNcxaU1BDL1AHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Pilsner Trigo Duplo Malte Brahma Lata 350ml — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -243,7 +243,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Brahma (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "355ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149106455.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.Yu5cSf0mkQgPIKICFgprDQHaJa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Specialty Beer Extra Weiss 355ml Brahma — Produto oficial do catálogo Ambev. Marca: Brahma (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 355ML. NCM: 2203.00.00."
   },
   {
@@ -252,7 +252,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991016247.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.WGGM3GqzKkx4Q2ANbYH-CgAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Antarctica 269ml Lt Ginger Ale By — Produto oficial do catálogo Ambev. Marca: Antarctica (Ambev). Categoria: Bebidas Alcoólicas (Agua). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -261,7 +261,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica Original (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303521.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.IWp5VGAkeUsU8tDNjIvhawHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Antarctica Lt 473ml Original — Produto oficial do catálogo Ambev. Marca: Antarctica Original (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -270,7 +270,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "300ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/60005441.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.Iaf-Ej0il1ODTIhEVeC3RQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Antarctica Subzero Retornavel Garrafa 300ml Data — Produto oficial do catálogo Ambev. Marca: Antarctica (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 300ML. NCM: 2203.00.00."
   },
   {
@@ -279,7 +279,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica Original (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991295017.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.IWp5VGAkeUsU8tDNjIvhawHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Pilsen Antarctica Original Lata 473ml — Produto oficial do catálogo Ambev. Marca: Antarctica Original (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -288,7 +288,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304214.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.rTlZqBBCjORifVYiVV4LcwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Pilsen Silver Antarctica Subzero Lata 350ml — Produto oficial do catálogo Ambev. Marca: Antarctica (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -297,7 +297,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica Original (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307338.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.7hzr9DCV4HEd8eSpQHYL9AHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Pack Cerveja Pilsen Antarctica Original Lata 12 Unidades 350ml Cada Embalagem Econômica — Produto oficial do catálogo Ambev. Marca: Antarctica Original (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -306,7 +306,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Antarctica Original (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307048.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.FN_XGAqlZY3J46gZUR0bkgHaFF?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Pack Cerveja Pilsen Antarctica Original Lata 15 Unidades 269ml Cada Embalagem Econômica — Produto oficial do catálogo Ambev. Marca: Antarctica Original (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -315,7 +315,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Tônica Antarctica (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991000888.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OPHS.eKUcaJylQD7A3w474C474?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Tonica Antarctica Diet||refrigerantes | Agua Tonica Antarctica Diet — Produto oficial do catálogo Ambev. Marca: Tônica Antarctica (Ambev). Categoria: Bebidas (Agua). Apresentação/Volume: UN. NCM: 2202.10.00."
   },
   {
@@ -378,7 +378,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305440.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.WmNwbBwq0wlGtC3QBCo_swHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Munich Helles Puro Malte Spaten Garrafa 330ml — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2203.00.00."
   },
   {
@@ -387,7 +387,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303347.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.Z4aMwh5d_3PAfbhPIpmSpwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Munich Helles Puro Malte Spaten Lata 269ml — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -396,7 +396,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303200.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.TS93dUulVLRQ96MliWl8rwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Munich Helles Puro Malte Spaten Lata 473ml — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -405,7 +405,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "355ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/60003997.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.TID_NMjkGOyMPLRsnQKSPQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Spaten Gf 355ml Data — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 355ML. NCM: 2203.00.00."
   },
   {
@@ -414,7 +414,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303217.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.lNjkqH6Tl8QSv3vagfKOpAHaE8?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Spaten Latao 473ml — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -423,7 +423,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/60004796.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.9HKZdkQw9n4EJ_uq1J-wDAHaNn?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Spaten Puro Malte Gf 600ml Data — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -432,7 +432,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Spaten (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "355ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898700710878.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.lqsfKQS90uFTGNDs-9AT0gHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Kit Caneca + Cerveja Munich Helles Puro Malte Spaten 355ml — Produto oficial do catálogo Ambev. Marca: Spaten (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 355ML. NCM: 2203.00.00."
   },
   {
@@ -441,7 +441,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304184.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.SF3G_vKPghmSLq-g2ujCNgHaFj?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Cero Sunbrew Zero Álcool Corona Garrafa 330ml — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2202.91.00."
   },
   {
@@ -450,7 +450,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307505.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.ExYj-njs7DQaSnZodelbrgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Cero Sunbrew Zero Álcool Corona Lata 350ml — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2202.91.00."
   },
   {
@@ -459,7 +459,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304191.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.FQWTsVgG-fpTDxt59OLTegHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Corona Zero Ln 330ml — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2202.91.00."
   },
   {
@@ -468,7 +468,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305853.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.h206BT_29WJuJcko9bCmiAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Extra Corona 473ml — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -477,7 +477,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991306324.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.HRUG4xfVON5OKMfFipGoTgHaNn?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Extra Pilsen Corona Lata 269ml — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -486,7 +486,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991305846.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.kmJ5DmZJfbubrE8HBzj68AHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Pilsen Corona Lata 473ml — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -495,7 +495,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Corona (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307512.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.ilbQqYfi606cWwEg6SJI4AHaGc?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Corona Cero Sunbrew N Lt Sleek 350ml C 8 Cx Cartao — Produto oficial do catálogo Ambev. Marca: Corona (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2202.91.00."
   },
   {
@@ -504,7 +504,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303309.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.kvrXBD5KCEG2UxBp0W19ewHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Lager Premium Puro Malte Stella Artois Lata 473ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -513,7 +513,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "310ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991013000.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.W-1ua0dDfw1-d5ooTjjCiQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Lata 310ml Stella Artois — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 310ML. NCM: 2203.00.00."
   },
   {
@@ -522,7 +522,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304870.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.aji4eliXdEsynEwpjjjlXgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Puro Malte Pure Gold Sem Glúten Stella Artois Garrafa 330ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2203.00.00."
   },
   {
@@ -531,7 +531,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991306461.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.e1YJZSy7nY4CCfzlBu5_qAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Puro Malte Pure Gold Sem Glúten Stella Artois Lata 269ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -540,7 +540,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991306478.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.e1YJZSy7nY4CCfzlBu5_qAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Puro Malte Pure Gold Sem Glúten Stella Artois Lata 269ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -549,7 +549,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "473ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991306430.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.YhibADk4gGk427I0yrMbzAAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Puro Malte Pure Gold Sem Glúten Stella Artois Lata 473ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 473ML. NCM: 2203.00.00."
   },
   {
@@ -558,7 +558,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991306485.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.H0I_42-FMqNNRyI_2C_T6AHaFj?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Puro Malte Pure Gold Stella Artois Lata 350ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -567,7 +567,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991302289.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.z_TZWPrNzDzHdPJWy0UG_AHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Stella Artois C15 Lt 269ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -576,7 +576,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7792798006045.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.qsw9sueQxBZq5VIW4tqhcwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Stella Artois Vidro 330ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2203.00.00."
   },
   {
@@ -585,7 +585,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Stella Artois (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898700710748.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.E_mfMcf_nr7YCDVduQ40jAHaHY?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Kit Cálice + Cerveja Puro Malte Stella Artois 330ml — Produto oficial do catálogo Ambev. Marca: Stella Artois (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2203.00.00."
   },
   {
@@ -594,7 +594,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307437.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.yD5E4ePIZD7NJJGoi4GBzQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Budweiser Lt 269ml Sh C 15 Multpack — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -603,7 +603,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "300ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304986.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.6A9s7k8Yp8Qi10uJaQy-4gHaHu?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv Budweiser Rom Gfa 300ml — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 300ML. NCM: 2203.00.00."
   },
   {
@@ -612,7 +612,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "300ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/60008701.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.QeqOLChin46tBt8DZnGXnwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Budweiser 300ml Liquido — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 300ML. NCM: 2203.00.00."
   },
   {
@@ -621,7 +621,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991298445.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.zNAO4Cek1ESWAclIVWOjmgHaFj?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Zero Álcool Budweiser Garrafa 330ml — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2202.91.00."
   },
   {
@@ -630,7 +630,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991298407.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.4R-KpWerJCmMfeQuIRzF1QHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Zero Álcool Budweiser Lata 350ml — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2202.91.00."
   },
   {
@@ -639,7 +639,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/798190114538.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.ZPcy_vUF73HD7ZEYJyW-nQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Kit Cerveja Budweiser Com 8 269ml + Copo — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -648,7 +648,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Budweiser (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "200G",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7896292371040.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.BQnjbpYCAGQXOY-6F5kpLAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Sal De Parrilha Pimenta Do Reino Com Lúpulo Budweiser 200g — Produto oficial do catálogo Ambev. Marca: Budweiser (Ambev). Categoria: Bebidas Alcoólicas (Mercearia E Doce). Apresentação/Volume: 200G. NCM: NCM não disponível."
   },
   {
@@ -657,7 +657,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Bohemia (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991012195.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.r5tURMTCKVH-uYSN2LDUlwAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Bohemia Bela Rosa — Produto oficial do catálogo Ambev. Marca: Bohemia (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -666,7 +666,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Bohemia (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898994341345.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.4iIgxT1oqAJkq-kQg9dMMQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Bohemian Pilsener Madalena Garrafa 600ml — Produto oficial do catálogo Ambev. Marca: Bohemia (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -675,7 +675,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Bohemia (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898958547226.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.3rH5F5PsygHr6iFGe5en8gHaPR?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Leopold.bohemian 500 — Produto oficial do catálogo Ambev. Marca: Bohemia (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -684,7 +684,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "410ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605251698.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.XnaudwZ3Bh92iS0qaBDPQAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv Colorado Appia 410ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 410ML. NCM: 2203.00.00."
   },
   {
@@ -693,7 +693,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605250332.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.pCdpzYAUapyEzov8w2lF0wHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv Colorado Nassau Caju 600ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -702,7 +702,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605253920.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.V-WqgkWg5eGkDSzTB6Jg2QHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv Colorado Tim Maia One Way 600ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -711,7 +711,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605252299.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.MgI0lypz4REwaPBTYMki_wHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Colorado 600ml Tropicana One Way — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -720,7 +720,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605253135.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.0OcbEuduXiOa3YOE3CtDpwAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Colorado Ed 20 Brazilian Witibier 600ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -729,7 +729,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898925943877.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.V5D7A0oz5V4O2i4lqFkMRgAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Colorado Titas — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -738,7 +738,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "600ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605252527.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.3Ei5vxENDR2vPmQVArfgKgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Session Ipa Puro Malte Kuyá Colorado Garrafa 600ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 600ML. NCM: 2203.00.00."
   },
   {
@@ -747,7 +747,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "350ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605254309.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.tO2Ej4_v1DGxp72TCWloIQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Session Ipa Puro Malte Kuyá Colorado Lata 350ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 350ML. NCM: 2203.00.00."
   },
   {
@@ -756,7 +756,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "300ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898605250400.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.FlH28AJQMMBRLQJEAKTrRwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Colorado Appia 300ml — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 300ML. NCM: 2203.00.00."
   },
   {
@@ -765,7 +765,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Colorado (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7898925943709.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.WuFw3WJQKbkGrGNWpqV8IAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Colorado Vixnu Double Ipa Garrafa 1 Unidade — Produto oficial do catálogo Ambev. Marca: Colorado (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: UN. NCM: 2203.00.00."
   },
   {
@@ -774,7 +774,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Patagonia (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "355ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7792798008131.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.tbzLLajGjtkAXMsWrSyxzwHaNn?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Patagonia Amber Lager Long Neck - 355ml — Produto oficial do catálogo Ambev. Marca: Patagonia (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 355ML. NCM: 2203.00.00."
   },
   {
@@ -783,7 +783,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Beck's (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991303941.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.RJqiCLu9meqivBOkhfogQQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja German Lager Becks Lata 269ml — Produto oficial do catálogo Ambev. Marca: Beck's (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -792,7 +792,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Michelob Ultra (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991302548.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.RACqZx8NqDq1K3oFQFhmuQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerv Michelob Ultra 330ml Long Neck — Produto oficial do catálogo Ambev. Marca: Michelob Ultra (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2203.00.00."
   },
   {
@@ -801,7 +801,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Hoegaarden (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "330ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891149108640.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.vD3dwZQ1pzkKIUPwb1HdDQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Cerveja Witbier Hoegaarden Garrafa 330ml — Produto oficial do catálogo Ambev. Marca: Hoegaarden (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 330ML. NCM: 2203.00.00."
   },
   {
@@ -810,7 +810,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Beats (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991304849.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.Mabq_TDOH7-GUhkalaT4gAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Bebida Mista Alcoólica Caipirinha Beats Caipi Garrafa 269ml — Produto oficial do catálogo Ambev. Marca: Beats (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2208.90.00."
   },
   {
@@ -819,7 +819,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Beats (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991307185.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.pIFHwXHSmSTbVBKSW-AqAwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Bebida Mista Alcoólica Gaseificada Frutas Vermelhas Beats Red Mix Lata 269ml — Produto oficial do catálogo Ambev. Marca: Beats (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2206.00.90."
   },
   {
@@ -828,7 +828,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Beats (Ambev)",
     "categoria": "Bebidas Alcoólicas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991306188.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.fJYGG2cIAPQMkOr0AxDtAQAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Bebida Mista Alcoólica Tropical Beats Garrafa 269ml — Produto oficial do catálogo Ambev. Marca: Beats (Ambev). Categoria: Bebidas Alcoólicas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2208.90.00."
   },
   {
@@ -837,7 +837,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Beats (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "269ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991301350.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.i5RU5K1nq1Q9stK5pGLb8AAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Kit 2 Bebidas Mistas Alcoólicas Moscow Mule Ginger + 2 Mojito Mint + 2 Gin & Tônica Gt Beats 269ml Cada — Produto oficial do catálogo Ambev. Marca: Beats (Ambev). Categoria: Bebidas (Bebidas Alcoolicas). Apresentação/Volume: 269ML. NCM: 2203.00.00."
   },
   {
@@ -1125,7 +1125,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Sukita (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://cdn-cosmos.bluesoft.com.br/products/7891149840601",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.-FFmTkU6ZkEGZTRwhlfpJQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Refrig Sukita Zero Lata — Produto oficial do catálogo Ambev. Marca: Sukita (Ambev). Categoria: Bebidas (Refrigerantes). Apresentação/Volume: UN. NCM: 2202.10.00."
   },
   {
@@ -1431,7 +1431,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "310ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991013055.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.j9cMU5gioheZO1ky0vbRSgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Energ.fusion Pessego Lt.310ml — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Bebida Energeticas). Apresentação/Volume: 310ML. NCM: 2202.99.00."
   },
   {
@@ -1440,7 +1440,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "250ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991010580.png",
+    "imagem": "https://tse3.mm.bing.net/th/id/OIP.eYUKPED2KezpiVgLP1PVqAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Energético Fusion Lata 250ml — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Bebida Energeticas). Apresentação/Volume: 250ML. NCM: 2202.99.00."
   },
   {
@@ -1449,7 +1449,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "250ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891991294751.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.4B3DRsb8JsEqhdOZiB7gOQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Energético Guaraná Fusion Lata 250ml — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Bebidas Alcoolicas). Apresentação/Volume: 250ML. NCM: 2202.99.00."
   },
   {
@@ -1458,7 +1458,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/43000005859.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.JOU8dlf__GAwNF0TaxlhggHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Mio Energy Tropical Fusion Liquid Water Enhancer, 1.62 Fl Oz — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Agua). Apresentação/Volume: UN. NCM: NCM não disponível."
   },
   {
@@ -1467,7 +1467,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/855439000608.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.CKKc73uwmd9xV5pZHEYvfAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Rokz Bloody Mary Infusion Kit For Cocktails, 12 Oz — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Aromatizantes E Misturas De Bebidas). Apresentação/Volume: UN. NCM: NCM não disponível."
   },
   {
@@ -1476,7 +1476,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/855439000431.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.vEAkTb8Kf3gvA32YCs6KOQHaJ2?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Rokz Ginger Cardamom Spirit Infusion Blend For Cocktails — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Aromatizantes E Misturas De Bebidas). Apresentação/Volume: UN. NCM: NCM não disponível."
   },
   {
@@ -1485,7 +1485,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/855439000615.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.mH7z3hTluvMSmqK8fiZ9PwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Rokz Margarita Infusion Kit For Cocktails, 12 Oz — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Aromatizantes E Misturas De Bebidas). Apresentação/Volume: UN. NCM: NCM não disponível."
   },
   {
@@ -1494,7 +1494,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Fusion Energy Drink (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/855439000387.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.DiKMgmrvBxfKIDroxadvSAAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Rokz Spirit Infusion Kit For Cocktails - Fiery Pepper — Produto oficial do catálogo Ambev. Marca: Fusion Energy Drink (Ambev). Categoria: Bebidas (Aromatizantes E Misturas De Bebidas). Apresentação/Volume: UN. NCM: NCM não disponível."
   },
   {
@@ -1503,7 +1503,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "200ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7892840815875.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.3UfVgJmzkZrlSZbFVakzdQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Chá Ice Tea Pêssego Zero Açúcar Lipton Garrafa 200ml — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: 200ML. NCM: 2202.10.00."
   },
   {
@@ -1512,7 +1512,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "1.5L",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891042103278.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.IJ7rux4xpF0fJSWMoXeIMwHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Chá Preto Ice Tea Limão Zero Açúcar Lipton Garrafa 1,5l — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: 1.5L. NCM: 2202.10.00."
   },
   {
@@ -1521,7 +1521,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "340ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891042005206.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.EsHS2se3Czy2PiU5RLDSnwAAAA?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Chá Preto Ice Tea Limão Zero Açúcar Lipton Lata 340ml — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: 340ML. NCM: 2202.10.00."
   },
   {
@@ -1530,7 +1530,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "340ML",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891042005213.png",
+    "imagem": "https://tse4.mm.bing.net/th/id/OIP.PigDxUCM1svTn0MQwTXLXQHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Chá Preto Ice Tea Pêssego Lipton Lata 340ml — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: 340ML. NCM: 2202.10.00."
   },
   {
@@ -1539,7 +1539,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "1.5L",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891042000195.png",
+    "imagem": "https://tse2.mm.bing.net/th/id/OIP.3zXr1CCD5RQ9YjV29rQFRgHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Chá Pronto Com Pêssego Lipton Ice Tea 1,5 Litro — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: 1.5L. NCM: 2202.10.00."
   },
   {
@@ -1548,7 +1548,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "1.5L",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/7891042000201.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.W4qUtsGLLIpu3pa1T36o1gHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Lipton Ice Tea 1,5l Limao — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: 1.5L. NCM: 2202.10.00."
   },
   {
@@ -1557,7 +1557,7 @@ export const CATALOGO_AMBEV_OFICIAL: ProdutoCatalogo[] = [
     "marca": "Lipton Ice Tea (Ambev)",
     "categoria": "Bebidas",
     "unidade_medida": "UN",
-    "imagem": "https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/12000112232.png",
+    "imagem": "https://tse1.mm.bing.net/th/id/OIP.xpbH0tJCX3qk7YCA-ObQfAHaHa?w=260&h=260&c=7&rs=1&qlt=80&pid=Api",
     "descricao": "Lipton Ice Tea, Peach, 20 Fl Oz — Produto oficial do catálogo Ambev. Marca: Lipton Ice Tea (Ambev). Categoria: Bebidas (Chas). Apresentação/Volume: UN. NCM: NCM não disponível."
   }
 ];
