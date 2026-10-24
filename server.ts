@@ -2,6 +2,10 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
+import {
+  consultarProdutoBomJawaKitPorCodigo,
+  buscarProdutosBomJawaKit,
+} from "./src/lib/bomJawaKitApi";
 
 async function startServer() {
   const app = express();
@@ -660,6 +664,20 @@ async function startServer() {
         },
       };
 
+      // 0. Prioridade 1: API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) com X-API-Key
+      const bomJawaDirect = await consultarProdutoBomJawaKitPorCodigo(ean.trim()).catch(() => null);
+      if (bomJawaDirect && bomJawaDirect.nomeProduto) {
+        return res.json({
+          nomeProduto: bomJawaDirect.nomeProduto,
+          marca: bomJawaDirect.marca || "",
+          categoria: bomJawaDirect.categoria || "",
+          fotoUrl: bomJawaDirect.fotoUrl || "",
+          descricao: bomJawaDirect.descricao || "",
+          ncm: bomJawaDirect.ncm || "",
+          fonte: bomJawaDirect.fonte,
+        });
+      }
+
       // 1. Direct live lookup in Consulta Produtos (https://consultaprodutos.com.br) & Bluesoft Cosmos (https://cosmos.bluesoft.com.br) in parallel
       const [cpDirect, cosmosDirect] = await Promise.all([
         consultarConsultaProdutosDireto(cleanEan).catch(() => null),
@@ -870,6 +888,17 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
       }
 
       const numPage = typeof page === "number" && page > 0 ? page : 1;
+      const resBomJawa = await buscarProdutosBomJawaKit({
+        query,
+        page: numPage,
+        limit: 24,
+        comImagem: true,
+      }).catch(() => null);
+
+      if (resBomJawa && resBomJawa.produtos.length > 0) {
+        return res.json(resBomJawa);
+      }
+
       const resultado = await buscarConsultaProdutosLista(query, numPage);
       return res.json(resultado);
     } catch (err: any) {

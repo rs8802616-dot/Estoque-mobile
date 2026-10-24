@@ -104,6 +104,16 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 12]
+- **Integração com a API Oficial de Produtos BomJawaKit (`https://produtos.bomjawakit.com.br/api/v1`) com `X-API-Key`:**
+  - Criado o módulo dedicado `src/lib/bomJawaKitApi.ts` configurado com a chave de API `sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU` no header `X-API-Key` em todas as requisições.
+  - Endpoints integrados:
+    - `GET /api/v1/produtos/{barcode}` e `GET /api/v1/produtos?barcode=...`: Consulta imediata por código de barras ao bipar/digitar no cadastro (`consultarEANGemini` em `src/App.tsx` e `/api/consultar-produto-codigo` em `server.ts`), preenchendo Nome, Categoria, NCM e Foto oficial em PNG.
+    - `GET /api/v1/produtos?q=...&categoria=...&com_imagem=...&limit=24&offset=...`: Busca paginada por nome, código ou categoria no modal `ConsultaProdutosModal.tsx` (funcionando 100% direto no navegador na Vercel e também via `server.ts`).
+    - `GET /api/v1/categorias`: Seletor de categorias reais da API (+26.000 produtos distribuídos em 31 categorias como Água, Bebidas Alcoólicas, Refrigerantes, Sucos, Vinhos, Mercearia, Perecíveis, Hortifruti, Açougue, Limpeza, etc.).
+    - Resolução otimizada das imagens em PNG via CDN R2 (`https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev/{barcode}.png`) e `/api/v1/produtos/{barcode}/imagem`, economizando a cota mensal de chamadas da chave de API.
+  - Atualizado o cache do Service Worker para `estoque-mobile-pwa-v16` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-23 - Atualização 11]
 - **Correção do Cabeçalho Responsivo no Celular (`src/components/CardapioClienteDeliveryModal.tsx`):**
   - Corrigido o esmagamento horizontal do cabeçalho em telas de celular onde o nome da loja cortava (`A...`) e os textos de tempo (`25-45 min`) e taxa (`Taxa: R$ 5.00`) quebravam em 3 linhas verticais.

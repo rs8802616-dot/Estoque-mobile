@@ -82,6 +82,10 @@ import { AlterarCredenciaisDonoModal } from './components/AlterarCredenciaisDono
 import { ManualUsuarioModal } from './components/ManualUsuarioModal';
 import { ConsultaProdutosModal } from './components/ConsultaProdutosModal';
 import {
+  consultarProdutoBomJawaKitPorCodigo,
+  buscarProdutosBomJawaKit,
+} from './lib/bomJawaKitApi';
+import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
   tocarSomAlerta,
@@ -3411,7 +3415,9 @@ export default function App() {
     return null;
   };
 
-  // Query Consulta Produtos (https://consultaprodutos.com.br/), Cosmos Bluesoft (https://cosmos.bluesoft.com.br/) and Gemini AI for Product Name, Category, Image and NCM by Barcode EAN
+  const [totalResultadosConsultaProdutos, setTotalResultadosConsultaProdutos] = useState<number>(0);
+
+  // Query API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) + Fallbacks (ConsultaProdutos, Cosmos Bluesoft, Open Food Facts)
   const consultarEANGemini = async (codigoOpcional?: string) => {
     const codParaConsultar = (codigoOpcional || cadCod).trim();
     if (!codParaConsultar) {
@@ -3422,23 +3428,35 @@ export default function App() {
     setConsultandoEAN(true);
     let data: any = null;
 
-    // 1. Try server endpoint which queries Consulta Produtos + Cosmos Bluesoft directly + Gemini Search
+    // 1. Prioridade Máxima: API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) com X-API-Key
     try {
-      const res = await fetch('/api/consultar-produto-codigo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ean: codParaConsultar }),
-      });
-
-      const contentType = res.headers.get('content-type') || '';
-      if (res.ok && contentType.includes('application/json')) {
-        data = await res.json();
+      const prodBomJawa = await consultarProdutoBomJawaKitPorCodigo(codParaConsultar);
+      if (prodBomJawa && prodBomJawa.nomeProduto) {
+        data = prodBomJawa;
       }
     } catch (err) {
-      console.warn('Endpoint do servidor indisponível ou erro de resposta HTML, usando fallback client-side...', err);
+      console.warn('Aviso ao consultar API BomJawaKit:', err);
     }
 
-    // 2. Fallback to direct client-side lookup if server returned error / HTML / missing name
+    // 2. Fallback para endpoint do servidor local (se ainda não encontrou)
+    if (!data || !data.nomeProduto) {
+      try {
+        const res = await fetch('/api/consultar-produto-codigo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ean: codParaConsultar }),
+        });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
+          data = await res.json();
+        }
+      } catch (err) {
+        console.warn('Endpoint do servidor indisponível, usando fallback client-side...', err);
+      }
+    }
+
+    // 3. Fallback direto no Open Food Facts client-side
     if (!data || !data.nomeProduto) {
       const resultClient = await buscarProdutoEANClientSide(codParaConsultar);
       if (resultClient) {
@@ -3452,7 +3470,6 @@ export default function App() {
       setCadNome(data.nomeProduto);
       if (data.marca) setCadMarca(data.marca);
       if (data.categoria) {
-        // Preenche com a categoria exata retornada pelo Consulta Produtos / Cosmos Bluesoft
         setCadCategoria(data.categoria.trim());
       }
       if (data.fotoUrl) {
@@ -3464,53 +3481,85 @@ export default function App() {
           `• Produto: ${data.nomeProduto}\n` +
           (data.marca ? `• Marca: ${data.marca}\n` : '') +
           `• Categoria: ${data.categoria || 'Geral'}\n` +
+          (data.ncm ? `• NCM: ${data.ncm}\n` : '') +
           (data.fotoUrl ? `• Foto Oficial: Anexada 📸\n` : '') +
-          `• Fonte: ${data.fonte || 'Consulta Produtos & Cosmos Bluesoft'}\n\n` +
-          `Os campos foram preenchidos com as informações oficiais do Consulta Produtos e Cosmos Bluesoft!`
+          `• Fonte: ${data.fonte || 'API BomJawaKit'}\n\n` +
+          `Os campos foram preenchidos automaticamente!`
       );
     } else {
       alert(
-        `⚠️ Código de barras lido (${codParaConsultar}), mas o produto não foi localizado nos bancos de dados online.\n\nVocê também pode usar a busca por nome no ConsultaProdutos.com.br ou digitar manualmente.`
+        `⚠️ Código de barras lido (${codParaConsultar}), mas o produto não foi localizado na base de dados.\n\nVocê também pode usar o botão "Buscar por Nome ou Categoria na API" abaixo ou digitar manualmente.`
       );
     }
   };
 
-  // Search by keyword/text on Consulta Produtos (https://consultaprodutos.com.br/buscar?q=...)
-  const executarBuscaConsultaProdutos = async (termo?: string, pagina: number = 1) => {
+  // Busca paginada na API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1/produtos)
+  const executarBuscaConsultaProdutos = async (
+    termo?: string,
+    pagina: number = 1,
+    opcoes?: { categoria?: string; comImagem?: boolean }
+  ) => {
     const q = (termo !== undefined ? termo : termoBuscaConsultaProdutos).trim();
-    if (!q) {
-      alert('Por favor, digite o nome de um produto para pesquisar!');
+    const cat = opcoes?.categoria || '';
+    const comImg = opcoes?.comImagem !== undefined ? opcoes.comImagem : true;
+
+    if (!q && !cat) {
+      alert('Por favor, digite o nome de um produto ou escolha uma categoria para pesquisar!');
       return;
     }
 
     setBuscandoConsultaProdutos(true);
     try {
-      const res = await fetch('/api/buscar-produtos-externos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q, page: pagina }),
+      // 1. Consulta direta na API Oficial BomJawaKit com X-API-Key
+      const resBomJawa = await buscarProdutosBomJawaKit({
+        query: q,
+        categoria: cat,
+        comImagem: comImg,
+        page: pagina,
+        limit: 24,
       });
 
-      if (res.ok) {
-        const json = await res.json();
-        setResultadosConsultaProdutos(json.produtos || []);
+      if (resBomJawa.produtos.length > 0 || cat) {
+        setResultadosConsultaProdutos(resBomJawa.produtos);
+        setTotalResultadosConsultaProdutos(resBomJawa.total);
         setPaginaBuscaConsultaProdutos(pagina);
-      } else {
-        alert('Não foi possível carregar os resultados do Consulta Produtos no momento.');
+        return;
       }
+
+      // 2. Fallback no endpoint do servidor caso a busca não retorne nada na API primária
+      try {
+        const res = await fetch('/api/buscar-produtos-externos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: q, page: pagina }),
+        });
+
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
+          const json = await res.json();
+          setResultadosConsultaProdutos(json.produtos || []);
+          setTotalResultadosConsultaProdutos(json.total || (json.produtos || []).length);
+          setPaginaBuscaConsultaProdutos(pagina);
+          return;
+        }
+      } catch {}
+
+      setResultadosConsultaProdutos([]);
+      setTotalResultadosConsultaProdutos(0);
+      setPaginaBuscaConsultaProdutos(pagina);
     } catch (err) {
-      console.warn('Erro ao consultar Consulta Produtos:', err);
-      alert('Falha de conexão com a busca do Consulta Produtos.');
+      console.warn('Erro ao consultar catálogo de produtos:', err);
+      alert('Falha de conexão com a API de produtos.');
     } finally {
       setBuscandoConsultaProdutos(false);
     }
   };
 
   const abrirBuscaConsultaProdutosModal = (termoInicial?: string) => {
-    const termo = (termoInicial || cadNome || 'Coca cola').trim();
+    const termo = (termoInicial || cadNome || 'Cerveja').trim();
     setTermoBuscaConsultaProdutos(termo);
     setModalBuscaConsultaProdutosVisivel(true);
-    executarBuscaConsultaProdutos(termo, 1);
+    executarBuscaConsultaProdutos(termo, 1, { comImagem: true });
   };
 
   const selecionarProdutoConsultaProdutos = (item: {
@@ -9265,8 +9314,8 @@ export default function App() {
                         disabled={consultandoEAN || !cadCod.trim()}
                       >
                         {consultandoEAN
-                          ? '⏳ Consultando ConsultaProdutos & Cosmos...'
-                          : '🌐 Buscar Código no ConsultaProdutos & Cosmos (Nome, Foto, Marca)'}
+                          ? '⏳ Consultando API BomJawaKit...'
+                          : '🌐 Buscar Código na API Oficial (Nome, Foto, Categoria & NCM)'}
                       </button>
                       <button
                         type="button"
@@ -9285,9 +9334,9 @@ export default function App() {
                           justifyContent: 'center',
                           gap: '6px',
                         }}
-                        onClick={() => abrirBuscaConsultaProdutosModal(cadNome || cadMarca || 'Coca cola')}
+                        onClick={() => abrirBuscaConsultaProdutosModal(cadNome || cadMarca || 'Cerveja')}
                       >
-                        🔍 Buscar por Nome no ConsultaProdutos.com.br (Ex: Coca-cola, Nescau)
+                        🔍 Buscar por Nome ou Categoria na API (+26.000 Produtos)
                       </button>
                     </div>
                   )}
@@ -10302,16 +10351,17 @@ export default function App() {
         nomeOperador={opAtualLogado?.nome}
       />
 
-      {/* MODAL DE BUSCA ONLINE NO CONSULTAPRODUTOS.COM.BR & COSMOS */}
+      {/* MODAL DE BUSCA ONLINE NA API OFICIAL BOMJAWAKIT */}
       <ConsultaProdutosModal
         visivel={modalBuscaConsultaProdutosVisivel}
         onFechar={() => setModalBuscaConsultaProdutosVisivel(false)}
         termoBusca={termoBuscaConsultaProdutos}
         onTermoChange={(novoTermo) => setTermoBuscaConsultaProdutos(novoTermo)}
         paginaAtual={paginaBuscaConsultaProdutos}
-        onBuscar={(termo, pagina) => executarBuscaConsultaProdutos(termo, pagina || 1)}
+        onBuscar={(termo, pagina, opcoes) => executarBuscaConsultaProdutos(termo, pagina || 1, opcoes)}
         carregando={buscandoConsultaProdutos}
         resultados={resultadosConsultaProdutos}
+        totalEncontrados={totalResultadosConsultaProdutos}
         onSelecionarProduto={selecionarProdutoConsultaProdutos}
       />
 

@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  listarCategoriasBomJawaKit,
+  BomJawaKitCategoria,
+} from '../lib/bomJawaKitApi';
 
 export interface ProdutoConsultaProdutos {
   ean: string;
@@ -17,9 +21,14 @@ interface ConsultaProdutosModalProps {
   termoBusca: string;
   onTermoChange: (novoTermo: string) => void;
   paginaAtual: number;
-  onBuscar: (termo?: string, pagina?: number) => void;
+  onBuscar: (
+    termo?: string,
+    pagina?: number,
+    opcoes?: { categoria?: string; comImagem?: boolean }
+  ) => void;
   carregando: boolean;
   resultados: ProdutoConsultaProdutos[];
+  totalEncontrados?: number;
   onSelecionarProduto: (produto: ProdutoConsultaProdutos) => void;
 }
 
@@ -32,29 +41,63 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
   onBuscar,
   carregando,
   resultados,
+  totalEncontrados,
   onSelecionarProduto,
 }) => {
-  const [termoLocal, setTermoLocal] = useState<string>(termoBusca || 'Coca cola');
+  const [termoLocal, setTermoLocal] = useState<string>(termoBusca || 'Cerveja');
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('');
+  const [somenteComImagem, setSomenteComImagem] = useState<boolean>(true);
+  const [categoriasApi, setCategoriasApi] = useState<BomJawaKitCategoria[]>([]);
+
+  useEffect(() => {
+    if (termoBusca) {
+      setTermoLocal(termoBusca);
+    }
+  }, [termoBusca]);
+
+  useEffect(() => {
+    if (visivel && categoriasApi.length === 0) {
+      listarCategoriasBomJawaKit()
+        .then((cats) => {
+          if (cats.length > 0) {
+            setCategoriasApi(cats.filter((c) => c.produtos > 0));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [visivel, categoriasApi.length]);
 
   if (!visivel) return null;
 
+  const dispararBusca = (
+    novoTermo: string,
+    novaPagina: number = 1,
+    novaCategoria: string = categoriaSelecionada,
+    novoComImagem: boolean = somenteComImagem
+  ) => {
+    onTermoChange(novoTermo);
+    onBuscar(novoTermo, novaPagina, {
+      categoria: novaCategoria,
+      comImagem: novoComImagem,
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!termoLocal.trim()) return;
-    onTermoChange(termoLocal.trim());
-    onBuscar(termoLocal.trim(), 1);
+    dispararBusca(termoLocal.trim(), 1);
   };
 
   const sugestoesRapidas = [
-    'Coca cola',
-    'Nescau',
-    'Heineken',
-    'Arroz Tio João',
-    'Feijão Camil',
-    'Detergente Ypê',
-    'Leite Piracanjuba',
-    'OMO Lavagem Perfeita',
-    'Café Pilão',
+    'Cerveja',
+    'Agua com gas',
+    'Refrigerante',
+    'Vinho',
+    'Suco',
+    'Arroz',
+    'Feijao',
+    'Leite',
+    'Cafe',
+    'Energetico',
   ];
 
   return (
@@ -80,7 +123,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
           background: '#ffffff',
           borderRadius: '16px',
           width: '100%',
-          maxWidth: '860px',
+          maxWidth: '900px',
           maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
@@ -93,8 +136,8 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
         {/* Cabeçalho do Modal */}
         <div
           style={{
-            padding: '16px 20px',
-            background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+            padding: '14px 20px',
+            background: 'linear-gradient(135deg, #4f46e5 0%, #0284c7 100%)',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
@@ -113,14 +156,14 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                 fontSize: '1.2rem',
               }}
             >
-              🌐
+              📦
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-                Consulta de Produtos Online
+              <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
+                Catálogo Oficial de Produtos & Códigos EAN
               </h2>
-              <p style={{ margin: 0, fontSize: '0.78rem', opacity: 0.9 }}>
-                Buscando em <b>consultaprodutos.com.br</b> e <b>cosmos.bluesoft.com.br</b>
+              <p style={{ margin: 0, fontSize: '0.76rem', opacity: 0.92 }}>
+                Conectado à API <b>produtos.bomjawakit.com.br/api/v1</b> • Mais de 26.000 produtos com fotos e NCM
               </p>
             </div>
           </div>
@@ -145,21 +188,21 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
           </button>
         </div>
 
-        {/* Formulário de Busca e Chips */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
+        {/* Formulário de Busca, Filtros da API e Chips */}
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: '1 1 240px' }}>
               <input
                 type="text"
                 value={termoLocal}
                 onChange={(e) => setTermoLocal(e.target.value)}
-                placeholder="Ex: Coca cola, Nescau, Heineken, Arroz..."
+                placeholder="Digite nome do produto (ex: cerveja, agua com gas) ou código de barras..."
                 style={{
                   width: '100%',
-                  padding: '10px 14px',
+                  padding: '10px 32px 10px 14px',
                   borderRadius: '8px',
                   border: '1.5px solid #cbd5e1',
-                  fontSize: '0.92rem',
+                  fontSize: '0.9rem',
                   outline: 'none',
                   boxSizing: 'border-box',
                 }}
@@ -185,23 +228,83 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                 </button>
               )}
             </div>
+
+            {categoriasApi.length > 0 && (
+              <select
+                value={categoriaSelecionada}
+                onChange={(e) => {
+                  const novaCat = e.target.value;
+                  setCategoriaSelecionada(novaCat);
+                  dispararBusca(termoLocal.trim(), 1, novaCat, somenteComImagem);
+                }}
+                style={{
+                  padding: '10px 12px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #cbd5e1',
+                  background: '#ffffff',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  color: '#334155',
+                  cursor: 'pointer',
+                  maxWidth: '220px',
+                }}
+                title="Filtrar por Categoria da API"
+              >
+                <option value="">📂 Todas as Categorias</option>
+                {categoriasApi.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.nome} ({c.produtos})
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <label
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: somenteComImagem ? '#eff6ff' : '#ffffff',
+                border: somenteComImagem ? '1.5px solid #3b82f6' : '1.5px solid #cbd5e1',
+                color: somenteComImagem ? '#1d4ed8' : '#475569',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={somenteComImagem}
+                onChange={(e) => {
+                  const novoVal = e.target.checked;
+                  setSomenteComImagem(novoVal);
+                  dispararBusca(termoLocal.trim(), 1, categoriaSelecionada, novoVal);
+                }}
+                style={{ cursor: 'pointer' }}
+              />
+              <span>📸 Só com foto</span>
+            </label>
+
             <button
               type="submit"
-              disabled={carregando || !termoLocal.trim()}
+              disabled={carregando}
               style={{
-                background: '#0284c7',
+                background: '#4f46e5',
                 color: '#ffffff',
                 border: 'none',
-                padding: '10px 20px',
+                padding: '10px 18px',
                 borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                cursor: carregando || !termoLocal.trim() ? 'not-allowed' : 'pointer',
+                fontWeight: 700,
+                fontSize: '0.88rem',
+                cursor: carregando ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
                 whiteSpace: 'nowrap',
-                opacity: carregando || !termoLocal.trim() ? 0.7 : 1,
+                opacity: carregando ? 0.7 : 1,
               }}
             >
               {carregando ? '⏳ Buscando...' : '🔍 Buscar'}
@@ -210,25 +313,24 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
 
           {/* Atalhos Rápidos */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Sugestões:</span>
+            <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Sugestões rápidas:</span>
             {sugestoesRapidas.map((sug) => (
               <button
                 key={sug}
                 type="button"
                 onClick={() => {
                   setTermoLocal(sug);
-                  onTermoChange(sug);
-                  onBuscar(sug, 1);
+                  dispararBusca(sug, 1, categoriaSelecionada, somenteComImagem);
                 }}
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
+                  background: termoLocal.toLowerCase() === sug.toLowerCase() ? '#e0e7ff' : '#ffffff',
+                  border: termoLocal.toLowerCase() === sug.toLowerCase() ? '1px solid #6366f1' : '1px solid #e2e8f0',
                   borderRadius: '14px',
                   padding: '3px 10px',
                   fontSize: '0.74rem',
-                  color: '#0369a1',
+                  color: '#4338ca',
                   cursor: 'pointer',
-                  fontWeight: 500,
+                  fontWeight: 600,
                 }}
               >
                 {sug}
@@ -242,28 +344,28 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
           {carregando ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>⏳</div>
-              <div style={{ fontWeight: 600, fontSize: '1rem', color: '#0f172a' }}>
-                Consultando consultaprodutos.com.br...
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>
+                Consultando API produtos.bomjawakit.com.br...
               </div>
               <div style={{ fontSize: '0.84rem' }}>
-                Puxando fotos em alta resolução, nomes oficiais, códigos EAN e marcas.
+                Buscando produtos, fotos oficiais em PNG, códigos de barras e NCM.
               </div>
             </div>
           ) : resultados.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📦</div>
-              <div style={{ fontWeight: 600, fontSize: '1rem', color: '#0f172a' }}>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>
                 Nenhum produto encontrado para &quot;{termoLocal}&quot;
               </div>
               <div style={{ fontSize: '0.84rem', marginTop: '4px' }}>
-                Tente digitar outro termo ou pesquisar pela marca ou código de barras.
+                Tente digitar sem acento (ex: &quot;agua com gas&quot;), escolher outra categoria ou desmarcar &quot;Só com foto&quot;.
               </div>
             </div>
           ) : (
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
                 gap: '12px',
               }}
             >
@@ -278,7 +380,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
                     transition: 'all 0.15s ease',
                   }}
                 >
@@ -288,9 +390,9 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                         width: '72px',
                         height: '72px',
                         minWidth: '72px',
-                        background: '#ffffff',
-                        border: '1px solid #f1f5f9',
-                        borderRadius: '8px',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '10px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -303,14 +405,14 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                           src={prod.fotoUrl}
                           alt={prod.nomeProduto}
                           referrerPolicy="no-referrer"
+                          loading="lazy"
                           style={{
                             width: '100%',
                             height: '100%',
                             objectFit: 'contain',
                           }}
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80';
+                            (e.target as HTMLImageElement).style.display = 'none';
                           }}
                         />
                       ) : (
@@ -321,7 +423,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                       <h4
                         style={{
                           margin: '0 0 4px 0',
-                          fontSize: '0.88rem',
+                          fontSize: '0.86rem',
                           fontWeight: 700,
                           color: '#0f172a',
                           lineHeight: 1.3,
@@ -340,7 +442,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                             style={{
                               background: '#e0f2fe',
                               color: '#0369a1',
-                              fontSize: '0.7rem',
+                              fontSize: '0.68rem',
                               fontWeight: 600,
                               padding: '2px 6px',
                               borderRadius: '4px',
@@ -354,9 +456,10 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                             style={{
                               background: '#f1f5f9',
                               color: '#475569',
-                              fontSize: '0.7rem',
+                              fontSize: '0.68rem',
                               padding: '2px 6px',
                               borderRadius: '4px',
+                              fontWeight: 600,
                             }}
                           >
                             📂 {prod.categoria}
@@ -372,19 +475,20 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                       background: '#f8fafc',
                       borderRadius: '6px',
                       padding: '6px 8px',
-                      fontSize: '0.74rem',
+                      fontSize: '0.73rem',
                       color: '#64748b',
                       marginBottom: '10px',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      gap: '6px',
                     }}
                   >
-                    <span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       <b>EAN:</b> {prod.ean || 'N/D'}
                     </span>
                     {prod.ncm && (
-                      <span>
+                      <span style={{ whiteSpace: 'nowrap' }}>
                         <b>NCM:</b> {prod.ncm}
                       </span>
                     )}
@@ -409,7 +513,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                       boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
                     }}
                   >
-                    📥 Preencher no Cadastro
+                    📥 Usar Produto no Cadastro
                   </button>
                 </div>
               ))}
@@ -433,7 +537,10 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
           <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
             {resultados.length > 0 && (
               <>
-                Exibindo página <b>{paginaAtual}</b> de resultados para &quot;<b>{termoLocal}</b>&quot;
+                Página <b>{paginaAtual}</b>
+                {typeof totalEncontrados === 'number' && totalEncontrados > 0
+                  ? ` • ${totalEncontrados} produto(s) encontrado(s)`
+                  : ''}
               </>
             )}
           </div>
@@ -442,7 +549,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             <button
               type="button"
               disabled={paginaAtual <= 1 || carregando}
-              onClick={() => onBuscar(termoLocal, paginaAtual - 1)}
+              onClick={() => dispararBusca(termoLocal, paginaAtual - 1)}
               style={{
                 background: '#f1f5f9',
                 border: '1px solid #cbd5e1',
@@ -462,11 +569,11 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                 key={pg}
                 type="button"
                 disabled={carregando}
-                onClick={() => onBuscar(termoLocal, pg)}
+                onClick={() => dispararBusca(termoLocal, pg)}
                 style={{
-                  background: paginaAtual === pg ? '#0284c7' : '#ffffff',
+                  background: paginaAtual === pg ? '#4f46e5' : '#ffffff',
                   color: paginaAtual === pg ? '#ffffff' : '#334155',
-                  border: paginaAtual === pg ? '1px solid #0284c7' : '1px solid #cbd5e1',
+                  border: paginaAtual === pg ? '1px solid #4f46e5' : '1px solid #cbd5e1',
                   padding: '6px 10px',
                   borderRadius: '6px',
                   fontSize: '0.8rem',
@@ -482,7 +589,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             <button
               type="button"
               disabled={carregando}
-              onClick={() => onBuscar(termoLocal, paginaAtual + 1)}
+              onClick={() => dispararBusca(termoLocal, paginaAtual + 1)}
               style={{
                 background: '#f1f5f9',
                 border: '1px solid #cbd5e1',
