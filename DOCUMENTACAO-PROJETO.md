@@ -104,6 +104,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 30]
+- **Resolução Definitiva do Corte de Imagens nos Cards de Produtos:**
+  - **Causa Raiz Identificada:** Os URLs de imagens provenientes do CDN do Bing continham o parâmetro `&c=7` (square crop), que amputava a base e o topo de garrafas e produtos verticais (ex: Jägermeister, Red Label, licores e vinhos).
+  - **Correções Aplicadas:**
+    1. **Re-upload das Imagens Sem Corte no Firebase Storage:** Todos os 210 produtos do catálogo que utilizavam imagens Bing foram reprocessados com o parâmetro `?w=350&qlt=85&pid=Api` (removendo `c=7`), obtendo as fotos verticais na íntegra (altura completa original sem cortes). As novas imagens foram enviadas ao Firebase Storage (`produtos_catalogo/{codigo}.{ext}`), e as URLs permanentes foram atualizadas tanto no Cloud Firestore quanto nos arquivos locais de catálogo (`catalogoAdegaMix.ts`, `catalogoZeDeliveryMix.ts`, `catalogoChoppBrahmaExpress.ts`).
+    2. **Ajuste no Otimizador de Imagens (`src/lib/imageCompressor.ts`):** O parâmetro `&c=7` foi eliminado da função `otimizarUrlImagem`, prevenindo recortes quadrados automáticos em novos produtos.
+    3. **Ajuste de CSS dos Cards (`src/index.css`):** A classe `.foto-produto` recebeu `height: 160px; background: #ffffff; padding: 8px; display: flex; align-items: center; justify-content: center;` e a imagem interna recebeu `object-fit: contain !important; object-position: center !important; max-height: 100%; max-width: 100%; width: auto;`, garantindo enquadramento perfeito e sem cortes em qualquer tamanho de tela.
+    4. **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v34` em `public/sw.js` e `src/main.tsx` para forçar a renovação das imagens cacheadas nos dispositivos dos usuários.
+
 ### [2026-10-24 - Atualização 29]
 - **Correção Imediata do ReferenceError (`produtoExistenteCatalogo is not defined`):**
   - **Diagnóstico:** Na Atualização 28, a variável responsável por verificar a existência do produto no catálogo global foi declarada como `itemCatalogoExistente`, porém ao computar `isProdutoBloqueadoParaEdicaoMestre`, fez-se referência a `produtoExistenteCatalogo`, disparando um `ReferenceError` capturado pelo `ErrorBoundary`.

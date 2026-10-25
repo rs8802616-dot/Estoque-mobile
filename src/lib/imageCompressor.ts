@@ -1,16 +1,15 @@
 // Utilities for compressing and optimizing images before storage or Firestore transmission
 
 /**
- * Otimiza e comprime qualquer URL de imagem do Bing/CDN em tempo real
- * aplicando redimensionamento exato (260x260px) e compressão inteligente (qlt=80).
- * Reduz o tráfego de rede e o consumo de memória RAM/GPU do navegador em mais de 75%!
+ * Otimiza qualquer URL de imagem do Bing/CDN em tempo real
+ * aplicando redimensionamento e compressão sem cortes (preserva 100% da garrafa/lata intacta).
  */
 export function otimizarUrlImagem(url?: string): string {
   if (!url || typeof url !== 'string') return '';
   const limpa = url.trim();
   if (limpa.includes('bing.net/th/id/')) {
     const base = limpa.split('?')[0];
-    return `${base}?w=260&h=260&c=7&rs=1&qlt=80&pid=Api`;
+    return `${base}?w=350&qlt=85&pid=Api`;
   }
   return limpa;
 }
