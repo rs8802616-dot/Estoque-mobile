@@ -196,7 +196,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-                Catálogo Oficial de Produtos (+13.300 Produtos & EANs)
+                Catálogo Oficial de Produtos ({totalEmCache ? totalEmCache.toLocaleString('pt-BR') : '13.357'} Produtos & EANs)
               </h2>
               <p style={{ margin: 0, fontSize: '0.76rem', opacity: 0.95 }}>
                 ⚡ <b>Acervo 100% Offline Integrado:</b> 0 Requisições gastas • Produtos já existentes saem da lista
@@ -436,13 +436,36 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
               </div>
             </div>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: '12px',
-              }}
-            >
+            <>
+              <div
+                style={{
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '6px',
+                  fontSize: '0.8rem',
+                  color: '#475569',
+                }}
+              >
+                <span>
+                  Exibindo <b>{resultados.length}</b> {totalEncontrados ? <>de <b>{totalEncontrados.toLocaleString('pt-BR')}</b></> : ''} produtos encontrados
+                </span>
+                {totalEmCache ? (
+                  <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                    Acervo total: <b>{totalEmCache.toLocaleString('pt-BR')}</b> produtos
+                  </span>
+                ) : null}
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                  gap: '12px',
+                }}
+              >
               {resultados.map((prod, idx) => (
                 <div
                   key={`${prod.ean || idx}-${idx}`}
@@ -602,6 +625,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                 </div>
               ))}
             </div>
+            </>
           )}
         </div>
 

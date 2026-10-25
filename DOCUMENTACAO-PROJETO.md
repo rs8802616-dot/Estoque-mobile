@@ -104,6 +104,18 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-25 - Atualização 38]
+- **Exibição da Quantidade Total de Produtos no Catálogo Global:**
+  - **Solicitação do Usuário:** *"colocar par me no catalogo global a quantidade de produto que tem"*.
+  - **Melhorias e Indicadores Implementados:**
+    1. **Menu Lateral (Sidebar):** No item *Catálogo Global*, adicionado um badge numérico com a contagem em tempo real de produtos cadastrados (`{catalogoGlobal.length}`).
+    2. **Título da Tela do Catálogo:** No cabeçalho da visualização de tela cheia do Catálogo Global, o título foi atualizado para exibir `Catálogo Global (X produtos cadastrados)` dinamicamente.
+    3. **Card Informativo no Topo do Catálogo:** Criado um card destacado com gradiente mostrando o total de produtos cadastrados e, ao realizar pesquisas, um indicador de quantos produtos estão sendo exibidos (ex: `Mostrando Y de X produtos`).
+    4. **Modal de Cadastro de Produtos:** No botão de seleção do modo Master, agora exibe `👑 Banco Master (X produtos)`.
+    5. **Gerenciador Geral de Banco de Dados:** Exibição do total de produtos do Catálogo Global no subtítulo e na opção de filtro de origem (`🌐 Catálogo Global (X produtos)`).
+    6. **Modal do Catálogo Oficial Offline:** Título e cabeçalho da lista atualizados para exibir dinamicamente o total do acervo e produtos encontrados.
+    7. **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v42` (`public/sw.js`).
+
 ### [2026-10-25 - Atualização 37]
 - **Eliminação Definitiva do Alerta de "Falha de conexão com a API de produtos":**
   - **Diagnóstico da Causa Raiz:** Quando uma busca retornava 0 itens adicionais no acervo local (por exemplo, após todos os produtos correspondentes já terem sido importados ou cadastrados no banco) ou quando o usuário clicava em enviar lote para o Firebase, a função `buscarProdutosBomJawaKit` realizava um fall-through desnecessário para uma chamada remota à API externa, e `executarBuscaConsultaProdutos` tentava chamar `/api/buscar-produtos-externos`, que na hospedagem estática (Vercel) causava erro de rede / CORS e disparava o popup `alert('Falha de conexão com a API de produtos.')`.

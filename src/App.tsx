@@ -6523,10 +6523,23 @@ export default function App() {
                         abrirRelatorioCatalogo();
                         fecharMenu();
                       }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <FolderKanban size={15} style={{ color: '#64748b', flexShrink: 0 }} />
                         <span>Catálogo Global</span>
+                      </span>
+                      <span
+                        style={{
+                          background: '#e0f2fe',
+                          color: '#0369a1',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: '12px',
+                        }}
+                      >
+                        {catalogoGlobal.length}
                       </span>
                     </div>
                   )}
@@ -7553,7 +7566,7 @@ export default function App() {
           <h2 id="tituloRelatorioCheio">
             {modoRelatorioAtual === 'estoque'
               ? `Relatório de Estoque (${nomeSupermercadoAtivo})`
-              : 'Catálogo Global (Compartilhado)'}
+              : `Catálogo Global (${catalogoGlobal.length} ${catalogoGlobal.length === 1 ? 'produto cadastrado' : 'produtos cadastrados'})`}
           </h2>
           <button className="btn-voltar-rel" onClick={fecharRelatorio}>
             Voltar
@@ -7699,31 +7712,107 @@ export default function App() {
           })()}
 
           {modoRelatorioAtual !== 'estoque' && (
-            <div className="linha-input" style={{ marginBottom: '12px' }}>
-              <input
-                type="search"
-                id="buscaRelatorioGlobal"
-                name="search_query_relatorio_catalogo_global"
-                autoComplete="new-password"
-                autoCorrect="off"
-                autoCapitalize="none"
-                spellCheck={false}
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                className="input-modal"
-                style={{ marginBottom: 0 }}
-                placeholder="Pesquisar no catálogo global..."
-                value={buscaRelatorio.toLowerCase().includes('rodrigo.souza') ? '' : buscaRelatorio}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setBuscaRelatorio(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+            <>
+              {/* Card de Estatísticas do Catálogo Global */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%)',
+                  border: '1px solid #bae6fd',
+                  borderRadius: '12px',
+                  padding: '12px 16px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '10px',
+                  boxShadow: '0 2px 6px rgba(2, 132, 199, 0.08)',
                 }}
-              />
-              <button className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
-                📷
-              </button>
-            </div>
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      color: '#0369a1',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    🌐 Quantidade no Catálogo Global
+                  </div>
+                  <div style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a' }}>
+                    {catalogoGlobal.length}{' '}
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b' }}>
+                      {catalogoGlobal.length === 1 ? 'produto cadastrado' : 'produtos cadastrados'}
+                    </span>
+                  </div>
+                </div>
+                {buscaRelatorio.trim() ? (
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '8px',
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#0284c7',
+                    }}
+                  >
+                    Mostrando{' '}
+                    {
+                      catalogoGlobal.filter(
+                        (c) =>
+                          c.codigo.toLowerCase().includes(buscaRelatorio.trim().toLowerCase()) ||
+                          c.nome.toLowerCase().includes(buscaRelatorio.trim().toLowerCase())
+                      ).length
+                    }{' '}
+                    de {catalogoGlobal.length}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '8px',
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#15803d',
+                    }}
+                  >
+                    ✓ 100% Sincronizado
+                  </div>
+                )}
+              </div>
+
+              <div className="linha-input" style={{ marginBottom: '12px' }}>
+                <input
+                  type="search"
+                  id="buscaRelatorioGlobal"
+                  name="search_query_relatorio_catalogo_global"
+                  autoComplete="new-password"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  data-form-type="other"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  className="input-modal"
+                  style={{ marginBottom: 0 }}
+                  placeholder={`Pesquisar entre os ${catalogoGlobal.length} produtos do catálogo...`}
+                  value={buscaRelatorio.toLowerCase().includes('rodrigo.souza') ? '' : buscaRelatorio}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setBuscaRelatorio(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+                  }}
+                />
+                <button className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
+                  📷
+                </button>
+              </div>
+            </>
           )}
 
           <div className="tabela-relatorio" id="listaRelatorioCheio">
@@ -8693,7 +8782,7 @@ export default function App() {
                       👑 Acesso Exclusivo da Dona do Aplicativo - Gerenciador Geral de Banco de Dados
                     </h3>
                     <p style={{ fontSize: '0.84rem', margin: 0, color: '#0284c7' }}>
-                      Conectado ao Banco de Dados Dedicado: <b>appestoqueprodutos-bb92d</b> (Firebase Firestore)
+                      Conectado ao Banco de Dados Dedicado: <b>appestoqueprodutos-bb92d</b> • 🌐 <b>{catalogoGlobal.length} produtos</b> no Catálogo Global
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -8795,7 +8884,7 @@ export default function App() {
                     onChange={(e) => setFiltroMasterOrigem(e.target.value as any)}
                   >
                     <option value="todos">Origem: Todos os Itens</option>
-                    <option value="catalogo">🌐 Catálogo Global ({catalogoGlobal.length})</option>
+                    <option value="catalogo">🌐 Catálogo Global ({catalogoGlobal.length} produtos)</option>
                     <option value="estoque">🏪 Estoque Local ({estoque.length})</option>
                   </select>
                 </div>
@@ -9484,7 +9573,7 @@ export default function App() {
                   }}
                   onClick={() => setModoCadastroItem('master')}
                 >
-                  👑 Banco Master (Catálogo)
+                  👑 Banco Master ({catalogoGlobal.length} produtos)
                 </button>
               </div>
             )}
