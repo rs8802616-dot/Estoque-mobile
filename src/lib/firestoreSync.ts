@@ -11,6 +11,7 @@ import {
   getDoc,
   getFirestore,
   writeBatch,
+  limit,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { safeLocalStorageSet } from './safeStorage';
@@ -384,10 +385,10 @@ export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => voi
   );
 }
 
-// Real-time listener for Vendas
+// Real-time listener for Vendas (limitado a 300 vendas mais recentes para economizar leituras do Firestore)
 export function subscribeVendas(lojaId: string, callback: (vendas: Venda[]) => void) {
   const colRef = collection(db, 'vendas');
-  const q = query(colRef, where('lojaId', '==', lojaId));
+  const q = query(colRef, where('lojaId', '==', lojaId), limit(300));
   return onSnapshot(
     q,
     (snapshot) => {

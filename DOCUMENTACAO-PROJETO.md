@@ -104,6 +104,16 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-25 - Atualização 40]
+- **Otimização Extrema de Leituras do Firestore e Ativação de Cache Persistente em Disco (`persistentLocalCache`):**
+  - **Diagnóstico das 138.000 Leituras:**
+    - Como o Catálogo Global atingiu 8.849 produtos, o ouvinte em tempo real (`onSnapshot`) baixava todos os 8.849 documentos a cada recarregamento de página. Cerca de 15 atualizações/recarregamentos no dia geravam exatamente ~133.000 leituras (15 × 8.849).
+    - Além disso, o Firestore estava configurado com `memoryLocalCache` (RAM volátil), o que forçava o navegador a baixar tudo novamente do servidor a cada F5 ou reabertura do app.
+  - **Correções Aplicadas:**
+    1. **Ativação do `persistentLocalCache` com `persistentMultipleTabManager`:** O Firestore agora armazena os documentos em disco (IndexedDB) no navegador. Nas inicializações subsequentes, os documentos não modificados são lidos localmente com **zero custo de leitura de servidor**.
+    2. **Otimização de Leituras de Vendas:** O ouvinte em tempo real `subscribeVendas` agora possui limite defensivo de 300 vendas mais recentes (`limit(300)`), evitando transferir históricos antigos sem necessidade.
+    3. **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v44` (`public/sw.js`).
+
 ### [2026-10-25 - Atualização 39]
 - **Correção da Duplicação ao Editar Produtos e Otimização Massiva de Desempenho (Eliminação de Travamentos):**
   - **Diagnóstico da Duplicação na Edição:**

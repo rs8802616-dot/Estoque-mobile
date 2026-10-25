@@ -1,6 +1,8 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
   initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   memoryLocalCache,
   memoryLruGarbageCollector,
   getFirestore,
@@ -18,11 +20,14 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 let firestoreInstance: Firestore;
 try {
+  // Ativa cache persistente em disco (IndexedDB) com gerenciador multi-abas.
+  // Isso impede que o Firebase baixe os mesmos documentos do servidor a cada F5/recarregamento de tela,
+  // economizando dezenas de milhares de leituras diárias e mantendo o consumo na cota gratuita de 50.000 leituras/dia!
   firestoreInstance = initializeFirestore(
     app,
     {
-      localCache: memoryLocalCache({
-        garbageCollector: memoryLruGarbageCollector(),
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
       }),
     },
     firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
@@ -30,13 +35,27 @@ try {
       : undefined
   );
 } catch (e) {
-  firestoreInstance =
-    firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
-      ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
-      : getFirestore(app);
+  try {
+    firestoreInstance = initializeFirestore(
+      app,
+      {
+        localCache: memoryLocalCache({
+          garbageCollector: memoryLruGarbageCollector(),
+        }),
+      },
+      firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
+        ? firebaseConfig.firestoreDatabaseId
+        : undefined
+    );
+  } catch (errFallback) {
+    firestoreInstance =
+      firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'
+        ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
+        : getFirestore(app);
+  }
 }
 
-// Export safe Firestore instance with memory cache
+// Export safe Firestore instance with persistent multi-tab cache
 export const db = firestoreInstance;
 
 // Initialize Firebase Auth
