@@ -91,6 +91,9 @@ export async function salvarImagemIndexedDB(codigo: string, fotoBase64: string):
   const cod = codigo.trim();
   if (!cod || fotoBase64.length < 10) return;
 
+  // Se já está em memória com o mesmo valor exato, evita abrir transação redundante e disparar re-renders
+  if (cacheImagensMemoria.get(cod) === fotoBase64) return;
+
   // Atualiza cache em memória imediatamente
   cacheImagensMemoria.set(cod, fotoBase64);
 
@@ -120,32 +123,32 @@ export async function salvarImagemIndexedDB(codigo: string, fotoBase64: string):
 export async function salvarLoteImagensIndexedDB(itens: { codigo: string; imagem?: string; foto?: string }[]): Promise<void> {
   if (!Array.isArray(itens) || itens.length === 0) return;
   
-  let algumaAdicionada = false;
+  const itensAlterados: { cod: string; img: string }[] = [];
   itens.forEach((it) => {
     const cod = it.codigo?.trim();
     const img = it.imagem || it.foto;
     if (cod && img && typeof img === 'string' && img.length > 10) {
-      cacheImagensMemoria.set(cod, img);
-      algumaAdicionada = true;
+      if (cacheImagensMemoria.get(cod) !== img) {
+        cacheImagensMemoria.set(cod, img);
+        itensAlterados.push({ cod, img });
+      }
     }
   });
+
+  if (itensAlterados.length === 0) return;
 
   try {
     const db = await abrirDB();
     if (!db) {
-      if (algumaAdicionada) notificarListeners();
+      notificarListeners();
       return;
     }
 
     const tx = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
 
-    for (const it of itens) {
-      const cod = it.codigo?.trim();
-      const img = it.imagem || it.foto;
-      if (cod && img && typeof img === 'string' && img.length > 10) {
-        store.put({ codigo: cod, imagem: img, timestamp: Date.now() });
-      }
+    for (const it of itensAlterados) {
+      store.put({ codigo: it.cod, imagem: it.img, timestamp: Date.now() });
     }
 
     return new Promise((resolve) => {

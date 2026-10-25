@@ -139,6 +139,14 @@ export function safeLocalStorageSet(key: string, value: string): boolean {
       localStorage.setItem(key, valorSanitizado);
       return true;
     } catch (retryErr) {
+      // Se for uma chave prioritária de estoque ou vendas, libera o cache de catalogoGlobalFirebase (que já existe no bundle e Firestore)
+      if (key.startsWith('estoque_') || key.startsWith('vendas_')) {
+        try {
+          localStorage.removeItem('catalogoGlobalFirebase');
+          localStorage.setItem(key, valorSanitizado);
+          return true;
+        } catch (_) {}
+      }
       console.warn(
         `Limite de armazenamento local (localStorage) excedido para "${key}". Os dados continuam íntegros no Firestore e em memória.`
       );

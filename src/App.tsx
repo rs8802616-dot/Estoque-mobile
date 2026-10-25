@@ -1437,6 +1437,9 @@ export default function App() {
     };
   }, [supermercadoAtual]);
 
+  // Identificador único desta aba para evitar que BroadcastChannel sobrescreva o próprio estado recém-salvo na mesma aba
+  const tabIdRef = useRef<string>(`tab_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
+
   // BroadcastChannel for Real-time Cross-Tab / Cross-Device Sync
   useEffect(() => {
     let syncChannel: BroadcastChannel | null = null;
@@ -1444,6 +1447,10 @@ export default function App() {
       syncChannel = new BroadcastChannel('estoque_sync_channel');
       syncChannel.onmessage = (event) => {
         if (event.data && event.data.type === 'SYNC') {
+          // Ignora mensagens disparadas pela própria aba (que já atualizou o estado em memória de forma otimista)
+          if (event.data.senderTabId && event.data.senderTabId === tabIdRef.current) {
+            return;
+          }
           recarregarDadosLocais();
         }
       };
@@ -1938,7 +1945,7 @@ export default function App() {
     if (typeof BroadcastChannel !== 'undefined') {
       try {
         const channel = new BroadcastChannel('estoque_sync_channel');
-        channel.postMessage({ type: 'SYNC', storeId: supermercadoAtual });
+        channel.postMessage({ type: 'SYNC', storeId: supermercadoAtual, senderTabId: tabIdRef.current });
         channel.close();
       } catch (e) {
         console.log('Sync broadcast:', e);
@@ -4102,54 +4109,78 @@ export default function App() {
         await salvarProdutoCatalogoFirestore(dadosGlobal);
 
         // Propaga o nome e a foto atualizados para TODOS os lotes existentes no estoque da loja
-        let novoEstoque = [...estoque];
-        const itensCorrespondentes = novoEstoque.filter((p) => p.codigo?.trim() === codigoDigitado);
+        const precoVendaNum = (typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco)) || 0;
+        const precoCustoNum = (typeof cadCusto === 'string' ? parseFloat(cadCusto.replace(',', '.')) : Number(cadCusto)) || 0;
+        const qtdNum = parseInt(String(cadQtd).replace(/\D/g, ''), 10) || 0;
+        const loteMaster = cadLote.trim() || `LOTE-${new Date().getFullYear()}`;
+        const valMaster = cadVal.trim() || '2099-12-31';
 
+        const novoItemMasterFallback: ItemEstoque = {
+          codigo_barras: codigoDigitado,
+          codigo: codigoDigitado,
+          nome: nomeDigitado,
+          marca: marcaDigitada,
+          categoria: categoriaDigitada || 'Geral',
+          quantidade: qtdNum,
+          lote: loteMaster,
+          validade: valMaster,
+          preco_custo: precoCustoNum,
+          preco_venda: precoVendaNum,
+          foto: fotoFinal || '',
+          tipoCadastro: 'padrao',
+        };
+
+        setEstoque((prevEstoque) => {
+          const temCorrespondente = prevEstoque.some((p) => p.codigo?.trim() === codigoDigitado);
+          let atualizado: ItemEstoque[];
+          if (temCorrespondente) {
+            atualizado = prevEstoque.map((p) =>
+              p.codigo?.trim() === codigoDigitado
+                ? {
+                    ...p,
+                    nome: nomeDigitado,
+                    marca: marcaDigitada || p.marca,
+                    categoria: categoriaDigitada || p.categoria,
+                    foto: fotoFinal,
+                  }
+                : p
+            );
+          } else {
+            atualizado = [...prevEstoque, novoItemMasterFallback];
+          }
+          safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(atualizado));
+          return atualizado;
+        });
+
+        if (busca && busca.trim() !== '') {
+          const termo = busca.toLowerCase().trim();
+          if (!nomeDigitado.toLowerCase().includes(termo) && !codigoDigitado.toLowerCase().includes(termo)) {
+            setBusca('');
+          }
+        }
+        if (filtroTipoProduto !== 'todos' && filtroTipoProduto !== 'padrao') {
+          setFiltroTipoProduto('todos');
+        }
+
+        const itensCorrespondentes = estoque.filter((p) => p.codigo?.trim() === codigoDigitado);
         if (itensCorrespondentes.length > 0) {
           const promisesSalvar: Promise<any>[] = [];
-          novoEstoque = novoEstoque.map((p) => {
-            if (p.codigo?.trim() === codigoDigitado) {
-              const itemAtualizado: ItemEstoque = {
-                ...p,
-                nome: nomeDigitado,
-                marca: marcaDigitada || p.marca,
-                categoria: categoriaDigitada || p.categoria,
-                foto: fotoFinal,
-              };
-              if (supermercadoAtual) {
-                promisesSalvar.push(salvarItemEstoqueFirestore(itemAtualizado, supermercadoAtual));
-              }
-              return itemAtualizado;
+          itensCorrespondentes.forEach((p) => {
+            const itemAtualizado: ItemEstoque = {
+              ...p,
+              nome: nomeDigitado,
+              marca: marcaDigitada || p.marca,
+              categoria: categoriaDigitada || p.categoria,
+              foto: fotoFinal,
+            };
+            if (supermercadoAtual) {
+              promisesSalvar.push(salvarItemEstoqueFirestore(itemAtualizado, supermercadoAtual));
             }
-            return p;
           });
           await Promise.all(promisesSalvar);
         } else {
-          // Se o item não existia no estoque da loja ativa, cria um registro inicial para aparecer na Área de Vendas / Adega
-          const precoVendaNum = (typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco)) || 0;
-          const precoCustoNum = (typeof cadCusto === 'string' ? parseFloat(cadCusto.replace(',', '.')) : Number(cadCusto)) || 0;
-          const qtdNum = parseInt(String(cadQtd).replace(/\D/g, ''), 10) || 0;
-          
-          const novoItemEstoque: ItemEstoque = {
-            codigo_barras: codigoDigitado,
-            codigo: codigoDigitado,
-            nome: nomeDigitado,
-            marca: marcaDigitada,
-            categoria: categoriaDigitada || 'Geral',
-            quantidade: qtdNum,
-            lote: cadLote.trim() || `LOTE-${new Date().getFullYear()}`,
-            validade: cadVal.trim() || '2099-12-31',
-            preco_custo: precoCustoNum,
-            preco_venda: precoVendaNum,
-            foto: fotoFinal || '',
-            tipoCadastro: 'padrao',
-          };
-          novoEstoque.push(novoItemEstoque);
-          await salvarItemEstoqueFirestore(novoItemEstoque, supermercadoAtual);
+          await salvarItemEstoqueFirestore(novoItemMasterFallback, supermercadoAtual);
         }
-
-        setEstoque(novoEstoque);
-        safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(novoEstoque));
 
         // Reconciliar caches locais de todos os outros supermercados/adegas
         try {
@@ -4264,90 +4295,143 @@ export default function App() {
         }
       }
 
-      // 2. Grava no Estoque da Loja Selecionada
-      let novoEstoque = [...estoque];
+        // 2. Grava no Estoque da Loja Selecionada (atualização otimista imediata sem depender de closure antiga)
+        const aplicarAtualizacaoEstoque = (baseEstoque: ItemEstoque[]): ItemEstoque[] => {
+          let lista = [...baseEstoque];
 
-      // Se estava editando e alterou código, lote ou validade, remove o documento antigo do Firestore
-      if (
-        codigoEditando &&
-        (codigoEditando.codigo !== codigoFinal ||
-          codigoEditando.validade !== valDigitada ||
-          codigoEditando.lote !== loteDigitado)
-      ) {
-        novoEstoque = novoEstoque.filter(
-          (p) =>
-            !(
-              p.codigo === codigoEditando.codigo &&
-              p.validade === codigoEditando.validade &&
-              p.lote === codigoEditando.lote
-            )
-        );
-        await excluirItemEstoqueFirestore(
-          codigoEditando.codigo,
-          codigoEditando.validade,
-          codigoEditando.lote,
-          supermercadoAtual
-        );
-      } else if (codigoEditando) {
-        novoEstoque = novoEstoque.filter(
-          (p) =>
-            !(
-              p.codigo === codigoEditando.codigo &&
-              p.validade === codigoEditando.validade &&
-              p.lote === codigoEditando.lote
-            )
-        );
-      }
-
-      const indexExistente = novoEstoque.findIndex(
-        (p) => p.codigo === codigoFinal && p.validade === valDigitada && p.lote === loteDigitado
-      );
-
-      const dadosItemEstoque: ItemEstoque = {
-        codigo_barras: isInterno ? undefined : codigoFinal,
-        codigo: codigoFinal,
-        nome: nomeFinal,
-        marca: marcaFinal || (isInterno ? 'Produção Própria / Adega' : ''),
-        categoria: categoriaFinal || (isInterno ? '🍢 Balcão / Adega' : 'Geral'),
-        quantidade: indexExistente !== -1 && !codigoEditando ? novoEstoque[indexExistente].quantidade + (isInterno && cadEstoqueIlimitado ? 0 : qtdDigitada) : qtdDigitada,
-        lote: loteDigitado,
-        validade: valDigitada,
-        preco_custo: custoDigitado,
-        preco_venda: precoDigitado,
-        foto: fotoFinal,
-        tipoCadastro: isInterno ? 'interno' : 'padrao',
-        estoqueIlimitado: isInterno ? cadEstoqueIlimitado : false,
-        exclusivoLoja: isInterno,
-      };
-
-      if (indexExistente !== -1 && !codigoEditando) {
-        novoEstoque[indexExistente] = dadosItemEstoque;
-      } else {
-        novoEstoque.push(dadosItemEstoque);
-      }
-
-      // Propaga o nome, marca, categoria e a foto oficial para TODOS os outros lotes do mesmo código no estoque
-      novoEstoque = novoEstoque.map((p) => {
-        if (p.codigo === codigoFinal) {
-          const itemAtualizado: ItemEstoque = {
-            ...p,
-            nome: nomeFinal,
-            marca: marcaFinal || p.marca,
-            categoria: categoriaFinal || p.categoria,
-            foto: fotoFinal,
-          };
-          // Se for outro lote além do principal salvo, persiste no Firestore também
-          if (p.validade !== valDigitada || p.lote !== loteDigitado) {
-            salvarItemEstoqueFirestore(itemAtualizado, supermercadoAtual).catch(console.warn);
+          if (codigoEditando) {
+            lista = lista.filter(
+              (p) =>
+                !(
+                  p.codigo === codigoEditando.codigo &&
+                  p.validade === codigoEditando.validade &&
+                  p.lote === codigoEditando.lote
+                )
+            );
           }
-          return itemAtualizado;
-        }
-        return p;
-      });
 
-      setEstoque(novoEstoque);
-      safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(novoEstoque));
-      await salvarItemEstoqueFirestore(dadosItemEstoque, supermercadoAtual);
+          const idx = lista.findIndex(
+            (p) => p.codigo === codigoFinal && p.validade === valDigitada && p.lote === loteDigitado
+          );
+
+          const itemMontado: ItemEstoque = {
+            codigo_barras: isInterno ? undefined : codigoFinal,
+            codigo: codigoFinal,
+            nome: nomeFinal,
+            marca: marcaFinal || (isInterno ? 'Produção Própria / Adega' : ''),
+            categoria: categoriaFinal || (isInterno ? '🍢 Balcão / Adega' : 'Geral'),
+            quantidade:
+              idx !== -1 && !codigoEditando
+                ? lista[idx].quantidade + (isInterno && cadEstoqueIlimitado ? 0 : qtdDigitada)
+                : qtdDigitada,
+            lote: loteDigitado,
+            validade: valDigitada,
+            preco_custo: custoDigitado,
+            preco_venda: precoDigitado,
+            foto: fotoFinal,
+            tipoCadastro: isInterno ? 'interno' : 'padrao',
+            estoqueIlimitado: isInterno ? cadEstoqueIlimitado : false,
+            exclusivoLoja: isInterno,
+          };
+
+          if (idx !== -1 && !codigoEditando) {
+            lista[idx] = itemMontado;
+          } else {
+            lista.push(itemMontado);
+          }
+
+          // Propaga nome, marca, categoria e foto para todos os lotes do mesmo código
+          return lista.map((p) => {
+            if (p.codigo === codigoFinal) {
+              return {
+                ...p,
+                nome: nomeFinal,
+                marca: marcaFinal || p.marca,
+                categoria: categoriaFinal || p.categoria,
+                foto: fotoFinal,
+              };
+            }
+            return p;
+          });
+        };
+
+        // Se estava editando e alterou chave primária (código, lote ou validade), remove o documento antigo do Firestore
+        if (
+          codigoEditando &&
+          (codigoEditando.codigo !== codigoFinal ||
+            codigoEditando.validade !== valDigitada ||
+            codigoEditando.lote !== loteDigitado)
+        ) {
+          excluirItemEstoqueFirestore(
+            codigoEditando.codigo,
+            codigoEditando.validade,
+            codigoEditando.lote,
+            supermercadoAtual
+          ).catch(console.warn);
+        }
+
+        const indexExistenteClosure = estoque.findIndex(
+          (p) => p.codigo === codigoFinal && p.validade === valDigitada && p.lote === loteDigitado
+        );
+
+        const dadosItemEstoque: ItemEstoque = {
+          codigo_barras: isInterno ? undefined : codigoFinal,
+          codigo: codigoFinal,
+          nome: nomeFinal,
+          marca: marcaFinal || (isInterno ? 'Produção Própria / Adega' : ''),
+          categoria: categoriaFinal || (isInterno ? '🍢 Balcão / Adega' : 'Geral'),
+          quantidade:
+            indexExistenteClosure !== -1 && !codigoEditando
+              ? estoque[indexExistenteClosure].quantidade + (isInterno && cadEstoqueIlimitado ? 0 : qtdDigitada)
+              : qtdDigitada,
+          lote: loteDigitado,
+          validade: valDigitada,
+          preco_custo: custoDigitado,
+          preco_venda: precoDigitado,
+          foto: fotoFinal,
+          tipoCadastro: isInterno ? 'interno' : 'padrao',
+          estoqueIlimitado: isInterno ? cadEstoqueIlimitado : false,
+          exclusivoLoja: isInterno,
+        };
+
+        // Atualiza imediatamente o React State usando functional updater (garante que nenhum snapshot intermediário apague o item)
+        setEstoque((prevEstoque) => {
+          const atualizado = aplicarAtualizacaoEstoque(prevEstoque);
+          safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(atualizado));
+          return atualizado;
+        });
+
+        // Garante que filtros de busca ou abas não escondam o produto recém-cadastrado na tela
+        if (busca && busca.trim() !== '') {
+          const termo = busca.toLowerCase().trim();
+          if (!nomeFinal.toLowerCase().includes(termo) && !codigoFinal.toLowerCase().includes(termo)) {
+            setBusca('');
+          }
+        }
+        if (filtroTipoProduto !== 'todos') {
+          const tipoSalvo = isInterno ? 'interno' : 'padrao';
+          if (filtroTipoProduto !== tipoSalvo) {
+            setFiltroTipoProduto('todos');
+          }
+        }
+
+        // Propaga para outros lotes do mesmo código no Firestore se existirem
+        estoque.forEach((p) => {
+          if (p.codigo === codigoFinal && (p.validade !== valDigitada || p.lote !== loteDigitado)) {
+            salvarItemEstoqueFirestore(
+              {
+                ...p,
+                nome: nomeFinal,
+                marca: marcaFinal || p.marca,
+                categoria: categoriaFinal || p.categoria,
+                foto: fotoFinal,
+              },
+              supermercadoAtual
+            ).catch(console.warn);
+          }
+        });
+
+        await salvarItemEstoqueFirestore(dadosItemEstoque, supermercadoAtual);
 
       // Reconciliar caches locais de todos os outros supermercados/adegas
       try {

@@ -104,6 +104,22 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 31]
+- **Exibição Instantânea de Produtos Cadastrados no Estoque (Sem Necessidade de F5 / Reload):**
+  - **Problema Relatado:** Ao cadastrar um novo produto no estoque, ele salvava corretamente no banco de dados Firestore, mas o card só aparecia na tela quando o usuário atualizava o site ou o aplicativo (`F5`).
+  - **Causas Raiz Identificadas:**
+    1. **Auto-Sobrescrita via `BroadcastChannel` na Mesma Aba (`src/App.tsx`):** A função `notificarSincronizacao()` instanciava um segundo `BroadcastChannel('estoque_sync_channel')` e enviava `{ type: 'SYNC' }`. Como o `BroadcastChannel` entrega mensagens para todas as outras instâncias (inclusive outra instância na **mesma aba**), o listener `syncChannel.onmessage` disparava `recarregarDadosLocais()` na própria aba que acabou de salvar, sobrescrevendo o estado React caso o `localStorage` tivesse atingido a cota de 5MB.
+    2. **Closure Antiga (`estoque`) Após Operações `async` (`src/App.tsx`):** `salvarProduto` fazia `await` na compressão de imagem e no `salvarProdutoCatalogoFirestore` antes de ler `estoque`, usando uma referência desatualizada ao montar `novoEstoque`.
+    3. **Condição de Corrida no Snapshot do Firestore (`src/lib/firestoreSync.ts`):** Se um evento `onSnapshot` intermediário chegasse antes da confirmação de gravação de `salvarItemEstoqueFirestore`, a lista era reconstruída apenas com os itens antigos da nuvem.
+    4. **Tempestade de Transações no IndexedDB (`src/lib/imageIndexedDB.ts` & `src/lib/firestoreSync.ts`):** `subscribeCatalogo` chamava `salvarImagemIndexedDB` para todos os 849 produtos com URLs `https://` a cada snapshot, gerando centenas de notificações concorrentes durante o salvamento.
+    5. **Filtros de Busca/Aba Ocultando o Novo Item (`src/App.tsx`):** Caso houvesse texto residual na barra de busca ou filtro de tipo ativo, o produto recém-cadastrado ficava oculto até recarregar a página.
+  - **Soluções Implementadas:**
+    - Adicionado `tabIdRef` único por aba em `src/App.tsx` para que `syncChannel.onmessage` ignore eventos disparados pela própria aba.
+    - Adicionado buffer otimista em memória (`itensRecemSalvosMemoria` e `itensRecemExcluidosMemoria`) e notificação síncrona imediata (`notificarListenersEstoqueImediato`) em `src/lib/firestoreSync.ts`, garantindo que o produto apareça instantaneamente antes mesmo do round-trip de rede do Firestore e nunca seja removido por snapshots intermediários.
+    - Atualizado `salvarProduto` em `src/App.tsx` para usar atualização funcional de estado (`setEstoque((prev) => ...)`), além de limpar automaticamente filtros de busca/categoria que esconderiam o item recém-adicionado.
+    - Otimizado `src/lib/imageIndexedDB.ts` para pular gravações repetidas quando o valor já é idêntico no cache em memória, e ajustado `src/lib/safeStorage.ts` para priorizar chaves `estoque_*` liberando `catalogoGlobalFirebase` do `localStorage` se houver estouro de cota.
+    - Versão do Service Worker elevada para `estoque-mobile-pwa-v35` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 30]
 - **Resolução Definitiva do Corte de Imagens nos Cards de Produtos:**
   - **Causa Raiz Identificada:** Os URLs de imagens provenientes do CDN do Bing continham o parâmetro `&c=7` (square crop), que amputava a base e o topo de garrafas e produtos verticais (ex: Jägermeister, Red Label, licores e vinhos).

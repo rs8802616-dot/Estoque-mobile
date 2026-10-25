@@ -85,19 +85,59 @@ export function sanitizarItemEstoque(item: ItemEstoque): ItemEstoque {
   };
 }
 
+// Buffer em memória para garantir atualização otimista instantânea e impedir que snapshots intermediários ocultem produtos recém-cadastrados
+const itensRecemSalvosMemoria = new Map<string, { item: ItemEstoque; lojaId: string; timestamp: number }>();
+const itensRecemExcluidosMemoria = new Map<string, number>();
+const estoqueListenersPorLoja = new Map<string, Set<(itens: ItemEstoque[]) => void>>();
+
+function gerarChaveItemEstoque(lojaId: string, codigo: string, validade: string, lote: string): string {
+  return `${String(lojaId || '').trim()}_${String(codigo || '').trim()}_${String(validade || '2099-12-31').trim()}_${String(lote || '').trim()}`;
+}
+
+function notificarListenersEstoqueImediato(lojaId: string) {
+  const listeners = estoqueListenersPorLoja.get(lojaId);
+  if (!listeners || listeners.size === 0) return;
+
+  try {
+    const salvo = localStorage.getItem(`estoque_${lojaId}`);
+    if (!salvo) return;
+    const parsed = JSON.parse(salvo);
+    if (!Array.isArray(parsed)) return;
+    const itens = parsed.filter((x) => x && (x.codigo || x.codigo_barras)).map(sanitizarItemEstoque);
+    listeners.forEach((cb) => {
+      try {
+        cb(itens);
+      } catch (e) {}
+    });
+  } catch (e) {}
+}
+
 // Real-time listener for Estoque com proteção Offline-First (nunca apaga dados locais)
 export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]) => void) {
   if (!lojaId) return () => {};
+
+  if (!estoqueListenersPorLoja.has(lojaId)) {
+    estoqueListenersPorLoja.set(lojaId, new Set());
+  }
+  estoqueListenersPorLoja.get(lojaId)!.add(callback);
+
   const colRef = collection(db, 'estoque');
   const q = query(colRef, where('lojaId', '==', lojaId));
-  return onSnapshot(
+  const unsubSnapshot = onSnapshot(
     q,
     (snapshot) => {
+      const agora = Date.now();
       const itensRemotos: ItemEstoque[] = [];
       snapshot.forEach((docSnap) => {
         const data = docSnap.data() as ItemEstoque;
         if (data && (data.codigo || data.codigo_barras)) {
-          itensRemotos.push(sanitizarItemEstoque(data));
+          const itemSanitizado = sanitizarItemEstoque(data);
+          const chaveExclusao = gerarChaveItemEstoque(lojaId, itemSanitizado.codigo, itemSanitizado.validade, itemSanitizado.lote);
+          const tsExcluido = itensRecemExcluidosMemoria.get(chaveExclusao);
+          if (tsExcluido && agora - tsExcluido < 15000) {
+            return; // Ignora item recém-excluído caso snapshot antigo ainda o traga
+          }
+          itensRemotos.push(itemSanitizado);
         }
       });
 
@@ -121,6 +161,20 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
       });
 
       if (itensRemotos.length === 0) {
+        // Verifica se há itens recém-salvos em memória para esta loja
+        const recemSalvosLoja: ItemEstoque[] = [];
+        itensRecemSalvosMemoria.forEach((reg) => {
+          if (reg.lojaId === lojaId && agora - reg.timestamp < 30000) {
+            recemSalvosLoja.push(reg.item);
+          }
+        });
+
+        if (recemSalvosLoja.length > 0) {
+          safeLocalStorageSet(`estoque_${lojaId}`, JSON.stringify(recemSalvosLoja));
+          callback(recemSalvosLoja);
+          return;
+        }
+
         // Se a nuvem retornou vazia e a resposta não é de cache offline, o estoque está genuinamente vazio
         if (snapshot.empty && !snapshot.metadata.fromCache) {
           try {
@@ -139,28 +193,43 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
         return;
       }
 
-      // Constrói a lista baseando-se estritamente nos itens que existem no banco remoto,
+      // Constrói a lista baseando-se nos itens que existem no banco remoto,
       // preservando as fotos locais e do cache IndexedDB caso o remoto tenha vindo sem foto
+      const chavesPresentes = new Set<string>();
       const itensAtualizados = itensRemotos.map((remoto) => {
         const chave = `${remoto.codigo}_${remoto.validade || ''}_${remoto.lote || ''}`;
+        const chaveCompleta = gerarChaveItemEstoque(lojaId, remoto.codigo, remoto.validade, remoto.lote);
+        chavesPresentes.add(chaveCompleta);
+
+        const recemSalvo = itensRecemSalvosMemoria.get(chaveCompleta);
+        const baseRemoto = recemSalvo && agora - recemSalvo.timestamp < 15000 ? recemSalvo.item : remoto;
+
         const local = mapaLocal.get(chave) || mapaLocal.get(remoto.codigo);
         const fotoCache = obterFotoCache(remoto.codigo) || '';
-        const fotoFinal = (remoto.foto && remoto.foto.trim()) || (local?.foto && local.foto.trim()) || fotoCache || '';
+        const fotoFinal = (baseRemoto.foto && baseRemoto.foto.trim()) || (local?.foto && local.foto.trim()) || fotoCache || '';
 
-        // Se veio foto no documento remoto, assegura cache no IndexedDB
-        if (remoto.foto && remoto.foto.length > 10 && remoto.codigo) {
-          salvarImagemIndexedDB(remoto.codigo, remoto.foto).catch(() => {});
+        // Se veio foto base64 no documento remoto, assegura cache no IndexedDB
+        if (baseRemoto.foto && baseRemoto.foto.startsWith('data:image') && baseRemoto.codigo) {
+          salvarImagemIndexedDB(baseRemoto.codigo, baseRemoto.foto).catch(() => {});
         }
 
         return sanitizarItemEstoque({
-          ...remoto,
-          preco_venda: Number(remoto.preco_venda) || Number(local?.preco_venda) || 0,
-          preco_custo: Number(remoto.preco_custo) || Number(local?.preco_custo) || 0,
+          ...baseRemoto,
+          preco_venda: Number(baseRemoto.preco_venda) || Number(local?.preco_venda) || 0,
+          preco_custo: Number(baseRemoto.preco_custo) || Number(local?.preco_custo) || 0,
           foto: fotoFinal,
         });
       });
 
-      // Atualiza o cache local para refletir as exclusões com exatidão
+      // Mescla qualquer produto recém-cadastrado nesta sessão que ainda esteja em trânsito para o Firestore
+      itensRecemSalvosMemoria.forEach((reg, chaveCompleta) => {
+        if (reg.lojaId === lojaId && agora - reg.timestamp < 30000 && !chavesPresentes.has(chaveCompleta)) {
+          chavesPresentes.add(chaveCompleta);
+          itensAtualizados.push(sanitizarItemEstoque(reg.item));
+        }
+      });
+
+      // Atualiza o cache local para refletir as adições e exclusões com exatidão
       try {
         safeLocalStorageSet(`estoque_${lojaId}`, JSON.stringify(itensAtualizados));
       } catch (e) {}
@@ -180,6 +249,14 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
       } catch (e) {}
     }
   );
+
+  return () => {
+    const set = estoqueListenersPorLoja.get(lojaId);
+    if (set) {
+      set.delete(callback);
+    }
+    unsubSnapshot();
+  };
 }
 
 // Real-time listener for Catálogo Global (com sincronização em tempo real de adições, edições e exclusões)
@@ -255,8 +332,8 @@ export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => voi
         const fotoCache = obterFotoCache(codLimpo) || '';
         const imagemFinal = (remoto.imagem && remoto.imagem.trim()) || (local?.imagem && local.imagem.trim()) || fotoCache || '';
 
-        // Se veio imagem no documento remoto, assegura cache no IndexedDB
-        if (remoto.imagem && remoto.imagem.length > 10) {
+        // Se veio imagem base64 no documento remoto, assegura cache no IndexedDB
+        if (remoto.imagem && remoto.imagem.startsWith('data:image') && remoto.imagem.length > 10) {
           salvarImagemIndexedDB(codLimpo, remoto.imagem).catch(() => {});
         }
 
@@ -474,7 +551,36 @@ export async function salvarSupermercadoFirestore(loja: Supermercado) {
 // Save or Update Item no Estoque
 export async function salvarItemEstoqueFirestore(item: ItemEstoque, lojaId: string) {
   try {
-    const itemLimpo = sanitizarItemEstoque(item);
+    const itemLimpo = sanitizarItemEstoque({ ...item, lojaId });
+    const chaveMemoria = gerarChaveItemEstoque(lojaId, itemLimpo.codigo, itemLimpo.validade, itemLimpo.lote);
+    itensRecemExcluidosMemoria.delete(chaveMemoria);
+    itensRecemSalvosMemoria.set(chaveMemoria, {
+      item: itemLimpo,
+      lojaId,
+      timestamp: Date.now(),
+    });
+
+    // Atualiza localStorage e notifica listeners imediatamente (UI otimista instantânea)
+    try {
+      const salvo = localStorage.getItem(`estoque_${lojaId}`);
+      const listaAtual: ItemEstoque[] = salvo ? JSON.parse(salvo) : [];
+      if (Array.isArray(listaAtual)) {
+        const idx = listaAtual.findIndex(
+          (x) =>
+            String(x?.codigo || '').trim() === itemLimpo.codigo &&
+            String(x?.validade || '2099-12-31').trim() === itemLimpo.validade &&
+            String(x?.lote || '').trim() === itemLimpo.lote
+        );
+        if (idx !== -1) {
+          listaAtual[idx] = itemLimpo;
+        } else {
+          listaAtual.push(itemLimpo);
+        }
+        safeLocalStorageSet(`estoque_${lojaId}`, JSON.stringify(listaAtual));
+        notificarListenersEstoqueImediato(lojaId);
+      }
+    } catch (e) {}
+
     const safeLojaId = sanitizarIdDoc(lojaId || 'loja_padrao');
     const safeCod = sanitizarIdDoc(itemLimpo.codigo || 'semcod');
     const safeVal = sanitizarIdDoc(itemLimpo.validade || 'semval');
@@ -646,6 +752,18 @@ export async function excluirItemEstoqueFirestore(codigo: string, validade: stri
     const safeVal = sanitizarIdDoc(validade || 'semval');
     const safeLote = sanitizarIdDoc(lote || 'semlote');
     const docId = `${safeLojaId}_${safeCod}_${safeVal}_${safeLote}`;
+
+    // Remove do buffer otimista e marca como recém-excluído para evitar reaparecimento por snapshot atrasado
+    const chaveItem = `${codigo}|${validade}|${lote}`;
+    const mapaRecentes = itensRecemSalvosMemoria.get(lojaId);
+    if (mapaRecentes) {
+      mapaRecentes.delete(chaveItem);
+    }
+    if (!itensRecemExcluidosMemoria.has(lojaId)) {
+      itensRecemExcluidosMemoria.set(lojaId, new Map());
+    }
+    itensRecemExcluidosMemoria.get(lojaId)!.set(chaveItem, Date.now());
+
     const docRef = doc(db, 'estoque', docId);
     try {
       await deleteDoc(docRef);
@@ -670,6 +788,17 @@ export async function excluirItemEstoqueFirestore(codigo: string, validade: stri
 // Delete Todos os Lotes de um Produto no Estoque de uma loja ou de todas
 export async function excluirTodosLotesProdutoEstoqueFirestore(codigo: string, lojaId?: string) {
   try {
+    // Limpa do buffer otimista
+    itensRecemSalvosMemoria.forEach((mapa, lId) => {
+      if (!lojaId || lId === lojaId) {
+        for (const [k, v] of mapa.entries()) {
+          if (v.item.codigo === codigo) {
+            mapa.delete(k);
+          }
+        }
+      }
+    });
+
     const colRef = collection(db, 'estoque');
     const q = lojaId
       ? query(colRef, where('lojaId', '==', lojaId), where('codigo', '==', codigo))
