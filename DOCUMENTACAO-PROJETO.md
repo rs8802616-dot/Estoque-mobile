@@ -104,6 +104,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 33]
+- **Remoção do Botão de Acesso Livre ao Cardápio na Tela de Login (`src/components/TelaLogin.tsx`):**
+  - **Solicitação do Usuário:** Retirar o bloco `🛵 Ver Cardápio & Fazer Pedido (Cliente)` e o subtítulo `Acesso livre para o cliente pedir bebidas geladas sem precisar de senha` da tela de login e senha.
+  - **Alterações Realizadas:**
+    - Removida a seção do botão de acesso livre ao cardápio na `TelaLogin.tsx`, mantendo a tela de login exclusiva para autenticação com usuário/CPF e senha/PIN.
+    - Versão do Service Worker elevada para `estoque-mobile-pwa-v37` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 32]
 - **Remoção dos Avisos Visuais de Bloqueio no Modal de Cadastro de Estoque:**
   - **Solicitação do Usuário:** Remover os avisos e badges visuais de bloqueio (`🔒 Produto já cadastrado no Banco de Dados Central...`, `🔒 Oficial do Catálogo Master`, `🔒 Bloqueado`, `🏷️ Bebidas 🔒`, `🔒 Foto Oficial Bloqueada` e `🔒 Imagem Oficial do Banco Mestre`) exibidos no modal de adicionar produto ao estoque, mantendo a proteção de nome, marca, categoria e foto oficial de forma limpa e silenciosa.

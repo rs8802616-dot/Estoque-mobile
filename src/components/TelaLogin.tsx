@@ -710,38 +710,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                 ? 'Validando Acesso...'
                 : 'Entrar no Sistema'}
             </button>
-
-            {/* BOTÃO DE ACESSO LIVRE PARA O CLIENTE FINAL NO CARDÁPIO */}
-            {onAbrirCardapioCliente && (
-              <div style={{ marginTop: '4px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-                <button
-                  type="button"
-                  onClick={onAbrirCardapioCliente}
-                  style={{
-                    width: '100%',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    color: '#000000',
-                    border: 'none',
-                    padding: '14px',
-                    borderRadius: '12px',
-                    fontWeight: 900,
-                    fontSize: '0.98rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    boxShadow: '0 6px 16px rgba(245, 158, 11, 0.35)',
-                  }}
-                >
-                  <span style={{ fontSize: '1.3rem' }}>🛵</span>
-                  <span>Ver Cardápio & Fazer Pedido (Cliente)</span>
-                </button>
-                <span style={{ fontSize: '0.74rem', color: '#64748b', display: 'block', marginTop: '6px', fontWeight: 600 }}>
-                  Acesso livre para o cliente pedir bebidas geladas sem precisar de senha
-                </span>
-              </div>
-            )}
           </form>
         </div>
       </div>
