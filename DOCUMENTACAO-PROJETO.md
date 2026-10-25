@@ -104,6 +104,14 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 32]
+- **Remoção dos Avisos Visuais de Bloqueio no Modal de Cadastro de Estoque:**
+  - **Solicitação do Usuário:** Remover os avisos e badges visuais de bloqueio (`🔒 Produto já cadastrado no Banco de Dados Central...`, `🔒 Oficial do Catálogo Master`, `🔒 Bloqueado`, `🏷️ Bebidas 🔒`, `🔒 Foto Oficial Bloqueada` e `🔒 Imagem Oficial do Banco Mestre`) exibidos no modal de adicionar produto ao estoque, mantendo a proteção de nome, marca, categoria e foto oficial de forma limpa e silenciosa.
+  - **Alterações Realizadas (`src/App.tsx`):**
+    - Removidos o banner informativo azul e as tags de cadeado ao lado dos rótulos de *Nome Detalhado do Produto*, *Marca*, *Categoria do Produto* e *Foto do Produto*, bem como o rodapé de aviso dentro do preview da foto.
+    - Os campos continuam protegidos (`disabled`/`readOnly`) quando o código de barras já pertence ao Catálogo Master.
+    - Versão do Service Worker elevada para `estoque-mobile-pwa-v36` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 31]
 - **Exibição Instantânea de Produtos Cadastrados no Estoque (Sem Necessidade de F5 / Reload):**
   - **Problema Relatado:** Ao cadastrar um novo produto no estoque, ele salvava corretamente no banco de dados Firestore, mas o card só aparecia na tela quando o usuário atualizava o site ou o aplicativo (`F5`).

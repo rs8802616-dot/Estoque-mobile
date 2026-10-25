@@ -9526,32 +9526,6 @@ export default function App() {
               </div>
             )}
 
-            {/* BANNER DE PROTEÇÃO DO CATÁLOGO MASTER */}
-            {isProdutoBloqueadoParaEdicaoMestre && (
-              <div
-                style={{
-                  background: '#f0f9ff',
-                  border: '1px solid #bae6fd',
-                  borderRadius: '8px',
-                  padding: '10px 12px',
-                  marginBottom: '14px',
-                  fontSize: '0.82rem',
-                  color: '#0369a1',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '8px',
-                  lineHeight: '1.45',
-                }}
-              >
-                <span style={{ fontSize: '1.15rem' }}>🔒</span>
-                <div>
-                  <b>Produto já cadastrado no Banco de Dados Central:</b><br />
-                  A foto oficial, nome, marca e categoria são protegidos pelo Catálogo Master e <b>não podem ser alterados por lojas/adegas</b>.
-                  Para dar entrada no estoque, basta preencher a <b>quantidade, lote, validade e seus preços de custo/venda</b> abaixo.
-                </div>
-              </div>
-            )}
-
             {/* CAMPOS ESPECÍFICOS PARA PRODUTO INTERNO (ADEGA / ESPETINHO / BALCÃO) */}
             {tipoProdutoCadastro === 'interno' ? (
               <>
@@ -9786,14 +9760,7 @@ export default function App() {
                   )}
                 </div>
                 <div className="grupo-input">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <label className="rotulo-campo" style={{ marginBottom: 0 }}>Nome Detalhado do Produto</label>
-                    {isProdutoBloqueadoParaEdicaoMestre && (
-                      <span style={{ fontSize: '0.72rem', color: '#0369a1', background: '#e0f2fe', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                        🔒 Oficial do Catálogo Master
-                      </span>
-                    )}
-                  </div>
+                  <label className="rotulo-campo">Nome Detalhado do Produto</label>
                   <input
                     type="text"
                     id="cad-nome"
@@ -9813,14 +9780,7 @@ export default function App() {
                   />
                 </div>
                 <div className="grupo-input">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <label className="rotulo-campo" style={{ marginBottom: 0 }}>Marca</label>
-                    {isProdutoBloqueadoParaEdicaoMestre && (
-                      <span style={{ fontSize: '0.72rem', color: '#64748b', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
-                        🔒 Bloqueado
-                      </span>
-                    )}
-                  </div>
+                  <label className="rotulo-campo">Marca</label>
                   <input
                     type="text"
                     id="cad-marca"
@@ -9839,14 +9799,7 @@ export default function App() {
                   />
                 </div>
                 <div className="grupo-input">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <label className="rotulo-campo" style={{ marginBottom: 0 }}>Categoria do Produto</label>
-                    {cadCategoria && (
-                      <span style={{ fontSize: '0.74rem', color: '#0369a1', background: '#e0f2fe', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                        🏷️ {cadCategoria} {isProdutoBloqueadoParaEdicaoMestre ? '🔒' : ''}
-                      </span>
-                    )}
-                  </div>
+                  <label className="rotulo-campo">Categoria do Produto</label>
                   <div className="linha-input">
                     <input
                       type="text"
@@ -9975,14 +9928,7 @@ export default function App() {
             )}
 
             <div className="grupo-input">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <label className="rotulo-campo" style={{ marginBottom: 0 }}>Foto do Produto (Packshot Fundo Branco)</label>
-                {isProdutoBloqueadoParaEdicaoMestre && (
-                  <span style={{ fontSize: '0.72rem', color: '#0369a1', background: '#e0f2fe', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
-                    🔒 Foto Oficial Bloqueada
-                  </span>
-                )}
-              </div>
+              <label className="rotulo-campo">Foto do Produto (Packshot Fundo Branco)</label>
               {!isProdutoBloqueadoParaEdicaoMestre && (
                 <input
                   type="file"
@@ -9997,7 +9943,7 @@ export default function App() {
                 id="preview-foto"
                 style={{
                   background: '#ffffff',
-                  border: isProdutoBloqueadoParaEdicaoMestre ? '1px solid #bae6fd' : '1px solid #e2e8f0',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -10017,29 +9963,25 @@ export default function App() {
                       referrerPolicy="no-referrer"
                       style={{ maxHeight: '110px', maxWidth: '100%', objectFit: 'contain' }}
                     />
-                    <div
-                      style={{
-                        marginTop: '8px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        background: isProdutoBloqueadoParaEdicaoMestre ? '#f0f9ff' : '#f0fdf4',
-                        border: isProdutoBloqueadoParaEdicaoMestre ? '1px solid #bae6fd' : '1px solid #bbf7d0',
-                        borderRadius: '6px',
-                        padding: '4px 8px',
-                        fontSize: '0.75rem',
-                        color: isProdutoBloqueadoParaEdicaoMestre ? '#0369a1' : '#166534',
-                      }}
-                    >
-                      <span>
-                        {isProdutoBloqueadoParaEdicaoMestre ? (
-                          <>🔒 <b>Imagem Oficial do Banco Mestre</b> (Gerenciada pelo Dono do App)</>
-                        ) : (
-                          <>⚡ <b>Otimizada:</b> ~{calcularTamanhoImagemKB(fotoTemp)} KB</>
-                        )}
-                      </span>
-                      {!isProdutoBloqueadoParaEdicaoMestre && (
+                    {!isProdutoBloqueadoParaEdicaoMestre && (
+                      <div
+                        style={{
+                          marginTop: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                          background: '#f0fdf4',
+                          border: '1px solid #bbf7d0',
+                          borderRadius: '6px',
+                          padding: '4px 8px',
+                          fontSize: '0.75rem',
+                          color: '#166534',
+                        }}
+                      >
+                        <span>
+                          ⚡ <b>Otimizada:</b> ~{calcularTamanhoImagemKB(fotoTemp)} KB
+                        </span>
                         <button
                           type="button"
                           onClick={() => setFotoTemp('')}
@@ -10056,17 +9998,17 @@ export default function App() {
                         >
                           ✕ Remover
                         </button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <div style={{ textAlign: 'center', padding: '10px', color: '#94a3b8' }}>
                     <div style={{ fontSize: '0.82rem', marginBottom: '4px' }}>Sem foto vinculada</div>
-                    <div style={{ fontSize: '0.73rem', color: '#64748b' }}>
-                      {isProdutoBloqueadoParaEdicaoMestre
-                        ? '🔒 Este produto está cadastrado no Banco de Dados Central sem imagem anexada pelo Administrador.'
-                        : '💡 Envie fotos em qualquer resolução (celular/câmera/downloads): o sistema comprime automaticamente para o menor tamanho possível antes de salvar no banco.'}
-                    </div>
+                    {!isProdutoBloqueadoParaEdicaoMestre && (
+                      <div style={{ fontSize: '0.73rem', color: '#64748b' }}>
+                        💡 Envie fotos em qualquer resolução (celular/câmera/downloads): o sistema comprime automaticamente para o menor tamanho possível antes de salvar no banco.
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
