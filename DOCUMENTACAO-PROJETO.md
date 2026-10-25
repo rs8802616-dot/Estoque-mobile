@@ -104,6 +104,21 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 28]
+- **Blindagem do Catálogo Master e Bloqueio Estrito de Alteração de Nome, Marca, Categoria e Foto por Lojas:**
+  - **Solicitação do Usuário:** Bloquear a alteração do Nome Oficial, da Marca, da Categoria e da Foto do produto quando qualquer loja/adega colocar um código de barras que já esteja cadastrado no Catálogo Global, garantindo que o catálogo permaneça unificado, padronizado e sem duplicações de fotos ou nomes adulterados.
+  - **Implementações Técnicas (`src/App.tsx`):**
+    1. **Ativação da Trava `isProdutoBloqueadoParaEdicaoMestre`:**
+       - O identificador `isProdutoBloqueadoParaEdicaoMestre` agora avalia dinamicamente se o código de barras existe no `catalogoGlobal` e se a operação é feita no modo de estoque de loja (`modoCadastroItem === 'estoque'` ou `perfilAtivo !== 'dona_app'`).
+       - Ao bipar ou digitar um código de barras existente, os campos `cad-nome`, `cad-marca`, `cad-categoria` e o seletor de arquivos de foto ficam imediatamente desabilitados (`disabled` e `readOnly`) com os distintivos `🔒 Oficial do Catálogo Master` e `🔒 Foto Oficial Bloqueada`.
+       - Exibido banner visual em azul informativo: `🔒 Produto já cadastrado no Banco de Dados Central: A foto oficial, nome, marca e categoria são protegidos pelo Catálogo Master e não podem ser alterados por lojas/adegas.`
+    2. **Proteção no Processo de Salvamento (`salvarProduto`):**
+       - Quando uma loja salva um produto no estoque, o sistema verifica se o código já existe no Catálogo Master (`indexCat !== -1`).
+       - Em caso positivo, o Catálogo Global **NÃO É SOBREESCRITO**, preservando integralmente o nome, a marca, a categoria e a URL da foto do Firebase Storage.
+       - O registro de estoque da loja (`ItemEstoque`) herda os atributos oficiais canônicos, permitindo à loja gerenciar exclusivamente o que lhe pertence: **Preço de Venda, Preço de Custo, Quantidade, Lote e Validade**.
+  - **Atualização do Service Worker:**
+    - Versão do cache do PWA elevada para `estoque-mobile-pwa-v32` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-10-24 - Atualização 27]
 - **Migração e Armazenamento Próprio de 100% das 849 Imagens no Firebase Storage (`adega-delivery-pdv`):**
   - **Solicitação do Usuário:** Salvar todas as fotos de produtos dentro do seu próprio bucket do Firebase Storage, garantindo independência total de servidores de terceiros e imunidade contra links externos quebrados.

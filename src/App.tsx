@@ -742,8 +742,11 @@ export default function App() {
     return catalogoGlobal.find((c) => c.codigo?.trim() === codLimpo);
   }, [cadCod, catalogoGlobal, tipoProdutoCadastro]);
 
-  // Administradores e lojistas têm permissão total para atualizar nome, foto, marca e dados dos produtos
-  const isProdutoBloqueadoParaEdicaoMestre = false;
+  // Se o produto já existe no Catálogo Master e o usuário estiver cadastrando/editando estoque de loja,
+  // bloqueia edição de Nome Oficial, Marca, Categoria e Foto para garantir integridade e padronização absoluta
+  const isProdutoBloqueadoParaEdicaoMestre = Boolean(
+    produtoExistenteCatalogo && (perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque')
+  );
 
   // Stock Sale/Markdown Modal & Multi-Item Cart
   const [prodAtual, setProdAtual] = useState<ItemEstoque | null>(null);
@@ -4225,33 +4228,41 @@ export default function App() {
         !codigoFinal.startsWith('COK') &&
         codigoFinal.length >= 6;
 
+      let nomeFinal = nomeDigitado;
+      let marcaFinal = marcaDigitada;
+      let categoriaFinal = categoriaDigitada;
+
       if (!isInterno || ehCodigoComBarrasValido) {
         const novoCatalogo = [...catalogoGlobal];
         const indexCat = novoCatalogo.findIndex((c) => c.codigo === codigoFinal);
 
-        const dadosGlobal: ProdutoCatalogo = {
-          codigo: codigoFinal,
-          nome: nomeDigitado,
-          marca: marcaDigitada,
-          categoria: categoriaDigitada || 'Geral',
-          unidade_medida: 'un',
-          imagem: fotoFinal,
-          descricao: nomeDigitado,
-        };
-
         if (indexCat !== -1) {
-          novoCatalogo[indexCat] = dadosGlobal;
+          // PRODUTO JÁ EXISTE NO CATÁLOGO MASTER:
+          // Preserva o nome oficial, marca, categoria e foto do Catálogo Global (bloqueado contra alterações por lojas)
+          const catExistente = novoCatalogo[indexCat];
+          nomeFinal = catExistente.nome || nomeFinal;
+          marcaFinal = catExistente.marca || marcaFinal;
+          categoriaFinal = catExistente.categoria || categoriaFinal;
+          fotoFinal = catExistente.imagem || catExistente.foto || fotoFinal;
         } else {
+          // Produto totalmente novo que ainda não existia no Catálogo Master: adiciona novo registro
+          const dadosGlobal: ProdutoCatalogo = {
+            codigo: codigoFinal,
+            nome: nomeFinal,
+            marca: marcaFinal,
+            categoria: categoriaFinal || 'Geral',
+            unidade_medida: 'un',
+            imagem: fotoFinal,
+            descricao: nomeFinal,
+          };
           novoCatalogo.push(dadosGlobal);
+          setCatalogoGlobal(novoCatalogo);
+          safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novoCatalogo));
+          if (codigoFinal && fotoFinal && fotoFinal.length > 10) {
+            salvarImagemIndexedDB(codigoFinal, fotoFinal).catch(() => {});
+          }
+          await salvarProdutoCatalogoFirestore(dadosGlobal);
         }
-        setCatalogoGlobal(novoCatalogo);
-        safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novoCatalogo));
-        if (codigoFinal && fotoFinal && fotoFinal.length > 10) {
-          salvarImagemIndexedDB(codigoFinal, fotoFinal).catch(() => {});
-        }
-        
-        // SALVA DIRETAMENTE NO FIRESTORE (produtos_catalogo + catalogo_global + propaga para estoque de todas as lojas)
-        await salvarProdutoCatalogoFirestore(dadosGlobal);
       }
 
       // 2. Grava no Estoque da Loja Selecionada
@@ -4296,9 +4307,9 @@ export default function App() {
       const dadosItemEstoque: ItemEstoque = {
         codigo_barras: isInterno ? undefined : codigoFinal,
         codigo: codigoFinal,
-        nome: nomeDigitado,
-        marca: marcaDigitada || (isInterno ? 'Produção Própria / Adega' : ''),
-        categoria: categoriaDigitada || (isInterno ? '🍢 Balcão / Adega' : 'Geral'),
+        nome: nomeFinal,
+        marca: marcaFinal || (isInterno ? 'Produção Própria / Adega' : ''),
+        categoria: categoriaFinal || (isInterno ? '🍢 Balcão / Adega' : 'Geral'),
         quantidade: indexExistente !== -1 && !codigoEditando ? novoEstoque[indexExistente].quantidade + (isInterno && cadEstoqueIlimitado ? 0 : qtdDigitada) : qtdDigitada,
         lote: loteDigitado,
         validade: valDigitada,
@@ -4316,14 +4327,14 @@ export default function App() {
         novoEstoque.push(dadosItemEstoque);
       }
 
-      // Propaga o nome, marca, categoria e a nova foto para TODOS os outros lotes do mesmo código no estoque
+      // Propaga o nome, marca, categoria e a foto oficial para TODOS os outros lotes do mesmo código no estoque
       novoEstoque = novoEstoque.map((p) => {
         if (p.codigo === codigoFinal) {
           const itemAtualizado: ItemEstoque = {
             ...p,
-            nome: nomeDigitado,
-            marca: marcaDigitada || p.marca,
-            categoria: categoriaDigitada || p.categoria,
+            nome: nomeFinal,
+            marca: marcaFinal || p.marca,
+            categoria: categoriaFinal || p.categoria,
             foto: fotoFinal,
           };
           // Se for outro lote além do principal salvo, persiste no Firestore também
