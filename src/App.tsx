@@ -84,6 +84,7 @@ import { ConsultaProdutosModal } from './components/ConsultaProdutosModal';
 import {
   consultarProdutoBomJawaKitPorCodigo,
   buscarProdutosBomJawaKit,
+  obterProximoLoteParaFirestore,
 } from './lib/bomJawaKitApi';
 import {
   CATALOGO_AMBEV_OFICIAL,
@@ -154,6 +155,7 @@ import {
   salvarSupermercadoFirestore,
   salvarItemEstoqueFirestore,
   salvarProdutoCatalogoFirestore,
+  salvarLoteProdutosCatalogoFirestore,
   buscarProdutoCatalogoFirestore,
   buscarItemEstoquePorCodigoFirestore,
   salvarVendaFirestore,
@@ -3724,6 +3726,54 @@ export default function App() {
     if (item.categoria) setCadCategoria(item.categoria);
     if (item.fotoUrl) setFotoTemp(item.fotoUrl);
     setModalBuscaConsultaProdutosVisivel(false);
+  };
+
+  const [sincronizandoLoteFirebase, setSincronizandoLoteFirebase] = useState<boolean>(false);
+
+  const handleSincronizarLoteFirebase = async () => {
+    if (sincronizandoLoteFirebase) return;
+    const confirmou = window.confirm(
+      '📦 Enviar Próximos 1.000 Produtos ao Banco Master (Firebase)?\n\n' +
+        '• Esta ação grava 1.000 produtos offline no Catálogo Central.\n' +
+        '• Utilize quando seu limite diário estiver zerado ou com folga.\n\n' +
+        'Deseja iniciar o envio agora?'
+    );
+    if (!confirmou) return;
+
+    setSincronizandoLoteFirebase(true);
+    try {
+      const codigosAtuais = new Set(catalogoGlobal.map((c) => c.codigo));
+      const lote = await obterProximoLoteParaFirestore(codigosAtuais, 1000);
+      if (lote.length === 0) {
+        alert('🎉 Todos os produtos do catálogo já foram enviados para o Banco Master!');
+        setSincronizandoLoteFirebase(false);
+        return;
+      }
+
+      const novosConvertidos: ProdutoCatalogo[] = lote.map((p) => ({
+        codigo: p.ean,
+        nome: p.nomeProduto,
+        marca: p.marca || '',
+        categoria: p.categoria || 'Geral',
+        unidade_medida: 'un',
+        imagem: p.fotoUrl,
+        descricao: `${p.nomeProduto} — NCM: ${p.ncm || 'N/D'}`,
+      }));
+
+      await salvarLoteProdutosCatalogoFirestore(novosConvertidos);
+
+      const atualizado = [...catalogoGlobal, ...novosConvertidos];
+      setCatalogoGlobal(atualizado);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(atualizado));
+
+      alert(`✅ Lote de ${lote.length} produtos gravado com sucesso no Firebase!`);
+      executarBuscaConsultaProdutos(termoBuscaConsultaProdutos, 1, { forcarAtualizacao: true });
+    } catch (err: any) {
+      console.error('Erro ao sincronizar lote com Firebase:', err);
+      alert(`Aviso ao enviar lote: ${err?.message || err}`);
+    } finally {
+      setSincronizandoLoteFirebase(false);
+    }
   };
 
   // Obter nome do produto de forma centralizada, priorizando atualizações do Catálogo Master
@@ -10730,6 +10780,9 @@ export default function App() {
         totalEncontrados={totalResultadosConsultaProdutos}
         veioDoCache={veioDoCacheConsultaProdutos}
         totalEmCache={totalEmCacheConsultaProdutos}
+        isDonoApp={perfilAtivo === 'dona_app'}
+        onSincronizarLoteFirebase={handleSincronizarLoteFirebase}
+        sincronizandoLote={sincronizandoLoteFirebase}
         onSelecionarProduto={selecionarProdutoConsultaProdutos}
       />
 

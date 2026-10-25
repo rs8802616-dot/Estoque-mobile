@@ -31,6 +31,9 @@ interface ConsultaProdutosModalProps {
   totalEncontrados?: number;
   veioDoCache?: boolean;
   totalEmCache?: number;
+  isDonoApp?: boolean;
+  onSincronizarLoteFirebase?: () => void;
+  sincronizandoLote?: boolean;
   onSelecionarProduto: (produto: ProdutoConsultaProdutos) => void;
 }
 
@@ -46,6 +49,9 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
   totalEncontrados,
   veioDoCache,
   totalEmCache,
+  isDonoApp,
+  onSincronizarLoteFirebase,
+  sincronizandoLote,
   onSelecionarProduto,
 }) => {
   const [termoLocal, setTermoLocal] = useState<string>(termoBusca || 'Cerveja');
@@ -190,32 +196,58 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.01em' }}>
-                Catálogo Oficial Multi-API de Produtos & Códigos EAN
+                Catálogo Oficial de Produtos (+13.300 Produtos & EANs)
               </h2>
-              <p style={{ margin: 0, fontSize: '0.76rem', opacity: 0.92 }}>
-                Motor Duplo Ativo: <b>1º API Bluesoft Cosmos (Principal)</b> + <b>2º API BomJawaKit (Contingência)</b>
+              <p style={{ margin: 0, fontSize: '0.76rem', opacity: 0.95 }}>
+                ⚡ <b>Acervo 100% Offline Integrado:</b> 0 Requisições gastas • Produtos já existentes saem da lista
               </p>
             </div>
           </div>
-          <button
-            onClick={onFechar}
-            style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: 'none',
-              color: '#ffffff',
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '1.1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            title="Fechar"
-          >
-            ✕
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {isDonoApp && onSincronizarLoteFirebase && (
+              <button
+                type="button"
+                onClick={onSincronizarLoteFirebase}
+                disabled={sincronizandoLote}
+                style={{
+                  background: sincronizandoLote ? '#94a3b8' : '#10b981',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '6px 12px',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: sincronizandoLote ? 'wait' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                }}
+                title="Grava um lote de 1.000 produtos offline diretamente no seu Banco Central do Firebase"
+              >
+                <span>{sincronizandoLote ? '⏳ Enviando 1.000...' : '🚀 Enviar 1.000 ao Firebase'}</span>
+              </button>
+            )}
+            <button
+              onClick={onFechar}
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: 'none',
+                color: '#ffffff',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '1.1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="Fechar"
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Formulário de Busca, Filtros da API e Chips */}

@@ -104,6 +104,14 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-25 - Atualização 36]
+- **Catálogo Offline Integrado com +13.300 Produtos e Sincronização em Lotes de 1.000 ao Firebase:**
+  - **Estratégia Adotada Conforme Solicitação do Usuário:** Para proteger a cota diária do Firestore (já em 80%) e evitar cobranças ou interrupções, os 13.545 produtos e 31 categorias da API foram baixados e filtrados localmente em `public/catalogo-api-offline.json` (3.7MB).
+  - **Deduplicação Rigorosa:** Todos os 849 produtos já existentes no banco do usuário foram cruzados por código de barras e **188 duplicados foram removidos da lista** (restando 13.357 produtos estritamente novos).
+  - **Busca e Paginação 100% Offline (Zero Requisições):** No modal `ConsultaProdutosModal.tsx`, a pesquisa por qualquer categoria ou termo filtra instantaneamente em memória, sem gastar nenhuma requisição externa. Além disso, qualquer produto que o usuário cadastrar/já possuir sai automaticamente da lista.
+  - **Envio Controlado de 1.000 em 1.000 ao Firestore:** Implementada a funcionalidade `handleSincronizarLoteFirebase` exclusiva para o Dono do App, permitindo enviar lotes de 1.000 produtos ao Firebase apenas quando a cota diária resetar ou houver folga.
+  - **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v40` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 35]
 - **Isolamento Estrito do Cadastro no Banco Master (`modoCadastroItem === 'master'`) Sem Inserir no Estoque da Loja (`src/App.tsx`):**
   - **Problema Relatado:** Quando o Dono do App (`dona_app`) cadastrava um produto selecionando a opção **👑 Banco Master (Catálogo)**, o sistema salvava no catálogo global, mas também criava automaticamente um item inicial (`novoItemMasterFallback`) dentro do estoque da loja ativa (`estoque_${supermercadoAtual}` e coleção `estoque` no Firestore).

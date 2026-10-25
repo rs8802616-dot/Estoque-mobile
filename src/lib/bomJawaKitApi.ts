@@ -619,10 +619,98 @@ function normalizarTextoComparacao(str: string): string {
     .trim();
 }
 
+// ============================================================================
+// CATÁLOGO COMPLETO OFFLINE (+13.300 PRODUTOS E 31 CATEGORIAS SALVOS LOCALMENTE)
+// ============================================================================
+export interface ItemCatalogoOffline {
+  ean: string;
+  nomeProduto: string;
+  marca: string;
+  categoria: string;
+  categoriaSlug: string;
+  fotoUrl: string;
+  ncm: string;
+  fonte: string;
+}
+
+let catalogoOfflineMemoria: {
+  categorias: BomJawaKitCategoria[];
+  produtos: ItemCatalogoOffline[];
+} | null = null;
+
+let carregandoCatalogoOfflinePromessa: Promise<{
+  categorias: BomJawaKitCategoria[];
+  produtos: ItemCatalogoOffline[];
+}> | null = null;
+
+export async function carregarCatalogoOfflineJSON(): Promise<{
+  categorias: BomJawaKitCategoria[];
+  produtos: ItemCatalogoOffline[];
+}> {
+  if (catalogoOfflineMemoria && catalogoOfflineMemoria.produtos.length > 0) {
+    return catalogoOfflineMemoria;
+  }
+  if (carregandoCatalogoOfflinePromessa) {
+    return carregandoCatalogoOfflinePromessa;
+  }
+
+  carregandoCatalogoOfflinePromessa = (async () => {
+    try {
+      const res = await fetch('/catalogo-api-offline.json');
+      if (res.ok) {
+        const data = await res.json();
+        catalogoOfflineMemoria = {
+          categorias: data.categorias || [],
+          produtos: Array.isArray(data.produtos) ? data.produtos : [],
+        };
+        cacheCategoriasMemoria = catalogoOfflineMemoria.categorias;
+        return catalogoOfflineMemoria;
+      }
+    } catch (e) {
+      console.warn('Catálogo offline local ainda não disponível, usando fallback dinâmico:', e);
+    }
+    return { categorias: [], produtos: [] };
+  })();
+
+  const resultado = await carregandoCatalogoOfflinePromessa;
+  carregandoCatalogoOfflinePromessa = null;
+  return resultado;
+}
+
 /**
- * Busca produtos carregando um LOTE COMPLETO (até 200 produtos em 1 ÚNICA requisição)
- * e paginando localmente na memória/IndexedDB sem gastar novas requisições ao trocar de página
- * ou ao fechar e abrir o modal novamente.
+ * Obtém estatísticas do Catálogo Offline e produtos pendentes para sincronização ao Firebase
+ */
+export async function obterEstatisticasCatalogoOffline(codigosJaNoBanco: Set<string> | string[]): Promise<{
+  totalOffline: number;
+  totalPendentes: number;
+  totalJaNoBanco: number;
+}> {
+  const offline = await carregarCatalogoOfflineJSON();
+  const setExistentes = codigosJaNoBanco instanceof Set ? codigosJaNoBanco : new Set(codigosJaNoBanco);
+  const pendentes = offline.produtos.filter((p) => !setExistentes.has(p.ean));
+  return {
+    totalOffline: offline.produtos.length,
+    totalPendentes: pendentes.length,
+    totalJaNoBanco: setExistentes.size,
+  };
+}
+
+/**
+ * Retorna o próximo lote de produtos pendentes (ex: 1.000 itens) para o Dono do App enviar ao Firestore
+ */
+export async function obterProximoLoteParaFirestore(
+  codigosJaNoBanco: Set<string> | string[],
+  tamanhoLote = 1000
+): Promise<ItemCatalogoOffline[]> {
+  const offline = await carregarCatalogoOfflineJSON();
+  const setExistentes = codigosJaNoBanco instanceof Set ? codigosJaNoBanco : new Set(codigosJaNoBanco);
+  const pendentes = offline.produtos.filter((p) => !setExistentes.has(p.ean));
+  return pendentes.slice(0, tamanhoLote);
+}
+
+/**
+ * Busca produtos priorizando o Catálogo Geral Offline (+13.300 produtos já baixados localmente)
+ * com 0 requisições externas e garantindo que produtos já cadastrados saiam da lista.
  */
 export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): Promise<{
   produtos: ProdutoNormalizadoBomJawaKit[];
@@ -635,87 +723,76 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
   const rawQuery = (opcoes.query || '').trim();
   const page = opcoes.page && opcoes.page > 0 ? opcoes.page : 1;
   const pageSize = opcoes.limit && opcoes.limit <= 100 ? opcoes.limit : 24;
-  const catNormalizada = (opcoes.categoria || '').trim();
-  const comImg = opcoes.comImagem !== undefined ? opcoes.comImagem : true;
-  const chaveCache = `${normalizarTextoComparacao(rawQuery)}|${catNormalizada}|${comImg ? '1' : '0'}`;
+  const catSelecionada = (opcoes.categoria || '').trim();
+  const termoNorm = normalizarTextoComparacao(rawQuery);
 
-  // 1. Verifica se este termo/categoria já foi carregado antes (Memória ou IndexedDB)
-  if (!opcoes.forcarAtualizacao) {
-    const cacheExistente = await lerConsultaCachePersistente(chaveCache);
-    if (cacheExistente && cacheExistente.produtos.length > 0) {
-      const inicio = (page - 1) * pageSize;
-      const fim = inicio + pageSize;
-      // Se a página solicitada está dentro dos produtos já baixados em lote (ex: páginas 1 a 8 = 200 itens),
-      // retorna INSTANTANEAMENTE com ZERO requisições à API!
-      if (inicio < cacheExistente.produtos.length || cacheExistente.produtos.length >= cacheExistente.totalRemoto) {
-        return {
-          produtos: cacheExistente.produtos.slice(inicio, fim),
-          total: Math.max(cacheExistente.totalRemoto, cacheExistente.produtos.length),
-          page,
-          query: rawQuery,
-          veioDoCache: true,
-          totalEmCache: cacheExistente.produtos.length,
-        };
+  // Conjunto de códigos que o usuário já tem no estoque/banco central (devem sair da lista)
+  const codigosUsuario = new Set<string>();
+  if (Array.isArray(opcoes.catalogoLocalExtra)) {
+    opcoes.catalogoLocalExtra.forEach((p) => {
+      if (p.codigo) codigosUsuario.add(String(p.codigo).trim());
+    });
+  }
+
+  // 1. CARREGAMENTO DO CATÁLOGO GERAL OFFLINE (13.357 produtos locais com 0 requisições!)
+  const offline = await carregarCatalogoOfflineJSON();
+  if (offline.produtos.length > 0) {
+    const listaFiltradaOffline = offline.produtos.filter((p) => {
+      // 1. Se o usuário já tem o produto no banco dele, SAI DA LISTA
+      if (codigosUsuario.has(p.ean)) return false;
+
+      // 2. Filtro por Categoria / Slug
+      if (catSelecionada) {
+        const bateSlug = p.categoriaSlug === catSelecionada;
+        const bateNomeCat = normalizarTextoComparacao(p.categoria).includes(normalizarTextoComparacao(catSelecionada));
+        if (!bateSlug && !bateNomeCat) return false;
       }
+
+      // 3. Filtro por Termo de Busca (Nome, Marca ou EAN)
+      if (termoNorm) {
+        const nomeNorm = normalizarTextoComparacao(p.nomeProduto);
+        const marcaNorm = normalizarTextoComparacao(p.marca);
+        const catNorm = normalizarTextoComparacao(p.categoria);
+        const bateu =
+          p.ean.includes(termoNorm) ||
+          nomeNorm.includes(termoNorm) ||
+          marcaNorm.includes(termoNorm) ||
+          catNorm.includes(termoNorm);
+        if (!bateu) return false;
+      }
+
+      return true;
+    });
+
+    const inicio = (page - 1) * pageSize;
+    const fim = inicio + pageSize;
+    const paginados = listaFiltradaOffline.slice(inicio, fim).map((p) => ({
+      ean: p.ean,
+      nomeProduto: p.nomeProduto,
+      marca: p.marca || '',
+      categoria: p.categoria || 'Geral',
+      fotoUrl: p.fotoUrl,
+      ncm: p.ncm || '',
+      descricao: p.nomeProduto,
+      temImagem: true,
+      fonte: 'Catálogo Offline Local (0 requisições gastas)',
+    }));
+
+    // Se encontrou no acervo local ou se o acervo local está ativo, retorna direto sem tocar na API!
+    if (paginados.length > 0 || !opcoes.forcarAtualizacao) {
+      return {
+        produtos: paginados,
+        total: listaFiltradaOffline.length,
+        page,
+        query: rawQuery,
+        veioDoCache: true,
+        totalEmCache: listaFiltradaOffline.length,
+      };
     }
   }
 
-  // 2. Caso ainda não esteja no cache (ou o usuário clicou em atualizar / avançou além dos 200 primeiros itens),
-  // faz UMA ÚNICA REQUISIÇÃO buscando 200 produtos de uma só vez (batch_size = 200)!
-  const BATCH_SIZE_UNICA_REQUISICAO = 200;
-  const batchIndex = Math.floor(((page - 1) * pageSize) / BATCH_SIZE_UNICA_REQUISICAO);
-  const batchOffset = batchIndex * BATCH_SIZE_UNICA_REQUISICAO;
-
+  // 2. Fallback remoto de contingência (somente se o catálogo offline ainda não foi baixado)
   const apiKey = getBomJawaKitApiKey();
-  const isNumericBarcode = /^\d{4,}$/.test(rawQuery);
-
-  const listaCombinada: ProdutoNormalizadoBomJawaKit[] = [];
-  const eansAdicionados = new Set<string>();
-
-  // Se for o primeiro lote (batchIndex === 0) e houver catálogo local do app (849 produtos oficiais),
-  // inclui também os produtos locais correspondentes sem gastar requisição!
-  if (batchIndex === 0 && Array.isArray(opcoes.catalogoLocalExtra) && opcoes.catalogoLocalExtra.length > 0) {
-    const termoNorm = normalizarTextoComparacao(rawQuery);
-    const catNorm = normalizarTextoComparacao(catNormalizada);
-    for (const itemLocal of opcoes.catalogoLocalExtra) {
-      const cod = String(itemLocal.codigo || '').trim();
-      const nome = String(itemLocal.nome || '').trim();
-      const foto = String(itemLocal.imagem || itemLocal.foto || '').trim();
-      if (!cod || !nome) continue;
-      if (comImg && !foto) continue;
-
-      const nomeNorm = normalizarTextoComparacao(nome);
-      const marcaNorm = normalizarTextoComparacao(itemLocal.marca || '');
-      const itemCatNorm = normalizarTextoComparacao(itemLocal.categoria || '');
-
-      const bateTermo =
-        !termoNorm ||
-        nomeNorm.includes(termoNorm) ||
-        marcaNorm.includes(termoNorm) ||
-        itemCatNorm.includes(termoNorm) ||
-        cod.includes(termoNorm);
-      const bateCat = !catNorm || itemCatNorm.includes(catNorm.replace(/-/g, ' '));
-
-      if (bateTermo && bateCat && !eansAdicionados.has(cod)) {
-        listaCombinada.push({
-          ean: cod,
-          nomeProduto: nome,
-          marca: itemLocal.marca || '',
-          categoria: itemLocal.categoria || 'Bebidas',
-          fotoUrl: foto,
-          ncm: '',
-          descricao: nome,
-          temImagem: Boolean(foto),
-          fonte: 'Catálogo Oficial Integrado (Firebase)',
-        });
-        eansAdicionados.add(cod);
-      }
-    }
-  }
-
-  // Consulta 1 ÚNICA VEZ na API BomJawaKit trazendo 200 produtos de uma vez
-  let totalBomJawa = 0;
-
   const executarFetchBomJawa = async (params: URLSearchParams) => {
     const url = `${BOMJAWAKIT_API_BASE}/api/v1/produtos?${params.toString()}`;
     const controller = new AbortController();
@@ -866,6 +943,15 @@ export async function listarCategoriasBomJawaKit(): Promise<BomJawaKitCategoria[
   if (cacheCategoriasMemoria && cacheCategoriasMemoria.length > 0) {
     return cacheCategoriasMemoria;
   }
+
+  // 1. Tenta carregar as categorias do catálogo offline (0 requisições)
+  try {
+    const offline = await carregarCatalogoOfflineJSON();
+    if (offline.categorias && offline.categorias.length > 0) {
+      cacheCategoriasMemoria = offline.categorias;
+      return offline.categorias;
+    }
+  } catch {}
 
   // Tenta ler do localStorage primeiro para não gastar requisição ao reabrir o modal
   if (typeof window !== 'undefined') {

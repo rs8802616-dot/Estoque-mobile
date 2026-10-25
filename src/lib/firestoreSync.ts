@@ -10,6 +10,7 @@ import {
   getDocs,
   getDoc,
   getFirestore,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { safeLocalStorageSet } from './safeStorage';
@@ -674,6 +675,26 @@ export async function salvarProdutoCatalogoFirestore(prod: ProdutoCatalogo) {
       console.warn('Aviso: Permissão de escrita pendente no Firestore para catálogo de produtos.');
     } else {
       console.warn('Aviso ao salvar no catalogo global no Firestore (mantido localmente offline):', err);
+    }
+  }
+}
+
+// Salva Lote de Produtos no Catálogo Global com writeBatch (em blocos de 450)
+export async function salvarLoteProdutosCatalogoFirestore(prods: ProdutoCatalogo[]) {
+  if (!Array.isArray(prods) || prods.length === 0) return;
+  const TAMANHO_CHUNK = 450;
+  for (let i = 0; i < prods.length; i += TAMANHO_CHUNK) {
+    const chunk = prods.slice(i, i + TAMANHO_CHUNK);
+    const batch = writeBatch(db);
+    chunk.forEach((prod) => {
+      const safeCod = sanitizarIdDoc(prod.codigo || 'semcod');
+      const docGlobalRef = doc(db, 'catalogo_global', safeCod);
+      batch.set(docGlobalRef, limparUndefined(prod), { merge: true });
+    });
+    try {
+      await batch.commit();
+    } catch (err) {
+      console.warn('Aviso ao gravar lote no catalogo_global:', err);
     }
   }
 }

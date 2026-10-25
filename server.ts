@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import {
@@ -1047,6 +1048,17 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
     res.setHeader("Content-Type", "application/manifest+json");
     const manifestPath = path.join(process.cwd(), "public", "manifest.json");
     res.sendFile(manifestPath);
+  });
+
+  // Rota explícita para o Catálogo Offline Completo (+13.300 Produtos)
+  app.get("/catalogo-api-offline.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    const p = path.join(process.cwd(), "public", "catalogo-api-offline.json");
+    if (fs.existsSync(p)) return res.sendFile(p);
+    const pDist = path.join(process.cwd(), "dist", "catalogo-api-offline.json");
+    if (fs.existsSync(pDist)) return res.sendFile(pDist);
+    res.status(404).json({ error: "Arquivo offline não encontrado" });
   });
 
   if (process.env.NODE_ENV !== "production") {
