@@ -24,11 +24,13 @@ interface ConsultaProdutosModalProps {
   onBuscar: (
     termo?: string,
     pagina?: number,
-    opcoes?: { categoria?: string; comImagem?: boolean }
+    opcoes?: { categoria?: string; comImagem?: boolean; forcarAtualizacao?: boolean }
   ) => void;
   carregando: boolean;
   resultados: ProdutoConsultaProdutos[];
   totalEncontrados?: number;
+  veioDoCache?: boolean;
+  totalEmCache?: number;
   onSelecionarProduto: (produto: ProdutoConsultaProdutos) => void;
 }
 
@@ -42,11 +44,26 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
   carregando,
   resultados,
   totalEncontrados,
+  veioDoCache,
+  totalEmCache,
   onSelecionarProduto,
 }) => {
   const [termoLocal, setTermoLocal] = useState<string>(termoBusca || 'Cerveja');
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('');
-  const [somenteComImagem, setSomenteComImagem] = useState<boolean>(true);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>(() => {
+    try {
+      return localStorage.getItem('filtro_cat_consulta_api') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [somenteComImagem, setSomenteComImagem] = useState<boolean>(() => {
+    try {
+      const salvo = localStorage.getItem('filtro_img_consulta_api');
+      return salvo !== null ? salvo === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
   const [categoriasApi, setCategoriasApi] = useState<BomJawaKitCategoria[]>([]);
 
   useEffect(() => {
@@ -80,12 +97,18 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
     novoTermo: string,
     novaPagina: number = 1,
     novaCategoria: string = categoriaSelecionada,
-    novoComImagem: boolean = somenteComImagem
+    novoComImagem: boolean = somenteComImagem,
+    forcarAtualizacao: boolean = false
   ) => {
+    try {
+      localStorage.setItem('filtro_cat_consulta_api', novaCategoria);
+      localStorage.setItem('filtro_img_consulta_api', String(novoComImagem));
+    } catch {}
     onTermoChange(novoTermo);
     onBuscar(novoTermo, novaPagina, {
       categoria: novaCategoria,
       comImagem: novoComImagem,
+      forcarAtualizacao,
     });
   };
 
@@ -563,13 +586,29 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
             gap: '10px',
           }}
         >
-          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             {resultados.length > 0 && (
               <>
-                Página <b>{paginaAtual}</b>
-                {typeof totalEncontrados === 'number' && totalEncontrados > 0
-                  ? ` • ${totalEncontrados} produto(s) encontrado(s)`
-                  : ''}
+                <span>
+                  Página <b>{paginaAtual}</b>
+                  {typeof totalEncontrados === 'number' && totalEncontrados > 0
+                    ? ` • ${totalEncontrados} produto(s) encontrado(s)`
+                    : ''}
+                </span>
+                <span
+                  style={{
+                    background: '#dcfce7',
+                    color: '#166534',
+                    border: '1px solid #bbf7d0',
+                    borderRadius: '12px',
+                    padding: '2px 8px',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                  }}
+                  title="Todos os produtos desta busca ficam salvos na memória do seu dispositivo: você pode fechar, cadastrar e voltar ou trocar de página sem gastar nenhuma requisição!"
+                >
+                  ⚡ {veioDoCache ? 'Memória Local (0 requisições)' : `Lote salvo na memória (${totalEmCache || resultados.length} itens)`}
+                </span>
               </>
             )}
           </div>

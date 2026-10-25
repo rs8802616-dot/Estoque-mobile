@@ -375,12 +375,17 @@ export async function consultarProdutoBomJawaKitPorCodigo(
   const cleanCode = (barcode || '').trim();
   if (!cleanCode) return null;
 
+  if (cachePorCodigoMemoria.has(cleanCode)) {
+    return cachePorCodigoMemoria.get(cleanCode)!;
+  }
+
   // 1º PRIORIDADE MÁXIMA: API Bluesoft Cosmos
   const resultadoCosmos = await consultarProdutoCosmosBluesoftPorCodigo(cleanCode);
 
   if (resultadoCosmos && resultadoCosmos.nomeProduto) {
     // Se a Bluesoft Cosmos trouxe tudo (nome, marca, categoria e foto), retorna imediatamente!
     if (resultadoCosmos.categoria && resultadoCosmos.fotoUrl) {
+      cachePorCodigoMemoria.set(cleanCode, resultadoCosmos);
       return resultadoCosmos;
     }
 
@@ -388,7 +393,7 @@ export async function consultarProdutoBomJawaKitPorCodigo(
     try {
       const complementoBomJawa = await consultarApenasBomJawaKitPorCodigo(cleanCode);
       if (complementoBomJawa) {
-        return {
+        const combinado = {
           ...resultadoCosmos,
           marca: resultadoCosmos.marca || complementoBomJawa.marca || '',
           categoria: resultadoCosmos.categoria || complementoBomJawa.categoria || '',
@@ -399,15 +404,19 @@ export async function consultarProdutoBomJawaKitPorCodigo(
           temImagem: Boolean(complementoBomJawa.temImagem || resultadoCosmos.temImagem),
           fonte: 'Bluesoft Cosmos + BomJawaKit (Integrado)',
         };
+        cachePorCodigoMemoria.set(cleanCode, combinado);
+        return combinado;
       }
     } catch {}
 
+    cachePorCodigoMemoria.set(cleanCode, resultadoCosmos);
     return resultadoCosmos;
   }
 
   // 2º CONTINGÊNCIA AUTOMÁTICA: Se não tinha na Bluesoft Cosmos ou se a Bluesoft excedeu o limite, busca na BomJawaKit
   const resultadoBomJawa = await consultarApenasBomJawaKitPorCodigo(cleanCode);
   if (resultadoBomJawa && resultadoBomJawa.nomeProduto) {
+    cachePorCodigoMemoria.set(cleanCode, resultadoBomJawa);
     return resultadoBomJawa;
   }
 
@@ -510,60 +519,207 @@ export interface OpcoesBuscaBomJawaKit {
   comImagem?: boolean;
   page?: number;
   limit?: number;
+  forcarAtualizacao?: boolean;
+  catalogoLocalExtra?: Array<{
+    codigo: string;
+    nome: string;
+    marca?: string;
+    categoria?: string;
+    imagem?: string;
+    foto?: string;
+  }>;
+}
+
+// ============================================================================
+// CACHE PERSISTENTE EM MEMÓRIA + INDEXEDDB (ZERO REQUISIÇÕES REPETIDAS)
+// ============================================================================
+interface EntradaCacheConsulta {
+  produtos: ProdutoNormalizadoBomJawaKit[];
+  totalRemoto: number;
+  timestamp: number;
+}
+
+const cacheConsultasMemoria = new Map<string, EntradaCacheConsulta>();
+const cachePorCodigoMemoria = new Map<string, ProdutoNormalizadoBomJawaKit>();
+let cacheCategoriasMemoria: BomJawaKitCategoria[] | null = null;
+const CACHE_DB_NAME = 'EstoqueMobileApiCacheDB';
+const CACHE_STORE_CONSULTAS = 'consultas_api';
+const CACHE_STORE_META = 'meta_api';
+
+function abrirCacheApiDB(): Promise<IDBDatabase | null> {
+  if (typeof window === 'undefined' || !window.indexedDB) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    try {
+      const req = window.indexedDB.open(CACHE_DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(CACHE_STORE_CONSULTAS)) {
+          db.createObjectStore(CACHE_STORE_CONSULTAS);
+        }
+        if (!db.objectStoreNames.contains(CACHE_STORE_META)) {
+          db.createObjectStore(CACHE_STORE_META);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+async function lerConsultaCachePersistente(chave: string): Promise<EntradaCacheConsulta | null> {
+  if (cacheConsultasMemoria.has(chave)) {
+    return cacheConsultasMemoria.get(chave)!;
+  }
+  const db = await abrirCacheApiDB();
+  if (!db) return null;
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(CACHE_STORE_CONSULTAS, 'readonly');
+      const store = tx.objectStore(CACHE_STORE_CONSULTAS);
+      const req = store.get(chave);
+      req.onsuccess = () => {
+        const val = req.result as EntradaCacheConsulta | undefined;
+        if (val && Array.isArray(val.produtos) && val.produtos.length > 0) {
+          cacheConsultasMemoria.set(chave, val);
+          val.produtos.forEach((p) => {
+            if (p.ean) cachePorCodigoMemoria.set(p.ean, p);
+          });
+          resolve(val);
+        } else {
+          resolve(null);
+        }
+      };
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+async function salvarConsultaCachePersistente(chave: string, entrada: EntradaCacheConsulta): Promise<void> {
+  cacheConsultasMemoria.set(chave, entrada);
+  entrada.produtos.forEach((p) => {
+    if (p.ean) cachePorCodigoMemoria.set(p.ean, p);
+  });
+  const db = await abrirCacheApiDB();
+  if (!db) return;
+  try {
+    const tx = db.transaction(CACHE_STORE_CONSULTAS, 'readwrite');
+    tx.objectStore(CACHE_STORE_CONSULTAS).put(entrada, chave);
+  } catch {}
+}
+
+function normalizarTextoComparacao(str: string): string {
+  return (str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
 }
 
 /**
- * Busca produtos paginados priorizando PRIMEIRO a API 1 (Bluesoft Cosmos) e em seguida a API 2 (BomJawaKit)
- * - Se a Bluesoft Cosmos exceder o limite ou não tiver todos os produtos, a BomJawaKit complementa automaticamente.
+ * Busca produtos carregando um LOTE COMPLETO (até 200 produtos em 1 ÚNICA requisição)
+ * e paginando localmente na memória/IndexedDB sem gastar novas requisições ao trocar de página
+ * ou ao fechar e abrir o modal novamente.
  */
 export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): Promise<{
   produtos: ProdutoNormalizadoBomJawaKit[];
   total: number;
   page: number;
   query: string;
+  veioDoCache?: boolean;
+  totalEmCache?: number;
 }> {
   const rawQuery = (opcoes.query || '').trim();
   const page = opcoes.page && opcoes.page > 0 ? opcoes.page : 1;
-  const limit = opcoes.limit && opcoes.limit <= 200 ? opcoes.limit : 24;
-  const offset = (page - 1) * limit;
+  const pageSize = opcoes.limit && opcoes.limit <= 100 ? opcoes.limit : 24;
+  const catNormalizada = (opcoes.categoria || '').trim();
+  const comImg = opcoes.comImagem !== undefined ? opcoes.comImagem : true;
+  const chaveCache = `${normalizarTextoComparacao(rawQuery)}|${catNormalizada}|${comImg ? '1' : '0'}`;
+
+  // 1. Verifica se este termo/categoria já foi carregado antes (Memória ou IndexedDB)
+  if (!opcoes.forcarAtualizacao) {
+    const cacheExistente = await lerConsultaCachePersistente(chaveCache);
+    if (cacheExistente && cacheExistente.produtos.length > 0) {
+      const inicio = (page - 1) * pageSize;
+      const fim = inicio + pageSize;
+      // Se a página solicitada está dentro dos produtos já baixados em lote (ex: páginas 1 a 8 = 200 itens),
+      // retorna INSTANTANEAMENTE com ZERO requisições à API!
+      if (inicio < cacheExistente.produtos.length || cacheExistente.produtos.length >= cacheExistente.totalRemoto) {
+        return {
+          produtos: cacheExistente.produtos.slice(inicio, fim),
+          total: Math.max(cacheExistente.totalRemoto, cacheExistente.produtos.length),
+          page,
+          query: rawQuery,
+          veioDoCache: true,
+          totalEmCache: cacheExistente.produtos.length,
+        };
+      }
+    }
+  }
+
+  // 2. Caso ainda não esteja no cache (ou o usuário clicou em atualizar / avançou além dos 200 primeiros itens),
+  // faz UMA ÚNICA REQUISIÇÃO buscando 200 produtos de uma só vez (batch_size = 200)!
+  const BATCH_SIZE_UNICA_REQUISICAO = 200;
+  const batchIndex = Math.floor(((page - 1) * pageSize) / BATCH_SIZE_UNICA_REQUISICAO);
+  const batchOffset = batchIndex * BATCH_SIZE_UNICA_REQUISICAO;
+
   const apiKey = getBomJawaKitApiKey();
   const isNumericBarcode = /^\d{4,}$/.test(rawQuery);
 
   const listaCombinada: ProdutoNormalizadoBomJawaKit[] = [];
   const eansAdicionados = new Set<string>();
 
-  // 1º PRIORIDADE PRINCIPAL: Consultar PRIMEIRO a API Bluesoft Cosmos (quando houver termo de busca e sem filtro exclusivo de slug de categoria da BomJawaKit)
-  if (rawQuery && !opcoes.categoria) {
-    try {
-      let resultadosCosmos: ProdutoNormalizadoBomJawaKit[] = [];
-      if (isNumericBarcode) {
-        const itemUnico = await consultarProdutoCosmosBluesoftPorCodigo(rawQuery);
-        if (itemUnico) resultadosCosmos = [itemUnico];
-      } else {
-        resultadosCosmos = await buscarProdutosCosmosBluesoft(rawQuery, page);
-      }
+  // Se for o primeiro lote (batchIndex === 0) e houver catálogo local do app (849 produtos oficiais),
+  // inclui também os produtos locais correspondentes sem gastar requisição!
+  if (batchIndex === 0 && Array.isArray(opcoes.catalogoLocalExtra) && opcoes.catalogoLocalExtra.length > 0) {
+    const termoNorm = normalizarTextoComparacao(rawQuery);
+    const catNorm = normalizarTextoComparacao(catNormalizada);
+    for (const itemLocal of opcoes.catalogoLocalExtra) {
+      const cod = String(itemLocal.codigo || '').trim();
+      const nome = String(itemLocal.nome || '').trim();
+      const foto = String(itemLocal.imagem || itemLocal.foto || '').trim();
+      if (!cod || !nome) continue;
+      if (comImg && !foto) continue;
 
-      for (const itemC of resultadosCosmos) {
-        const chave = itemC.ean || itemC.nomeProduto;
-        if (chave && !eansAdicionados.has(chave)) {
-          listaCombinada.push(itemC);
-          eansAdicionados.add(chave);
-        }
+      const nomeNorm = normalizarTextoComparacao(nome);
+      const marcaNorm = normalizarTextoComparacao(itemLocal.marca || '');
+      const itemCatNorm = normalizarTextoComparacao(itemLocal.categoria || '');
+
+      const bateTermo =
+        !termoNorm ||
+        nomeNorm.includes(termoNorm) ||
+        marcaNorm.includes(termoNorm) ||
+        itemCatNorm.includes(termoNorm) ||
+        cod.includes(termoNorm);
+      const bateCat = !catNorm || itemCatNorm.includes(catNorm.replace(/-/g, ' '));
+
+      if (bateTermo && bateCat && !eansAdicionados.has(cod)) {
+        listaCombinada.push({
+          ean: cod,
+          nomeProduto: nome,
+          marca: itemLocal.marca || '',
+          categoria: itemLocal.categoria || 'Bebidas',
+          fotoUrl: foto,
+          ncm: '',
+          descricao: nome,
+          temImagem: Boolean(foto),
+          fonte: 'Catálogo Oficial Integrado (Firebase)',
+        });
+        eansAdicionados.add(cod);
       }
-    } catch (err) {
-      console.warn('Aviso ao consultar Bluesoft Cosmos na busca principal:', err);
     }
   }
 
-  // 2º CONTINGÊNCIA E COMPLEMENTO: Consultar a API BomJawaKit para:
-  // - Assumir integralmente caso a Bluesoft Cosmos tenha atingido o limite diário (listaCombinada vazia)
-  // - Complementar com produtos que não existem na Bluesoft Cosmos ou quando filtrar por categoria específica
+  // Consulta 1 ÚNICA VEZ na API BomJawaKit trazendo 200 produtos de uma vez
   let totalBomJawa = 0;
 
   const executarFetchBomJawa = async (params: URLSearchParams) => {
     const url = `${BOMJAWAKIT_API_BASE}/api/v1/produtos?${params.toString()}`;
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 7500);
+    const timeout = setTimeout(() => controller.abort(), 8500);
 
     try {
       const r = await fetch(url, {
@@ -589,13 +745,13 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
 
   try {
     const baseParams = new URLSearchParams();
-    baseParams.set('limit', String(limit));
-    baseParams.set('offset', String(offset));
+    baseParams.set('limit', String(BATCH_SIZE_UNICA_REQUISICAO));
+    baseParams.set('offset', String(batchOffset));
 
-    if (opcoes.categoria && opcoes.categoria.trim()) {
-      baseParams.set('categoria', opcoes.categoria.trim());
+    if (catNormalizada) {
+      baseParams.set('categoria', catNormalizada);
     }
-    if (opcoes.comImagem === true) {
+    if (comImg === true) {
       baseParams.set('com_imagem', 'true');
     }
 
@@ -626,7 +782,7 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       resultadoBJ = await executarFetchBomJawa(paramsHifen);
     }
 
-    if (resultadoBJ.itens.length === 0 && opcoes.comImagem === true && rawQuery) {
+    if (resultadoBJ.itens.length === 0 && comImg === true && rawQuery) {
       const paramsSemFiltroImg = new URLSearchParams(baseParams);
       paramsSemFiltroImg.delete('com_imagem');
       resultadoBJ = await executarFetchBomJawa(paramsSemFiltroImg);
@@ -643,22 +799,88 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       }
     }
   } catch (err) {
-    console.warn('Erro ao complementar busca com API BomJawaKit:', err);
+    console.warn('Erro ao consultar lote de produtos na API BomJawaKit:', err);
   }
 
+  // Só aciona a Bluesoft Cosmos se a busca acima não retornou produtos (economizando requisições!)
+  if (listaCombinada.length === 0 && rawQuery && !catNormalizada) {
+    try {
+      let resultadosCosmos: ProdutoNormalizadoBomJawaKit[] = [];
+      if (isNumericBarcode) {
+        const itemUnico = await consultarProdutoCosmosBluesoftPorCodigo(rawQuery);
+        if (itemUnico) resultadosCosmos = [itemUnico];
+      } else {
+        resultadosCosmos = await buscarProdutosCosmosBluesoft(rawQuery, page);
+      }
+
+      for (const itemC of resultadosCosmos) {
+        const chave = itemC.ean || itemC.nomeProduto;
+        if (chave && !eansAdicionados.has(chave)) {
+          listaCombinada.push(itemC);
+          eansAdicionados.add(chave);
+        }
+      }
+    } catch (err) {
+      console.warn('Aviso ao consultar Bluesoft Cosmos:', err);
+    }
+  }
+
+  // Mescla com o cache anterior (caso esteja carregando a partir do item 201+) e persiste no IndexedDB
+  const cacheAnterior = await lerConsultaCachePersistente(chaveCache);
+  let listaAcumulada = listaCombinada;
+  if (batchIndex > 0 && cacheAnterior && cacheAnterior.produtos.length > 0) {
+    const mapaAcumulado = new Map<string, ProdutoNormalizadoBomJawaKit>();
+    cacheAnterior.produtos.forEach((p) => mapaAcumulado.set(p.ean || p.nomeProduto, p));
+    listaCombinada.forEach((p) => mapaAcumulado.set(p.ean || p.nomeProduto, p));
+    listaAcumulada = Array.from(mapaAcumulado.values());
+  }
+
+  const totalFinal = Math.max(totalBomJawa, listaAcumulada.length);
+
+  if (listaAcumulada.length > 0) {
+    await salvarConsultaCachePersistente(chaveCache, {
+      produtos: listaAcumulada,
+      totalRemoto: totalFinal,
+      timestamp: Date.now(),
+    });
+  }
+
+  const inicio = (page - 1) * pageSize;
+  const fim = inicio + pageSize;
+
   return {
-    produtos: listaCombinada,
-    total: Math.max(totalBomJawa, listaCombinada.length),
+    produtos: listaAcumulada.slice(inicio, fim),
+    total: totalFinal,
     page,
     query: rawQuery,
+    veioDoCache: false,
+    totalEmCache: listaAcumulada.length,
   };
 }
 
 /**
- * Lista todas as categorias disponíveis na API BomJawaKit
+ * Lista todas as categorias disponíveis na API BomJawaKit com cache permanente
  * Endpoint: GET /api/v1/categorias
  */
 export async function listarCategoriasBomJawaKit(): Promise<BomJawaKitCategoria[]> {
+  if (cacheCategoriasMemoria && cacheCategoriasMemoria.length > 0) {
+    return cacheCategoriasMemoria;
+  }
+
+  // Tenta ler do localStorage primeiro para não gastar requisição ao reabrir o modal
+  if (typeof window !== 'undefined') {
+    try {
+      const salvo = localStorage.getItem('cache_categorias_bomjawakit_v1');
+      if (salvo) {
+        const parsed = JSON.parse(salvo);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          cacheCategoriasMemoria = parsed;
+          return parsed;
+        }
+      }
+    } catch {}
+  }
+
   try {
     const r = await fetch(`${BOMJAWAKIT_API_BASE}/api/v1/categorias`, {
       method: 'GET',
@@ -669,7 +891,16 @@ export async function listarCategoriasBomJawaKit(): Promise<BomJawaKitCategoria[
     });
     if (!r.ok) return [];
     const dados = await r.json();
-    return Array.isArray(dados) ? dados : [];
+    if (Array.isArray(dados) && dados.length > 0) {
+      cacheCategoriasMemoria = dados;
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('cache_categorias_bomjawakit_v1', JSON.stringify(dados));
+        } catch {}
+      }
+      return dados;
+    }
+    return [];
   } catch (err) {
     console.warn('Erro ao listar categorias da API BomJawaKit:', err);
     return [];

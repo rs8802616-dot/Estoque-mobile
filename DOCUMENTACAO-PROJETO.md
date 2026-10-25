@@ -104,6 +104,16 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 34]
+- **Carregamento em Lote Único (200 Produtos por Requisição) e Cache Persistente no Catálogo da API (`ConsultaProdutosModal.tsx` & `bomJawaKitApi.ts`):**
+  - **Problema Solucionado:** Toda vez que o usuário saía do modal "Catálogo Oficial Multi-API de Produtos & Códigos EAN" (por exemplo, após clicar em *Usar Produto no Cadastro* para registrar um item no estoque) e abria novamente — ou trocava entre as páginas 1, 2, 3, 4, 5 — o sistema disparava uma nova requisição à API externa.
+  - **Soluções Implementadas:**
+    1. **Carregamento de Lote Completo em 1 Única Requisição (`limit=200`):** Em `src/lib/bomJawaKitApi.ts`, a consulta passou a buscar até **200 produtos de uma só vez** em uma única requisição HTTP (além de mesclar os **849 produtos oficiais** já presentes no `catalogoGlobal` local sem custo de requisição). As páginas 1 a 8 são paginadas 100% localmente na memória com **zero requisições adicionais**.
+    2. **Cache Persistente em Memória + IndexedDB (`EstoqueMobileApiCacheDB`):** Todas as buscas por termo/categoria e a lista de categorias da API ficam salvas no `IndexedDB` e `localStorage` do dispositivo. Mesmo que o usuário recarregue a página (`F5`) ou pesquise novamente um termo já consultado (ex: *Cerveja*, *Refrigerante*, *Vinho*), os produtos abrem instantaneamente do cache local sem gastar nenhuma requisição da API.
+    3. **Preservação de Estado ao Sair e Voltar para o Modal (`src/App.tsx`):** `abrirBuscaConsultaProdutosModal` agora verifica se já existem produtos carregados na sessão (`resultadosConsultaProdutos.length > 0`) e reabre o modal exatamente na mesma página e lista onde o lojista estava, com **0 requisições**.
+    4. **Indicador Visual de Economia:** Adicionado selo verde `⚡ Memória Local (0 requisições)` no rodapé do modal `ConsultaProdutosModal.tsx`.
+    5. **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v38` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 33]
 - **Remoção do Botão de Acesso Livre ao Cardápio na Tela de Login (`src/components/TelaLogin.tsx`):**
   - **Solicitação do Usuário:** Retirar o bloco `🛵 Ver Cardápio & Fazer Pedido (Cliente)` e o subtítulo `Acesso livre para o cliente pedir bebidas geladas sem precisar de senha` da tela de login e senha.

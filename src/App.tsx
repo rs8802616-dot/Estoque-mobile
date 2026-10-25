@@ -3549,6 +3549,8 @@ export default function App() {
   };
 
   const [totalResultadosConsultaProdutos, setTotalResultadosConsultaProdutos] = useState<number>(0);
+  const [veioDoCacheConsultaProdutos, setVeioDoCacheConsultaProdutos] = useState<boolean>(false);
+  const [totalEmCacheConsultaProdutos, setTotalEmCacheConsultaProdutos] = useState<number>(0);
 
   // Query API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) + Fallbacks (ConsultaProdutos, Cosmos Bluesoft, Open Food Facts)
   const consultarEANGemini = async (codigoOpcional?: string) => {
@@ -3626,11 +3628,11 @@ export default function App() {
     }
   };
 
-  // Busca paginada na API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1/produtos)
+  // Busca em lote (200 produtos em 1 única requisição) + cache persistente (0 requisições ao trocar página ou reabrir modal)
   const executarBuscaConsultaProdutos = async (
     termo?: string,
     pagina: number = 1,
-    opcoes?: { categoria?: string; comImagem?: boolean }
+    opcoes?: { categoria?: string; comImagem?: boolean; forcarAtualizacao?: boolean }
   ) => {
     const q = (termo !== undefined ? termo : termoBuscaConsultaProdutos).trim();
     const cat = opcoes?.categoria || '';
@@ -3643,19 +3645,23 @@ export default function App() {
 
     setBuscandoConsultaProdutos(true);
     try {
-      // 1. Consulta direta na API Oficial BomJawaKit com X-API-Key
+      // 1. Consulta em lote (200 produtos em 1 requisição) com cache persistente em Memória + IndexedDB
       const resBomJawa = await buscarProdutosBomJawaKit({
         query: q,
         categoria: cat,
         comImagem: comImg,
         page: pagina,
         limit: 24,
+        forcarAtualizacao: opcoes?.forcarAtualizacao,
+        catalogoLocalExtra: catalogoGlobal,
       });
 
       if (resBomJawa.produtos.length > 0 || cat) {
         setResultadosConsultaProdutos(resBomJawa.produtos);
         setTotalResultadosConsultaProdutos(resBomJawa.total);
         setPaginaBuscaConsultaProdutos(pagina);
+        setVeioDoCacheConsultaProdutos(Boolean(resBomJawa.veioDoCache));
+        setTotalEmCacheConsultaProdutos(resBomJawa.totalEmCache || resBomJawa.produtos.length);
         return;
       }
 
@@ -3673,6 +3679,8 @@ export default function App() {
           setResultadosConsultaProdutos(json.produtos || []);
           setTotalResultadosConsultaProdutos(json.total || (json.produtos || []).length);
           setPaginaBuscaConsultaProdutos(pagina);
+          setVeioDoCacheConsultaProdutos(false);
+          setTotalEmCacheConsultaProdutos((json.produtos || []).length);
           return;
         }
       } catch {}
@@ -3680,6 +3688,8 @@ export default function App() {
       setResultadosConsultaProdutos([]);
       setTotalResultadosConsultaProdutos(0);
       setPaginaBuscaConsultaProdutos(pagina);
+      setVeioDoCacheConsultaProdutos(false);
+      setTotalEmCacheConsultaProdutos(0);
     } catch (err) {
       console.warn('Erro ao consultar catálogo de produtos:', err);
       alert('Falha de conexão com a API de produtos.');
@@ -3689,9 +3699,15 @@ export default function App() {
   };
 
   const abrirBuscaConsultaProdutosModal = (termoInicial?: string) => {
-    const termo = (termoInicial || cadNome || 'Cerveja').trim();
-    setTermoBuscaConsultaProdutos(termo);
     setModalBuscaConsultaProdutosVisivel(true);
+    // Se já houver produtos carregados na memória da sessão, NÃO faz nova requisição ao abrir o modal!
+    // Mantém exatamente a lista e a página onde o usuário parou.
+    if (resultadosConsultaProdutos.length > 0 && !termoInicial) {
+      setVeioDoCacheConsultaProdutos(true);
+      return;
+    }
+    const termo = (termoInicial || termoBuscaConsultaProdutos || 'Cerveja').trim();
+    setTermoBuscaConsultaProdutos(termo);
     executarBuscaConsultaProdutos(termo, 1, { comImagem: true });
   };
 
@@ -9752,7 +9768,7 @@ export default function App() {
                           justifyContent: 'center',
                           gap: '6px',
                         }}
-                        onClick={() => abrirBuscaConsultaProdutosModal(cadNome || cadMarca || 'Cerveja')}
+                        onClick={() => abrirBuscaConsultaProdutosModal()}
                       >
                         🔍 Buscar por Nome ou Categoria na API (+26.000 Produtos)
                       </button>
@@ -10748,6 +10764,8 @@ export default function App() {
         carregando={buscandoConsultaProdutos}
         resultados={resultadosConsultaProdutos}
         totalEncontrados={totalResultadosConsultaProdutos}
+        veioDoCache={veioDoCacheConsultaProdutos}
+        totalEmCache={totalEmCacheConsultaProdutos}
         onSelecionarProduto={selecionarProdutoConsultaProdutos}
       />
 
