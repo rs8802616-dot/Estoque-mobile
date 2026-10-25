@@ -772,35 +772,54 @@ export async function salvarOperadorFirestore(op: OperadorCaixa) {
 // Delete Item do Estoque
 export async function excluirItemEstoqueFirestore(codigo: string, validade: string, lote: string, lojaId: string) {
   try {
+    const cleanCod = String(codigo || '').trim();
+    const cleanVal = String(validade || '').trim();
+    const cleanLote = String(lote || '').trim();
     const safeLojaId = sanitizarIdDoc(lojaId || 'loja_padrao');
-    const safeCod = sanitizarIdDoc(codigo || 'semcod');
-    const safeVal = sanitizarIdDoc(validade || 'semval');
-    const safeLote = sanitizarIdDoc(lote || 'semlote');
+    const safeCod = sanitizarIdDoc(cleanCod || 'semcod');
+    const safeVal = sanitizarIdDoc(cleanVal || 'semval');
+    const safeLote = sanitizarIdDoc(cleanLote || 'semlote');
     const docId = `${safeLojaId}_${safeCod}_${safeVal}_${safeLote}`;
 
     // Remove do buffer otimista e marca como recém-excluído para evitar reaparecimento por snapshot atrasado
-    const chaveItem = `${codigo}|${validade}|${lote}`;
+    const chaveItem = `${cleanCod}|${cleanVal}|${cleanLote}`;
     const mapaRecentes = itensRecemSalvosMemoria.get(lojaId);
     if (mapaRecentes) {
       mapaRecentes.delete(chaveItem);
+      mapaRecentes.delete(`${cleanCod}|2099-12-31|${cleanLote}`);
     }
     if (!itensRecemExcluidosMemoria.has(lojaId)) {
       itensRecemExcluidosMemoria.set(lojaId, new Map());
     }
     itensRecemExcluidosMemoria.get(lojaId)!.set(chaveItem, Date.now());
 
-    const docRef = doc(db, 'estoque', docId);
+    // Tenta apagar docId padrão
     try {
-      await deleteDoc(docRef);
+      await deleteDoc(doc(db, 'estoque', docId));
+    } catch (e) {}
+
+    // Se validade era vazia ou 2099-12-31, tenta apagar ambas as variações de docId
+    try {
+      const docIdPadrao = `${safeLojaId}_${safeCod}_2099-12-31_${safeLote}`;
+      if (docIdPadrao !== docId) {
+        await deleteDoc(doc(db, 'estoque', docIdPadrao));
+      }
+      const docIdSemVal = `${safeLojaId}_${safeCod}_semval_${safeLote}`;
+      if (docIdSemVal !== docId) {
+        await deleteDoc(doc(db, 'estoque', docIdSemVal));
+      }
     } catch (e) {}
 
     // Busca e remove qualquer doc correspondente no Firestore caso o ID tenha sido gerado diferente
     try {
-      const q = query(collection(db, 'estoque'), where('lojaId', '==', lojaId), where('codigo', '==', codigo));
+      const q = query(collection(db, 'estoque'), where('lojaId', '==', lojaId), where('codigo', '==', cleanCod));
       const snap = await getDocs(q);
       for (const d of snap.docs) {
         const data = d.data() as ItemEstoque;
-        if ((!validade || data.validade === validade) && (!lote || data.lote === lote)) {
+        const dVal = String(data.validade || '2099-12-31').trim();
+        const dLote = String(data.lote || '').trim();
+        const valAlvo = cleanVal || '2099-12-31';
+        if ((!cleanVal || dVal === valAlvo) && (!cleanLote || dLote === cleanLote)) {
           await deleteDoc(d.ref);
         }
       }

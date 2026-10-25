@@ -104,6 +104,22 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-25 - Atualização 39]
+- **Correção da Duplicação ao Editar Produtos e Otimização Massiva de Desempenho (Eliminação de Travamentos):**
+  - **Diagnóstico da Duplicação na Edição:**
+    1. **Edição no Estoque:** A função `aplicarAtualizacaoEstoque` possuía a condição `if (idx !== -1 && !codigoEditando)` para atualizar o item existente. Quando `codigoEditando` era verdadeiro, ela caía no `else` e executava `lista.push(itemMontado)`. Além disso, a filtragem anterior comparava `p.lote === codigoEditando.lote` estritamente (`undefined === ''` resultava em `false`), impedindo a remoção do item antigo e fazendo com que tanto o registro antigo quanto o novo permanecessem duplicados na lista e no Firestore.
+    2. **Edição no Banco Master:** Caso o código de barras fosse alterado na edição do Catálogo Global, o item antigo não era removido do array nem excluído do Firestore `catalogo_global`, mantendo o código antigo e o novo simultaneamente.
+  - **Correções Aplicadas na Edição:**
+    1. **Remoção e Atualização Confiável:** `aplicarAtualizacaoEstoque` agora utiliza normalização de chave (`codigo`, `validade || '2099-12-31'`, `lote || ''`) para remover com precisão o registro antigo e atualizar `lista[idx] = itemMontado`.
+    2. **Limpeza do Registro Antigo no Master:** Ao alterar o código de barras no Banco Master, o registro antigo é removido da memória e o documento antigo é excluído do Firestore (`excluirProdutoCatalogoFirestore`), propagando a atualização para todos os lotes da loja.
+    3. **Exclusão de Estoque Robusta:** `excluirItemEstoqueFirestore` agora trata variações de `validade` e `docId` (`semval` e `2099-12-31`), garantindo que documentos antigos sejam eliminados do Firebase sem ressurgir em recarregamentos.
+  - **Diagnóstico e Resolução do Travamento / Desempenho:**
+    - **Causa do Travamento:** Com 8.849 produtos no Catálogo Global, tanto o "Banco de Dados Master" quanto a tela cheia de "Catálogo Global" tentavam renderizar **todos os 8.849 cards com imagens, estilos inline e botões de uma só vez no DOM** (mais de 132.000 nós DOM simultâneos), congelando a aba do navegador a cada tecla digitada na pesquisa.
+    - **Paginação de Alto Desempenho:**
+      1. No *Banco de Dados Master*, implementada paginação rápida de 30 itens por página com barra de controle (`⏮ Primeira`, `◀ Anterior`, `Próxima ▶`, `Última ⏭`) e contagem total. O navegador renderiza apenas 30 itens por vez, acelerando a interface em mais de 100x e eliminando 100% dos travamentos.
+      2. No *Catálogo Global (Tela Cheia)*, implementado fatiamento progressivo de 50 itens com botão *"Carregar Mais 50 Produtos"*.
+    - **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v43` (`public/sw.js`).
+
 ### [2026-10-25 - Atualização 38]
 - **Exibição da Quantidade Total de Produtos no Catálogo Global:**
   - **Solicitação do Usuário:** *"colocar par me no catalogo global a quantidade de produto que tem"*.

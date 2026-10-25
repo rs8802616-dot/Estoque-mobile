@@ -609,6 +609,8 @@ export default function App() {
   });
   const [buscaMasterBd, setBuscaMasterBd] = useState<string>('');
   const [filtroMasterOrigem, setFiltroMasterOrigem] = useState<'todos' | 'catalogo' | 'estoque'>('todos');
+  const [paginaMasterBd, setPaginaMasterBd] = useState<number>(1);
+  const [limiteRelatorioCatalogo, setLimiteRelatorioCatalogo] = useState<number>(50);
 
   const [regLojaNome, setRegLojaNome] = useState<string>('');
   const [regLojaCnpj, setRegLojaCnpj] = useState<string>('');
@@ -1593,6 +1595,14 @@ export default function App() {
       }
     }
   }, [modalSupermercadoVisivel, abaDonaApp]);
+
+  useEffect(() => {
+    setPaginaMasterBd(1);
+  }, [buscaMasterBd, filtroMasterOrigem]);
+
+  useEffect(() => {
+    setLimiteRelatorioCatalogo(50);
+  }, [buscaRelatorio]);
 
   // Sync Cash Shift Session on Store or Operator Change
   useEffect(() => {
@@ -4124,10 +4134,21 @@ export default function App() {
         }
 
         // Atualiza Catálogo Global
-        const novoCatalogo = [...catalogoGlobal];
-        const indexCat = novoCatalogo.findIndex((c) => c.codigo === codigoDigitado);
+        const codDigitado = codigoDigitado.trim();
+        const codOriginal = codigoEditando?.codigo ? codigoEditando.codigo.trim() : null;
+
+        // Se estava editando e alterou o código de barras, remove o item antigo da lista
+        let novoCatalogo = catalogoGlobal.filter((c) => {
+          const cCod = String(c.codigo || '').trim();
+          if (codOriginal && codOriginal !== codDigitado && cCod === codOriginal) {
+            return false;
+          }
+          return true;
+        });
+
+        const indexCat = novoCatalogo.findIndex((c) => String(c.codigo || '').trim() === codDigitado);
         const dadosGlobal: ProdutoCatalogo = {
-          codigo: codigoDigitado,
+          codigo: codDigitado,
           nome: nomeDigitado,
           marca: marcaDigitada,
           categoria: categoriaDigitada || 'Geral',
@@ -4143,29 +4164,39 @@ export default function App() {
         }
         setCatalogoGlobal(novoCatalogo);
         safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novoCatalogo));
-        if (codigoDigitado && fotoFinal && fotoFinal.length > 10) {
-          salvarImagemIndexedDB(codigoDigitado, fotoFinal).catch(() => {});
+        if (codDigitado && fotoFinal && fotoFinal.length > 10) {
+          salvarImagemIndexedDB(codDigitado, fotoFinal).catch(() => {});
         }
         
+        // Se o código de barras mudou, exclui o documento do código antigo no Firestore
+        if (codOriginal && codOriginal !== codDigitado) {
+          excluirProdutoCatalogoFirestore(codOriginal).catch(console.warn);
+        }
+
         // Salva no Firestore produtos_catalogo e catalogo_global (EXCLUSIVAMENTE no Banco Master, sem criar item no estoque da loja!)
         await salvarProdutoCatalogoFirestore(dadosGlobal);
 
-        // Apenas se a loja já tiver esse código de barras em estoque, atualiza o nome/marca/categoria/foto oficial nos lotes existentes
+        // Se o código mudou ou o nome mudou, atualiza nos lotes existentes do estoque da loja
         setEstoque((prevEstoque) => {
-          const temCorrespondente = prevEstoque.some((p) => p.codigo?.trim() === codigoDigitado);
+          const temCorrespondente = prevEstoque.some(
+            (p) => String(p.codigo || '').trim() === codDigitado || (codOriginal && String(p.codigo || '').trim() === codOriginal)
+          );
           if (!temCorrespondente) return prevEstoque;
 
-          const atualizado = prevEstoque.map((p) =>
-            p.codigo?.trim() === codigoDigitado
-              ? {
-                  ...p,
-                  nome: nomeDigitado,
-                  marca: marcaDigitada || p.marca,
-                  categoria: categoriaDigitada || p.categoria,
-                  foto: fotoFinal,
-                }
-              : p
-          );
+          const atualizado = prevEstoque.map((p) => {
+            const pCod = String(p.codigo || '').trim();
+            if (pCod === codDigitado || (codOriginal && pCod === codOriginal)) {
+              return {
+                ...p,
+                codigo: codDigitado,
+                nome: nomeDigitado,
+                marca: marcaDigitada || p.marca,
+                categoria: categoriaDigitada || p.categoria,
+                foto: fotoFinal,
+              };
+            }
+            return p;
+          });
           safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(atualizado));
           return atualizado;
         });
@@ -4221,6 +4252,7 @@ export default function App() {
         notificarSincronizacao();
 
         setTimeout(() => {
+          setCodigoEditando(null);
           setModalCadastroVisivel(false);
         }, 700);
       } catch (err: any) {
@@ -4305,20 +4337,37 @@ export default function App() {
         const aplicarAtualizacaoEstoque = (baseEstoque: ItemEstoque[]): ItemEstoque[] => {
           let lista = [...baseEstoque];
 
-          if (codigoEditando) {
-            lista = lista.filter(
-              (p) =>
-                !(
-                  p.codigo === codigoEditando.codigo &&
-                  p.validade === codigoEditando.validade &&
-                  p.lote === codigoEditando.lote
-                )
-            );
+          const codOriginalAlvo = codigoEditando?.codigo ? String(codigoEditando.codigo).trim() : null;
+          const valOriginalAlvo = codigoEditando?.validade ? String(codigoEditando.validade).trim() : '';
+          const loteOriginalAlvo = codigoEditando?.lote ? String(codigoEditando.lote).trim() : '';
+
+          if (codigoEditando && codOriginalAlvo) {
+            // Remove com segurança o item que estava sendo editado para impedir duplicação
+            lista = lista.filter((p) => {
+              const pCod = String(p.codigo || '').trim();
+              if (pCod !== codOriginalAlvo) return true; // outro produto, mantém
+
+              const pVal = String(p.validade || '2099-12-31').trim();
+              const alvoVal = valOriginalAlvo || '2099-12-31';
+              const pLote = String(p.lote || '').trim();
+              const alvoLote = loteOriginalAlvo;
+
+              // Se a validade e o lote batem exatamente, remove o item antigo
+              if (pVal === alvoVal && pLote === alvoLote) return false;
+
+              // Se não havia lote/validade especificados no registro de edição, remove pelo código
+              if (!valOriginalAlvo && !loteOriginalAlvo) return false;
+
+              return true;
+            });
           }
 
-          const idx = lista.findIndex(
-            (p) => p.codigo === codigoFinal && p.validade === valDigitada && p.lote === loteDigitado
-          );
+          const idx = lista.findIndex((p) => {
+            const pCod = String(p.codigo || '').trim();
+            const pVal = String(p.validade || '2099-12-31').trim();
+            const pLote = String(p.lote || '').trim();
+            return pCod === codigoFinal && pVal === (valDigitada || '2099-12-31') && pLote === loteDigitado;
+          });
 
           const itemMontado: ItemEstoque = {
             codigo_barras: isInterno ? undefined : codigoFinal,
@@ -4340,7 +4389,7 @@ export default function App() {
             exclusivoLoja: isInterno,
           };
 
-          if (idx !== -1 && !codigoEditando) {
+          if (idx !== -1) {
             lista[idx] = itemMontado;
           } else {
             lista.push(itemMontado);
@@ -4364,9 +4413,9 @@ export default function App() {
         // Se estava editando e alterou chave primária (código, lote ou validade), remove o documento antigo do Firestore
         if (
           codigoEditando &&
-          (codigoEditando.codigo !== codigoFinal ||
-            codigoEditando.validade !== valDigitada ||
-            codigoEditando.lote !== loteDigitado)
+          (String(codigoEditando.codigo || '').trim() !== codigoFinal ||
+            String(codigoEditando.validade || '2099-12-31').trim() !== (valDigitada || '2099-12-31').trim() ||
+            String(codigoEditando.lote || '').trim() !== (loteDigitado || '').trim())
         ) {
           excluirItemEstoqueFirestore(
             codigoEditando.codigo,
@@ -4478,6 +4527,7 @@ export default function App() {
       notificarSincronizacao();
 
       setTimeout(() => {
+        setCodigoEditando(null);
         setModalCadastroVisivel(false);
       }, 700);
     } catch (err: any) {
@@ -7912,40 +7962,64 @@ export default function App() {
                     </div>
                   );
                 }
-                return lista.map((c, idx) => (
-                  <div className="relatorio-linha-cheia" key={`rel_cat_${c.codigo}_${idx}`}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          width: '36px',
-                          height: '36px',
-                          background: '#f8fafc',
-                          borderRadius: '6px',
-                          overflow: 'hidden',
-                          flexShrink: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '1px solid var(--borda)',
-                        }}
-                      >
-                        {c.imagem ? (
-                          <img src={otimizarUrlImagem(c.imagem)} alt={c.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                        ) : (
-                          'Foto'
-                        )}
+                const itensExibidos = lista.slice(0, limiteRelatorioCatalogo);
+                return (
+                  <>
+                    {itensExibidos.map((c, idx) => (
+                      <div className="relatorio-linha-cheia" key={`rel_cat_${c.codigo}_${idx}`}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                          <div
+                            style={{
+                              width: '36px',
+                              height: '36px',
+                              background: '#f8fafc',
+                              borderRadius: '6px',
+                              overflow: 'hidden',
+                              flexShrink: 0,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: '1px solid var(--borda)',
+                            }}
+                          >
+                            {c.imagem ? (
+                              <img src={otimizarUrlImagem(c.imagem)} alt={c.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            ) : (
+                              'Foto'
+                            )}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                              {c.nome}
+                            </b>
+                            <small style={{ color: 'var(--texto-secundario)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                              Cód: {c.codigo} | Marca: {c.marca || 'N/D'} | Cat: {c.categoria || 'N/D'}
+                            </small>
+                          </div>
+                        </div>
                       </div>
-                      <div style={{ minWidth: 0 }}>
-                        <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                          {c.nome}
-                        </b>
-                        <small style={{ color: 'var(--texto-secundario)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                          Cód: {c.codigo} | Marca: {c.marca || 'N/D'} | Cat: {c.categoria || 'N/D'}
-                        </small>
+                    ))}
+                    {lista.length > limiteRelatorioCatalogo && (
+                      <div style={{ textAlign: 'center', padding: '16px 0' }}>
+                        <button
+                          type="button"
+                          className="btn-acao-rel"
+                          style={{
+                            background: '#0284c7',
+                            color: '#ffffff',
+                            padding: '10px 20px',
+                            borderRadius: '8px',
+                            fontWeight: 700,
+                            fontSize: '0.85rem',
+                          }}
+                          onClick={() => setLimiteRelatorioCatalogo((prev) => prev + 50)}
+                        >
+                          🔽 Carregar Mais 50 Produtos (Mostrando {itensExibidos.length} de {lista.length})
+                        </button>
                       </div>
-                    </div>
-                  </div>
-                ));
+                    )}
+                  </>
+                );
               })()
             )}
           </div>
@@ -8943,7 +9017,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* TABELA DE ITENS DO BANCO DE DADOS */}
+              {/* TABELA DE ITENS DO BANCO DE DADOS (PAGINADA PARA MÁXIMA VELOCIDADE) */}
               <div className="tabela-relatorio">
                 {(() => {
                   const termo = buscaMasterBd.trim().toLowerCase();
@@ -8971,7 +9045,24 @@ export default function App() {
                     );
                   });
 
-                  const totalCount = catalogoFiltrado.length + estoqueFiltrado.length;
+                  // Lista combinada de acordo com o filtro selecionado
+                  let listaFinalMaster: (
+                    | { tipo: 'catalogo'; item: ProdutoCatalogo }
+                    | { tipo: 'estoque'; item: ItemEstoque }
+                  )[] = [];
+
+                  if (filtroMasterOrigem === 'catalogo') {
+                    listaFinalMaster = catalogoFiltrado.map((item) => ({ tipo: 'catalogo', item }));
+                  } else if (filtroMasterOrigem === 'estoque') {
+                    listaFinalMaster = estoqueFiltrado.map((item) => ({ tipo: 'estoque', item }));
+                  } else {
+                    listaFinalMaster = [
+                      ...catalogoFiltrado.map((item) => ({ tipo: 'catalogo' as const, item })),
+                      ...estoqueFiltrado.map((item) => ({ tipo: 'estoque' as const, item })),
+                    ];
+                  }
+
+                  const totalCount = listaFinalMaster.length;
 
                   if (totalCount === 0) {
                     return (
@@ -8981,138 +9072,230 @@ export default function App() {
                     );
                   }
 
+                  const ITENS_POR_PAGINA = 30;
+                  const totalPaginas = Math.max(1, Math.ceil(totalCount / ITENS_POR_PAGINA));
+                  const paginaAtualClamped = Math.min(Math.max(1, paginaMasterBd), totalPaginas);
+
+                  const itensPaginados = listaFinalMaster.slice(
+                    (paginaAtualClamped - 1) * ITENS_POR_PAGINA,
+                    paginaAtualClamped * ITENS_POR_PAGINA
+                  );
+
                   return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {/* ITENS DO CATÁLOGO GLOBAL */}
-                      {catalogoFiltrado.map((cat, idx) => (
-                        <div
-                          key={`cat_cons_${cat.codigo}_${idx}`}
-                          className="relatorio-linha-cheia"
-                          style={{ background: '#fafafa', borderLeft: '4px solid #0284c7' }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              {cat.imagem ? (
-                                <img src={otimizarUrlImagem(cat.imagem)} alt={cat.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : (
-                                <span style={{ fontSize: '1.2rem' }}>📦</span>
-                              )}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                                <b style={{ fontSize: '0.92rem', color: '#0f172a' }}>{cat.nome}</b>
-                                <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
-                                  🌐 Catálogo Global
-                                </span>
-                                {(isProdutoAmbev(cat.codigo) || isProdutoAmbev(cat.nome) || (cat.marca && isProdutoAmbev(cat.marca))) && (
-                                  <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700, border: '1px solid #fde68a' }}>
-                                    🍺 Ambev
-                                  </span>
-                                )}
-                              </div>
-                              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                                Cód. EAN: <b>{cat.codigo}</b> | Categoria: <b>{cat.categoria || 'Geral'}</b> {cat.marca ? `| Marca: ${cat.marca}` : ''} {cat.unidade_medida ? `| Un: ${cat.unidade_medida}` : ''}
-                              </div>
-                              {cat.descricao && (
-                                <div style={{ fontSize: '0.73rem', color: '#475569', marginTop: '3px', lineHeight: 1.35, background: '#f8fafc', padding: '4px 8px', borderRadius: '4px', border: '1px solid #f1f5f9' }}>
-                                  📝 {cat.descricao}
-                                </div>
-                              )}
-                            </div>
-                          </div>
+                      {/* BARRA SUPERIOR DE RESUMO DA PÁGINA */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '6px 10px',
+                          background: '#f8fafc',
+                          borderRadius: '8px',
+                          border: '1px solid #e2e8f0',
+                          fontSize: '0.8rem',
+                          color: '#475569',
+                          marginBottom: '4px',
+                        }}
+                      >
+                        <span>
+                          Mostrando <b>{(paginaAtualClamped - 1) * ITENS_POR_PAGINA + 1}</b> a{' '}
+                          <b>{Math.min(paginaAtualClamped * ITENS_POR_PAGINA, totalCount)}</b> de{' '}
+                          <b>{totalCount.toLocaleString('pt-BR')}</b> produtos
+                        </span>
+                        <span>
+                          Página <b>{paginaAtualClamped}</b> de <b>{totalPaginas}</b>
+                        </span>
+                      </div>
 
-                          <div className="acoes-relatorio" style={{ gap: '6px' }}>
-                            <button
-                              className="btn-acao-rel"
-                              style={{ background: '#059669', color: '#fff', fontSize: '0.78rem', padding: '6px 10px', borderRadius: '6px' }}
-                              onClick={() => {
-                                setModalSupermercadoVisivel(false);
-                                abrirCadastroComProdutoCatalogo(cat);
-                              }}
-                              title="Adicionar este produto ao Estoque da Loja/Adega"
+                      {itensPaginados.map((entry, idx) => {
+                        if (entry.tipo === 'catalogo') {
+                          const cat = entry.item;
+                          return (
+                            <div
+                              key={`cat_cons_${cat.codigo}_${idx}`}
+                              className="relatorio-linha-cheia"
+                              style={{ background: '#fafafa', borderLeft: '4px solid #0284c7' }}
                             >
-                              + Estoque
-                            </button>
-                            <button
-                              className="btn-acao-rel btn-editar-rel"
-                              onClick={() => {
-                                setModalSupermercadoVisivel(false);
-                                editarProduto(cat.codigo, '', '', 'master');
-                              }}
-                              title="Editar este item no Cadastro Master"
-                            >
-                              ✏️ Editar
-                            </button>
-                            <button
-                              className="btn-acao-rel btn-excluir-rel"
-                              onClick={() => excluirProdutoCatalogoMaster(cat.codigo)}
-                              title="Excluir do Banco de Dados"
-                            >
-                              🗑️ Excluir
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-
-                      {/* ITENS DO ESTOQUE */}
-                      {estoqueFiltrado.map((p, idx) => {
-                        const nomeLoja = listaSupermercados.find((l) => l.id === supermercadoAtual)?.nome || 'Loja Atual';
-                        const nomeExibicao = obterNomeProduto(p.codigo, p.nome);
-                        return (
-                          <div
-                            key={`est_cons_${p.codigo}_${p.validade}_${p.lote}_${idx}`}
-                            className="relatorio-linha-cheia"
-                            style={{ background: '#ffffff', borderLeft: '4px solid #16a34a' }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                              <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                {(() => {
-                                  const fotoLinha = obterFotoProduto(p.codigo, p.foto);
-                                  return fotoLinha ? (
-                                    <img src={fotoLinha} alt={nomeExibicao} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  {cat.imagem ? (
+                                    <img src={otimizarUrlImagem(cat.imagem)} alt={cat.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                   ) : (
-                                    <span style={{ fontSize: '1.2rem' }}>🛒</span>
-                                  );
-                                })()}
+                                    <span style={{ fontSize: '1.2rem' }}>📦</span>
+                                  )}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                    <b style={{ fontSize: '0.92rem', color: '#0f172a' }}>{cat.nome}</b>
+                                    <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                                      🌐 Catálogo Global
+                                    </span>
+                                    {(isProdutoAmbev(cat.codigo) || isProdutoAmbev(cat.nome) || (cat.marca && isProdutoAmbev(cat.marca))) && (
+                                      <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700, border: '1px solid #fde68a' }}>
+                                        🍺 Ambev
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                                    Cód. EAN: <b>{cat.codigo}</b> | Categoria: <b>{cat.categoria || 'Geral'}</b> {cat.marca ? `| Marca: ${cat.marca}` : ''} {cat.unidade_medida ? `| Un: ${cat.unidade_medida}` : ''}
+                                  </div>
+                                  {cat.descricao && (
+                                    <div style={{ fontSize: '0.73rem', color: '#475569', marginTop: '3px', lineHeight: 1.35, background: '#f8fafc', padding: '4px 8px', borderRadius: '4px', border: '1px solid #f1f5f9' }}>
+                                      📝 {cat.descricao}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                                  <b style={{ fontSize: '0.92rem', color: '#0f172a' }}>{nomeExibicao}</b>
-                                  <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
-                                    🏪 Estoque ({nomeLoja})
-                                  </span>
-                                </div>
-                                <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                                  Cód: <b>{p.codigo}</b> | Qtd: <b style={{ color: '#0f172a' }}>{p.quantidade} un</b> | Venda: <b style={{ color: '#16a34a' }}>R$ {Number(p.preco_venda || 0).toFixed(2)}</b> | Custo: R$ {Number(p.preco_custo || 0).toFixed(2)}
-                                </div>
-                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '1px' }}>
-                                  Validade: <b>{p.validade || 'N/A'}</b> {p.lote ? `| Lote: ${p.lote}` : ''}
-                                </div>
-                              </div>
-                            </div>
 
-                            <div className="acoes-relatorio" style={{ gap: '6px' }}>
-                              <button
-                                className="btn-acao-rel btn-editar-rel"
-                                onClick={() => {
-                                  setModalSupermercadoVisivel(false);
-                                  editarProduto(p.codigo, p.validade, p.lote || '');
-                                }}
-                                title="Editar no Estoque"
-                              >
-                                ✏️ Editar
-                              </button>
-                              <button
-                                className="btn-acao-rel btn-excluir-rel"
-                                onClick={() => excluirItemEstoqueMaster(p.codigo, p.validade, p.lote || '', supermercadoAtual)}
-                                title="Excluir do Banco de Dados"
-                              >
-                                🗑️ Excluir
-                              </button>
+                              <div className="acoes-relatorio" style={{ gap: '6px' }}>
+                                <button
+                                  className="btn-acao-rel"
+                                  style={{ background: '#059669', color: '#fff', fontSize: '0.78rem', padding: '6px 10px', borderRadius: '6px' }}
+                                  onClick={() => {
+                                    setModalSupermercadoVisivel(false);
+                                    abrirCadastroComProdutoCatalogo(cat);
+                                  }}
+                                  title="Adicionar este produto ao Estoque da Loja/Adega"
+                                >
+                                  + Estoque
+                                </button>
+                                <button
+                                  className="btn-acao-rel btn-editar-rel"
+                                  onClick={() => {
+                                    setModalSupermercadoVisivel(false);
+                                    editarProduto(cat.codigo, '', '', 'master');
+                                  }}
+                                  title="Editar este item no Cadastro Master"
+                                >
+                                  ✏️ Editar
+                                </button>
+                                <button
+                                  className="btn-acao-rel btn-excluir-rel"
+                                  onClick={() => excluirProdutoCatalogoMaster(cat.codigo)}
+                                  title="Excluir do Banco de Dados"
+                                >
+                                  🗑️ Excluir
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        );
+                          );
+                        } else {
+                          const p = entry.item;
+                          const nomeLoja = listaSupermercados.find((l) => l.id === supermercadoAtual)?.nome || 'Loja Atual';
+                          const nomeExibicao = obterNomeProduto(p.codigo, p.nome);
+                          return (
+                            <div
+                              key={`est_cons_${p.codigo}_${p.validade}_${p.lote}_${idx}`}
+                              className="relatorio-linha-cheia"
+                              style={{ background: '#ffffff', borderLeft: '4px solid #16a34a' }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  {(() => {
+                                    const fotoLinha = obterFotoProduto(p.codigo, p.foto);
+                                    return fotoLinha ? (
+                                      <img src={fotoLinha} alt={nomeExibicao} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                      <span style={{ fontSize: '1.2rem' }}>🛒</span>
+                                    );
+                                  })()}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                    <b style={{ fontSize: '0.92rem', color: '#0f172a' }}>{nomeExibicao}</b>
+                                    <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                                      🏪 Estoque ({nomeLoja})
+                                    </span>
+                                  </div>
+                                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                                    Cód: <b>{p.codigo}</b> | Qtd: <b style={{ color: '#0f172a' }}>{p.quantidade} un</b> | Venda: <b style={{ color: '#16a34a' }}>R$ {Number(p.preco_venda || 0).toFixed(2)}</b> | Custo: R$ {Number(p.preco_custo || 0).toFixed(2)}
+                                  </div>
+                                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '1px' }}>
+                                    Validade: <b>{p.validade || 'N/A'}</b> {p.lote ? `| Lote: ${p.lote}` : ''}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="acoes-relatorio" style={{ gap: '6px' }}>
+                                <button
+                                  className="btn-acao-rel btn-editar-rel"
+                                  onClick={() => {
+                                    setModalSupermercadoVisivel(false);
+                                    editarProduto(p.codigo, p.validade, p.lote || '');
+                                  }}
+                                  title="Editar no Estoque"
+                                >
+                                  ✏️ Editar
+                                </button>
+                                <button
+                                  className="btn-acao-rel btn-excluir-rel"
+                                  onClick={() => excluirItemEstoqueMaster(p.codigo, p.validade, p.lote || '', supermercadoAtual)}
+                                  title="Excluir do Banco de Dados"
+                                >
+                                  🗑️ Excluir
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        }
                       })}
+
+                      {/* CONTROLES DE PAGINAÇÃO */}
+                      {totalPaginas > 1 && (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            padding: '16px 8px',
+                            flexWrap: 'wrap',
+                            marginTop: '8px',
+                            borderTop: '1px solid #e2e8f0',
+                          }}
+                        >
+                          <button
+                            type="button"
+                            className="btn-acao-rel"
+                            style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px' }}
+                            onClick={() => setPaginaMasterBd(1)}
+                            disabled={paginaAtualClamped === 1}
+                          >
+                            ⏮ Primeira
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-acao-rel"
+                            style={{ background: '#0284c7', color: '#ffffff', padding: '6px 14px', fontWeight: 600 }}
+                            onClick={() => setPaginaMasterBd((prev) => Math.max(1, prev - 1))}
+                            disabled={paginaAtualClamped === 1}
+                          >
+                            ◀ Anterior
+                          </button>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', margin: '0 8px' }}>
+                            Página {paginaAtualClamped} de {totalPaginas}
+                          </span>
+                          <button
+                            type="button"
+                            className="btn-acao-rel"
+                            style={{ background: '#0284c7', color: '#ffffff', padding: '6px 14px', fontWeight: 600 }}
+                            onClick={() => setPaginaMasterBd((prev) => Math.min(totalPaginas, prev + 1))}
+                            disabled={paginaAtualClamped === totalPaginas}
+                          >
+                            Próxima ▶
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-acao-rel"
+                            style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px' }}
+                            onClick={() => setPaginaMasterBd(totalPaginas)}
+                            disabled={paginaAtualClamped === totalPaginas}
+                          >
+                            Última ⏭
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
