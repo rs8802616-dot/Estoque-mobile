@@ -3647,54 +3647,28 @@ export default function App() {
 
     setBuscandoConsultaProdutos(true);
     try {
-      // 1. Consulta em lote (200 produtos em 1 requisição) com cache persistente em Memória + IndexedDB
+      // 1. Consulta prioritária no Catálogo Offline Local (+13.300 produtos sem requisições)
       const resBomJawa = await buscarProdutosBomJawaKit({
         query: q,
         categoria: cat,
         comImagem: comImg,
         page: pagina,
         limit: 24,
-        forcarAtualizacao: opcoes?.forcarAtualizacao,
         catalogoLocalExtra: catalogoGlobal,
       });
 
-      if (resBomJawa.produtos.length > 0 || cat) {
-        setResultadosConsultaProdutos(resBomJawa.produtos);
-        setTotalResultadosConsultaProdutos(resBomJawa.total);
-        setPaginaBuscaConsultaProdutos(pagina);
-        setVeioDoCacheConsultaProdutos(Boolean(resBomJawa.veioDoCache));
-        setTotalEmCacheConsultaProdutos(resBomJawa.totalEmCache || resBomJawa.produtos.length);
-        return;
-      }
-
-      // 2. Fallback no endpoint do servidor caso a busca não retorne nada na API primária
-      try {
-        const res = await fetch('/api/buscar-produtos-externos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: q, page: pagina }),
-        });
-
-        const contentType = res.headers.get('content-type') || '';
-        if (res.ok && contentType.includes('application/json')) {
-          const json = await res.json();
-          setResultadosConsultaProdutos(json.produtos || []);
-          setTotalResultadosConsultaProdutos(json.total || (json.produtos || []).length);
-          setPaginaBuscaConsultaProdutos(pagina);
-          setVeioDoCacheConsultaProdutos(false);
-          setTotalEmCacheConsultaProdutos((json.produtos || []).length);
-          return;
-        }
-      } catch {}
-
+      setResultadosConsultaProdutos(resBomJawa.produtos);
+      setTotalResultadosConsultaProdutos(resBomJawa.total);
+      setPaginaBuscaConsultaProdutos(pagina);
+      setVeioDoCacheConsultaProdutos(Boolean(resBomJawa.veioDoCache));
+      setTotalEmCacheConsultaProdutos(resBomJawa.totalEmCache || resBomJawa.produtos.length);
+      return;
+    } catch (err) {
+      console.warn('Erro ao consultar catálogo de produtos:', err);
+      // Fallback gracioso: não trava a tela com alert se for apenas busca sem resultados
       setResultadosConsultaProdutos([]);
       setTotalResultadosConsultaProdutos(0);
       setPaginaBuscaConsultaProdutos(pagina);
-      setVeioDoCacheConsultaProdutos(false);
-      setTotalEmCacheConsultaProdutos(0);
-    } catch (err) {
-      console.warn('Erro ao consultar catálogo de produtos:', err);
-      alert('Falha de conexão com a API de produtos.');
     } finally {
       setBuscandoConsultaProdutos(false);
     }
@@ -3766,10 +3740,12 @@ export default function App() {
       setCatalogoGlobal(atualizado);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(atualizado));
 
+      setSincronizandoLoteFirebase(false);
       alert(`✅ Lote de ${lote.length} produtos gravado com sucesso no Firebase!`);
-      executarBuscaConsultaProdutos(termoBuscaConsultaProdutos, 1, { forcarAtualizacao: true });
+      executarBuscaConsultaProdutos(termoBuscaConsultaProdutos, 1);
     } catch (err: any) {
       console.error('Erro ao sincronizar lote com Firebase:', err);
+      setSincronizandoLoteFirebase(false);
       alert(`Aviso ao enviar lote: ${err?.message || err}`);
     } finally {
       setSincronizandoLoteFirebase(false);

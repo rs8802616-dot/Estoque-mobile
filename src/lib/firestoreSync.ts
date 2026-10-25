@@ -693,8 +693,12 @@ export async function salvarLoteProdutosCatalogoFirestore(prods: ProdutoCatalogo
     });
     try {
       await batch.commit();
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Aviso ao gravar lote no catalogo_global:', err);
+      if (err?.code === 'resource-exhausted' || err?.message?.toLowerCase().includes('quota')) {
+        throw new Error('Limite diário de gravações do Firebase atingido! Aguarde o reset diário para enviar mais lotes.');
+      }
+      throw err;
     }
   }
 }

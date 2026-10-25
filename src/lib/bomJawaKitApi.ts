@@ -778,17 +778,15 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       fonte: 'Catálogo Offline Local (0 requisições gastas)',
     }));
 
-    // Se encontrou no acervo local ou se o acervo local está ativo, retorna direto sem tocar na API!
-    if (paginados.length > 0 || !opcoes.forcarAtualizacao) {
-      return {
-        produtos: paginados,
-        total: listaFiltradaOffline.length,
-        page,
-        query: rawQuery,
-        veioDoCache: true,
-        totalEmCache: listaFiltradaOffline.length,
-      };
-    }
+    // Retorna SEMPRE os produtos filtrados do acervo local (mesmo que sejam 0 resultados encontrados para a busca)
+    return {
+      produtos: paginados,
+      total: listaFiltradaOffline.length,
+      page,
+      query: rawQuery,
+      veioDoCache: true,
+      totalEmCache: listaFiltradaOffline.length,
+    };
   }
 
   // 2. Fallback remoto de contingência (somente se o catálogo offline ainda não foi baixado)

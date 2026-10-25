@@ -104,6 +104,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-25 - Atualização 37]
+- **Eliminação Definitiva do Alerta de "Falha de conexão com a API de produtos":**
+  - **Diagnóstico da Causa Raiz:** Quando uma busca retornava 0 itens adicionais no acervo local (por exemplo, após todos os produtos correspondentes já terem sido importados ou cadastrados no banco) ou quando o usuário clicava em enviar lote para o Firebase, a função `buscarProdutosBomJawaKit` realizava um fall-through desnecessário para uma chamada remota à API externa, e `executarBuscaConsultaProdutos` tentava chamar `/api/buscar-produtos-externos`, que na hospedagem estática (Vercel) causava erro de rede / CORS e disparava o popup `alert('Falha de conexão com a API de produtos.')`.
+  - **Correções Aplicadas:**
+    1. **Acervo Offline Definitivo:** `buscarProdutosBomJawaKit` em `src/lib/bomJawaKitApi.ts` agora retorna **sempre** os resultados do acervo local (mesmo que sejam 0 produtos encontrados), nunca mais tentando fazer requisições externas desnecessárias.
+    2. **Remoção de Chamada Remota Residual:** Eliminado o fallback de `/api/buscar-produtos-externos` em `src/App.tsx`, garantindo que 0 produtos encontrados simplesmente exibam a mensagem limpa na interface sem alert bloqueante.
+    3. **Tratamento de Cota no Envio de Lotes:** O envio de lotes de 1.000 produtos agora libera o estado do botão antes do alerta e captura explicitamente eventuais erros de cota do Firebase (`resource-exhausted`).
+    4. **Elevação do Service Worker:** Cache PWA atualizado para `estoque-mobile-pwa-v41` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-25 - Atualização 36]
 - **Catálogo Offline Integrado com +13.300 Produtos e Sincronização em Lotes de 1.000 ao Firebase:**
   - **Estratégia Adotada Conforme Solicitação do Usuário:** Para proteger a cota diária do Firestore (já em 80%) e evitar cobranças ou interrupções, os 13.545 produtos e 31 categorias da API foram baixados e filtrados localmente em `public/catalogo-api-offline.json` (3.7MB).
