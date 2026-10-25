@@ -104,6 +104,14 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 35]
+- **Isolamento Estrito do Cadastro no Banco Master (`modoCadastroItem === 'master'`) Sem Inserir no Estoque da Loja (`src/App.tsx`):**
+  - **Problema Relatado:** Quando o Dono do App (`dona_app`) cadastrava um produto selecionando a opção **👑 Banco Master (Catálogo)**, o sistema salvava no catálogo global, mas também criava automaticamente um item inicial (`novoItemMasterFallback`) dentro do estoque da loja ativa (`estoque_${supermercadoAtual}` e coleção `estoque` no Firestore).
+  - **Correção Aplicada:**
+    - Removida a criação de `novoItemMasterFallback` em `salvarProduto` quando `modoCadastroItem === 'master'`.
+    - Agora, o cadastro em **👑 Banco Master (Catálogo)** grava **exclusivamente** no Catálogo Global (`catalogo_global` / `produtos_catalogo`). Ele só atualiza o estoque de uma loja se aquela loja *já possuir* lotes daquele código de barras cadastrados, nunca adicionando produtos novos ao estoque da loja.
+    - Versão do Service Worker elevada para `estoque-mobile-pwa-v39` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-10-24 - Atualização 34]
 - **Carregamento em Lote Único (200 Produtos por Requisição) e Cache Persistente no Catálogo da API (`ConsultaProdutosModal.tsx` & `bomJawaKitApi.ts`):**
   - **Problema Solucionado:** Toda vez que o usuário saía do modal "Catálogo Oficial Multi-API de Produtos & Códigos EAN" (por exemplo, após clicar em *Usar Produto no Cadastro* para registrar um item no estoque) e abria novamente — ou trocava entre as páginas 1, 2, 3, 4, 5 — o sistema disparava uma nova requisição à API externa.
