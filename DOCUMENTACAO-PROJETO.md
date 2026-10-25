@@ -104,6 +104,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-10-24 - Atualização 29]
+- **Correção Imediata do ReferenceError (`produtoExistenteCatalogo is not defined`):**
+  - **Diagnóstico:** Na Atualização 28, a variável responsável por verificar a existência do produto no catálogo global foi declarada como `itemCatalogoExistente`, porém ao computar `isProdutoBloqueadoParaEdicaoMestre`, fez-se referência a `produtoExistenteCatalogo`, disparando um `ReferenceError` capturado pelo `ErrorBoundary`.
+  - **Correção Aplicada:**
+    - Ajustado o identificador em `src/App.tsx` para `itemCatalogoExistente`.
+    - Atualizada a interface `ProdutoCatalogo` em `src/types.ts` com propriedades opcionais (`ncm`, `foto`, `foto_url`, `preco_custo`, `preco_venda`).
+    - Removido import obsoleto `sincronizarCatalogoAdegaLocalmente`.
+    - Corrigido `ErrorBoundary.tsx` com `public override state` para conformidade com React 19 e TypeScript.
+  - **Atualização do Service Worker:**
+    - Versão do cache do PWA elevada para `estoque-mobile-pwa-v33` em `public/sw.js` e `src/main.tsx` para forçar limpeza de cache residual.
+
 ### [2026-10-24 - Atualização 28]
 - **Blindagem do Catálogo Master e Bloqueio Estrito de Alteração de Nome, Marca, Categoria e Foto por Lojas:**
   - **Solicitação do Usuário:** Bloquear a alteração do Nome Oficial, da Marca, da Categoria e da Foto do produto quando qualquer loja/adega colocar um código de barras que já esteja cadastrado no Catálogo Global, garantindo que o catálogo permaneça unificado, padronizado e sem duplicações de fotos ou nomes adulterados.

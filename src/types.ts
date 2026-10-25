@@ -5,7 +5,12 @@ export interface ProdutoCatalogo {
   categoria?: string;
   unidade_medida?: string;
   imagem?: string;
+  foto?: string;
+  foto_url?: string;
   descricao?: string;
+  ncm?: string;
+  preco_custo?: number;
+  preco_venda?: number;
 }
 
 export interface ItemEstoque {

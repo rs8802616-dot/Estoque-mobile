@@ -95,7 +95,6 @@ import {
 import {
   CATALOGO_ADEGA_MIX_OFICIAL,
   garantirCatalogoAdegaNoBancoGlobal,
-  sincronizarCatalogoAdegaLocalmente,
   sincronizarCatalogoAdegaComFirestore,
 } from './lib/catalogoAdegaMix';
 import {
@@ -745,7 +744,7 @@ export default function App() {
   // Se o produto já existe no Catálogo Master e o usuário estiver cadastrando/editando estoque de loja,
   // bloqueia edição de Nome Oficial, Marca, Categoria e Foto para garantir integridade e padronização absoluta
   const isProdutoBloqueadoParaEdicaoMestre = Boolean(
-    produtoExistenteCatalogo && (perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque')
+    itemCatalogoExistente && (perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque')
   );
 
   // Stock Sale/Markdown Modal & Multi-Item Cart
