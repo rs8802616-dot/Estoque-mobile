@@ -1,7 +1,7 @@
 // Service Worker para Estoque Mobile Multi-Supermercado
 // Permite funcionamento 100% offline mesmo ao recarregar a página (F5 ou abrir app sem conexão)
 
-const CACHE_NAME = 'estoque-mobile-pwa-v44';
+const CACHE_NAME = 'estoque-mobile-pwa-v50';
 
 const ASSETS_PARA_CACHE_INICIAL = [
   '/',
@@ -11,8 +11,9 @@ const ASSETS_PARA_CACHE_INICIAL = [
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
 ];
 
-// Instalação do Service Worker: pré-armazena o shell da aplicação
+// Instalação do Service Worker: pré-armazena o shell da aplicação e ativa imediatamente
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       try {
@@ -20,19 +21,21 @@ self.addEventListener('install', (event) => {
       } catch (err) {
         console.warn('Aviso ao pré-carregar assets no cache offline:', err);
       }
-      return self.skipWaiting();
     })
   );
 });
 
-// Ativação: remove caches antigos e assume controle imediatamente
+// Ativação: remove IMEDIATAMENTE todos os caches antigos (v44, v45, etc.) e assume controle
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.info('[SW] Removendo cache legado expirado:', name);
+            return caches.delete(name);
+          })
       );
     }).then(() => self.clients.claim())
   );

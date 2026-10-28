@@ -272,128 +272,20 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
   };
 }
 
-// Real-time listener for Catálogo Global (com sincronização em tempo real de adições, edições e exclusões)
+// Real-time listener for Catálogo Global DESATIVADO PARA PROTEÇÃO DE COTA (Zero leituras na nuvem)
+// Proteção estrita: NUNCA executa onSnapshot ou getDocs em massa na coleção 'catalogo_global' (14.207 docs).
+// Novos produtos são pesquisados 1 a 1 sob demanda via getDoc(doc(db, 'catalogo_global', barcode)).
 export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => void) {
-  const colRef = collection(db, 'catalogo_global');
-  return onSnapshot(
-    colRef,
-    (snapshot) => {
-      const mapaRemoto = new Map<string, ProdutoCatalogo>();
-      snapshot.forEach((docSnap) => {
-        const p = docSnap.data() as ProdutoCatalogo;
-        if (p && p.codigo) {
-          const codLimpo = p.codigo.trim();
-          const existente = mapaRemoto.get(codLimpo);
-          if (!existente) {
-            mapaRemoto.set(codLimpo, { ...p, codigo: codLimpo });
-          } else {
-            // Se houver duplicação remota, une preservando imagem e nome válidos
-            const imgMelhor = (p.imagem && p.imagem.trim().length > 10) ? p.imagem : existente.imagem;
-            const nomeMelhor = (p.nome && p.nome.trim().length > 0) ? p.nome : existente.nome;
-            mapaRemoto.set(codLimpo, {
-              ...existente,
-              ...p,
-              codigo: codLimpo,
-              imagem: imgMelhor || '',
-              nome: nomeMelhor || existente.nome,
-            });
-          }
-        }
-      });
-
-      const prodsRemotos = Array.from(mapaRemoto.values());
-
-      let prodsLocais: ProdutoCatalogo[] = [];
-      try {
-        const salvo = localStorage.getItem('catalogoGlobalFirebase');
-        if (salvo) prodsLocais = JSON.parse(salvo);
-      } catch (e) {}
-
-      const mapaLocal = new Map<string, ProdutoCatalogo>();
-      prodsLocais.forEach((p) => {
-        if (p.codigo) {
-          const codLimpo = p.codigo.trim();
-          if (!mapaLocal.has(codLimpo)) {
-            mapaLocal.set(codLimpo, { ...p, codigo: codLimpo });
-          }
-        }
-      });
-
-      if (prodsRemotos.length === 0) {
-        if (snapshot.empty && !snapshot.metadata.fromCache) {
-          try {
-            safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify([]));
-          } catch (e) {}
-          callback([]);
-          return;
-        }
-
-        const locaisDeduplicados = Array.from(mapaLocal.values());
-        if (locaisDeduplicados.length > 0) {
-          callback(locaisDeduplicados);
-        } else {
-          callback([]);
-        }
-        return;
+  try {
+    const salvo = localStorage.getItem('catalogoGlobalFirebase');
+    if (salvo) {
+      const parsed = JSON.parse(salvo);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        callback(parsed);
       }
-
-      // Baseia-se estritamente nos produtos existentes no banco remoto, mantendo fotos locais e do cache IndexedDB
-      const mapaFinal = new Map<string, ProdutoCatalogo>();
-      prodsRemotos.forEach((remoto) => {
-        const codLimpo = remoto.codigo.trim();
-        const local = mapaLocal.get(codLimpo);
-        const fotoCache = obterFotoCache(codLimpo) || '';
-        const imagemFinal = (remoto.imagem && remoto.imagem.trim()) || (local?.imagem && local.imagem.trim()) || fotoCache || '';
-
-        // Se veio imagem base64 no documento remoto, assegura cache no IndexedDB
-        if (remoto.imagem && remoto.imagem.startsWith('data:image') && remoto.imagem.length > 10) {
-          salvarImagemIndexedDB(codLimpo, remoto.imagem).catch(() => {});
-        }
-
-        const produtoFinal: ProdutoCatalogo = {
-          ...remoto,
-          codigo: codLimpo,
-          imagem: imagemFinal,
-        };
-        if (!mapaFinal.has(codLimpo)) {
-          mapaFinal.set(codLimpo, produtoFinal);
-        } else {
-          const anterior = mapaFinal.get(codLimpo)!;
-          mapaFinal.set(codLimpo, {
-            ...anterior,
-            ...produtoFinal,
-            imagem: produtoFinal.imagem || anterior.imagem || fotoCache || '',
-            categoria: produtoFinal.categoria || anterior.categoria || 'Geral',
-            marca: produtoFinal.marca || anterior.marca || '',
-          });
-        }
-      });
-
-      const prodsAtualizados = Array.from(mapaFinal.values());
-
-      try {
-        safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(prodsAtualizados));
-      } catch (e) {}
-
-      callback(prodsAtualizados);
-    },
-    (_err) => {
-      try {
-        const salvo = localStorage.getItem('catalogoGlobalFirebase');
-        if (salvo) {
-          const parsed = JSON.parse(salvo);
-          if (Array.isArray(parsed)) {
-            const mapa = new Map<string, ProdutoCatalogo>();
-            parsed.forEach((p) => {
-              if (p?.codigo) mapa.set(p.codigo.trim(), p);
-            });
-            callback(Array.from(mapa.values()));
-            return;
-          }
-        }
-      } catch (e) {}
     }
-  );
+  } catch (e) {}
+  return () => {};
 }
 
 // Real-time listener for Vendas (limitado a 300 vendas mais recentes para economizar leituras do Firestore)

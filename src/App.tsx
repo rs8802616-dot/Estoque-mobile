@@ -144,7 +144,6 @@ import { screenWakeLockManager } from './lib/screenWakeLock';
 import {
   subscribeSupermercados,
   subscribeEstoque,
-  subscribeCatalogo,
   subscribeVendas,
   subscribeOperadores,
   subscribeClientesDevedores,
@@ -3751,9 +3750,14 @@ export default function App() {
     }
   };
 
-  // Sincroniza a contagem oficial exata do catálogo no Firestore (consome apenas 1 leitura)
+  // Sincroniza a contagem oficial exata do catálogo no Firestore com cache local estrito (Zero leituras ao recarregar a tela)
   useEffect(() => {
     if (perfilAtivo !== 'dona_app') return;
+    const salvo = localStorage.getItem('total_produtos_catalogo_banco');
+    if (salvo && Number(salvo) > 0) {
+      setTotalProdutosCadastrados(Number(salvo));
+      return;
+    }
     obterQuantidadeTotalCatalogoFirestore().then((totalReal) => {
       if (typeof totalReal === 'number' && totalReal > 0) {
         setTotalProdutosCadastrados(totalReal);

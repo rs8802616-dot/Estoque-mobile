@@ -22,6 +22,8 @@
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
               console.log('✅ PWA Service Worker registrado com sucesso:', registration.scope);
+              // Força verificação imediata de atualizações no servidor
+              registration.update().catch(() => {});
             })
             .catch((error) => {
               console.warn('⚠️ Falha ao registrar Service Worker:', error);
