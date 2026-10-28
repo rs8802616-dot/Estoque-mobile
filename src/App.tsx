@@ -110,6 +110,10 @@ import {
   sincronizarCatalogoRissulComFirestore,
 } from './lib/catalogoRissulBebidas';
 import {
+  garantirCatalogoCocaColaNoBancoGlobal,
+  sincronizarCatalogoCocaColaComFirestore,
+} from './lib/catalogoCocaColaFemsa';
+import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
   tocarSomAlerta,
@@ -381,12 +385,13 @@ export default function App() {
         }
       } catch (e) {}
     }
-    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express e Bebidas Rissul estejam presentes
+    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express, Bebidas Rissul e Coca-Cola FEMSA estejam presentes
     const { catalogoCompleto: comAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaBase);
     const { catalogoCompleto: comAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
     const { catalogoCompleto: comZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
     const { catalogoCompleto: comChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
-    const { catalogoCompleto } = garantirCatalogoRissulNoBancoGlobal(comChopp);
+    const { catalogoCompleto: comRissul } = garantirCatalogoRissulNoBancoGlobal(comChopp);
+    const { catalogoCompleto } = garantirCatalogoCocaColaNoBancoGlobal(comRissul);
     try {
       localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
     } catch (e) {}
@@ -3881,6 +3886,17 @@ export default function App() {
       setCatalogoGlobal(res.catalogoFinal);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
       alert(`🥤 Bebidas Rissul Sincronizadas no Novo Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos com fotos 260x260: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
+    } catch (err: any) {
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
+    }
+  };
+
+  const handleSincronizarCocaColaFemsa = async () => {
+    try {
+      const res = await sincronizarCatalogoCocaColaComFirestore(catalogoGlobal);
+      setCatalogoGlobal(res.catalogoFinal);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
+      alert(`🔴 Portfólio Coca-Cola FEMSA Sincronizado no Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
     } catch (err: any) {
       alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
     }
@@ -8688,6 +8704,14 @@ export default function App() {
                     title="Carrega os 465 produtos de bebidas não alcoólicas do Rissul (Refrigerantes, Sucos Integrais, Águas Minerais, Chás, Isotônicos)"
                   >
                     🥤 Bebidas Rissul (465 Itens)
+                  </button>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: '#e11d48', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    onClick={handleSincronizarCocaColaFemsa}
+                    title="Carrega os 255 produtos oficiais do Portfólio Coca-Cola FEMSA Brasil (Refrigerantes, Cervejas Heineken/Eisenbahn, Sucos Del Valle, Águas Crystal, Monster)"
+                  >
+                    🔴 Coca-Cola FEMSA (255 Novos Itens)
                   </button>
                 </div>
               </div>

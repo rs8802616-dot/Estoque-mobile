@@ -1,0 +1,2402 @@
+import { ProdutoCatalogo } from '../types';
+import { salvarProdutoCatalogoFirestore } from './firestoreSync';
+
+/**
+ * Catálogo Oficial do Portfólio Coca-Cola FEMSA Brasil (https://portfoliococacolafemsa.com.br)
+ * Extraído e filtrado: 255 produtos novos não cadastrados no banco anterior.
+ * 100% com códigos de barras EAN, imagens em alta definição e marcas oficiais.
+ */
+export const catalogoCocaColaFemsaMix: ProdutoCatalogo[] = [
+  {
+    "codigo": "7894900016024",
+    "nome": "Coca-Cola BAG 10L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2024/7894900016024.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900016017",
+    "nome": "Coca-Cola BAG 18L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2025/7894900016017.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900015119",
+    "nome": "Coca-Cola LS RGB",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2029/7894900015119.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900011326",
+    "nome": "Coca-Cola LT 350ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2485/7894900011326.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900012606",
+    "nome": "Coca-Cola PET 600ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4080/7894900012606.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900014211",
+    "nome": "Coca-Cola PET RET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2042/7894900014211.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900705034",
+    "nome": "Coca-Cola Zero KS 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2045/7894900705034.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900701326",
+    "nome": "Coca-Cola Zero LT 350ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4632/7894900701326_1.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900701593",
+    "nome": "Coca-Cola Zero PET 2,5L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2052/7894900701593.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900704211",
+    "nome": "Coca-Cola Zero PET RET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2056/7894900704211.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900015034",
+    "nome": "Coca-Cola KS 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2416/Prancheta-1-c%C3%B3pia.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900093100",
+    "nome": "Fanta Guarana BAG 5L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2063/7894900093100.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900093056",
+    "nome": "Fanta Guarana PET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2970/Fanta-Guarana.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900094008",
+    "nome": "Fanta Guarana Zero LT 350ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2070/7894900094008.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900036039",
+    "nome": "Fanta Laranja BAG 5L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2072/7894900036039.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900035209",
+    "nome": "Fanta Laranja KS 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2990/Fanta-Laranja.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900034219",
+    "nome": "Fanta Laranja PET RET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2083/7894900034219.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900091007",
+    "nome": "Fanta Maracuja LT 350ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2086/7894900091007.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900091014",
+    "nome": "Fanta Maracuja PET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2087/7894900091014.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900050394",
+    "nome": "Fanta Uva LT 220ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2093/7894900050394.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938571",
+    "nome": "Fanta Uva PET 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3070/Fanta-Laranja.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900053630",
+    "nome": "Fanta Uva PET 600ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3080/Fanta-Laranja_03.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900054217",
+    "nome": "Fanta Uva PET RET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2098/7894900054217.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900910391",
+    "nome": "Kuat Guarana LT 220ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4439/7894900910391.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900910018",
+    "nome": "Kuat Guarana LT 350ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4444/7894900910018.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900911510",
+    "nome": "Kuat Guarana PET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4449/7894900911510.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900320015",
+    "nome": "Schweppes Citrus LT 350ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4250/SCH-TM-3.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900066036",
+    "nome": "Sprite Limão Zero BAG 5L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4396/SPRITE_1.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900065206",
+    "nome": "Sprite Original Limao KS 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2135/7894900065206.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900093261",
+    "nome": "Fanta Guarana PET 600ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3087/Fanta-Guarana.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900180558",
+    "nome": "Schweppes Citrus Original NRGB 250ml (2x6) New",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2117/7894900180558.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900303407",
+    "nome": "Schweppes Tonica NRGB 250ml (2x6) New",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2124/7894900303407.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900055207",
+    "nome": "Fanta Uva KS 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2674/7894900055207.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900035117",
+    "nome": "Fanta Laranja LS UNI ROT",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2075/7894900035117.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900055115",
+    "nome": "Fanta Uva  LS UNI ROT",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2092/7894900055115.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898341430081",
+    "nome": "Del Valle Nectar Caju SAA TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3685/7898341430081.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660265",
+    "nome": "Del Valle Nectar Goiaba SAA LT 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2249/7894900660265.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660418",
+    "nome": "Del Valle Nectar Laranja TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2251/7894900660418.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660401",
+    "nome": "Del Valle Nectar Manga LT 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2252/7894900660401.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660357",
+    "nome": "Del Valle Nectar Manga SAA TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3695/7894900660357.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660302",
+    "nome": "Del Valle Nectar Maracuja LT 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2254/7894900660302.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898341430074",
+    "nome": "Del Valle Nectar Maracuja TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3700/7898341430074.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660319",
+    "nome": "Del Valle Nectar Pessego LT 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2256/7894900660319.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898341430043",
+    "nome": "Del Valle Nectar Pessego SAA TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3705/7898341430043.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660333",
+    "nome": "Del Valle Nectar Uva LT 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2260/7894900660333.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898341430777",
+    "nome": "Del Valle Nectar Uva SAA TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3715/7898341430777.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900660555",
+    "nome": "Del Valle Nectar Goiaba SAA TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3725/7894900660555.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900551068",
+    "nome": "Del Valle Frut Limão PET 1,5L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2339/7894900551068.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "70847035305",
+    "nome": "Monster Energy Original LT 269ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2000/70847035305.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898938890007",
+    "nome": "Monster Mango Loco LT 269ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2003/7898938890007.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900502046",
+    "nome": "Powerade Tangerina PET 500ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2020/7894900502046.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087109",
+    "nome": "Ades Frutas Pessego TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3882/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087017",
+    "nome": "Ades Max Abacaxi TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3893/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087055",
+    "nome": "Ades Max Laranja TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3897/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087079",
+    "nome": "Ades Max Maca TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3903/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087093",
+    "nome": "Ades Max Morango TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3909/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087116",
+    "nome": "Ades Max Pessego TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3915/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900087130",
+    "nome": "Ades Max Uva TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3928/ADES.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900086003",
+    "nome": "Ades Original TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3935/ADES_1.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900086027",
+    "nome": "Ades Original Zero TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3940/ADES_1.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900083507",
+    "nome": "Ades Seeds Amendoas com Baunilha TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1845/7894900083507.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900084009",
+    "nome": "Ades Seeds Amendoas SAA TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1846/7894900084009.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900083002",
+    "nome": "Ades Seeds Amendoas TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1847/7894900083002.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900084504",
+    "nome": "Ades Seeds Coco TP 1L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1850/7894900084504.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891098037015",
+    "nome": "GUARANA LEAO ACAI COPO 300ML",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2677/7891098037015.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5099873022092",
+    "nome": "Jack Honey LT 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1662/5099873022092.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184075",
+    "nome": "Schweppes Gin Tonica LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2300/7894900184075.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184174",
+    "nome": "Schweppes Gin Tonica Pink LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2301/7894900184174.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184372",
+    "nome": "Schweppes Spritz LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2302/7894900184372.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184273",
+    "nome": "Schweppes Vodka Citrus LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2303/7894900184273.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184303",
+    "nome": "Schweppes Spritz LN 250ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2329/7894900184303.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184204",
+    "nome": "Schweppes Vodka Citrus LN 250ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2330/7894900184204.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900337006",
+    "nome": "Absolut Sprite LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2340/7894900337006.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900336535",
+    "nome": "Jack &amp; Coke LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2365/7894900336535.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367983790",
+    "nome": "Eisenbahn Pilsen LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2440/Eisenbahn_Locomotiva_10s_Bar_1920x1080_.mp4",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045506095",
+    "nome": "Bavaria Pilsen LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1863/7896045506095.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503452",
+    "nome": "Bavaria Pilsen LT 473ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1864/7896045503452.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78909458",
+    "nome": "Bavaria Pilsen RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1865/78909458.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503100",
+    "nome": "Chopp Kaiser 50L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1870/7896045503100.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367984070",
+    "nome": "Eisenbahn Pale Ale LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1879/7898367984070.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367983813",
+    "nome": "Eisenbahn IPA LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1876/7898367983813.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367984056",
+    "nome": "Eisenbahn IPA LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1877/7898367984056.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367980034",
+    "nome": "Eisenbahn Pale Ale LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1878/7898367980034.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367983998",
+    "nome": "Eisenbahn Pilsen KEG 30L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1881/7898367983998.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367980010",
+    "nome": "Eisenbahn Pilsen LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1883/7898367980010.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367984285",
+    "nome": "Eisenbahn Pilsen LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1884/7898367984285.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367983615",
+    "nome": "Eisenbahn Pilsen RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1887/7898367983615.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367980041",
+    "nome": "Eisenbahn Weizenbier LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1894/7898367980041.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "8412598000478",
+    "nome": "Estrella Galicia 0,0% LT 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1895/8412598000478.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898953990140",
+    "nome": "Estrella Galicia LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1896/7898953990140.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898953990027",
+    "nome": "Estrella Galicia LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1897/7898953990027.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898953990065",
+    "nome": "Estrella Galicia LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1898/7898953990065.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898953990010",
+    "nome": "Estrella Galicia RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1902/7898953990010.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045512317",
+    "nome": "Kaiser Pilsen LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1916/7896045512317.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503476",
+    "nome": "Kaiser Pilsen RGB 1L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1918/7896045503476.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78904644",
+    "nome": "Kaiser Pilsen RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1919/78904644.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78934115",
+    "nome": "Sol Premium LN 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3413/78934115.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000205",
+    "nome": "Therezopolis Elfelbein NRGB 500ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1922/7896371000205.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000007",
+    "nome": "Therezopolis Gold LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1924/7896371000007.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000045",
+    "nome": "Therezopolis Gold RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1927/7896371000045.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000342",
+    "nome": "Therezopolis Session IPA LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2352/7896371000342.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000366",
+    "nome": "Therezopolis Session IPA LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2354/7896371000366.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "8412598001628",
+    "nome": "1906 Black Coupage LN 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2387/8412598001628.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "8412598004605",
+    "nome": "Estrella Galicia 0,0% LN 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2388/8412598004605.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "8412598009372",
+    "nome": "Estrella Galicia Tostada 0,0% LN 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2389/8412598009372.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000373",
+    "nome": "Therezopolis Or Blanc LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3574/7896371000373.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000380",
+    "nome": "Therezopolis Or Blanc LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3580/Prancheta-2.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000458",
+    "nome": "Therezopolis Rubine LN 355ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3586/Prancheta-3.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891136057012",
+    "nome": "Aperol NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2142/7891136057012.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896010006360",
+    "nome": "Dreher NRGB 900ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2158/7896010006360.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896010006353",
+    "nome": "Drury&#039;S NRGB 900ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2160/7896010006339.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "897076002003",
+    "nome": "Gin Bulldog NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2166/897076002003.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000289020701",
+    "nome": "Gin Gordon&#039;s NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2167/5000289020701.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000291020706",
+    "nome": "Gin Tanqueray NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2172/5000291020706.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "850003347653",
+    "nome": "Howler Head NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2176/850003347653.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896010006346",
+    "nome": "Old Eight NRGB 900ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4107/7896010006346.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896010000016",
+    "nome": "Sagatiba Cristalina NRGB 700ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2183/7896010000016.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896010004502",
+    "nome": "Skyy Vodka NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2186/7896010004502.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896010004007",
+    "nome": "Skyy Vodka NRGB 980ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2187/7896010004007.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330311101",
+    "nome": "Vinho 120 Cab Sauv NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3972/7804330311101.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330984060",
+    "nome": "Vinho 120 Carmenere NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3977/7804330984060.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330351206",
+    "nome": "Vinho 120 Chardonnay NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3982/Prancheta-3.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330006717",
+    "nome": "Vinho 3 Medallas Cab Sauv NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2191/7804330006717.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330006731",
+    "nome": "Vinho 3 Medallas Merlot NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2192/7804330006731.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330006724",
+    "nome": "Vinho 3 Medallas Sauv. Blanc NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4733/Sauvignon-Blanc-1.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7893218002576",
+    "nome": "Vodka Smirnoff Red NRGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2198/7893218002576.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7893218000473",
+    "nome": "Vodka Smirnoff Red NRGB 998ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2199/7893218000473.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000267023601",
+    "nome": "Whiskey JW Black Label NRGB 1L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2208/5000267023601.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000267024011",
+    "nome": "Whiskey JW Black Label NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2209/5000267024011.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000267190556",
+    "nome": "Whiskey JW Blonde NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2211/5000267190556.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000267197630",
+    "nome": "Whiskey JW Gold Label NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4109/5000267197630.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000267013602",
+    "nome": "Whiskey JW Red Label NRGB 1L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2213/5000267013602.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000281004020",
+    "nome": "Whiskey Old Parr NRGB 1L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2216/5000281004020.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "5000265001335",
+    "nome": "Whiskey White Horse NRGB 1L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2218/5000265001335.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "721059707503",
+    "nome": "Espolon Prata NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2162/721059707503.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "721059707510",
+    "nome": "Espolon Ouro NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2161/721059707510.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540043369",
+    "nome": "Vinho Alma Mora Cab Sauv NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2292/7791540043369.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540092336",
+    "nome": "Vinho Alma Mora Malbec NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2293/7791540092336.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540047572",
+    "nome": "Vinho FLM Barrel Select Cab Sauv NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2294/7791540047572.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540090066",
+    "nome": "Vinho FLM Barrel Select Malbec NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4732/7791540090066_1.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540127106",
+    "nome": "Vinho FLM Cab Sauv NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2296/7791540127106.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540127168",
+    "nome": "Vinho FLM Malbec NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2297/7791540127168.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540090417",
+    "nome": "Vinho FLM Sauv Blanc NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2298/7791540090417.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7791540049347",
+    "nome": "Vinho Intocables Malbec NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2299/7791540049347.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330312108",
+    "nome": "Vinho 120 Cab Sauv NRGB 375ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2355/7804330312108.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330005215",
+    "nome": "Vinho 120 Pinot Noir NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3996/vinho-120-reserva-especial-%282%29.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330361106",
+    "nome": "Vinho 120 Rose NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3991/vinho-120-reserva-especial.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7804330006014",
+    "nome": "Medalla Real GM Cab Sauv NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2376/7804330006014.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622300988470",
+    "nome": "Bis Xtra ao Leite 45g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1692/7622300988470.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891118026043",
+    "nome": "Amor Paçoca Quadrada Cx 18gr",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1682/7891118026043.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891330012725",
+    "nome": "Stikadinho 70g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1686/7891330012725.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896058599053",
+    "nome": "Pettiz Amendoim Japones Special 50g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3799/7896058599053.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896058599060",
+    "nome": "Pettiz Amendoim Tor e Salg Special 50g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3802/17896058599067.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896004006239",
+    "nome": "Pringles Batata Cebola 109g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1738/7896004006239.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896004006406",
+    "nome": "Pringles Batata Churrasco 109g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1740/7896004006406.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896004006277",
+    "nome": "Pringles Batata Original 104g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1742/7896004006277.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896004006284",
+    "nome": "Pringles Batata Queijo 109g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1744/7896004006284.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891330018680",
+    "nome": "Stikadinho Go 40g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1747/7891330018680.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891330016532",
+    "nome": "Stikadinho Morango 12,3g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1748/7891330016532.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622210570116",
+    "nome": "Wafer Ouro Branco 25g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1761/7622210570116.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622210570086",
+    "nome": "Wafer Sonho De Valsa 25g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1762/7622210570086.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622210933454",
+    "nome": "Mini Oreo 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2271/7622210933454.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896004010076",
+    "nome": "Nano Pringles Original 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2304/7896004010076.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622202298189",
+    "nome": "Ouro Branco 540g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4001/7896019000635_1.jpg",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622210531773",
+    "nome": "Sonho De Valsa 540g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2343/7622210531773.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896423419276",
+    "nome": "M&amp;M&#039;S Tubo Choco Ao Leite 30g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2370/7896423419276.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896423470994",
+    "nome": "Twix Original 40g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2372/7896423470994.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896423438727",
+    "nome": "M&amp;M&#039;S Choco Ao Leite 40g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3602/7896423438727_01.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591450686",
+    "nome": "Fini Bananas 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1768/7898591450686.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144892832",
+    "nome": "Mentos Cool White Blue Rapsberry 5P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2384/7895144892832.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591450600",
+    "nome": "Fini Dentaduras 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1773/7898591450600.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591450662",
+    "nome": "Fini Beijos Morango 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1769/7898591450662.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938830",
+    "nome": "Halls Menta 28g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1802/78938830.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144080116",
+    "nome": "Mentos Pf Mint Garrafa 28P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1813/7895144080116.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228801986",
+    "nome": "Fini Chicle Classicos 14g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1770/7908228801986.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591450648",
+    "nome": "Fini Amoras 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1767/7898591450648.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228802006",
+    "nome": "Fini Chicle Morango 14g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1771/7908228802006.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228802020",
+    "nome": "Fini Chicle Salada de Frutas 14g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1772/7908228802020.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591450709",
+    "nome": "Fini Minhocas Brilho 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1777/7898591450709.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591459511",
+    "nome": "Fini Tubes Morango 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1782/7898591459511.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228801634",
+    "nome": "Fini Tubes Morango 27g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1783/7908228801634.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898279799823",
+    "nome": "Fini Tubes Morango Citr 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1785/7898279799823.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228802068",
+    "nome": "Fini Tubes Morango Citr 27g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1786/7908228802068.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591459771",
+    "nome": "Fini Tubes Pinta Lingua 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1789/7898591459771.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591459498",
+    "nome": "Fini Tubes Tres Cores 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1790/7898591459498.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591459474",
+    "nome": "Fini Tubes Tutti Frutti 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1791/7898591459474.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228801672",
+    "nome": "Fini Tubes Twister 27g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1794/7908228801672.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898591450624",
+    "nome": "Fini Ursinhos 15g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1797/7898591450624.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896262305075",
+    "nome": "Fruittella Mastig Morango Vita C 10P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1798/7896262305075.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144228518",
+    "nome": "Fruittella Swirl Morango Vita C",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1799/7895144228518.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938793",
+    "nome": "Halls Cereja 28g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1800/78938793.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938816",
+    "nome": "Halls Extra Forte 27,5g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1801/78938816.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938823",
+    "nome": "Halls Mentol 28g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1803/78938823.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938847",
+    "nome": "Halls Morango 28g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1804/78938847.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896262304467",
+    "nome": "Mentos Frutas Stick 14P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1808/7896262304467.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144693064",
+    "nome": "Mentos Frutas Vermelhas Stick 14P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1809/7895144693064.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896262304450",
+    "nome": "Mentos Mint Stick 14P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1810/7896262304450.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144693088",
+    "nome": "Mentos Morango Iogurte Stick 14P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1811/7895144693088.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144859941",
+    "nome": "Mentos Pf Fresh Mint 3 Camadas 5P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1812/7895144859941.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144205663",
+    "nome": "Mentos Pf Morango Garrafa 28P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1817/7895144205663.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144852935",
+    "nome": "Mentos Pf Spearmint 3 Camadas 5P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1818/7895144852935.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144203089",
+    "nome": "Mentos Pf Up2U Garrafa 28P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1819/7895144203089.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144080123",
+    "nome": "Mentos Pf Wintergreen Garrafa 28P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1820/7895144080123.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144859934",
+    "nome": "Mentos Pure Fruit 3 Camadas 5P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4101/7895144899930.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144693149",
+    "nome": "Mentos Rainbow Stick 14P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1824/7895144693149.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144693224",
+    "nome": "Mentos Tutti-Frutti Stick 14P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1826/7895144693224.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895800304211",
+    "nome": "Trident Hortela 8g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1828/7895800304211.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895800309780",
+    "nome": "Trident Melancia 8g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1829/7895800309780.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895800304228",
+    "nome": "Trident Menta 8g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1830/7895800304228.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895800430002",
+    "nome": "Trident Tutti-Frutti 8g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1831/7895800430002.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891118026234",
+    "nome": "Bala Butter Toffee Leite 450g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2281/7891118026234.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228804369",
+    "nome": "Fini Bananas 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2282/7908228804369.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228804383",
+    "nome": "Fini Beijos Morango e Nata 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2283/7908228804383.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228804390",
+    "nome": "Fini Dentaduras 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2284/7908228804390.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228804376",
+    "nome": "Fini Minhocas Citricas 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2285/7908228804376.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78947269",
+    "nome": "Mentos Pf Monopeça Tutti-Frutti 2g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2308/78947269.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144025117",
+    "nome": "Fruittella Swirl Caramelo 10P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2346/7895144025117.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78938854",
+    "nome": "Halls Melancia 28g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2347/78938854.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7622210564290",
+    "nome": "Trident Intense 8g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2348/7622210564290.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895800201503",
+    "nome": "Trident Morango 8g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2349/7895800201503.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78947818",
+    "nome": "Chupa Chups Sortido Reposicao 600g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2385/78947818.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7895144899978",
+    "nome": "Mentos Pf Melancia Garrafa 28P",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2404/7895144899978.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228807308",
+    "nome": "Fini Tubes Azedissimo 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3352/7908228807308.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7908228805564",
+    "nome": "Fini Tubes Morango 35g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3353/7908228805564.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7891118027361",
+    "nome": "Bala 7Belo Framboesa Display 450g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3356/7891118027361.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900093353",
+    "nome": "Fanta Guarana BAG 18L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2062/7894900093353.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900650006",
+    "nome": "Kapo Frutas Citricas TP 200ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3617/Kapo.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900184907",
+    "nome": "Schweppes Vodka Maracuja LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3129/7894900184907.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898367983356",
+    "nome": "Eisenbahn Pilsen LT 473ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1886/7898367983356.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7898953990157",
+    "nome": "Estrella Galicia LT 473ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1899/7898953990157.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503414",
+    "nome": "Kaiser Pilsen LT 473ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1917/7896045503414.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896371000021",
+    "nome": "Therezopolis Gold LT 473ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1925/7896371000021.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "8411144101010",
+    "nome": "Gin Larios NRGB 700ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2169/8411144101010.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "80686027638",
+    "nome": "Whiskey Jim Beam White NRGB 1L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2207/80686027638.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78947276",
+    "nome": "Mentos Pf Monopeça Sortido 2g",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2307/78947276.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900093292",
+    "nome": "Fanta Guarana PET 3L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4548/7894900093292.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900031706",
+    "nome": "Fanta Laranja PET 3L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4515/7894900031706.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900911602",
+    "nome": "Kuat Guarana PET 600ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4454/7894900911602.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900950397",
+    "nome": "Guarapan LT 220ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4386/7894900950397.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900951516",
+    "nome": "Guarapan PET 2L",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4391/7894900951516.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045507566",
+    "nome": "Sol Premium LT 350ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/3431/7896045507566.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "17790580424258",
+    "nome": "Amor Turron y Mani 25gr",
+    "categoria": "Mercearia & Alimentos",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1684/17790580424258.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7894900853438",
+    "nome": "Charrua Guarana KS 290ml",
+    "categoria": "Bebidas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/4048/CHARRUA-GUARANA.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503094",
+    "nome": "Chopp Kaiser 30L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1869/7896045503094.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "88076161863",
+    "nome": "Vodka Ciroc NRGB 750ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/2194/88076161863.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045505319",
+    "nome": "Amstel LT 269ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1855/7896045505319.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045504541",
+    "nome": "Amstel RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1858/7896045504541.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045504381",
+    "nome": "Chopp Amstel 50L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1866/7896045504381.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503162",
+    "nome": "Chopp Heineken 30L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1867/7896045503162.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045503179",
+    "nome": "Chopp Heineken 50L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1868/7896045503179.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "7896045506040",
+    "nome": "Heineken 0,0% LN 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1907/7896045506040.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "8712000025649",
+    "nome": "Heineken KEG 5L",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1909/8712000025649.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78936683",
+    "nome": "Heineken LN 330ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1911/78936683.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78905498",
+    "nome": "Heineken RGB 600ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1914/78905498.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  },
+  {
+    "codigo": "78935495",
+    "nome": "Heineken LN 250ml",
+    "categoria": "Bebidas Alcoólicas",
+    "marca": "Coca-Cola FEMSA",
+    "imagem": "https://apis3-coca-cola.s3.sa-east-1.amazonaws.com/1910/78935495.png",
+    "preco": 0,
+    "origem": "Coca-Cola FEMSA Portfolio"
+  }
+];
+
+/**
+ * Garante que todos os 255 produtos da Coca-Cola FEMSA estejam no catálogo local da aplicação (localStorage / Memória)
+ * sem necessidade de chamadas de leitura na nuvem (Custo: 0 leituras).
+ */
+export function garantirCatalogoCocaColaNoBancoGlobal(catalogoAtual: ProdutoCatalogo[]): {
+  catalogoCompleto: ProdutoCatalogo[];
+  novosInseridos: ProdutoCatalogo[];
+  atualizados: ProdutoCatalogo[];
+} {
+  const mapaExistentes = new Map<string, ProdutoCatalogo>();
+  (catalogoAtual || []).forEach((p) => {
+    if (p && p.codigo) {
+      mapaExistentes.set(String(p.codigo).trim(), p);
+    }
+  });
+
+  const novosInseridos: ProdutoCatalogo[] = [];
+  const atualizados: ProdutoCatalogo[] = [];
+
+  catalogoCocaColaFemsaMix.forEach((itemNovo) => {
+    const codLimpo = String(itemNovo.codigo).trim();
+    if (!mapaExistentes.has(codLimpo)) {
+      mapaExistentes.set(codLimpo, itemNovo);
+      novosInseridos.push(itemNovo);
+    } else {
+      const existente = mapaExistentes.get(codLimpo)!;
+      let alterou = false;
+      const fotoMelhor = (!existente.imagem || existente.imagem.length < 10) && itemNovo.imagem ? itemNovo.imagem : existente.imagem;
+      const nomeMelhor = (!existente.nome || existente.nome.trim().length === 0) && itemNovo.nome ? itemNovo.nome : existente.nome;
+
+      if (fotoMelhor !== existente.imagem || nomeMelhor !== existente.nome) {
+        alterou = true;
+      }
+
+      if (alterou) {
+        const itemAtualizado: ProdutoCatalogo = {
+          ...existente,
+          nome: nomeMelhor,
+          imagem: fotoMelhor,
+          categoria: existente.categoria || itemNovo.categoria,
+          marca: existente.marca || itemNovo.marca,
+        };
+        mapaExistentes.set(codLimpo, itemAtualizado);
+        atualizados.push(itemAtualizado);
+      }
+    }
+  });
+
+  return {
+    catalogoCompleto: Array.from(mapaExistentes.values()),
+    novosInseridos,
+    atualizados,
+  };
+}
+
+/**
+ * Sincroniza em lote os produtos da Coca-Cola FEMSA com o Cloud Firestore
+ */
+export async function sincronizarCatalogoCocaColaComFirestore(
+  catalogoAtual: ProdutoCatalogo[],
+  onProgresso?: (atual: number, total: number) => void
+): Promise<{ totalNovos: number; totalAtualizados: number; catalogoFinal: ProdutoCatalogo[] }> {
+  const { catalogoCompleto, novosInseridos, atualizados } = garantirCatalogoCocaColaNoBancoGlobal(catalogoAtual);
+  const itensParaSalvar = [...novosInseridos, ...atualizados];
+
+  try {
+    localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
+  } catch (err) {
+    console.warn('Erro ao salvar localmente:', err);
+  }
+
+  let processados = 0;
+  const total = itensParaSalvar.length;
+  const BATCH_SIZE = 5;
+
+  for (let i = 0; i < itensParaSalvar.length; i += BATCH_SIZE) {
+    const lote = itensParaSalvar.slice(i, i + BATCH_SIZE);
+    await Promise.all(
+      lote.map(async (item) => {
+        try {
+          await salvarProdutoCatalogoFirestore(item);
+        } catch (e) {
+          console.warn('Erro ao salvar produto Coca-Cola FEMSA no Firestore:', item.codigo, e);
+        }
+      })
+    );
+    processados += lote.length;
+    if (onProgresso) onProgresso(Math.min(processados, total), total);
+  }
+
+  return {
+    totalNovos: novosInseridos.length,
+    totalAtualizados: atualizados.length,
+    catalogoFinal: catalogoCompleto,
+  };
+}
