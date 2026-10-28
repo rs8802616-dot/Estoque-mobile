@@ -907,7 +907,7 @@ export async function excluirSupermercadoFirestore(lojaId: string) {
 
     // 2. Excluir por query ou busca caso o documento possua docId diferente
     try {
-      const snapLojas = await getDocs(collection(db, 'supermercados'));
+      const snapLojas = await getDocs(query(collection(db, 'supermercados'), limit(1)));
       for (const d of snapLojas.docs) {
         const data = d.data();
         if (d.id === lojaId || d.id === docId || data.id === lojaId || data.id === docId) {
@@ -979,11 +979,11 @@ export async function limparTodasLojasDeTesteFirestore() {
     for (const d of snapEst.docs) {
       await deleteDoc(d.ref);
     }
-    const snapOp = await getDocs(collection(db, 'operadores'));
+    const snapOp = await getDocs(query(collection(db, 'operadores'), limit(1)));
     for (const d of snapOp.docs) {
       await deleteDoc(d.ref);
     }
-    const snapVen = await getDocs(collection(db, 'vendas'));
+    const snapVen = await getDocs(query(collection(db, 'vendas'), limit(1)));
     for (const d of snapVen.docs) {
       await deleteDoc(d.ref);
     }
@@ -1091,7 +1091,7 @@ export async function inicializarDadosIniciaisFirestore(
     }
 
     // 2. Catálogo Global de Produtos
-    const snapCat = await getDocs(collection(db, 'catalogo_global'));
+    const snapCat = await getDocs(query(collection(db, 'catalogo_global'), limit(1)));
     if (snapCat.empty && catalogoInicial.length > 0) {
       for (const p of catalogoInicial) {
         await salvarProdutoCatalogoFirestore(p);
