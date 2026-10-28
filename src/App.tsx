@@ -110,9 +110,15 @@ import {
   sincronizarCatalogoRissulComFirestore,
 } from './lib/catalogoRissulBebidas';
 import {
+  catalogoCocaColaFemsaMix,
   garantirCatalogoCocaColaNoBancoGlobal,
   sincronizarCatalogoCocaColaComFirestore,
 } from './lib/catalogoCocaColaFemsa';
+import {
+  catalogoSalgadinhosCosmosMix,
+  garantirCatalogoSalgadinhosNoBancoGlobal,
+  sincronizarCatalogoSalgadinhosComFirestore,
+} from './lib/catalogoSalgadinhosCosmos';
 import {
   tocarBeepCaixa,
   tocarSomSucessoVenda,
@@ -385,13 +391,14 @@ export default function App() {
         }
       } catch (e) {}
     }
-    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express, Bebidas Rissul e Coca-Cola FEMSA estejam presentes
+    // Garante que o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express, Bebidas Rissul, Coca-Cola FEMSA e Salgadinhos Cosmos estejam presentes
     const { catalogoCompleto: comAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaBase);
     const { catalogoCompleto: comAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
     const { catalogoCompleto: comZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
     const { catalogoCompleto: comChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
     const { catalogoCompleto: comRissul } = garantirCatalogoRissulNoBancoGlobal(comChopp);
-    const { catalogoCompleto } = garantirCatalogoCocaColaNoBancoGlobal(comRissul);
+    const { catalogoCompleto: comCoca } = garantirCatalogoCocaColaNoBancoGlobal(comRissul);
+    const { catalogoCompleto } = garantirCatalogoSalgadinhosNoBancoGlobal(comCoca);
     try {
       localStorage.setItem('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
     } catch (e) {}
@@ -3902,6 +3909,80 @@ export default function App() {
     }
   };
 
+  const handleSincronizarSalgadinhosCosmos = async () => {
+    try {
+      const res = await sincronizarCatalogoSalgadinhosComFirestore(catalogoGlobal);
+      setCatalogoGlobal(res.catalogoFinal);
+      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(res.catalogoFinal));
+      alert(`🍟 Catálogo Salgadinhos (Cosmos Bluesoft) Sincronizado no Banco!\n\n• Novos produtos gravados: ${res.totalNovos}\n• Produtos enriquecidos: ${res.totalAtualizados}\n• Total no Catálogo Geral: ${res.catalogoFinal.length} produtos.\n\nBanco Conectado: adega-delivery-pdv`);
+    } catch (err: any) {
+      alert(`Aviso ao atualizar catálogo: ${err?.message || err}`);
+    }
+  };
+
+  // Controle de Envio em Lotes de 1.000 em 1.000 do LocalStorage para o Banco de Dados (Firestore)
+  const [codigosNovosJaEnviadosBanco, setCodigosNovosJaEnviadosBanco] = useState<string[]>(() => {
+    try {
+      const salvo = localStorage.getItem('codigos_novos_enviados_banco_v1');
+      if (salvo) {
+        const parsed = JSON.parse(salvo);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return [];
+  });
+  const [enviandoLoteMilBanco, setEnviandoLoteMilBanco] = useState<boolean>(false);
+
+  const produtosNovosPendentesEnvio = useMemo(() => {
+    const setEnviados = new Set(codigosNovosJaEnviadosBanco);
+    const todosNovos = [...catalogoCocaColaFemsaMix, ...catalogoSalgadinhosCosmosMix];
+    const vistos = new Set<string>();
+    const pendentes: ProdutoCatalogo[] = [];
+    for (const item of todosNovos) {
+      const cod = String(item.codigo || '').trim();
+      if (cod && !vistos.has(cod) && !setEnviados.has(cod)) {
+        vistos.add(cod);
+        pendentes.push(item);
+      }
+    }
+    return pendentes;
+  }, [codigosNovosJaEnviadosBanco]);
+
+  const handleEnviarLoteMilParaBanco = async () => {
+    if (enviandoLoteMilBanco) return;
+    if (produtosNovosPendentesEnvio.length === 0) {
+      alert('🎉 Todos os novos produtos do LocalStorage (Coca-Cola FEMSA + Salgadinhos) já foram enviados para o seu Banco de Dados!');
+      return;
+    }
+
+    const lote = produtosNovosPendentesEnvio.slice(0, 1000);
+    setEnviandoLoteMilBanco(true);
+    try {
+      await salvarLoteProdutosCatalogoFirestore(lote);
+
+      const novosEnviados = [...codigosNovosJaEnviadosBanco, ...lote.map((p) => String(p.codigo).trim())];
+      setCodigosNovosJaEnviadosBanco(novosEnviados);
+      safeLocalStorageSet('codigos_novos_enviados_banco_v1', JSON.stringify(novosEnviados));
+
+      setTotalProdutosCadastrados((prev) => {
+        const novoTotal = (prev || 14207) + lote.length;
+        safeLocalStorageSet('total_produtos_catalogo_banco', String(novoTotal));
+        return novoTotal;
+      });
+
+      const restam = Math.max(0, produtosNovosPendentesEnvio.length - lote.length);
+      alert(
+        `✅ Lote de ${lote.length} produtos enviado com sucesso para o Banco de Dados!\n\n` +
+        `• Produtos gravados agora: +${lote.length}\n` +
+        `• Restam no LocalStorage para enviar depois: ${restam} itens.`
+      );
+    } catch (err: any) {
+      alert(`❌ Erro ao enviar lote para o Banco de Dados:\n${err?.message || err}`);
+    } finally {
+      setEnviandoLoteMilBanco(false);
+    }
+  };
+
   const abrirCadastroComProdutoCatalogo = (cat: ProdutoCatalogo) => {
     fecharMenu();
     setModoCadastroItem('estoque');
@@ -5953,7 +6034,7 @@ export default function App() {
       <div className="seletor-perfil-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {perfilAtivo === 'dona_app' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
               <span style={{ background: '#f3e8ff', color: '#7e22ce', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #d8b4fe' }}>
                 👑 Dona do App (Master)
               </span>
@@ -5973,6 +6054,32 @@ export default function App() {
                   </option>
                 ))}
               </select>
+              {produtosNovosPendentesEnvio.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleEnviarLoteMilParaBanco}
+                  disabled={enviandoLoteMilBanco}
+                  style={{
+                    background: enviandoLoteMilBanco ? '#94a3b8' : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '5px 11px',
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    cursor: enviandoLoteMilBanco ? 'wait' : 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
+                  }}
+                  title="Envia um lote de até 1.000 produtos novos do LocalStorage (Coca-Cola FEMSA + Salgadinhos) para o Banco de Dados Firestore"
+                >
+                  {enviandoLoteMilBanco
+                    ? '⏳ Enviando Lote...'
+                    : `🚀 Enviar ${Math.min(1000, produtosNovosPendentesEnvio.length)} p/ Banco (Restam: ${produtosNovosPendentesEnvio.length})`}
+                </button>
+              )}
             </div>
           )}
 
@@ -6439,27 +6546,90 @@ export default function App() {
                         background: '#f8fafc',
                         border: '1px solid #e2e8f0',
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
+                        flexDirection: 'column',
+                        gap: '8px',
                       }}
-                      title="Quantidade total de produtos cadastrados no banco de dados central"
                     >
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>
-                        <Database size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
-                        <span>Produtos no Banco:</span>
-                      </span>
-                      <span
+                      <div
                         style={{
-                          background: '#e0f2fe',
-                          color: '#0369a1',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          padding: '3px 10px',
-                          borderRadius: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
                         }}
+                        title="Quantidade total de produtos cadastrados no banco de dados central"
                       >
-                        {totalProdutosCadastrados} itens
-                      </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                          <Database size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
+                          <span>Produtos no Banco:</span>
+                        </span>
+                        <span
+                          style={{
+                            background: '#e0f2fe',
+                            color: '#0369a1',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            padding: '3px 10px',
+                            borderRadius: '12px',
+                          }}
+                        >
+                          {totalProdutosCadastrados} itens
+                        </span>
+                      </div>
+
+                      {produtosNovosPendentesEnvio.length > 0 && (
+                        <>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              borderTop: '1px dashed #cbd5e1',
+                              paddingTop: '8px',
+                            }}
+                          >
+                            <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>
+                              📦 No LocalStorage p/ Enviar:
+                            </span>
+                            <span
+                              style={{
+                                background: '#dcfce7',
+                                color: '#15803d',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                                padding: '2px 8px',
+                                borderRadius: '10px',
+                              }}
+                            >
+                              {produtosNovosPendentesEnvio.length} novos
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleEnviarLoteMilParaBanco}
+                            disabled={enviandoLoteMilBanco}
+                            style={{
+                              width: '100%',
+                              background: enviandoLoteMilBanco ? '#94a3b8' : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '8px 10px',
+                              fontSize: '12px',
+                              fontWeight: 800,
+                              cursor: enviandoLoteMilBanco ? 'wait' : 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px',
+                              boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
+                            }}
+                          >
+                            {enviandoLoteMilBanco
+                              ? '⏳ Enviando p/ Banco...'
+                              : `🚀 Enviar ${Math.min(1000, produtosNovosPendentesEnvio.length)} ao Banco`}
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -8713,6 +8883,33 @@ export default function App() {
                   >
                     🔴 Coca-Cola FEMSA (255 Novos Itens)
                   </button>
+                  <button
+                    className="btn-acao-rel"
+                    style={{ background: '#ea580c', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    onClick={handleSincronizarSalgadinhosCosmos}
+                    title="Carrega os 1.059 novos salgadinhos extraídos do Cosmos Bluesoft (Doritos, Cheetos, Ruffles, Torcida, Pringles, Elma Chips, Fandangos, Yokitos)"
+                  >
+                    🍟 Salgadinhos Cosmos (1.059 Novos Itens)
+                  </button>
+                  {produtosNovosPendentesEnvio.length > 0 && (
+                    <button
+                      className="btn-acao-rel"
+                      style={{
+                        background: enviandoLoteMilBanco ? '#94a3b8' : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                        color: '#fff',
+                        padding: '10px 18px',
+                        fontWeight: 800,
+                        fontSize: '0.9rem',
+                        boxShadow: '0 2px 8px rgba(22, 163, 74, 0.35)',
+                      }}
+                      onClick={handleEnviarLoteMilParaBanco}
+                      disabled={enviandoLoteMilBanco}
+                    >
+                      {enviandoLoteMilBanco
+                        ? '⏳ Enviando Lote...'
+                        : `🚀 Enviar ${Math.min(1000, produtosNovosPendentesEnvio.length)} ao Banco (Faltam: ${produtosNovosPendentesEnvio.length})`}
+                    </button>
+                  )}
                 </div>
               </div>
 
