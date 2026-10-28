@@ -15,6 +15,15 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Habilita CORS global para permitir integração com outros sites/apps
+  app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key, X-Cosmos-Token");
+    if (req.method === "OPTIONS") return res.sendStatus(200);
+    next();
+  });
+
   // JSON Body parser for base64 camera uploads
   app.use(express.json({ limit: "15mb" }));
 
@@ -622,9 +631,11 @@ async function startServer() {
   }
 
   // API endpoint to lookup Product Name, Category and Image by Barcode EAN directly in Cosmos Bluesoft (https://cosmos.bluesoft.com.br/) and Gemini AI
-  app.post("/api/consultar-produto-codigo", async (req, res) => {
+  const handleConsultarProdutoCodigo = async (req: express.Request, res: express.Response) => {
     try {
-      const { ean, cosmosToken, onlyCosmos } = req.body;
+      const ean = (req.method === "GET" ? req.query.ean : (req.body?.ean || req.query.ean)) as string;
+      const cosmosToken = (req.method === "GET" ? req.query.cosmosToken : (req.body?.cosmosToken || req.query.cosmosToken)) as string;
+      const onlyCosmos = req.method === "GET" ? req.query.onlyCosmos === "true" : Boolean(req.body?.onlyCosmos);
       if (!ean || typeof ean !== "string") {
         return res.status(400).json({ error: "Código de barras inválido" });
       }
@@ -947,7 +958,13 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
         fonte: "Manual",
       });
     }
-  });
+  };
+
+  // Rotas de Consulta de Produto por Código de Barras (GET e POST)
+  app.get("/api/consultar-produto-codigo", handleConsultarProdutoCodigo);
+  app.post("/api/consultar-produto-codigo", handleConsultarProdutoCodigo);
+  app.get("/api/v1/produtos/consulta", handleConsultarProdutoCodigo);
+  app.post("/api/v1/produtos/consulta", handleConsultarProdutoCodigo);
 
   // API endpoint to search products by text/keyword: 1º Bluesoft Cosmos API + 2º BomJawaKit + Consulta Produtos
   app.post("/api/buscar-produtos-externos", async (req, res) => {

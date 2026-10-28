@@ -80,12 +80,7 @@ import { TelaLogin } from './components/TelaLogin';
 import { TermoConcordanciaModal } from './components/TermoConcordanciaModal';
 import { AlterarCredenciaisDonoModal } from './components/AlterarCredenciaisDonoModal';
 import { ManualUsuarioModal } from './components/ManualUsuarioModal';
-import { ConsultaProdutosModal } from './components/ConsultaProdutosModal';
-import {
-  consultarProdutoBomJawaKitPorCodigo,
-  buscarProdutosBomJawaKit,
-  obterProximoLoteParaFirestore,
-} from './lib/bomJawaKitApi';
+import { consultarProdutoBomJawaKitPorCodigo } from './lib/bomJawaKitApi';
 import {
   CATALOGO_AMBEV_OFICIAL,
   garantirCatalogoAmbevNoBancoGlobal,
@@ -342,20 +337,37 @@ export const PRODUTOS_PADRAO_ADEGA: ItemEstoque[] = [
 ];
 
 export default function App() {
+  // Detecta se a URL é exclusiva do Cardápio do Cliente (Delivery / Totem)
+  const urlParamsAtivo = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const publicLojaSlugAtivo =
+    urlParamsAtivo?.get('loja') ||
+    urlParamsAtivo?.get('loja_id') ||
+    (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
+  const painelParamAtivo = urlParamsAtivo?.get('painel');
+  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo);
+
   // Global & Store States
   const [supermercadoAtual, setSupermercadoAtual] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const lojaParam = urlParams.get('loja') || urlParams.get('loja_id');
-      if (lojaParam) {
-        return lojaParam;
-      }
+    if (publicLojaSlugAtivo) {
+      return publicLojaSlugAtivo;
     }
-    return localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
+    return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoAtualId') : null) || 'loja_matriz_01';
   });
   const [nomeSupermercadoAtivo, setNomeSupermercadoAtivo] = useState<string>(
     () => localStorage.getItem('supermercadoNome') || 'Supermercado Matriz'
   );
+
+  const [totalProdutosCadastrados, setTotalProdutosCadastrados] = useState<number>(() => {
+    try {
+      const salvo = localStorage.getItem('total_produtos_catalogo_banco');
+      if (salvo && !isNaN(Number(salvo)) && Number(salvo) > 0) {
+        return Number(salvo);
+      }
+      return 8849;
+    } catch {
+      return 8849;
+    }
+  });
 
   const [catalogoGlobal, setCatalogoGlobal] = useState<ProdutoCatalogo[]>(() => {
     const salvo = localStorage.getItem('catalogoGlobalFirebase');
@@ -380,20 +392,39 @@ export default function App() {
     return catalogoCompleto;
   });
 
+  const [carregandoEstoqueInicial, setCarregandoEstoqueInicial] = useState<boolean>(() => {
+    try {
+      const currentStoreId = typeof window !== 'undefined' ? (localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01') : 'loja_matriz_01';
+      const salvo = typeof window !== 'undefined' ? localStorage.getItem(`estoque_${currentStoreId}`) : null;
+      if (!salvo) return true;
+      const parsed = JSON.parse(salvo);
+      // Se tiver apenas o mock demo antigo de carvão/costela, trata como carregando
+      if (Array.isArray(parsed) && parsed.some((p: any) => p.codigo === '7898901234002' || p.nome === 'Carvão Vegetal Especial para Churrasco 3kg')) {
+        return true;
+      }
+      return false;
+    } catch {
+      return true;
+    }
+  });
+
   const [estoque, setEstoque] = useState<ItemEstoque[]>(() => {
-    const currentStoreId = localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
-    const salvo = localStorage.getItem(`estoque_${currentStoreId}`);
+    const currentStoreId = typeof window !== 'undefined' ? (localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01') : 'loja_matriz_01';
+    const salvo = typeof window !== 'undefined' ? localStorage.getItem(`estoque_${currentStoreId}`) : null;
     if (salvo) {
       try {
         const parsed = JSON.parse(salvo);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map(sanitizarItemEstoque);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Descarta mock demo antigo de carvão/costela para não piscar fotos erradas
+          const isMockDemo = parsed.some((p: any) => p.codigo === '7898901234002' || p.nome === 'Carvão Vegetal Especial para Churrasco 3kg');
+          if (!isMockDemo) {
+            return parsed.map(sanitizarItemEstoque);
+          }
+        }
       } catch (e) {}
     }
-    // Salva estoque inicial com bebidas geladas caso esteja vazio
-    try {
-      localStorage.setItem(`estoque_${currentStoreId}`, JSON.stringify(PRODUTOS_PADRAO_ADEGA));
-    } catch (e) {}
-    return PRODUTOS_PADRAO_ADEGA;
+    // Inicia vazio para aguardar o Firebase carregar os produtos reais da loja
+    return [];
   });
 
   // UI Search & Navigation States
@@ -500,7 +531,12 @@ export default function App() {
   // Screen Persistence on Reload/Refresh
   const telaSalvaInicial = (() => {
     try {
-      return localStorage.getItem('tela_ativa_sistema') || '';
+      const salva = localStorage.getItem('tela_ativa_sistema') || '';
+      if (salva === 'relatorio_catalogo') {
+        localStorage.removeItem('tela_ativa_sistema');
+        return '';
+      }
+      return salva;
     } catch {
       return '';
     }
@@ -532,11 +568,9 @@ export default function App() {
 
   // Full Screen Report
   const [relatorioCheioVisivel, setRelatorioCheioVisivel] = useState<boolean>(() => {
-    return telaSalvaInicial === 'relatorio_catalogo' || telaSalvaInicial === 'relatorio_estoque';
+    return telaSalvaInicial === 'relatorio_estoque';
   });
-  const [modoRelatorioAtual, setModoRelatorioAtual] = useState<'estoque' | 'catalogo'>(() => {
-    return telaSalvaInicial === 'relatorio_catalogo' ? 'catalogo' : 'estoque';
-  });
+  const [modoRelatorioAtual, setModoRelatorioAtual] = useState<'estoque'>('estoque');
   const [buscaRelatorio, setBuscaRelatorio] = useState<string>(() => {
     try {
       const salva = localStorage.getItem('busca_relatorio_salva') || '';
@@ -550,22 +584,6 @@ export default function App() {
     }
   });
   const [consultandoEAN, setConsultandoEAN] = useState<boolean>(false);
-  const [modalBuscaConsultaProdutosVisivel, setModalBuscaConsultaProdutosVisivel] = useState<boolean>(false);
-  const [termoBuscaConsultaProdutos, setTermoBuscaConsultaProdutos] = useState<string>('Coca cola');
-  const [paginaBuscaConsultaProdutos, setPaginaBuscaConsultaProdutos] = useState<number>(1);
-  const [resultadosConsultaProdutos, setResultadosConsultaProdutos] = useState<
-    Array<{
-      ean: string;
-      nomeProduto: string;
-      marca: string;
-      categoria: string;
-      fotoUrl: string;
-      ncm: string;
-      href: string;
-      fonte: string;
-    }>
-  >([]);
-  const [buscandoConsultaProdutos, setBuscandoConsultaProdutos] = useState<boolean>(false);
 
   // Supermarket Form & Store List
   const [listaSupermercados, setListaSupermercados] = useState<Supermercado[]>(() => {
@@ -1125,100 +1143,12 @@ export default function App() {
       }
     });
 
-    // Subscribe to Catálogo Global
-    const unsubCat = subscribeCatalogo((prods) => {
-      if (prods && prods.length > 0) {
-        // Assegura unicidade estrita por código de barras no catálogo global
-        const mapaProds = new Map<string, ProdutoCatalogo>();
-        prods.forEach((p) => {
-          if (p.codigo) {
-            const cod = p.codigo.trim();
-            if (!mapaProds.has(cod)) {
-              mapaProds.set(cod, { ...p, codigo: cod });
-            }
-          }
-        });
-        const listaUnica = Array.from(mapaProds.values());
-        // Auto-reconcilia com o catálogo oficial Ambev, Mix Adega, Mix Zé Delivery, Chopp Brahma Express e Bebidas Rissul
-        const { catalogoCompleto: comAmbev, novosInseridos: novosAmbev, atualizados: atAmbev } = garantirCatalogoAmbevNoBancoGlobal(listaUnica);
-        const { catalogoCompleto: comAdega, novosInseridos: novosAdega, atualizados: atAdega } = garantirCatalogoAdegaNoBancoGlobal(comAmbev);
-        const { catalogoCompleto: comZe, novosInseridos: novosZe, atualizados: atZe } = garantirCatalogoZeDeliveryNoBancoGlobal(comAdega);
-        const { catalogoCompleto: comChopp, novosInseridos: novosChopp, atualizados: atChopp } = garantirCatalogoChoppBrahmaNoBancoGlobal(comZe);
-        const { catalogoCompleto, novosInseridos: novosRissul, atualizados: atRissul } = garantirCatalogoRissulNoBancoGlobal(comChopp);
-
-        setCatalogoGlobal(catalogoCompleto);
-        safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(catalogoCompleto));
-
-        // 1. Reconciliar o estoque da loja ativa imediatamente
-        setEstoque((prevEstoque) => {
-          if (!prevEstoque || prevEstoque.length === 0) return prevEstoque;
-          let alterou = false;
-
-          const atualizados = prevEstoque.map((it) => {
-            if (!it.codigo) return it;
-            const cat = mapaProds.get(it.codigo.trim());
-            if (!cat) return it;
-            const nomeNovo = (cat.nome && cat.nome.trim()) || it.nome;
-            const marcaNova = (cat.marca && cat.marca.trim()) || it.marca;
-            const catNova = (cat.categoria && cat.categoria.trim()) || it.categoria;
-            const fotoNova = (cat.imagem && cat.imagem.trim()) || it.foto;
-
-            if (nomeNovo !== it.nome || marcaNova !== it.marca || catNova !== it.categoria || (fotoNova && fotoNova !== it.foto)) {
-              alterou = true;
-              return {
-                ...it,
-                nome: nomeNovo,
-                marca: marcaNova,
-                categoria: catNova,
-                foto: fotoNova,
-              };
-            }
-            return it;
-          });
-
-          if (alterou) {
-            const lojaId = localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
-            safeLocalStorageSet(`estoque_${lojaId}`, JSON.stringify(atualizados));
-            return atualizados;
-          }
-          return prevEstoque;
-        });
-
-        // 2. Reconciliar todos os estoques locais salvos de TODOS os supermercados/adegas cadastrados
-        try {
-          const salvoLojas = localStorage.getItem('lista_supermercados_app');
-          const lojas: Supermercado[] = salvoLojas ? JSON.parse(salvoLojas) : [];
-          lojas.forEach((lj) => {
-            const salvoEst = localStorage.getItem(`estoque_${lj.id}`);
-            if (salvoEst) {
-              const itensLj: ItemEstoque[] = JSON.parse(salvoEst);
-              let mudouLj = false;
-              const itensAtualizadosLj = itensLj.map((it) => {
-                if (!it.codigo) return it;
-                const cat = mapaProds.get(it.codigo.trim());
-                if (!cat) return it;
-                const nomeNovo = (cat.nome && cat.nome.trim()) || it.nome;
-                const marcaNova = (cat.marca && cat.marca.trim()) || it.marca;
-                const catNova = (cat.categoria && cat.categoria.trim()) || it.categoria;
-                const fotoNova = (cat.imagem && cat.imagem.trim()) || it.foto;
-                if (nomeNovo !== it.nome || marcaNova !== it.marca || catNova !== it.categoria || (fotoNova && fotoNova !== it.foto)) {
-                  mudouLj = true;
-                  return { ...it, nome: nomeNovo, marca: marcaNova, categoria: catNova, foto: fotoNova || it.foto };
-                }
-                return it;
-              });
-              if (mudouLj) {
-                safeLocalStorageSet(`estoque_${lj.id}`, JSON.stringify(itensAtualizadosLj));
-              }
-            }
-          });
-        } catch (e) {}
-      }
-    });
-
+    // Proteção de Cota do Firebase:
+    // O download em massa em tempo real do Catálogo Global (8.849 itens) foi DESATIVADO.
+    // O catálogo oficial já roda 100% offline da memória/localStorage (Zero custo de leitura).
+    // Itens novos são consultados individualmente sob demanda via getDoc(doc(db, 'catalogo_global', barcode)).
     return () => {
       unsubLojas();
-      unsubCat();
     };
   }, []);
 
@@ -1332,7 +1262,13 @@ export default function App() {
 
     // Subscribe to Estoque for active store (com proteção para modo offline e auto-reconciliação de nomes)
     const unsubEstoque = subscribeEstoque(supermercadoAtual, (itens) => {
+      setCarregandoEstoqueInicial(false);
       if (itens && itens.length > 0) {
+        if (isModoCliente) {
+          setEstoque(itens);
+          safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(itens));
+          return;
+        }
         // Reconcilia automaticamente com o catálogo de produtos master
         const catalogoSalvo = (() => {
           try {
@@ -1373,6 +1309,7 @@ export default function App() {
         setEstoque(itensReconciliados);
         safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(itensReconciliados));
       } else {
+        setCarregandoEstoqueInicial(false);
         // Se a nuvem retornou vazio (modo offline), protege o estoque salvo localmente
         const salvo = localStorage.getItem(`estoque_${supermercadoAtual}`);
         if (salvo) {
@@ -1387,7 +1324,15 @@ export default function App() {
       }
     });
 
-    // Subscribe to Vendas for active store
+    // Se a tela estiver sendo acessada como Cardápio do Cliente (Delivery / WhatsApp),
+    // NÃO carrega vendas, operadores, devedores nem auditoria. O cliente só precisa do estoque da loja!
+    if (isModoCliente) {
+      return () => {
+        unsubEstoque();
+      };
+    }
+
+    // Subscribe to Vendas for active store (Apenas para Painel do Lojista)
     const unsubVendas = subscribeVendas(supermercadoAtual, (listaVendas) => {
       if (listaVendas && listaVendas.length > 0) {
         setVendas(listaVendas);
@@ -1512,7 +1457,7 @@ export default function App() {
   useEffect(() => {
     let telaAtual = 'home';
     if (relatorioCheioVisivel) {
-      telaAtual = modoRelatorioAtual === 'catalogo' ? 'relatorio_catalogo' : 'relatorio_estoque';
+      telaAtual = 'relatorio_estoque';
     } else if (modalSupermercadoVisivel) {
       telaAtual = abaDonaApp === 'banco_dados' ? 'modal_banco_dados_master' : 'modal_supermercados';
     } else if (modalRelatorioVendasVisivel) {
@@ -2306,6 +2251,11 @@ export default function App() {
       setCatalogoGlobal(novoCat);
       safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novoCat));
       await excluirProdutoCatalogoFirestore(codigo);
+        setTotalProdutosCadastrados((prev) => {
+          const n = Math.max(0, prev - 1);
+          safeLocalStorageSet('total_produtos_catalogo_banco', String(n));
+          return n;
+        });
 
       // 2. Remove também de todo o estoque da loja atual e atualiza a tela
       const novoEstoque = estoque.filter((p) => p.codigo !== codigo);
@@ -2933,6 +2883,13 @@ export default function App() {
     const codLimpo = codigoLido.trim();
     if (!codLimpo) return;
 
+    // Se o modal de cadastro estiver aberto, preenche o código e busca imediatamente
+    if (modalCadastroVisivel) {
+      setCadCod(codLimpo);
+      buscarProdutoPeloCodigo(codLimpo);
+      return;
+    }
+
     // 1. Verificação de Balança (EAN-13 começando com '2')
     const resBalanca = processarCodigoBarraBalanca(codLimpo, estoque);
     if (resBalanca.isBalanca && resBalanca.itemEncontrado) {
@@ -3152,14 +3109,7 @@ export default function App() {
       }
     } else if (destino === 'cadastro') {
       setCadCod(codLimpo);
-      const achouCat = catalogoGlobal.find((c) => c.codigo === codLimpo);
-      if (achouCat) {
-        setCadNome(achouCat.nome || '');
-        setCadMarca(achouCat.marca || '');
-        setCadCategoria(achouCat.categoria || '');
-        if (achouCat.imagem) setFotoTemp(achouCat.imagem);
-      }
-      consultarEANGemini(codLimpo);
+      buscarProdutoPeloCodigo(codLimpo);
     } else if (destino === 'lote') {
       setCadLote(codLimpo);
     } else if (destino === 'relatorio') {
@@ -3560,9 +3510,6 @@ export default function App() {
     return null;
   };
 
-  const [totalResultadosConsultaProdutos, setTotalResultadosConsultaProdutos] = useState<number>(0);
-  const [veioDoCacheConsultaProdutos, setVeioDoCacheConsultaProdutos] = useState<boolean>(false);
-  const [totalEmCacheConsultaProdutos, setTotalEmCacheConsultaProdutos] = useState<number>(0);
 
   // Query API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) + Fallbacks (ConsultaProdutos, Cosmos Bluesoft, Open Food Facts)
   const consultarEANGemini = async (codigoOpcional?: string) => {
@@ -3637,128 +3584,6 @@ export default function App() {
       alert(
         `⚠️ Código de barras lido (${codParaConsultar}), mas o produto não foi localizado na base de dados.\n\nVocê também pode usar o botão "Buscar por Nome ou Categoria na API" abaixo ou digitar manualmente.`
       );
-    }
-  };
-
-  // Busca em lote (200 produtos em 1 única requisição) + cache persistente (0 requisições ao trocar página ou reabrir modal)
-  const executarBuscaConsultaProdutos = async (
-    termo?: string,
-    pagina: number = 1,
-    opcoes?: { categoria?: string; comImagem?: boolean; forcarAtualizacao?: boolean }
-  ) => {
-    const q = (termo !== undefined ? termo : termoBuscaConsultaProdutos).trim();
-    const cat = opcoes?.categoria || '';
-    const comImg = opcoes?.comImagem !== undefined ? opcoes.comImagem : true;
-
-    if (!q && !cat) {
-      alert('Por favor, digite o nome de um produto ou escolha uma categoria para pesquisar!');
-      return;
-    }
-
-    setBuscandoConsultaProdutos(true);
-    try {
-      // 1. Consulta prioritária no Catálogo Offline Local (+13.300 produtos sem requisições)
-      const resBomJawa = await buscarProdutosBomJawaKit({
-        query: q,
-        categoria: cat,
-        comImagem: comImg,
-        page: pagina,
-        limit: 24,
-        catalogoLocalExtra: catalogoGlobal,
-      });
-
-      setResultadosConsultaProdutos(resBomJawa.produtos);
-      setTotalResultadosConsultaProdutos(resBomJawa.total);
-      setPaginaBuscaConsultaProdutos(pagina);
-      setVeioDoCacheConsultaProdutos(Boolean(resBomJawa.veioDoCache));
-      setTotalEmCacheConsultaProdutos(resBomJawa.totalEmCache || resBomJawa.produtos.length);
-      return;
-    } catch (err) {
-      console.warn('Erro ao consultar catálogo de produtos:', err);
-      // Fallback gracioso: não trava a tela com alert se for apenas busca sem resultados
-      setResultadosConsultaProdutos([]);
-      setTotalResultadosConsultaProdutos(0);
-      setPaginaBuscaConsultaProdutos(pagina);
-    } finally {
-      setBuscandoConsultaProdutos(false);
-    }
-  };
-
-  const abrirBuscaConsultaProdutosModal = (termoInicial?: string) => {
-    setModalBuscaConsultaProdutosVisivel(true);
-    // Se já houver produtos carregados na memória da sessão, NÃO faz nova requisição ao abrir o modal!
-    // Mantém exatamente a lista e a página onde o usuário parou.
-    if (resultadosConsultaProdutos.length > 0 && !termoInicial) {
-      setVeioDoCacheConsultaProdutos(true);
-      return;
-    }
-    const termo = (termoInicial || termoBuscaConsultaProdutos || 'Cerveja').trim();
-    setTermoBuscaConsultaProdutos(termo);
-    executarBuscaConsultaProdutos(termo, 1, { comImagem: true });
-  };
-
-  const selecionarProdutoConsultaProdutos = (item: {
-    ean: string;
-    nomeProduto: string;
-    marca: string;
-    categoria: string;
-    fotoUrl: string;
-  }) => {
-    if (item.ean) setCadCod(item.ean);
-    if (item.nomeProduto) setCadNome(item.nomeProduto);
-    if (item.marca) setCadMarca(item.marca);
-    if (item.categoria) setCadCategoria(item.categoria);
-    if (item.fotoUrl) setFotoTemp(item.fotoUrl);
-    setModalBuscaConsultaProdutosVisivel(false);
-  };
-
-  const [sincronizandoLoteFirebase, setSincronizandoLoteFirebase] = useState<boolean>(false);
-
-  const handleSincronizarLoteFirebase = async () => {
-    if (sincronizandoLoteFirebase) return;
-    const confirmou = window.confirm(
-      '📦 Enviar Próximos 1.000 Produtos ao Banco Master (Firebase)?\n\n' +
-        '• Esta ação grava 1.000 produtos offline no Catálogo Central.\n' +
-        '• Utilize quando seu limite diário estiver zerado ou com folga.\n\n' +
-        'Deseja iniciar o envio agora?'
-    );
-    if (!confirmou) return;
-
-    setSincronizandoLoteFirebase(true);
-    try {
-      const codigosAtuais = new Set(catalogoGlobal.map((c) => c.codigo));
-      const lote = await obterProximoLoteParaFirestore(codigosAtuais, 1000);
-      if (lote.length === 0) {
-        alert('🎉 Todos os produtos do catálogo já foram enviados para o Banco Master!');
-        setSincronizandoLoteFirebase(false);
-        return;
-      }
-
-      const novosConvertidos: ProdutoCatalogo[] = lote.map((p) => ({
-        codigo: p.ean,
-        nome: p.nomeProduto,
-        marca: p.marca || '',
-        categoria: p.categoria || 'Geral',
-        unidade_medida: 'un',
-        imagem: p.fotoUrl,
-        descricao: `${p.nomeProduto} — NCM: ${p.ncm || 'N/D'}`,
-      }));
-
-      await salvarLoteProdutosCatalogoFirestore(novosConvertidos);
-
-      const atualizado = [...catalogoGlobal, ...novosConvertidos];
-      setCatalogoGlobal(atualizado);
-      safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(atualizado));
-
-      setSincronizandoLoteFirebase(false);
-      alert(`✅ Lote de ${lote.length} produtos gravado com sucesso no Firebase!`);
-      executarBuscaConsultaProdutos(termoBuscaConsultaProdutos, 1);
-    } catch (err: any) {
-      console.error('Erro ao sincronizar lote com Firebase:', err);
-      setSincronizandoLoteFirebase(false);
-      alert(`Aviso ao enviar lote: ${err?.message || err}`);
-    } finally {
-      setSincronizandoLoteFirebase(false);
     }
   };
 
@@ -3837,33 +3662,23 @@ export default function App() {
     return otimizarUrlImagem(fotoBruta);
   };
 
-  // Product Catalog Look Up & Auto-fill (Memória Local + Firestore Direto)
-  const verificarCatalogoCodigo = async (cod: string) => {
-    const codigoLimpo = cod.trim();
-    if (!codigoLimpo) return;
+  // Product Catalog Look Up (Ordem estrita: Estoque Local -> Cache Memória -> Banco de Dados Firestore)
+  const [buscandoProdutoCodigo, setBuscandoProdutoCodigo] = useState<boolean>(false);
 
-    // Se estiver editando um item existente e o código for o mesmo, preserva as edições do usuário
-    if (codigoEditando && codigoEditando.codigo === codigoLimpo) return;
-
-    // 1. Busca no catálogo compartilhado em memória
-    const itemCat = catalogoGlobal.find((c) => c.codigo === codigoLimpo);
-    if (itemCat && itemCat.nome) {
-      setCadNome(itemCat.nome || '');
-      if (itemCat.marca) setCadMarca(itemCat.marca);
-      if (itemCat.categoria) setCadCategoria(itemCat.categoria);
-      if (itemCat.imagem) {
-        setFotoTemp(itemCat.imagem);
-      }
-      const itemEstoqueExistente = estoque.find((e) => e.codigo === codigoLimpo);
-      if (itemEstoqueExistente) {
-        if (itemEstoqueExistente.preco_venda && !cadPreco) setCadPreco(String(itemEstoqueExistente.preco_venda));
-        if (itemEstoqueExistente.preco_custo && !cadCusto) setCadCusto(String(itemEstoqueExistente.preco_custo));
-      }
+  const buscarProdutoPeloCodigo = async (codigoInformado?: string) => {
+    const codLimpo = String(codigoInformado !== undefined ? codigoInformado : cadCod).trim();
+    if (!codLimpo) {
+      alert('Por favor, informe ou escaneie o código de barras primeiro!');
       return;
     }
 
-    // 2. Busca no estoque local da loja ativa
-    const itemEst = estoque.find((e) => e.codigo === codigoLimpo);
+    // Se estiver editando um item existente e o código for o mesmo, preserva as edições do usuário
+    if (codigoEditando && codigoEditando.codigo === codLimpo) return;
+
+    setBuscandoProdutoCodigo(true);
+
+    // 1. PRIMEIRO: Verifica se tem aquele produto salvo no estoque local da loja
+    const itemEst = estoque.find((e) => String(e.codigo || '').trim() === codLimpo);
     if (itemEst && itemEst.nome) {
       setCadNome(itemEst.nome);
       if (itemEst.marca) setCadMarca(itemEst.marca);
@@ -3872,28 +3687,47 @@ export default function App() {
       if (fotoRef) setFotoTemp(fotoRef);
       if (itemEst.preco_venda && !cadPreco) setCadPreco(String(itemEst.preco_venda));
       if (itemEst.preco_custo && !cadCusto) setCadCusto(String(itemEst.preco_custo));
+      setBuscandoProdutoCodigo(false);
       return;
     }
 
-    // 3. Consulta direta em tempo real no banco de dados Firestore (Catálogo Master + Estoque)
+    // 2. SEGUNDO: Verifica no cache local de produtos em memória
+    const itemCat = catalogoGlobal.find((c) => String(c.codigo || '').trim() === codLimpo);
+    if (itemCat && itemCat.nome) {
+      setCadNome(itemCat.nome || '');
+      if (itemCat.marca) setCadMarca(itemCat.marca);
+      if (itemCat.categoria) setCadCategoria(itemCat.categoria);
+      if (itemCat.imagem) setFotoTemp(itemCat.imagem);
+      if (itemCat.preco_venda && !cadPreco) setCadPreco(String(itemCat.preco_venda));
+      if (itemCat.preco_custo && !cadCusto) setCadCusto(String(itemCat.preco_custo));
+      setBuscandoProdutoCodigo(false);
+      return;
+    }
+
+    // 3. TERCEIRO: Se NÃO tiver no estoque nem no cache, aí sim busca no banco de dados Firestore (apenas 1 documento)
     try {
-      const prodRemoto = await buscarProdutoCatalogoFirestore(codigoLimpo);
+      const prodRemoto = await buscarProdutoCatalogoFirestore(codLimpo);
       if (prodRemoto && prodRemoto.nome) {
         setCadNome(prodRemoto.nome);
         if (prodRemoto.marca) setCadMarca(prodRemoto.marca);
         if (prodRemoto.categoria) setCadCategoria(prodRemoto.categoria);
         if (prodRemoto.imagem) setFotoTemp(prodRemoto.imagem);
+        if (prodRemoto.preco_venda && !cadPreco) setCadPreco(String(prodRemoto.preco_venda));
+        if (prodRemoto.preco_custo && !cadCusto) setCadCusto(String(prodRemoto.preco_custo));
 
+        // Guarda em memória para futuras pesquisas sem custo de leitura
         setCatalogoGlobal((prev) => {
           if (prev.some((p) => p.codigo === prodRemoto.codigo)) return prev;
           const novo = [...prev, prodRemoto];
           safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novo));
           return novo;
         });
+        setBuscandoProdutoCodigo(false);
         return;
       }
 
-      const itemRemotoEstoque = await buscarItemEstoquePorCodigoFirestore(codigoLimpo);
+      // Se nem no catálogo master existir, verifica se existe no estoque remoto de outra filial
+      const itemRemotoEstoque = await buscarItemEstoquePorCodigoFirestore(codLimpo);
       if (itemRemotoEstoque && itemRemotoEstoque.nome) {
         setCadNome(itemRemotoEstoque.nome);
         if (itemRemotoEstoque.marca) setCadMarca(itemRemotoEstoque.marca);
@@ -3902,9 +3736,16 @@ export default function App() {
         if (fotoRemota) setFotoTemp(fotoRemota);
         if (itemRemotoEstoque.preco_venda && !cadPreco) setCadPreco(String(itemRemotoEstoque.preco_venda));
         if (itemRemotoEstoque.preco_custo && !cadCusto) setCadCusto(String(itemRemotoEstoque.preco_custo));
+        setBuscandoProdutoCodigo(false);
+        return;
       }
-    } catch (e) {
-      console.warn('Consulta Firestore em tempo real:', e);
+
+      // Se não encontrou em nenhum lugar:
+      alert(`ℹ️ Código "${codLimpo}" não encontrado no estoque desta loja nem no banco de dados.\n\nPreencha as informações do produto para salvá-lo.`);
+    } catch (err) {
+      console.warn('Erro ao consultar produto no banco de dados:', err);
+    } finally {
+      setBuscandoProdutoCodigo(false);
     }
   };
 
@@ -4326,6 +4167,11 @@ export default function App() {
           novoCatalogo.push(dadosGlobal);
           setCatalogoGlobal(novoCatalogo);
           safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novoCatalogo));
+          setTotalProdutosCadastrados((prev) => {
+            const n = prev + 1;
+            safeLocalStorageSet('total_produtos_catalogo_banco', String(n));
+            return n;
+          });
           if (codigoFinal && fotoFinal && fotoFinal.length > 10) {
             salvarImagemIndexedDB(codigoFinal, fotoFinal).catch(() => {});
           }
@@ -5682,13 +5528,6 @@ export default function App() {
     setRelatorioCheioVisivel(true);
   };
 
-  const abrirRelatorioCatalogo = () => {
-    fecharMenu();
-    fecharPaineisTelaCheia();
-    setModoRelatorioAtual('catalogo');
-    setBuscaRelatorio('');
-    setRelatorioCheioVisivel(true);
-  };
 
   const fecharRelatorio = () => {
     setRelatorioCheioVisivel(false);
@@ -5799,14 +5638,7 @@ export default function App() {
     : false;
 
   // 1. SE O PARÂMETRO ?loja= OU ?delivery= ESTIVER PRESENTE NA URL SEM ?painel=, RENDERIZA EXCLUSIVAMENTE O CUSTOMER DELIVERY VIEW EM TELA CHEIA (IDENTICO AO ATENDEJÁ)
-  const urlParamsAtivo = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-  const publicLojaSlugAtivo =
-    urlParamsAtivo?.get('loja') ||
-    urlParamsAtivo?.get('loja_id') ||
-    (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
-  const painelParamAtivo = urlParamsAtivo?.get('painel');
-
-  if (publicLojaSlugAtivo && !painelParamAtivo) {
+  if (isModoCliente && publicLojaSlugAtivo) {
     return (
       <CustomerDeliveryView
         lojaSlug={publicLojaSlugAtivo}
@@ -5818,6 +5650,7 @@ export default function App() {
         obterFotoProduto={obterFotoProduto}
         obterNomeProduto={obterNomeProduto}
         onTrocarParaFuncionario={() => setTelaLoginVisivel(true)}
+        carregando={carregandoEstoqueInicial}
       />
     );
   }
@@ -6566,18 +6399,23 @@ export default function App() {
                     </div>
                   )}
 
-                  {temPermissaoOperador('catalogo_global', 'catalogo_global') && (
+                  {perfilAtivo === 'dona_app' && (
                     <div
-                      className="sidebar-item"
-                      onClick={() => {
-                        abrirRelatorioCatalogo();
-                        fecharMenu();
+                      style={{
+                        padding: '10px 14px',
+                        margin: '4px 8px',
+                        borderRadius: '10px',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                       }}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                      title="Quantidade total de produtos cadastrados no banco de dados central"
                     >
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <FolderKanban size={15} style={{ color: '#64748b', flexShrink: 0 }} />
-                        <span>Catálogo Global</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                        <Database size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
+                        <span>Produtos no Banco:</span>
                       </span>
                       <span
                         style={{
@@ -6585,11 +6423,11 @@ export default function App() {
                           color: '#0369a1',
                           fontSize: '11px',
                           fontWeight: 700,
-                          padding: '2px 8px',
+                          padding: '3px 10px',
                           borderRadius: '12px',
                         }}
                       >
-                        {catalogoGlobal.length}
+                        {totalProdutosCadastrados} itens
                       </span>
                     </div>
                   )}
@@ -7614,9 +7452,7 @@ export default function App() {
       >
         <div className="cabecalho-relatorio">
           <h2 id="tituloRelatorioCheio">
-            {modoRelatorioAtual === 'estoque'
-              ? `Relatório de Estoque (${nomeSupermercadoAtivo})`
-              : `Catálogo Global (${catalogoGlobal.length} ${catalogoGlobal.length === 1 ? 'produto cadastrado' : 'produtos cadastrados'})`}
+            Relatório de Estoque ({nomeSupermercadoAtivo})
           </h2>
           <button className="btn-voltar-rel" onClick={fecharRelatorio}>
             Voltar
@@ -7761,112 +7597,8 @@ export default function App() {
             );
           })()}
 
-          {modoRelatorioAtual !== 'estoque' && (
-            <>
-              {/* Card de Estatísticas do Catálogo Global */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%)',
-                  border: '1px solid #bae6fd',
-                  borderRadius: '12px',
-                  padding: '12px 16px',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '10px',
-                  boxShadow: '0 2px 6px rgba(2, 132, 199, 0.08)',
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: '11px',
-                      color: '#0369a1',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                    }}
-                  >
-                    🌐 Quantidade no Catálogo Global
-                  </div>
-                  <div style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a' }}>
-                    {catalogoGlobal.length}{' '}
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b' }}>
-                      {catalogoGlobal.length === 1 ? 'produto cadastrado' : 'produtos cadastrados'}
-                    </span>
-                  </div>
-                </div>
-                {buscaRelatorio.trim() ? (
-                  <div
-                    style={{
-                      background: '#ffffff',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '8px',
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#0284c7',
-                    }}
-                  >
-                    Mostrando{' '}
-                    {
-                      catalogoGlobal.filter(
-                        (c) =>
-                          c.codigo.toLowerCase().includes(buscaRelatorio.trim().toLowerCase()) ||
-                          c.nome.toLowerCase().includes(buscaRelatorio.trim().toLowerCase())
-                      ).length
-                    }{' '}
-                    de {catalogoGlobal.length}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      background: '#ffffff',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '8px',
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#15803d',
-                    }}
-                  >
-                    ✓ 100% Sincronizado
-                  </div>
-                )}
-              </div>
-
-              <div className="linha-input" style={{ marginBottom: '12px' }}>
-                <input
-                  type="search"
-                  id="buscaRelatorioGlobal"
-                  name="search_query_relatorio_catalogo_global"
-                  autoComplete="new-password"
-                  autoCorrect="off"
-                  autoCapitalize="none"
-                  spellCheck={false}
-                  data-form-type="other"
-                  data-lpignore="true"
-                  data-1p-ignore="true"
-                  className="input-modal"
-                  style={{ marginBottom: 0 }}
-                  placeholder={`Pesquisar entre os ${catalogoGlobal.length} produtos do catálogo...`}
-                  value={buscaRelatorio.toLowerCase().includes('rodrigo.souza') ? '' : buscaRelatorio}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setBuscaRelatorio(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
-                  }}
-                />
-                <button className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
-                  📷
-                </button>
-              </div>
-            </>
-          )}
-
           <div className="tabela-relatorio" id="listaRelatorioCheio">
-            {modoRelatorioAtual === 'estoque' ? (
+            {
               (() => {
                 const t = buscaRelatorio.trim().toLowerCase();
                 const hojeStr = new Date().toISOString().split('T')[0];
@@ -7949,79 +7681,7 @@ export default function App() {
                   </div>
                 ));
               })()
-            ) : (
-              (() => {
-                const t = buscaRelatorio.trim().toLowerCase();
-                const lista = catalogoGlobal.filter(
-                  (c) => c.codigo.toLowerCase().includes(t) || c.nome.toLowerCase().includes(t)
-                );
-                if (!lista.length) {
-                  return (
-                    <div style={{ textAlign: 'center', color: 'var(--texto-secundario)', padding: '30px' }}>
-                      Nenhum produto cadastrado no catálogo global.
-                    </div>
-                  );
-                }
-                const itensExibidos = lista.slice(0, limiteRelatorioCatalogo);
-                return (
-                  <>
-                    {itensExibidos.map((c, idx) => (
-                      <div className="relatorio-linha-cheia" key={`rel_cat_${c.codigo}_${idx}`}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
-                          <div
-                            style={{
-                              width: '36px',
-                              height: '36px',
-                              background: '#f8fafc',
-                              borderRadius: '6px',
-                              overflow: 'hidden',
-                              flexShrink: 0,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: '1px solid var(--borda)',
-                            }}
-                          >
-                            {c.imagem ? (
-                              <img src={otimizarUrlImagem(c.imagem)} alt={c.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                            ) : (
-                              'Foto'
-                            )}
-                          </div>
-                          <div style={{ minWidth: 0 }}>
-                            <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                              {c.nome}
-                            </b>
-                            <small style={{ color: 'var(--texto-secundario)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                              Cód: {c.codigo} | Marca: {c.marca || 'N/D'} | Cat: {c.categoria || 'N/D'}
-                            </small>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {lista.length > limiteRelatorioCatalogo && (
-                      <div style={{ textAlign: 'center', padding: '16px 0' }}>
-                        <button
-                          type="button"
-                          className="btn-acao-rel"
-                          style={{
-                            background: '#0284c7',
-                            color: '#ffffff',
-                            padding: '10px 20px',
-                            borderRadius: '8px',
-                            fontWeight: 700,
-                            fontSize: '0.85rem',
-                          }}
-                          onClick={() => setLimiteRelatorioCatalogo((prev) => prev + 50)}
-                        >
-                          🔽 Carregar Mais 50 Produtos (Mostrando {itensExibidos.length} de {lista.length})
-                        </button>
-                      </div>
-                    )}
-                  </>
-                );
-              })()
-            )}
+            }
           </div>
         </div>
       </div>
@@ -9969,19 +9629,46 @@ export default function App() {
               <>
                 <div className="grupo-input">
                   <label className="rotulo-campo">Código de Barras (EAN / GTIN)</label>
-                  <div className="linha-input">
+                  <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <input
                       type="text"
                       id="cad-cod"
                       className="input-modal"
                       placeholder="Ex: 7891000379585"
                       value={cadCod}
-                      onChange={(e) => {
-                        setCadCod(e.target.value);
-                        verificarCatalogoCodigo(e.target.value);
+                      onChange={(e) => setCadCod(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          buscarProdutoPeloCodigo(cadCod);
+                        }
                       }}
                       required
                     />
+                    <button
+                      type="button"
+                      style={{
+                        padding: '0 14px',
+                        height: '42px',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        whiteSpace: 'nowrap',
+                        background: 'var(--primario)',
+                        color: '#fff',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem'
+                      }}
+                      onClick={() => buscarProdutoPeloCodigo(cadCod)}
+                      disabled={buscandoProdutoCodigo || !cadCod.trim()}
+                      title="Buscar produto pelo código de barras digitado"
+                    >
+                      {buscandoProdutoCodigo ? '⏳' : '🔍 Buscar'}
+                    </button>
                     <button className="btn-cam-pequeno" onClick={abrirLeitorCadastro} title="Escanear Código de Barras com Câmera">
                       📷
                     </button>
@@ -10010,30 +9697,10 @@ export default function App() {
                         disabled={consultandoEAN || !cadCod.trim()}
                       >
                         {consultandoEAN
-                          ? '⏳ Consultando API BomJawaKit...'
-                          : '🌐 Buscar Código na API Oficial (Nome, Foto, Categoria & NCM)'}
+                          ? '⏳ Consultando...'
+                          : '🌐 Buscar Código na Web (Nome, Foto, Categoria & NCM)'}
                       </button>
-                      <button
-                        type="button"
-                        style={{
-                          background: '#f0fdf4',
-                          color: '#15803d',
-                          border: '1px solid #bbf7d0',
-                          padding: '7px 12px',
-                          borderRadius: '6px',
-                          fontSize: '0.8rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          width: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '6px',
-                        }}
-                        onClick={() => abrirBuscaConsultaProdutosModal()}
-                      >
-                        🔍 Buscar por Nome ou Categoria na API (+26.000 Produtos)
-                      </button>
+
                     </div>
                   )}
                 </div>
@@ -10828,6 +10495,7 @@ export default function App() {
         pedidosExistentes={pedidosDelivery}
         obterFotoProduto={obterFotoProduto}
         obterNomeProduto={obterNomeProduto}
+        carregando={carregandoEstoqueInicial}
         onTrocarParaFuncionario={() => {
           setModalCardapioClienteVisivel(false);
           setTelaLoginVisivel(true);
@@ -11013,25 +10681,6 @@ export default function App() {
         permissoesLoja={lojaAtualObj?.permissoesLoja || PERMISSOES_LOJA_PADRAO}
         nomeLoja={nomeSupermercadoAtivo}
         nomeOperador={opAtualLogado?.nome}
-      />
-
-      {/* MODAL DE BUSCA ONLINE NA API OFICIAL BOMJAWAKIT */}
-      <ConsultaProdutosModal
-        visivel={modalBuscaConsultaProdutosVisivel}
-        onFechar={() => setModalBuscaConsultaProdutosVisivel(false)}
-        termoBusca={termoBuscaConsultaProdutos}
-        onTermoChange={(novoTermo) => setTermoBuscaConsultaProdutos(novoTermo)}
-        paginaAtual={paginaBuscaConsultaProdutos}
-        onBuscar={(termo, pagina, opcoes) => executarBuscaConsultaProdutos(termo, pagina || 1, opcoes)}
-        carregando={buscandoConsultaProdutos}
-        resultados={resultadosConsultaProdutos}
-        totalEncontrados={totalResultadosConsultaProdutos}
-        veioDoCache={veioDoCacheConsultaProdutos}
-        totalEmCache={totalEmCacheConsultaProdutos}
-        isDonoApp={perfilAtivo === 'dona_app'}
-        onSincronizarLoteFirebase={handleSincronizarLoteFirebase}
-        sincronizandoLote={sincronizandoLoteFirebase}
-        onSelecionarProduto={selecionarProdutoConsultaProdutos}
       />
 
       {/* TELA DE LOGIN & CONTROLE DE ACESSO */}

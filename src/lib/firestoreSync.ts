@@ -208,15 +208,25 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
 
         const local = mapaLocal.get(chave) || mapaLocal.get(remoto.codigo);
         const fotoCache = obterFotoCache(remoto.codigo) || '';
-        const fotoFinal = (baseRemoto.foto && baseRemoto.foto.trim()) || (local?.foto && local.foto.trim()) || fotoCache || '';
+        // Preserva foto e textos pesados já em cache no celular para atualizar apenas a quantidade/preço
+        const fotoFinal = (local?.foto && local.foto.trim()) || (baseRemoto.foto && baseRemoto.foto.trim()) || fotoCache || '';
+        const nomeFinal = (local?.nome && local.nome.trim()) || baseRemoto.nome || '';
+        const descricaoFinal = (local?.descricao && local.descricao.trim()) || baseRemoto.descricao || '';
+        const marcaFinal = (local?.marca && local.marca.trim()) || baseRemoto.marca || '';
+        const categoriaFinal = (local?.categoria && local.categoria.trim()) || baseRemoto.categoria || '';
 
-        // Se veio foto base64 no documento remoto, assegura cache no IndexedDB
-        if (baseRemoto.foto && baseRemoto.foto.startsWith('data:image') && baseRemoto.codigo) {
+        // Se veio foto base64 no documento remoto e não tínhamos local, assegura cache no IndexedDB
+        if (baseRemoto.foto && baseRemoto.foto.startsWith('data:image') && baseRemoto.codigo && !fotoCache) {
           salvarImagemIndexedDB(baseRemoto.codigo, baseRemoto.foto).catch(() => {});
         }
 
         return sanitizarItemEstoque({
           ...baseRemoto,
+          nome: nomeFinal,
+          marca: marcaFinal,
+          categoria: categoriaFinal,
+          descricao: descricaoFinal,
+          quantidade: baseRemoto.quantidade !== undefined ? Number(baseRemoto.quantidade) : (local?.quantidade || 0),
           preco_venda: Number(baseRemoto.preco_venda) || Number(local?.preco_venda) || 0,
           preco_custo: Number(baseRemoto.preco_custo) || Number(local?.preco_custo) || 0,
           foto: fotoFinal,

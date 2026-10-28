@@ -17,6 +17,7 @@ export interface CustomerDeliveryViewProps {
   obterFotoProduto?: (codigo: string, fotoFallback?: string) => string;
   obterNomeProduto?: (codigo: string, nomeFallback?: string) => string;
   onTrocarParaFuncionario?: () => void;
+  carregando?: boolean;
 }
 
 const DEFAULT_CONFIG_DELIVERY: ConfiguracaoDelivery = {
@@ -43,6 +44,7 @@ export const CustomerDeliveryView: React.FC<CustomerDeliveryViewProps> = ({
   obterFotoProduto,
   obterNomeProduto,
   onTrocarParaFuncionario,
+  carregando = false,
 }) => {
   const lojaAtiva = useMemo(() => {
     const slugLimpo = (lojaSlug || '').trim().toLowerCase();
@@ -96,6 +98,7 @@ export const CustomerDeliveryView: React.FC<CustomerDeliveryViewProps> = ({
       pedidosExistentes={pedidos}
       obterFotoProduto={obterFotoProduto}
       obterNomeProduto={obterNomeProduto}
+      carregando={carregando}
       onTrocarParaFuncionario={() => {
         const url = new URL(window.location.href);
         url.searchParams.delete('loja');

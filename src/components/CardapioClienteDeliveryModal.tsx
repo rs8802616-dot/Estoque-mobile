@@ -42,6 +42,7 @@ interface CardapioClienteDeliveryModalProps {
   modoTelaCheia?: boolean;
   obterFotoProduto?: (codigo: string, fotoFallback?: string) => string;
   obterNomeProduto?: (codigo: string, nomeFallback?: string) => string;
+  carregando?: boolean;
 }
 
 interface ItemCarrinhoCliente {
@@ -71,6 +72,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   modoTelaCheia = false,
   obterFotoProduto,
   obterNomeProduto,
+  carregando = false,
 }) => {
   // Etapa atual: 'vitrine' | 'carrinho' | 'checkout' | 'rastreio' | 'meus_pedidos'
   const [etapa, setEtapa] = useState<'vitrine' | 'carrinho' | 'checkout' | 'rastreio' | 'meus_pedidos'>('vitrine');
@@ -641,7 +643,38 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
 
               {/* GRID DE PRODUTOS IDÊNTICO AO FORMATO DO PDV (.grid-produtos / .card-produto) */}
               <div className="grid-produtos">
-                {produtosDisponiveis.length === 0 ? (
+                {carregando && produtosDisponiveis.length === 0 ? (
+                  <div
+                    style={{
+                      gridColumn: '1 / -1',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '60px 20px',
+                      textAlign: 'center',
+                      color: '#57534e',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '42px',
+                        height: '42px',
+                        border: '4px solid #e7e5e4',
+                        borderTopColor: '#059669',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        marginBottom: '16px',
+                      }}
+                    />
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: '#1c1917' }}>
+                      Carregando cardápio da loja...
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: '#78716c', marginTop: '4px' }}>
+                      Sincronizando produtos e fotos em tempo real
+                    </div>
+                  </div>
+                ) : produtosDisponiveis.length === 0 ? (
                   <div className="vazio">
                     Nenhum produto encontrado nesta categoria. Tente buscar por outro termo ou selecione Todos.
                   </div>
