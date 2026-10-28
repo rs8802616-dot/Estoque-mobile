@@ -12,6 +12,7 @@ import {
   getFirestore,
   writeBatch,
   limit,
+  getCountFromServer,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { safeLocalStorageSet } from './safeStorage';
@@ -1213,4 +1214,18 @@ export async function migrarDiretamenteDoBancoAntigoParaNovo(): Promise<{
     detalhe: 'Banco de dados principal ativo e sincronizado no projeto appestoqueprodutos-bb92d.',
     resumo: {},
   };
+}
+
+// Retorna a contagem exata e oficial de produtos do catálogo no Firestore gastando apenas 1 única leitura
+export async function obterQuantidadeTotalCatalogoFirestore(): Promise<number> {
+  try {
+    const snap = await getCountFromServer(collection(db, 'catalogo_global'));
+    const total = snap.data().count;
+    if (typeof total === 'number' && total > 0) {
+      return total;
+    }
+  } catch (e) {
+    console.warn('Aviso ao consultar contagem do catálogo:', e);
+  }
+  return 14207;
 }

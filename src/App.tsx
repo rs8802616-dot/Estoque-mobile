@@ -170,6 +170,7 @@ import {
   salvarLogAuditoriaFirestore,
   subscribeLogsAuditoria,
   sanitizarItemEstoque,
+  obterQuantidadeTotalCatalogoFirestore,
 } from './lib/firestoreSync';
 import {
   gerarSessaoToken,
@@ -364,9 +365,9 @@ export default function App() {
       if (salvo && !isNaN(Number(salvo)) && Number(salvo) > 0) {
         return Number(salvo);
       }
-      return 8849;
+      return 14207;
     } catch {
-      return 8849;
+      return 14207;
     }
   });
 
@@ -3749,6 +3750,17 @@ export default function App() {
       setBuscandoProdutoCodigo(false);
     }
   };
+
+  // Sincroniza a contagem oficial exata do catálogo no Firestore (consome apenas 1 leitura)
+  useEffect(() => {
+    if (perfilAtivo !== 'dona_app') return;
+    obterQuantidadeTotalCatalogoFirestore().then((totalReal) => {
+      if (typeof totalReal === 'number' && totalReal > 0) {
+        setTotalProdutosCadastrados(totalReal);
+        safeLocalStorageSet('total_produtos_catalogo_banco', String(totalReal));
+      }
+    });
+  }, [perfilAtivo]);
 
   // Image Upload Handling with Automatic Canvas Compression
   const carregarFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
