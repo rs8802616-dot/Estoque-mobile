@@ -5725,10 +5725,9 @@ export default function App() {
                   onClick={() => {
                     abrirCadastro('estoque', 'padrao');
                   }}
-                  title="Adicionar Produto Industrial com Código de Barras ao Estoque"
+                  title="Cadastrar Produto com Código de Barras"
                 >
-                  <span>➕</span>
-                  <span>Estoque</span>
+                  <span>➕ Com Código</span>
                 </button>
 
                 <button
@@ -5752,10 +5751,9 @@ export default function App() {
                   onClick={() => {
                     abrirCadastro('estoque', 'interno');
                   }}
-                  title="Cadastrar Produto Interno sem Código de Barras (Espetinho, Doses, Gelo, Balcão)"
+                  title="Cadastrar Produto sem Código de Barras"
                 >
-                  <span>🍢</span>
-                  <span>+ Balcão</span>
+                  <span>✨ Sem Código</span>
                 </button>
               </>
             )}
@@ -9356,7 +9354,7 @@ export default function App() {
                   }}
                 >
                   <span>📦</span>
-                  <span>Industrial (com Código de Barras)</span>
+                  <span>Com Código de Barras</span>
                 </button>
 
                 <button
@@ -9388,8 +9386,8 @@ export default function App() {
                     setCadLote('PROD_INTERNA');
                   }}
                 >
-                  <span>🍢</span>
-                  <span>Interno / Balcão (Sem Código de Barras)</span>
+                  <span>✨</span>
+                  <span>Sem Código de Barras</span>
                 </button>
               </div>
             )}
@@ -9434,23 +9432,6 @@ export default function App() {
               </div>
             )}
 
-            {/* BANNER INFORMATIVO PARA PRODUTOS INTERNOS (ADEGA / BALCÃO) */}
-            {tipoProdutoCadastro === 'interno' && (
-              <div
-                style={{
-                  background: '#fffbeb',
-                  border: '1px solid #fde68a',
-                  borderRadius: '8px',
-                  padding: '10px 12px',
-                  marginBottom: '14px',
-                  fontSize: '0.82rem',
-                  color: '#92400e',
-                  lineHeight: '1.4',
-                }}
-              >
-                <b>🍢 Cadastro Interno Exclusivo ({nomeSupermercadoAtivo}):</b> Este produto <b>NÃO</b> exige código de barras e <b>NÃO</b> é enviado ao Catálogo Global. Fica gravado no banco de dados exclusivo da sua adega com <b>estoque ilimitado</b>, pronto para dar baixa de 1, 2 ou quantas unidades desejar na hora da venda!
-              </div>
-            )}
 
             {/* INFORMAÇÃO DA LOJA SELECIONADA */}
             {tipoProdutoCadastro === 'padrao' && (perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') && (
@@ -9606,36 +9587,6 @@ export default function App() {
                   />
                 </div>
 
-                {/* Configuração de Estoque Contínuo */}
-                <div
-                  style={{
-                    background: '#f0fdf4',
-                    border: '1px solid #bbf7d0',
-                    borderRadius: '8px',
-                    padding: '10px 12px',
-                    marginBottom: '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setCadEstoqueIlimitado(!cadEstoqueIlimitado)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={cadEstoqueIlimitado}
-                    onChange={(e) => setCadEstoqueIlimitado(e.target.checked)}
-                    style={{ transform: 'scale(1.2)', cursor: 'pointer' }}
-                  />
-                  <div>
-                    <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#15803d' }}>
-                      ♾️ Estoque Ilimitado / Produção Contínua
-                    </div>
-                    <div style={{ fontSize: '0.74rem', color: '#166534' }}>
-                      Permite vender sempre 1, 2 ou mais unidades sem bloquear o caixa por falta de estoque.
-                    </div>
-                  </div>
-                </div>
               </>
             ) : (
               /* FLUXO PADRÃO INDUSTRIAL COM CÓDIGO DE BARRAS (EAN) */
@@ -9686,36 +9637,6 @@ export default function App() {
                       📷
                     </button>
                   </div>
-                  {!isProdutoBloqueadoParaEdicaoMestre && (
-                    <div style={{ marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <button
-                        type="button"
-                        style={{
-                          background: 'var(--primario)',
-                          color: '#fff',
-                          border: 'none',
-                          padding: '8px 12px',
-                          borderRadius: '6px',
-                          fontSize: '0.82rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          width: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '6px',
-                          boxShadow: '0 2px 4px rgba(2,132,199,0.2)',
-                        }}
-                        onClick={() => consultarEANGemini()}
-                        disabled={consultandoEAN || !cadCod.trim()}
-                      >
-                        {consultandoEAN
-                          ? '⏳ Consultando...'
-                          : '🌐 Buscar Código na Web (Nome, Foto, Categoria & NCM)'}
-                      </button>
-
-                    </div>
-                  )}
                 </div>
                 <div className="grupo-input">
                   <label className="rotulo-campo">Nome Detalhado do Produto</label>
