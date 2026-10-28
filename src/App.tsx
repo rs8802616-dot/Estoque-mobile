@@ -29,6 +29,7 @@ import {
   Zap,
   LogOut,
   X,
+  Database,
 } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import {
