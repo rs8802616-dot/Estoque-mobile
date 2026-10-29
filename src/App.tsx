@@ -41,6 +41,11 @@ import {
   decodificarImagemArquivo,
   alternarLanternaCamera,
   aplicarZoomCamera,
+  validarCodigoBarrasConfiavel,
+  validarChecksumEAN13,
+  validarChecksumEAN8,
+  validarChecksumUPCA,
+  decodificarComDetectorNativo,
 } from './lib/barcodeScanner';
 import {
   Venda,
@@ -3149,14 +3154,39 @@ export default function App() {
       }
 
       let escaneou = false;
+      let bufferConfirmacao = { codigo: '', vezes: 0, timestamp: 0 };
+
       const onDetect = (rawText: string) => {
         if (!rawText) return;
         const cod = rawText.trim();
-        const destinoAtual = destinoLeitorRef.current;
+
+        // 1. Validação estrita de integridade e checksum oficial (impede leitura de números aleatórios/ruídos)
+        if (!validarCodigoBarrasConfiavel(cod)) {
+          return;
+        }
+
+        const temChecksumValido =
+          validarChecksumEAN13(cod) || validarChecksumEAN8(cod) || validarChecksumUPCA(cod);
+
         const agora = Date.now();
 
+        // Para formatos sem checksum matemático obrigatório, exige confirmação em 2 quadros para evitar falsos positivos
+        if (!temChecksumValido) {
+          if (bufferConfirmacao.codigo === cod && agora - bufferConfirmacao.timestamp < 600) {
+            bufferConfirmacao.vezes += 1;
+          } else {
+            bufferConfirmacao = { codigo: cod, vezes: 1, timestamp: agora };
+            return;
+          }
+          if (bufferConfirmacao.vezes < 2) {
+            return;
+          }
+        }
+
+        const destinoAtual = destinoLeitorRef.current;
+
         if (destinoAtual === 'carrinho') {
-          // Anti-duplicate protection: 1.4s cooldown on the same barcode, 650ms on a different barcode
+          // Proteção anti-duplicidade: 1.4s no mesmo código, 650ms em código diferente
           if (
             ultimoCodigoLidoRef.current.codigo === cod &&
             agora - ultimoCodigoLidoRef.current.timestamp < 1400
@@ -3175,7 +3205,7 @@ export default function App() {
         }
       };
 
-      // 1. ZXing MultiFormat Reader com TRY_HARDER e formatos 1D/2D
+      // 1. ZXing MultiFormat Reader com formatos comerciais seguros
       if (!codeReaderRef.current) {
         codeReaderRef.current = criarLeitorZXing();
       }
@@ -3184,7 +3214,7 @@ export default function App() {
         try {
           const decodePromise = codeReaderRef.current.decodeFromVideoElementContinuously(
             videoRef.current,
-            (result: any, err: any) => {
+            (result: any) => {
               if (result) {
                 const txt = result.getText();
                 if (txt) onDetect(txt);
@@ -3192,28 +3222,38 @@ export default function App() {
             }
           );
           if (decodePromise && typeof decodePromise.catch === 'function') {
-            decodePromise.catch(() => {
-              // Silently handle stream closure / video end without throwing
-            });
+            decodePromise.catch(() => {});
           }
-        } catch (e) {
-          // Ignore scanner initialization errors
-        }
+        } catch {}
       }
 
-      // 2. Loop de Escaneamento Ativo em Canvas com Rotação (Garante leitura no iPhone e Safari)
-      frameScanIntervalRef.current = setInterval(() => {
+      // 2. Loop Híbrido: Aceleração nativa por Hardware (BarcodeDetector) + Recorte Central com Rotação (iOS)
+      frameScanIntervalRef.current = setInterval(async () => {
         if (!videoRef.current || videoRef.current.readyState < 2) return;
         try {
+          // 2.1 Tenta BarcodeDetector nativo da GPU do smartphone (ultra-rápido e preciso)
+          const codNativo = await decodificarComDetectorNativo(videoRef.current);
+          if (codNativo) {
+            onDetect(codNativo);
+            return;
+          }
+
+          // 2.2 Se o nativo ainda não pegou, analisa recorte central com alta nitidez
           const cropCanvas = capturarRecorteCentroVideo(videoRef.current);
           if (cropCanvas) {
+            const codNativoCrop = await decodificarComDetectorNativo(cropCanvas);
+            if (codNativoCrop) {
+              onDetect(codNativoCrop);
+              return;
+            }
+
             const cod = decodificarCanvasComRotacao(cropCanvas);
             if (cod) {
               onDetect(cod);
             }
           }
-        } catch (e) {}
-      }, 140);
+        } catch {}
+      }, 90);
 
     } catch (err: any) {
       alert('Erro ao acessar a câmera: ' + (err.message || 'Verifique as permissões de câmera no navegador'));
@@ -6053,32 +6093,6 @@ export default function App() {
                   </option>
                 ))}
               </select>
-              {produtosNovosPendentesEnvio.length > 0 && (
-                <button
-                  type="button"
-                  onClick={handleEnviarLoteMilParaBanco}
-                  disabled={enviandoLoteMilBanco}
-                  style={{
-                    background: enviandoLoteMilBanco ? '#94a3b8' : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '5px 11px',
-                    fontSize: '0.78rem',
-                    fontWeight: 800,
-                    cursor: enviandoLoteMilBanco ? 'wait' : 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
-                  }}
-                  title="Envia um lote de até 1.000 produtos novos do LocalStorage (Coca-Cola FEMSA + Salgadinhos) para o Banco de Dados Firestore"
-                >
-                  {enviandoLoteMilBanco
-                    ? '⏳ Enviando Lote...'
-                    : `🚀 Enviar ${Math.min(1000, produtosNovosPendentesEnvio.length)} p/ Banco (Restam: ${produtosNovosPendentesEnvio.length})`}
-                </button>
-              )}
             </div>
           )}
 
@@ -6574,61 +6588,6 @@ export default function App() {
                           {totalProdutosCadastrados} itens
                         </span>
                       </div>
-
-                      {produtosNovosPendentesEnvio.length > 0 && (
-                        <>
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              borderTop: '1px dashed #cbd5e1',
-                              paddingTop: '8px',
-                            }}
-                          >
-                            <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>
-                              📦 No LocalStorage p/ Enviar:
-                            </span>
-                            <span
-                              style={{
-                                background: '#dcfce7',
-                                color: '#15803d',
-                                fontSize: '11px',
-                                fontWeight: 800,
-                                padding: '2px 8px',
-                                borderRadius: '10px',
-                              }}
-                            >
-                              {produtosNovosPendentesEnvio.length} novos
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleEnviarLoteMilParaBanco}
-                            disabled={enviandoLoteMilBanco}
-                            style={{
-                              width: '100%',
-                              background: enviandoLoteMilBanco ? '#94a3b8' : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '8px',
-                              padding: '8px 10px',
-                              fontSize: '12px',
-                              fontWeight: 800,
-                              cursor: enviandoLoteMilBanco ? 'wait' : 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '6px',
-                              boxShadow: '0 2px 6px rgba(22, 163, 74, 0.25)',
-                            }}
-                          >
-                            {enviandoLoteMilBanco
-                              ? '⏳ Enviando p/ Banco...'
-                              : `🚀 Enviar ${Math.min(1000, produtosNovosPendentesEnvio.length)} ao Banco`}
-                          </button>
-                        </>
-                      )}
                     </div>
                   )}
 
@@ -8890,25 +8849,6 @@ export default function App() {
                   >
                     🍟 Salgadinhos Cosmos (1.059 Novos Itens)
                   </button>
-                  {produtosNovosPendentesEnvio.length > 0 && (
-                    <button
-                      className="btn-acao-rel"
-                      style={{
-                        background: enviandoLoteMilBanco ? '#94a3b8' : 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                        color: '#fff',
-                        padding: '10px 18px',
-                        fontWeight: 800,
-                        fontSize: '0.9rem',
-                        boxShadow: '0 2px 8px rgba(22, 163, 74, 0.35)',
-                      }}
-                      onClick={handleEnviarLoteMilParaBanco}
-                      disabled={enviandoLoteMilBanco}
-                    >
-                      {enviandoLoteMilBanco
-                        ? '⏳ Enviando Lote...'
-                        : `🚀 Enviar ${Math.min(1000, produtosNovosPendentesEnvio.length)} ao Banco (Faltam: ${produtosNovosPendentesEnvio.length})`}
-                    </button>
-                  )}
                 </div>
               </div>
 

@@ -8,20 +8,125 @@ import {
   MultiFormatReader,
 } from '@zxing/library';
 
-// Formatos comuns de códigos de barras de varejo, bebidas e produtos
+// Formatos padrão de varejo e comércio (bebidas, alimentos, produtos industriais e internos)
+// NOTA IMPORTANTE: Removidos formatos sem checksum obrigatório (ITF, CODABAR, CODE_39, CODE_93)
+// que causavam leituras aleatórias falsas quando a câmera ficava apontada para texturas ou sombras.
 export const FORMATOS_BARRAS_PADRAO = [
   BarcodeFormat.EAN_13,
   BarcodeFormat.EAN_8,
-  BarcodeFormat.CODE_128,
-  BarcodeFormat.CODE_39,
   BarcodeFormat.UPC_A,
   BarcodeFormat.UPC_E,
-  BarcodeFormat.ITF,
+  BarcodeFormat.CODE_128,
   BarcodeFormat.QR_CODE,
   BarcodeFormat.DATA_MATRIX,
-  BarcodeFormat.CODABAR,
-  BarcodeFormat.CODE_93,
 ];
+
+// Validação de Checksum EAN-13 (Dígito Verificador Oficial Modulo 10)
+export function validarChecksumEAN13(codigo: string): boolean {
+  if (!/^\d{13}$/.test(codigo)) return false;
+  let soma = 0;
+  for (let i = 0; i < 12; i++) {
+    soma += parseInt(codigo[i], 10) * (i % 2 === 0 ? 1 : 3);
+  }
+  const digitoEsperado = (10 - (soma % 10)) % 10;
+  return digitoEsperado === parseInt(codigo[12], 10);
+}
+
+// Validação de Checksum EAN-8 (Bebidas e produtos compactos)
+export function validarChecksumEAN8(codigo: string): boolean {
+  if (!/^\d{8}$/.test(codigo)) return false;
+  let soma = 0;
+  for (let i = 0; i < 7; i++) {
+    soma += parseInt(codigo[i], 10) * (i % 2 === 0 ? 3 : 1);
+  }
+  const digitoEsperado = (10 - (soma % 10)) % 10;
+  return digitoEsperado === parseInt(codigo[7], 10);
+}
+
+// Validação de Checksum UPC-A (12 dígitos numéricos)
+export function validarChecksumUPCA(codigo: string): boolean {
+  if (!/^\d{12}$/.test(codigo)) return false;
+  let soma = 0;
+  for (let i = 0; i < 11; i++) {
+    soma += parseInt(codigo[i], 10) * (i % 2 === 0 ? 3 : 1);
+  }
+  const digitoEsperado = (10 - (soma % 10)) % 10;
+  return digitoEsperado === parseInt(codigo[11], 10);
+}
+
+// Filtro rigoroso para descartar leituras aleatórias / ruídos de imagem
+export function validarCodigoBarrasConfiavel(codigo: string): boolean {
+  if (!codigo) return false;
+  const limpo = codigo.trim();
+  if (limpo.length < 3 || limpo.length > 80) return false;
+
+  // Se tem 13 dígitos numéricos (EAN-13 padrão Brasil)
+  if (limpo.length === 13 && /^\d+$/.test(limpo)) {
+    return validarChecksumEAN13(limpo);
+  }
+
+  // Se tem 8 dígitos numéricos (EAN-8 padrão latas/garrafas pequenas)
+  if (limpo.length === 8 && /^\d+$/.test(limpo)) {
+    return validarChecksumEAN8(limpo);
+  }
+
+  // Se tem 12 dígitos numéricos (UPC-A)
+  if (limpo.length === 12 && /^\d+$/.test(limpo)) {
+    return validarChecksumUPCA(limpo);
+  }
+
+  // Se tem 14 dígitos numéricos (DUN-14 caixas de transporte)
+  if (limpo.length === 14 && /^\d+$/.test(limpo)) {
+    return true;
+  }
+
+  // Se for código interno com letras ou traços (ex: ESP-01, DOS-01, ADG-01, PROD-12)
+  if (/^[A-Za-z0-9_\-\.]+$/.test(limpo) && limpo.length >= 4) {
+    return true;
+  }
+
+  return false;
+}
+
+// Suporte nativo ao BarcodeDetector do navegador (Aceleração por Hardware GPU)
+let detectorNativoInstance: any = null;
+let detectorNativoInicializado = false;
+
+export function obterDetectorNativo(): any | null {
+  if (detectorNativoInicializado) return detectorNativoInstance;
+  detectorNativoInicializado = true;
+
+  if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+    try {
+      const formats = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'qr_code', 'data_matrix'];
+      detectorNativoInstance = new (window as any).BarcodeDetector({ formats });
+    } catch {
+      detectorNativoInstance = null;
+    }
+  }
+  return detectorNativoInstance;
+}
+
+// Decodificação direta ultra-rápida via API nativa do sistema operacional (Android / Safari)
+export async function decodificarComDetectorNativo(
+  elemento: HTMLVideoElement | HTMLCanvasElement
+): Promise<string | null> {
+  const detector = obterDetectorNativo();
+  if (!detector) return null;
+
+  try {
+    const barcodes = await detector.detect(elemento);
+    if (barcodes && barcodes.length > 0) {
+      for (const b of barcodes) {
+        const val = (b.rawValue || '').trim();
+        if (val && validarCodigoBarrasConfiavel(val)) {
+          return val;
+        }
+      }
+    }
+  } catch {}
+  return null;
+}
 
 // Configuração otimizada de Hints do ZXing com TRY_HARDER para iOS Safari e Android
 export function criarHintsLeitor(): Map<DecodeHintType, any> {
@@ -98,6 +203,21 @@ export function configurarTrackCamera(stream: MediaStream) {
     // @ts-ignore
     if (capabilities.focusMode && Array.isArray(capabilities.focusMode) && capabilities.focusMode.includes('continuous')) {
       advancedConstraints.focusMode = 'continuous';
+    }
+
+    // @ts-ignore
+    if (capabilities.exposureMode && Array.isArray(capabilities.exposureMode) && capabilities.exposureMode.includes('continuous')) {
+      advancedConstraints.exposureMode = 'continuous';
+    }
+
+    // Zoom leve de 1.4x para permitir manter o celular a 15-20cm com foco nítido em latas e pacotes
+    // @ts-ignore
+    if (capabilities.zoom) {
+      // @ts-ignore
+      const min = capabilities.zoom.min || 1;
+      // @ts-ignore
+      const max = capabilities.zoom.max || 5;
+      advancedConstraints.zoom = Math.min(max, Math.max(min, 1.4));
     }
 
     if (Object.keys(advancedConstraints).length > 0) {
