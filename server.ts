@@ -5,6 +5,7 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import {
   consultarApenasBomJawaKitPorCodigo,
+  consultarSI5GlobalCascata,
   buscarProdutosBomJawaKit,
   COSMOS_BLUESOFT_API_BASE,
   COSMOS_BLUESOFT_DEFAULT_TOKEN,
@@ -721,6 +722,20 @@ async function startServer() {
           foto: "https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=600&q=80",
         },
       };
+
+      // 0. PRIORIDADE MÁXIMA: Fila de 4 Chaves em Cascata SI5 Global (400 consultas/dia)
+      const si5Direct = await consultarSI5GlobalCascata(cleanEan).catch(() => null);
+      if (si5Direct && si5Direct.nomeProduto) {
+        return res.json({
+          nomeProduto: si5Direct.nomeProduto,
+          marca: si5Direct.marca || "",
+          categoria: si5Direct.categoria || "Geral",
+          fotoUrl: si5Direct.fotoUrl || "",
+          descricao: si5Direct.descricao || "",
+          ncm: si5Direct.ncm || "",
+          fonte: si5Direct.fonte,
+        });
+      }
 
       // 1º PRIORIDADE PRINCIPAL: Bluesoft Cosmos API (https://api.cosmos.bluesoft.com.br) & Consulta Produtos
       const [cosmosDirect, cpDirect] = await Promise.all([

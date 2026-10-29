@@ -1,3 +1,94 @@
+// Fila de 4 Chaves em Cascata SI5 Global (100 consultas/dia por chave = 400 consultas/dia)
+export const SI5_GLOBAL_TOKENS = [
+  '317|Xtgp6qwYewWk5ScCiY7JPLbPHZEaFEWPuLgQ3HfV37d19db3',
+  '318|DSFrciYJgudTZgumBUyGSIaoaIhDfVsBJc3wVXRb4c67fd72',
+  '319|IOXdsrllJ7zTek8FQ0rJoQwpNKb7f0WSpr6yMm7M009e4aa4',
+  '320|Gh303pFfHUKK8RxzZ8jDIQbalzFlIJ2FUidPrN9kbe63cec2',
+];
+
+export interface SI5ProdutoRetorno {
+  ean: string;
+  nomeProduto: string;
+  marca: string;
+  categoria: string;
+  fotoUrl: string;
+  ncm: string;
+  descricao: string;
+  fonte: string;
+}
+
+/**
+ * Consulta de produtos na API SI5 Global utilizando as 4 chaves em cascata.
+ * Se a Chave 1 atingir o limite diário de 100 consultas (HTTP 429), pula imediatamente para a Chave 2,
+ * depois 3 e 4, garantindo até 400 consultas diárias gratuitas sem travar o usuário.
+ */
+export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5ProdutoRetorno | null> {
+  const clean = (codigo || '').trim().replace(/\D/g, '');
+  if (!clean) return null;
+
+  const dataHoje = new Date().toISOString().slice(0, 10);
+
+  for (let i = 0; i < SI5_GLOBAL_TOKENS.length; i++) {
+    const token = SI5_GLOBAL_TOKENS[i];
+    const chaveStorage = `si5_token_esgotado_${i}_${dataHoje}`;
+
+    // Pula token se já marcou cota esgotada na data de hoje
+    if (typeof window !== 'undefined') {
+      try {
+        if (localStorage.getItem(chaveStorage) === 'true') {
+          continue;
+        }
+      } catch {}
+    }
+
+    try {
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 6000);
+
+      const res = await fetch(`https://global.si5.com.br/api/produtos/${encodeURIComponent(clean)}`, {
+        method: 'GET',
+        signal: ctrl.signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      });
+      clearTimeout(timeoutId);
+
+      // Cota de 100 consultas diárias atingida
+      if (res.status === 429) {
+        console.warn(`[SI5 Global] Token #${i + 1} atingiu limite de 100 consultas hoje. Passando para o próximo token...`);
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem(chaveStorage, 'true');
+          } catch {}
+        }
+        continue;
+      }
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json && (json.produto || json.codbar)) {
+          return {
+            ean: String(json.codbar || clean).trim(),
+            nomeProduto: String(json.produto || '').trim(),
+            marca: String(json.marca || '').trim(),
+            categoria: String(json.categoria || 'Geral').trim(),
+            fotoUrl: String(json.imagem_url || '').trim(),
+            ncm: String(json.ncm || '').trim(),
+            descricao: String(json.ncm_descricao || json.ingredientes || '').trim(),
+            fonte: `API SI5 Global (Chave #${i + 1} de 4)`,
+          };
+        }
+      }
+    } catch (e: any) {
+      console.warn(`[SI5 Global] Falha na Chave #${i + 1}:`, e?.message || e);
+    }
+  }
+
+  return null;
+}
+
 // Motor Duplo de Consulta de Produtos (Dual-API Engine):
 // 1º PRIORIDADE PRINCIPAL (API 1): Bluesoft Cosmos (https://api.cosmos.bluesoft.com.br) - Header: X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg
 // 2º CONTINGÊNCIA / COMPLEMENTO (API 2): BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) - Header: X-API-Key: sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU

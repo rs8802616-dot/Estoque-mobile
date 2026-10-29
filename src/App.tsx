@@ -86,7 +86,10 @@ import { TelaLogin } from './components/TelaLogin';
 import { TermoConcordanciaModal } from './components/TermoConcordanciaModal';
 import { AlterarCredenciaisDonoModal } from './components/AlterarCredenciaisDonoModal';
 import { ManualUsuarioModal } from './components/ManualUsuarioModal';
-import { consultarProdutoBomJawaKitPorCodigo } from './lib/bomJawaKitApi';
+import {
+  consultarProdutoBomJawaKitPorCodigo,
+  consultarSI5GlobalCascata,
+} from './lib/bomJawaKitApi';
 import {
   CATALOGO_AMBEV_OFICIAL,
   garantirCatalogoAmbevNoBancoGlobal,
@@ -3575,14 +3578,26 @@ export default function App() {
     setConsultandoEAN(true);
     let data: any = null;
 
-    // 1. Prioridade Máxima: API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) com X-API-Key
+    // 1. Prioridade Máxima: Fila de 4 Chaves em Cascata SI5 Global (100 consultas/dia por chave = 400 consultas/dia)
     try {
-      const prodBomJawa = await consultarProdutoBomJawaKitPorCodigo(codParaConsultar);
-      if (prodBomJawa && prodBomJawa.nomeProduto) {
-        data = prodBomJawa;
+      const prodSI5 = await consultarSI5GlobalCascata(codParaConsultar);
+      if (prodSI5 && prodSI5.nomeProduto) {
+        data = prodSI5;
       }
     } catch (err) {
-      console.warn('Aviso ao consultar API BomJawaKit:', err);
+      console.warn('Aviso ao consultar API SI5 Global:', err);
+    }
+
+    // 2. Segunda Prioridade: API BomJawaKit
+    if (!data || !data.nomeProduto) {
+      try {
+        const prodBomJawa = await consultarProdutoBomJawaKitPorCodigo(codParaConsultar);
+        if (prodBomJawa && prodBomJawa.nomeProduto) {
+          data = prodBomJawa;
+        }
+      } catch (err) {
+        console.warn('Aviso ao consultar API BomJawaKit:', err);
+      }
     }
 
     // 2. Fallback para endpoint do servidor local (se ainda não encontrou)
@@ -3793,8 +3808,45 @@ export default function App() {
         return;
       }
 
+      // 4. QUARTO: Se não encontrou no estoque, nem no cache, nem no banco Firestore,
+      // consulta automaticamente as 4 chaves em cascata da API SI5 Global (100 consultas/dia por chave = 400 consultas/dia)
+      try {
+        const prodSI5 = await consultarSI5GlobalCascata(codLimpo);
+        if (prodSI5 && prodSI5.nomeProduto) {
+          setCadNome(prodSI5.nomeProduto);
+          if (prodSI5.marca) setCadMarca(prodSI5.marca);
+          if (prodSI5.categoria) setCadCategoria(prodSI5.categoria);
+          if (prodSI5.fotoUrl) setFotoTemp(prodSI5.fotoUrl);
+
+          // Salva no cache local do dispositivo para que futuras buscas custem ZERO requisições
+          const itemNovoCat: ProdutoCatalogo = {
+            codigo: codLimpo,
+            nome: prodSI5.nomeProduto,
+            marca: prodSI5.marca,
+            categoria: prodSI5.categoria,
+            unidade_medida: 'un',
+            imagem: prodSI5.fotoUrl,
+            descricao: prodSI5.nomeProduto,
+          };
+          setCatalogoGlobal((prev) => {
+            if (prev.some((p) => p.codigo === codLimpo)) return prev;
+            const novo = [...prev, itemNovoCat];
+            safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novo));
+            return novo;
+          });
+
+          // Grava no banco master automaticamente em background para as próximas filiais
+          salvarProdutoCatalogoFirestore(itemNovoCat).catch(() => {});
+
+          setBuscandoProdutoCodigo(false);
+          return;
+        }
+      } catch (errApi) {
+        console.warn('Aviso na consulta da API SI5 Global em cascata:', errApi);
+      }
+
       // Se não encontrou em nenhum lugar:
-      alert(`ℹ️ Código "${codLimpo}" não encontrado no estoque desta loja nem no banco de dados.\n\nPreencha as informações do produto para salvá-lo.`);
+      alert(`ℹ️ Código "${codLimpo}" não encontrado no estoque, banco de dados ou nas 4 chaves da API.\n\nPreencha as informações do produto manualmente para salvá-lo.`);
     } catch (err) {
       console.warn('Erro ao consultar produto no banco de dados:', err);
     } finally {
@@ -9756,11 +9808,11 @@ export default function App() {
                   }}
                   onClick={() => consultarEANGemini()}
                   disabled={consultandoEAN || !cadCod.trim()}
-                  title="Consultar nome, marca, foto e categoria no ConsultaProdutos e Cosmos"
+                  title="Consultar na API SI5 Global com 4 chaves em cascata (400 consultas/dia)"
                 >
                   {consultandoEAN
-                    ? '⏳ Consultando ConsultaProdutos & Cosmos...'
-                    : '🌐 Buscar Código no ConsultaProdutos & Cosmos (Nome, Foto, Marca)'}
+                    ? '⏳ Consultando API Oficial (400/Dia)...'
+                    : '🌐 Buscar Código na API Oficial (Nome, Foto, Marca & NCM)'}
                 </button>
                 <div className="grupo-input">
                   <label className="rotulo-campo">Nome Detalhado do Produto</label>
