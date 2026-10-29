@@ -3182,9 +3182,9 @@ export default function App() {
 
       if (videoRef.current) {
         try {
-          const decodePromise = codeReaderRef.current.decodeFromVideoElement(
+          const decodePromise = codeReaderRef.current.decodeFromVideoElementContinuously(
             videoRef.current,
-            (result, err) => {
+            (result: any, err: any) => {
               if (result) {
                 const txt = result.getText();
                 if (txt) onDetect(txt);
@@ -4006,7 +4006,6 @@ export default function App() {
   };
 
   const editarProduto = (cod: string, val: string = '', lote: string = '', modoForcado?: 'master' | 'estoque') => {
-    setRelatorioCheioVisivel(false);
     const p = estoque.find((item) => item.codigo === cod && item.validade === val && item.lote === lote) || estoque.find((item) => item.codigo === cod);
     const cat = catalogoGlobal.find((c) => c.codigo === cod);
 
@@ -5553,7 +5552,7 @@ export default function App() {
           },
         ];
 
-    const sub = itensTeste.reduce((acc, cur) => acc + cur.subtotal, 0);
+    const sub: number = (itensTeste as any[]).reduce((acc: number, cur: any) => acc + (cur.subtotal || 0), 0);
     const taxa = configDelivery.taxaEntregaFixa || 6.90;
 
     const sim: PedidoDelivery = {
@@ -5575,7 +5574,7 @@ export default function App() {
         cidade: 'São Paulo',
         referencia: 'Apartamento 54',
       },
-      itens: itensTeste,
+      itens: itensTeste as any,
       subtotal: sub,
       taxaEntrega: taxa,
       valorTotal: sub + taxa,
@@ -7626,8 +7625,9 @@ export default function App() {
                         subtotal: pedido.subtotal,
                         desconto: 0,
                         acrescimo: pedido.taxaEntrega,
+                        valorTotal: pedido.valorTotal,
                         total: pedido.valorTotal,
-                        formaPagamento: pedido.formaPagamento === 'pix' ? 'pix' : pedido.formaPagamento === 'dinheiro' ? 'dinheiro' : 'cartao',
+                        formaPagamento: pedido.formaPagamento === 'pix' ? 'pix' : pedido.formaPagamento === 'dinheiro' ? 'dinheiro' : pedido.formaPagamento === 'cartao_debito' ? 'cartao_debito' : 'cartao_credito',
                         valorRecebido: pedido.trocoPara || pedido.valorTotal,
                         troco: pedido.trocoPara ? Math.max(0, pedido.trocoPara - pedido.valorTotal) : 0,
                         status: 'concluida',
@@ -8829,7 +8829,6 @@ export default function App() {
                     className="btn-acao-rel"
                     style={{ background: 'var(--primario)', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
                     onClick={() => {
-                      setModalSupermercadoVisivel(false);
                       abrirCadastro('master');
                     }}
                   >
@@ -9049,7 +9048,6 @@ export default function App() {
                                   className="btn-acao-rel"
                                   style={{ background: '#059669', color: '#fff', fontSize: '0.78rem', padding: '6px 10px', borderRadius: '6px' }}
                                   onClick={() => {
-                                    setModalSupermercadoVisivel(false);
                                     abrirCadastroComProdutoCatalogo(cat);
                                   }}
                                   title="Adicionar este produto ao Estoque da Loja/Adega"
@@ -9059,7 +9057,6 @@ export default function App() {
                                 <button
                                   className="btn-acao-rel btn-editar-rel"
                                   onClick={() => {
-                                    setModalSupermercadoVisivel(false);
                                     editarProduto(cat.codigo, '', '', 'master');
                                   }}
                                   title="Editar este item no Cadastro Master"
@@ -9117,7 +9114,6 @@ export default function App() {
                                 <button
                                   className="btn-acao-rel btn-editar-rel"
                                   onClick={() => {
-                                    setModalSupermercadoVisivel(false);
                                     editarProduto(p.codigo, p.validade, p.lote || '');
                                   }}
                                   title="Editar no Estoque"
@@ -9534,7 +9530,7 @@ export default function App() {
       </div>
 
       {/* PRODUCT REGISTRATION MODAL */}
-      <div className="modal" id="modalCadastro" style={{ display: modalCadastroVisivel ? 'flex' : 'none' }}>
+      <div className="modal" id="modalCadastro" style={{ display: modalCadastroVisivel ? 'flex' : 'none', zIndex: 99999 }}>
         <div className="modal-conteudo">
           <div className="cab-modal" id="titulo-modal-cad">
             {tipoProdutoCadastro === 'interno'
@@ -10294,7 +10290,7 @@ export default function App() {
                     <option value="">-- Selecione o Cliente Devedor --</option>
                     {clientesDevedores.map((c, cIdx) => (
                       <option key={`cli_dev_${c.id || cIdx}_${cIdx}`} value={c.id}>
-                        {c.nome} {c.cpfCnpj ? `(${c.cpfCnpj})` : ''} - Saldo Dev: R$ {Number(c.saldoDevedorTotal || 0).toFixed(2)}
+                        {c.nome} {c.cpfOuCnpj ? `(${c.cpfOuCnpj})` : ''} - Saldo Dev: R$ {Number(c.saldoDevedorTotal || 0).toFixed(2)}
                       </option>
                     ))}
                   </select>

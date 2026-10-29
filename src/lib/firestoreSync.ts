@@ -686,16 +686,12 @@ export async function excluirItemEstoqueFirestore(codigo: string, validade: stri
     const docId = `${safeLojaId}_${safeCod}_${safeVal}_${safeLote}`;
 
     // Remove do buffer otimista e marca como recém-excluído para evitar reaparecimento por snapshot atrasado
-    const chaveItem = `${cleanCod}|${cleanVal}|${cleanLote}`;
-    const mapaRecentes = itensRecemSalvosMemoria.get(lojaId);
-    if (mapaRecentes) {
-      mapaRecentes.delete(chaveItem);
-      mapaRecentes.delete(`${cleanCod}|2099-12-31|${cleanLote}`);
-    }
-    if (!itensRecemExcluidosMemoria.has(lojaId)) {
-      itensRecemExcluidosMemoria.set(lojaId, new Map());
-    }
-    itensRecemExcluidosMemoria.get(lojaId)!.set(chaveItem, Date.now());
+    const chaveCompleta = gerarChaveItemEstoque(lojaId, cleanCod, cleanVal, cleanLote);
+    const chaveCompletaPadrao = gerarChaveItemEstoque(lojaId, cleanCod, '2099-12-31', cleanLote);
+    itensRecemSalvosMemoria.delete(chaveCompleta);
+    itensRecemSalvosMemoria.delete(chaveCompletaPadrao);
+    itensRecemExcluidosMemoria.set(chaveCompleta, Date.now());
+    itensRecemExcluidosMemoria.set(chaveCompletaPadrao, Date.now());
 
     // Tenta apagar docId padrão
     try {
@@ -737,13 +733,9 @@ export async function excluirItemEstoqueFirestore(codigo: string, validade: stri
 export async function excluirTodosLotesProdutoEstoqueFirestore(codigo: string, lojaId?: string) {
   try {
     // Limpa do buffer otimista
-    itensRecemSalvosMemoria.forEach((mapa, lId) => {
-      if (!lojaId || lId === lojaId) {
-        for (const [k, v] of mapa.entries()) {
-          if (v.item.codigo === codigo) {
-            mapa.delete(k);
-          }
-        }
+    itensRecemSalvosMemoria.forEach((reg, chaveCompleta) => {
+      if ((!lojaId || reg.lojaId === lojaId) && reg.item.codigo === codigo) {
+        itensRecemSalvosMemoria.delete(chaveCompleta);
       }
     });
 

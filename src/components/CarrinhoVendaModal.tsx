@@ -239,9 +239,9 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
 
       if (videoRef.current) {
         try {
-          const decodePromise = codeReaderRef.current.decodeFromVideoElement(
+          const decodePromise = codeReaderRef.current.decodeFromVideoElementContinuously(
             videoRef.current,
-            (result, err) => {
+            (result: any, err: any) => {
               if (result) {
                 const txt = result.getText();
                 if (txt) onDetect(txt);
@@ -1407,7 +1407,7 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
                     <option value="">-- Selecione o Cliente Devedor --</option>
                     {clientesDevedores.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.nome} {c.cpfCnpj ? `(${c.cpfCnpj})` : ''} - Saldo Dev: R$ {c.saldoDevedorTotal.toFixed(2)}
+                        {c.nome} {c.cpfOuCnpj ? `(${c.cpfOuCnpj})` : ''} - Saldo Dev: R$ {c.saldoDevedorTotal.toFixed(2)}
                       </option>
                     ))}
                   </select>

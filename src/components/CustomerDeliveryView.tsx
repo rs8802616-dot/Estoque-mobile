@@ -22,8 +22,12 @@ export interface CustomerDeliveryViewProps {
 
 const DEFAULT_CONFIG_DELIVERY: ConfiguracaoDelivery = {
   ativo: true,
+  raioMaximoKm: 7,
   taxaEntregaFixa: 5.0,
+  valorMinimoPedido: 15.0,
   pedidoMinimo: 15.0,
+  tempoMinimoMinutos: 25,
+  tempoMaximoMinutos: 45,
   tempoMedioMinutos: 35,
   aceitaPix: true,
   chavePix: '',

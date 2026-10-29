@@ -51,13 +51,13 @@ interface ItemCarrinhoCliente {
 }
 
 const BAIRROS_PADRAO: TaxaBairro[] = [
-  { id: 'b1', nome: 'Centro', taxa: 5.00 },
-  { id: 'b2', nome: 'Jardim América', taxa: 7.00 },
-  { id: 'b3', nome: 'Vila Nova', taxa: 6.00 },
-  { id: 'b4', nome: 'Bela Vista', taxa: 6.50 },
-  { id: 'b5', nome: 'Consolação', taxa: 6.50 },
-  { id: 'b6', nome: 'Pinheiros', taxa: 8.00 },
-  { id: 'b7', nome: 'Outro Bairro (Taxa Padrão)', taxa: 8.00 },
+  { id: 'b1', nome: 'Centro', bairro: 'Centro', taxa: 5.00, valor: 5.00 },
+  { id: 'b2', nome: 'Jardim América', bairro: 'Jardim América', taxa: 7.00, valor: 7.00 },
+  { id: 'b3', nome: 'Vila Nova', bairro: 'Vila Nova', taxa: 6.00, valor: 6.00 },
+  { id: 'b4', nome: 'Bela Vista', bairro: 'Bela Vista', taxa: 6.50, valor: 6.50 },
+  { id: 'b5', nome: 'Consolação', bairro: 'Consolação', taxa: 6.50, valor: 6.50 },
+  { id: 'b6', nome: 'Pinheiros', bairro: 'Pinheiros', taxa: 8.00, valor: 8.00 },
+  { id: 'b7', nome: 'Outro Bairro (Taxa Padrão)', bairro: 'Outro Bairro (Taxa Padrão)', taxa: 8.00, valor: 8.00 },
 ];
 
 export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModalProps> = ({
@@ -133,16 +133,17 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   // Calcula a taxa de entrega baseada no bairro selecionado e tipo de pedido
   const taxaEntregaCalculada = useMemo(() => {
     if (tipoPedido === 'retirada') return 0;
-    const bairroEncontrado = listaBairros.find((b) => b.id === bairroSelecionadoId || b.nome.toLowerCase() === (endereco.bairro || '').toLowerCase());
-    if (bairroEncontrado) return Number(bairroEncontrado.taxa) || 0;
+    const bairroEncontrado = listaBairros.find((b) => b.id === bairroSelecionadoId || (b.nome || b.bairro || '').toLowerCase() === (endereco.bairro || '').toLowerCase());
+    if (bairroEncontrado) return Number(bairroEncontrado.taxa ?? bairroEncontrado.valor) || 0;
     return Number(configDelivery?.taxaEntregaFixa ?? loja?.taxa_entrega ?? 6.00) || 0;
   }, [tipoPedido, listaBairros, bairroSelecionadoId, endereco.bairro, configDelivery, loja]);
 
   // Atualizar bairro selecionado no endereço
   useEffect(() => {
     const bairroObj = listaBairros.find((b) => b.id === bairroSelecionadoId);
-    if (bairroObj && !bairroObj.nome.includes('Outro')) {
-      setEndereco((prev: any) => ({ ...prev, bairro: bairroObj.nome }));
+    const nomeBairro = bairroObj?.nome || bairroObj?.bairro || '';
+    if (nomeBairro && !nomeBairro.includes('Outro')) {
+      setEndereco((prev: any) => ({ ...prev, bairro: nomeBairro }));
     }
   }, [bairroSelecionadoId, listaBairros]);
 
@@ -1073,7 +1074,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                         >
                           {listaBairros.map((b) => (
                             <option key={b.id} value={b.id}>
-                              {b.nome} (R$ {Number(b.taxa || 0).toFixed(2)})
+                              {b.nome || b.bairro} (R$ {Number(b.taxa ?? b.valor ?? 0).toFixed(2)})
                             </option>
                           ))}
                         </select>

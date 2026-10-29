@@ -790,6 +790,17 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
   }
 
   // 2. Fallback remoto de contingência (somente se o catálogo offline ainda não foi baixado)
+  const BATCH_SIZE_UNICA_REQUISICAO = 200;
+  const batchIndex = Math.floor(((page - 1) * pageSize) / BATCH_SIZE_UNICA_REQUISICAO);
+  const batchOffset = batchIndex * BATCH_SIZE_UNICA_REQUISICAO;
+  const catNormalizada = catSelecionada;
+  const comImg = opcoes.comImagem;
+  const isNumericBarcode = /^\d{6,14}$/.test(rawQuery);
+  const chaveCache = `bjk_${termoNorm || 'all'}_${catNormalizada || 'all'}_b${batchIndex}`;
+  let totalBomJawa = 0;
+  const eansAdicionados = new Set<string>();
+  const listaCombinada: ProdutoNormalizadoBomJawaKit[] = [];
+
   const apiKey = getBomJawaKitApiKey();
   const executarFetchBomJawa = async (params: URLSearchParams) => {
     const url = `${BOMJAWAKIT_API_BASE}/api/v1/produtos?${params.toString()}`;

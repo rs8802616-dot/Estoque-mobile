@@ -262,7 +262,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
           minHeight: '46px',
           display: 'flex',
           alignItems: 'center',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           gap: '8px',
         }}
       >
@@ -351,7 +351,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                 border: '1px solid #e2e8f0',
                 boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                 display: 'flex',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '8px',
@@ -689,7 +689,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                           borderRadius: '10px',
                           border: '1px solid #e2e8f0',
                           display: 'flex',
-                          justify: 'space-between',
+                          justifyContent: 'space-between',
                           alignItems: 'center',
                           flexWrap: 'wrap',
                           gap: '10px',
@@ -845,7 +845,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                       boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                       display: 'flex',
                       flexDirection: 'column',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       gap: '8px',
                     }}
                   >

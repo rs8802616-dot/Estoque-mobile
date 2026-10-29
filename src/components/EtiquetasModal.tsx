@@ -97,7 +97,7 @@ export const EtiquetasModal: React.FC<EtiquetasModalProps> = ({
                     key={`etiq_prod_${prod.codigo}_${idx}`}
                     style={{
                       display: 'flex',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
                       padding: '10px 12px',
                       borderBottom: '1px solid #f1f5f9',
@@ -140,7 +140,7 @@ export const EtiquetasModal: React.FC<EtiquetasModalProps> = ({
                       key={idx}
                       style={{
                         display: 'flex',
-                        justify: 'space-between',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                         padding: '8px 12px',
                         background: '#fff',

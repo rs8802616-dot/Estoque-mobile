@@ -9,8 +9,11 @@ export interface ProdutoCatalogo {
   foto_url?: string;
   descricao?: string;
   ncm?: string;
+  preco?: number;
   preco_custo?: number;
   preco_venda?: number;
+  origem?: string;
+  buscaImagem?: string;
 }
 
 export interface ItemEstoque {
@@ -20,6 +23,7 @@ export interface ItemEstoque {
   nome: string;
   marca?: string;
   categoria?: string;
+  descricao?: string;
   quantidade: number;
   lote: string;
   validade: string;
@@ -109,8 +113,10 @@ export interface OperadorCaixa {
 
 export interface TaxaBairro {
   id: string;
-  bairro: string;
-  valor: number;
+  bairro?: string;
+  nome?: string;
+  valor?: number;
+  taxa?: number;
 }
 
 export interface Supermercado {
@@ -123,6 +129,7 @@ export interface Supermercado {
   senha: string;
   senhaAdmin?: string;
   endereco?: string;
+  cidade?: string;
   telefone?: string;
   status?: 'ativo' | 'bloqueado'; // Bloqueio pelo Dono do App
   motivoBloqueio?: string;
@@ -191,15 +198,22 @@ export interface VendaItem {
 
 export interface Venda {
   id: string;
+  numeroVenda?: number | string;
   lojaId: string;
   data: string; // ISO YYYY-MM-DD
   hora: string; // HH:mm
   timestamp: number;
   operadorId: string;
-  operadorNome: string;
+  operadorNome?: string;
   itens: VendaItem[];
   valorTotal: number;
+  total?: number;
+  subtotal?: number;
+  desconto?: number;
+  acrescimo?: number;
   formaPagamento: 'dinheiro' | 'cartao_credito' | 'cartao_debito' | 'pix' | 'fiado' | 'outros';
+  valorRecebido?: number;
+  troco?: number;
   status: 'concluida' | 'estornada';
   dataEstorno?: string;
   operadorEstornoNome?: string;
@@ -425,6 +439,14 @@ export interface ConfiguracaoDelivery {
   tempoMinimoMinutos: number; // Ex: 25
   tempoMaximoMinutos: number; // Ex: 45
   valorMinimoPedido: number; // Ex: 20.00
+  pedidoMinimo?: number; // Alias para compatibilidade
+  tempoMedioMinutos?: number; // Alias para compatibilidade
+  aceitaPix?: boolean;
+  aceitaCartaoEntrega?: boolean;
+  aceitaDinheiro?: boolean;
+  horarioAbertura?: string;
+  horarioFechamento?: string;
+  mensagemBoasVindas?: string;
   chavePix?: string; // Chave PIX da loja para pagamento
   telefoneContatoLoja?: string;
   enderecoLoja?: {
