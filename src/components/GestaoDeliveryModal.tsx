@@ -425,7 +425,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
       </div>
     );
   };
-  };
 
   return (
     <div

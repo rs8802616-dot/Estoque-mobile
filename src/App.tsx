@@ -5681,19 +5681,6 @@ export default function App() {
 
     handleCriarPedidoCliente(sim);
   };
-      subtotal: sub,
-      taxaEntrega: taxa,
-      valorTotal: sub + taxa,
-      formaPagamento: 'pix',
-      status: 'pendente',
-      tipo_pedido: tipoEscolhido,
-      mesaNumero: tipoEscolhido === 'mesa' ? '02' : undefined,
-      atendenteNome: tipoEscolhido === 'mesa' ? 'Fernanda (Admin Burger)' : undefined,
-      codigoEntregaPin: pin,
-    };
-
-    handleCriarPedidoCliente(sim);
-  };
 
   // Low Stock & Reorder Threshold Handler
   const alterarLimiarEstoque = (novoValor: number) => {
