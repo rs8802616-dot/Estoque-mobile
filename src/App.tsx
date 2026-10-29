@@ -9534,100 +9534,33 @@ export default function App() {
         <div className="modal-conteudo">
           <div className="cab-modal" id="titulo-modal-cad">
             {tipoProdutoCadastro === 'interno'
-              ? (codigoEditando ? `✏️ Editar Produto Interno / Balcão (${nomeSupermercadoAtivo})` : `🍢 Novo Produto Interno / Adega (${nomeSupermercadoAtivo})`)
+              ? (codigoEditando ? `✏️ Editar Produto Próprio / Balcão (${nomeSupermercadoAtivo})` : '🍢 Novo Produto Próprio / Balcão (Sem Código de Barras)')
               : (perfilAtivo === 'dona_app'
                   ? (modoCadastroItem === 'master'
                       ? (codigoEditando ? '👑 Editar Item no Banco de Dados Master' : '👑 Cadastrar Item no Banco Master')
-                      : (codigoEditando ? `✏️ Editar Item no Estoque (${nomeSupermercadoAtivo})` : `➕ Adicionar Item ao Estoque (${nomeSupermercadoAtivo})`))
-                  : (codigoEditando ? `✏️ Editar Produto (${nomeSupermercadoAtivo})` : `➕ Novo Produto no Estoque (${nomeSupermercadoAtivo})`))}
+                      : (codigoEditando ? `✏️ Editar Produto com Código de Barras (${nomeSupermercadoAtivo})` : `➕ Novo Produto com Código de Barras (${nomeSupermercadoAtivo})`))
+                  : (codigoEditando ? `✏️ Editar Produto com Código de Barras (${nomeSupermercadoAtivo})` : `➕ Novo Produto com Código de Barras (${nomeSupermercadoAtivo})`))}
           </div>
           <div className="corpo-modal">
-            {/* SELETOR DE TIPO DE CADASTRO: PADRÃO (COM EAN) VS INTERNO (ADEGA / ESPETINHO / BALCÃO) */}
-            {!codigoEditando && modoCadastroItem !== 'master' && (
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
-                <button
-                  type="button"
-                  style={{
-                    flex: 1,
-                    padding: '9px 6px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    borderRadius: '8px',
-                    border: tipoProdutoCadastro === 'padrao' ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                    background: tipoProdutoCadastro === 'padrao' ? '#dcfce7' : '#f8fafc',
-                    color: tipoProdutoCadastro === 'padrao' ? '#15803d' : '#64748b',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onClick={() => {
-                    setTipoProdutoCadastro('padrao');
-                    setCadEstoqueIlimitado(false);
-                    setCadCod('');
-                    setCadCategoria('');
-                    setCadMarca('');
-                    setCadQtd('1');
-                    setCadLote('');
-                    setCadVal('');
-                  }}
-                >
-                  <span>📦</span>
-                  <span>Com Código de Barras</span>
-                </button>
-
-                <button
-                  type="button"
-                  style={{
-                    flex: 1,
-                    padding: '9px 6px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    borderRadius: '8px',
-                    border: tipoProdutoCadastro === 'interno' ? '2px solid #d97706' : '1px solid #cbd5e1',
-                    background: tipoProdutoCadastro === 'interno' ? '#fef3c7' : '#f8fafc',
-                    color: tipoProdutoCadastro === 'interno' ? '#92400e' : '#64748b',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onClick={() => {
-                    setTipoProdutoCadastro('interno');
-                    setCadEstoqueIlimitado(true);
-                    setCadCod(gerarCodigoInternoAutomatico('ESP'));
-                    setCadCategoria('🍢 Espetinhos & Churrasco');
-                    setCadMarca('Produção Própria / Adega');
-                    setCadQtd('99999');
-                    setCadVal('2099-12-31');
-                    setCadLote('PROD_INTERNA');
-                  }}
-                >
-                  <span>✨</span>
-                  <span>Sem Código de Barras</span>
-                </button>
-              </div>
-            )}
-
             {/* SELETOR DE MODO PARA DONA DO APP (SE FOR PRODUTO PADRÃO) */}
             {perfilAtivo === 'dona_app' && !codigoEditando && tipoProdutoCadastro === 'padrao' && (
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
                 <button
                   type="button"
                   style={{
                     flex: 1,
-                    padding: '8px 6px',
-                    fontSize: '0.8rem',
+                    padding: '10px 8px',
+                    fontSize: '0.82rem',
                     fontWeight: 700,
                     borderRadius: '8px',
                     border: modoCadastroItem === 'estoque' ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                    background: modoCadastroItem === 'estoque' ? '#dcfce7' : '#f8fafc',
+                    background: modoCadastroItem === 'estoque' ? '#dcfce7' : '#ffffff',
                     color: modoCadastroItem === 'estoque' ? '#15803d' : '#64748b',
                     cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
                   }}
                   onClick={() => setModoCadastroItem('estoque')}
                 >
@@ -9637,22 +9570,25 @@ export default function App() {
                   type="button"
                   style={{
                     flex: 1,
-                    padding: '8px 6px',
-                    fontSize: '0.8rem',
+                    padding: '10px 8px',
+                    fontSize: '0.82rem',
                     fontWeight: 700,
                     borderRadius: '8px',
                     border: modoCadastroItem === 'master' ? '2px solid #0284c7' : '1px solid #cbd5e1',
-                    background: modoCadastroItem === 'master' ? '#e0f2fe' : '#f8fafc',
+                    background: modoCadastroItem === 'master' ? '#e0f2fe' : '#ffffff',
                     color: modoCadastroItem === 'master' ? '#0369a1' : '#64748b',
                     cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '4px',
                   }}
                   onClick={() => setModoCadastroItem('master')}
                 >
-                  👑 Banco Master ({catalogoGlobal.length} produtos)
+                  👑 Banco Master (Catálogo)
                 </button>
               </div>
             )}
-
 
             {/* INFORMAÇÃO DA LOJA SELECIONADA */}
             {tipoProdutoCadastro === 'padrao' && (perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') && (
@@ -9683,13 +9619,8 @@ export default function App() {
             {tipoProdutoCadastro === 'interno' ? (
               <>
                 <div className="grupo-input">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <label className="rotulo-campo" style={{ marginBottom: 0 }}>Código Interno do Produto</label>
-                    <span style={{ fontSize: '0.74rem', color: '#92400e', fontWeight: 700 }}>
-                      ⚡ Código rápido para PDV
-                    </span>
-                  </div>
-                  <div className="linha-input">
+                  <label className="rotulo-campo">Código Interno do Produto</label>
+                  <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <input
                       type="text"
                       id="cad-cod"
@@ -9707,11 +9638,15 @@ export default function App() {
                         color: '#92400e',
                         border: '1px solid #fde68a',
                         borderRadius: '6px',
-                        padding: '0 10px',
-                        fontSize: '0.78rem',
+                        padding: '0 12px',
+                        height: '42px',
+                        fontSize: '0.82rem',
                         fontWeight: 700,
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
                       }}
                       onClick={() => setCadCod(gerarCodigoInternoAutomatico(cadCod.slice(0, 3) || 'ESP'))}
                       title="Gerar próximo código sequencial"
@@ -9720,13 +9655,13 @@ export default function App() {
                     </button>
                   </div>
                   {/* Atalhos Rápidos de Prefixos para Adegas */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b', alignSelf: 'center', marginRight: '2px' }}>Prefixos:</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.74rem', color: '#64748b', marginRight: '4px' }}>Prefixos:</span>
                     {[
                       { pref: 'ESP', label: '🍢 Espetinho', cat: '🍢 Espetinhos & Churrasco' },
-                      { pref: 'DOS', label: '🥃 Dose', cat: '🥃 Doses & Destilados' },
+                      { pref: 'DOS', label: '🍺 Dose', cat: '🍺 Doses & Destilados' },
                       { pref: 'GEL', label: '🧊 Gelo/Carvão', cat: '🧊 Gelo & Carvão' },
-                      { pref: 'BAL', label: '🍬 Balcão', cat: '🍬 Balcão & Doces' },
+                      { pref: 'BAL', label: '📌 Balcão', cat: '📌 Balcão & Doces' },
                       { pref: 'ASS', label: '🍗 Assados', cat: '🍗 Assados & Porções' },
                       { pref: 'COK', label: '🍹 Drinks', cat: '🍹 Coquetéis & Drinks' },
                     ].map((btn) => (
@@ -9738,8 +9673,8 @@ export default function App() {
                           color: cadCod.startsWith(btn.pref) ? '#ffffff' : '#334155',
                           border: 'none',
                           borderRadius: '4px',
-                          padding: '3px 7px',
-                          fontSize: '0.72rem',
+                          padding: '4px 8px',
+                          fontSize: '0.74rem',
                           fontWeight: 600,
                           cursor: 'pointer',
                         }}
@@ -9760,7 +9695,7 @@ export default function App() {
                     type="text"
                     id="cad-nome"
                     className="input-modal"
-                    placeholder="Ex: Espetinho de Carne Bovina, Dose de Gin Tropical, Saco de Gelo 5kg..."
+                    placeholder="Ex: Espetinho de Carne Bovina, Dose de Gin Trop..."
                     value={cadNome}
                     onChange={(e) => setCadNome(e.target.value)}
                     required
@@ -9773,7 +9708,7 @@ export default function App() {
                     type="text"
                     id="cad-categoria"
                     className="input-modal"
-                    placeholder="Ex: Espetinhos, Bebidas Balcão, Porções..."
+                    placeholder="Ex: 🍢 Espetinhos & Churrasco"
                     value={cadCategoria}
                     onChange={(e) => setCadCategoria(e.target.value)}
                   />
@@ -9807,7 +9742,6 @@ export default function App() {
                     onChange={(e) => setCadCusto(e.target.value)}
                   />
                 </div>
-
               </>
             ) : (
               /* FLUXO PADRÃO INDUSTRIAL COM CÓDIGO DE BARRAS (EAN) */
@@ -9841,10 +9775,10 @@ export default function App() {
                         justifyContent: 'center',
                         gap: '4px',
                         whiteSpace: 'nowrap',
-                        background: 'var(--primario)',
-                        color: '#fff',
+                        background: '#f0f9ff',
+                        color: '#0369a1',
                         borderRadius: '8px',
-                        border: 'none',
+                        border: '1px solid #bae6fd',
                         cursor: 'pointer',
                         fontSize: '0.85rem'
                       }}
@@ -9859,6 +9793,35 @@ export default function App() {
                     </button>
                   </div>
                 </div>
+
+                {/* BOTÃO AZUL OFICIAL DE BUSCA EXTERNA */}
+                <button
+                  type="button"
+                  style={{
+                    width: '100%',
+                    padding: '11px 12px',
+                    background: '#0284c7',
+                    color: '#fff',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '0.84rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    marginBottom: '14px',
+                    boxShadow: '0 2px 4px rgba(2, 132, 199, 0.25)',
+                  }}
+                  onClick={() => consultarEANGemini()}
+                  disabled={consultandoEAN || !cadCod.trim()}
+                  title="Consultar nome, marca, foto e categoria no ConsultaProdutos e Cosmos"
+                >
+                  {consultandoEAN
+                    ? '⏳ Consultando ConsultaProdutos & Cosmos...'
+                    : '🌐 Buscar Código no ConsultaProdutos & Cosmos (Nome, Foto, Marca)'}
+                </button>
                 <div className="grupo-input">
                   <label className="rotulo-campo">Nome Detalhado do Produto</label>
                   <input
