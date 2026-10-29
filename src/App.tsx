@@ -5621,6 +5621,9 @@ export default function App() {
     const pin = Math.floor(1000 + Math.random() * 9000).toString();
     const agora = new Date();
 
+    const tipos: Array<'delivery' | 'retirada' | 'mesa'> = ['delivery', 'retirada', 'mesa'];
+    const tipoEscolhido = tipos[Math.floor(Math.random() * tipos.length)];
+
     const itensTeste = estoque.length > 0
       ? [
           {
@@ -5647,7 +5650,8 @@ export default function App() {
         ];
 
     const sub: number = (itensTeste as any[]).reduce((acc: number, cur: any) => acc + (cur.subtotal || 0), 0);
-    const taxa = configDelivery.taxaEntregaFixa || 6.90;
+    const taxa = tipoEscolhido === 'delivery' ? (configDelivery.taxaEntregaFixa || 6.90) : 0;
+    const clienteNome = tipoEscolhido === 'mesa' ? 'Mesa 02' : tipoEscolhido === 'retirada' ? 'Cliente Balcão (Teste)' : 'Rodrigo Souza';
 
     const sim: PedidoDelivery = {
       id: `del_${Date.now()}`,
@@ -5657,16 +5661,16 @@ export default function App() {
       hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: agora.getTime(),
       cliente: {
-        nome: 'Cliente Delivery (Teste)',
+        nome: clienteNome,
         telefone: '(11) 99887-1122',
         maior18AnosConfirmado: true,
       },
       enderecoEntrega: {
-        logradouro: 'Rua Augusta',
-        numero: '780',
-        bairro: 'Consolação',
+        logradouro: tipoEscolhido === 'mesa' ? 'Mesa 02' : tipoEscolhido === 'retirada' ? 'Retirada Balcão' : 'Rua das Palmeiras',
+        numero: tipoEscolhido === 'mesa' ? '2' : '342',
+        bairro: tipoEscolhido === 'mesa' ? 'Salão' : 'Jardins',
         cidade: 'São Paulo',
-        referencia: 'Apartamento 54',
+        referencia: 'Em frente à praça',
       },
       itens: itensTeste as any,
       subtotal: sub,
@@ -5674,6 +5678,9 @@ export default function App() {
       valorTotal: sub + taxa,
       formaPagamento: 'pix',
       status: 'pendente',
+      tipo_pedido: tipoEscolhido,
+      mesaNumero: tipoEscolhido === 'mesa' ? '02' : undefined,
+      atendenteNome: tipoEscolhido === 'mesa' ? 'Fernanda (Admin Burger)' : undefined,
       codigoEntregaPin: pin,
     };
 

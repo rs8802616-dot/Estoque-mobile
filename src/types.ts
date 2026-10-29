@@ -474,8 +474,9 @@ export interface ItemPedidoDelivery {
 export type StatusPedidoDelivery =
   | 'pendente'          // Novo pedido aguardando a loja aceitar
   | 'em_separacao'      // Loja aceitou, separando produtos
+  | 'pronto'            // Pronto para retirada ou envio
   | 'saiu_para_entrega' // Com o entregador/motoboy a caminho
-  | 'entregue'          // Finalizado com validação de PIN
+  | 'entregue'          // Finalizado com validação de PIN / Retirado
   | 'cancelado';        // Recusado ou cancelado
 
 export interface PedidoDelivery {
@@ -507,7 +508,9 @@ export interface PedidoDelivery {
   formaPagamento: 'pix' | 'cartao_credito' | 'cartao_debito' | 'dinheiro';
   trocoPara?: number;
   status: StatusPedidoDelivery;
-  tipo_pedido?: 'delivery' | 'retirada';
+  tipo_pedido?: 'delivery' | 'retirada' | 'mesa';
+  mesaNumero?: string;
+  atendenteNome?: string;
   observacao?: string;
   codigoEntregaPin: string; // Ex: '4912' (PIN de 4 dígitos para confirmação de entrega segura)
   motivoCancelamento?: string;
