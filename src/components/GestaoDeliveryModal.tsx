@@ -123,7 +123,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   const countEntregues = pedidos.filter((p) => p.status === 'entregue').length;
   const countTotal = pedidos.length;
 
-  // Filtragem dos pedidos
+  // Filtragem dos pedidos de Delivery
   const filteredOrders = pedidos.filter((p) => {
     // Filtro por status
     if (pedidosFilterStatus === 'novo' && p.status !== 'pendente') return false;
@@ -140,35 +140,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
       const ruaMatch = p.enderecoEntrega?.logradouro?.toLowerCase().includes(b);
       const bairroMatch = p.enderecoEntrega?.bairro?.toLowerCase().includes(b);
       const numMatch = p.numeroPedido?.toString().includes(b);
-      const mesaMatch = (p.mesaNumero || '').toLowerCase().includes(b);
-      if (!nomeMatch && !foneMatch && !ruaMatch && !bairroMatch && !numMatch && !mesaMatch) return false;
+      if (!nomeMatch && !foneMatch && !ruaMatch && !bairroMatch && !numMatch) return false;
     }
 
     return true;
   }).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-  // Separação em 3 canais de atendimento (Delivery, Retirada, Mesas & Salão)
-  const deliveryOrders = filteredOrders.filter((p) => {
-    if (p.tipo_pedido === 'retirada' || p.tipo_pedido === 'mesa') return false;
-    const log = (p.enderecoEntrega?.logradouro || '').toLowerCase();
-    const cli = (p.cliente?.nome || '').toLowerCase();
-    if (log.includes('mesa') || cli.includes('mesa') || log.includes('balcão') || log.includes('retirada')) return false;
-    return true;
-  });
-
-  const retiradaOrders = filteredOrders.filter((p) => {
-    if (p.tipo_pedido === 'retirada') return true;
-    if (p.tipo_pedido === 'mesa') return false;
-    const log = (p.enderecoEntrega?.logradouro || '').toLowerCase();
-    return log.includes('balcão') || log.includes('retirada') || log.includes('balcao');
-  });
-
-  const mesaOrders = filteredOrders.filter((p) => {
-    if (p.tipo_pedido === 'mesa') return true;
-    const log = (p.enderecoEntrega?.logradouro || '').toLowerCase();
-    const cli = (p.cliente?.nome || '').toLowerCase();
-    return log.includes('mesa') || cli.includes('mesa') || Boolean(p.mesaNumero);
-  });
 
   // Copiar link do cardápio digital
   const handleCopiarLinkCardapio = () => {
@@ -212,8 +188,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     setTimeout(() => setToastNfce(null), 3000);
   };
 
-  // Renderizador de Card Individual de Pedido
-  const renderCard = (order: PedidoDelivery, canal: 'delivery' | 'retirada' | 'mesa') => {
+  // Renderizador de Card Individual de Pedido de Delivery
+  const renderCard = (order: PedidoDelivery) => {
     const isNovo = order.status === 'pendente';
     const isPreparo = order.status === 'em_separacao';
     const isPronto = order.status === 'pronto';
@@ -226,11 +202,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     const isAnterior = order.data && order.data < hojeFormatado;
 
     // Borda do card:
-    // Imagem de referência:
     // Delivery a caminho tem borda verde destacada. Novo tem borda vermelha 2px.
     let cardBorder = 'border border-slate-200';
     if (isNovo) cardBorder = 'border-2 border-red-500 shadow-sm ring-2 ring-red-500/10';
-    else if (isACaminho && canal === 'delivery') cardBorder = 'border-2 border-[#10b981] shadow-sm';
+    else if (isACaminho) cardBorder = 'border-2 border-[#10b981] shadow-sm';
     else if (isPreparo) cardBorder = 'border-2 border-amber-400 shadow-sm';
     else if (isPronto) cardBorder = 'border-2 border-emerald-500 shadow-sm';
 
@@ -241,26 +216,12 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
       >
         {/* TOPO DO CARD: TAG DO CANAL + BADGE DE STATUS */}
         <div className="flex items-center justify-between gap-2">
-          {/* Tag do Canal */}
+          {/* Tag DELIVERY */}
           <div className="flex items-center gap-1.5">
-            {canal === 'delivery' && (
-              <span className="bg-[#059669] text-white text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1 shadow-xs uppercase">
-                <Bike className="w-3.5 h-3.5" />
-                <span>DELIVERY</span>
-              </span>
-            )}
-            {canal === 'retirada' && (
-              <span className="bg-[#d97706] text-white text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1 shadow-xs uppercase">
-                <ShoppingBag className="w-3.5 h-3.5" />
-                <span>RETIRADA</span>
-              </span>
-            )}
-            {canal === 'mesa' && (
-              <span className="bg-[#0f172a] text-white text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1 shadow-xs uppercase">
-                <UtensilsCrossed className="w-3.5 h-3.5" />
-                <span>MESA {order.mesaNumero || '02'}</span>
-              </span>
-            )}
+            <span className="bg-[#059669] text-white text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1 shadow-xs uppercase">
+              <Bike className="w-3.5 h-3.5" />
+              <span>DELIVERY</span>
+            </span>
             <span className="font-mono font-bold text-slate-800 text-xs">
               #{order.numeroPedido}
             </span>
@@ -294,7 +255,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             {isEntregue && (
               <span className="bg-[#334155] text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs">
                 <Check className="w-3 h-3 text-white stroke-[3]" />
-                <span>{canal === 'retirada' ? 'RETIRADO' : 'ENTREGUE'}</span>
+                <span>ENTREGUE</span>
               </span>
             )}
             {isCancelado && (
@@ -309,45 +270,31 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
         <div className="space-y-1 text-xs text-slate-700">
           <div className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
             <span className="text-slate-600">👤</span>
-            <span className="truncate">{order.cliente.nome || (canal === 'mesa' ? `Mesa ${order.mesaNumero || '02'}` : 'Cliente')}</span>
+            <span className="truncate">{order.cliente.nome || 'Cliente'}</span>
           </div>
 
-          {canal === 'mesa' ? (
-            <div className="text-slate-600 text-xs">
-              <span>Atendente: </span>
-              <strong className="text-slate-800">{order.atendenteNome || 'Fernanda (Admin Burger)'}</strong>
-            </div>
-          ) : (
-            order.cliente.telefone && (
-              <div className="text-slate-600 font-mono flex items-center gap-1.5 text-[11px]">
-                <Phone className="w-3 h-3 text-slate-400 shrink-0" />
-                <a
-                  href={`https://wa.me/55${order.cliente.telefone.replace(/\D/g, '')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:underline text-slate-700 font-semibold"
-                >
-                  {order.cliente.telefone}
-                </a>
-              </div>
-            )
-          )}
-
-          {canal === 'delivery' && (
-            <div className="text-slate-600 flex items-start gap-1 text-[11px] leading-snug">
-              <MapPin className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
-              <span className="truncate">
-                {order.enderecoEntrega.logradouro}, {order.enderecoEntrega.numero}
-                {order.enderecoEntrega.bairro ? ` (${order.enderecoEntrega.bairro})` : ''}
-              </span>
+          {order.cliente.telefone && (
+            <div className="text-slate-600 font-mono flex items-center gap-1.5 text-[11px]">
+              <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+              <a
+                href={`https://wa.me/55${order.cliente.telefone.replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:underline text-slate-700 font-semibold"
+              >
+                {order.cliente.telefone}
+              </a>
             </div>
           )}
 
-          {canal === 'retirada' && (
-            <div className="text-slate-500 text-[11px]">
-              <span>Totem Autoatendimento / Balcão</span>
-            </div>
-          )}
+          <div className="text-slate-600 flex items-start gap-1 text-[11px] leading-snug">
+            <MapPin className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
+            <span className="truncate">
+              {order.enderecoEntrega.logradouro}, {order.enderecoEntrega.numero}
+              {order.enderecoEntrega.bairro ? ` (${order.enderecoEntrega.bairro})` : ''}
+              {order.enderecoEntrega.referencia ? ` - Ref: ${order.enderecoEntrega.referencia}` : ''}
+            </span>
+          </div>
 
           {/* Data e Hora + Badge Anterior / Hoje */}
           <div className="text-slate-400 text-[11px] font-mono flex items-center gap-1.5 pt-0.5">
@@ -388,30 +335,14 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           ))}
         </div>
 
-        {/* BARRA INFERIOR: TOTAL + BOTÕES DE AÇÃO CONFORME A IMAGEM */}
+        {/* BARRA INFERIOR: TOTAL + BOTÕES DE AÇÃO */}
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5 mt-auto">
           {/* Caixa de TOTAL com badge colorido */}
-          {canal === 'delivery' && (
-            <div className="bg-[#d1fae5]/80 border border-[#a7f3d0] rounded-xl px-2.5 py-1.5 flex items-center gap-1 shrink-0">
-              <span className="text-xs sm:text-sm font-black text-[#065f46] font-mono">
-                {formatCurrency(order.valorTotal)}
-              </span>
-            </div>
-          )}
-          {canal === 'retirada' && (
-            <div className="bg-[#fef3c7]/90 border border-[#fde68a] rounded-xl px-2.5 py-1.5 flex items-center gap-1 shrink-0">
-              <span className="text-xs sm:text-sm font-black text-[#92400e] font-mono">
-                {formatCurrency(order.valorTotal)}
-              </span>
-            </div>
-          )}
-          {canal === 'mesa' && (
-            <div className="bg-[#e0f2fe]/90 border border-[#bae6fd] rounded-xl px-2.5 py-1.5 flex items-center gap-1 shrink-0">
-              <span className="text-xs sm:text-sm font-black text-[#0369a1] font-mono">
-                {formatCurrency(order.valorTotal)}
-              </span>
-            </div>
-          )}
+          <div className="bg-[#d1fae5]/80 border border-[#a7f3d0] rounded-xl px-2.5 py-1.5 flex items-center gap-1 shrink-0">
+            <span className="text-xs sm:text-sm font-black text-[#065f46] font-mono">
+              {formatCurrency(order.valorTotal)}
+            </span>
+          </div>
 
           {/* BOTÕES DE AÇÃO NA DIREITA */}
           <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -425,8 +356,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               <Printer className="w-3.5 h-3.5" />
             </button>
 
-            {/* Canal DELIVERY: Botão Link Motoboy / Rota Maps */}
-            {canal === 'delivery' && order.status !== 'entregue' && order.status !== 'cancelado' && (
+            {/* Botão Link Motoboy / Rota Maps */}
+            {order.status !== 'entregue' && order.status !== 'cancelado' && (
               <button
                 type="button"
                 onClick={() => gerarMensagemWhatsAppMotoboy(order)}
@@ -444,7 +375,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 type="button"
                 onClick={() => onAtualizarStatusPedido(order.id, 'em_separacao')}
                 className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Confirmar e iniciar preparo"
+                title="Confirmar pedido e iniciar separação"
               >
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
                 <span>Confirmar</span>
@@ -454,33 +385,16 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             {isPreparo && (
               <button
                 type="button"
-                onClick={() => {
-                  if (canal === 'delivery') {
-                    onAtualizarStatusPedido(order.id, 'saiu_para_entrega');
-                  } else {
-                    onAtualizarStatusPedido(order.id, 'pronto');
-                  }
-                }}
+                onClick={() => onAtualizarStatusPedido(order.id, 'saiu_para_entrega')}
                 className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title={canal === 'delivery' ? 'Despachar para o motoboy' : 'Marcar como pronto'}
+                title="Despachar para o motoboy"
               >
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
-                <span>{canal === 'delivery' ? 'Despachar' : 'Pronto'}</span>
+                <span>Despachar</span>
               </button>
             )}
 
-            {isPronto && canal !== 'delivery' && (
-              <button
-                type="button"
-                onClick={() => onAtualizarStatusPedido(order.id, 'entregue')}
-                className="px-3 py-1.5 rounded-xl bg-[#1e293b] hover:bg-slate-900 text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Finalizar e registrar saída"
-              >
-                <span>Caixa ➔</span>
-              </button>
-            )}
-
-            {isACaminho && canal === 'delivery' && (
+            {isACaminho && (
               <button
                 type="button"
                 onClick={() => {
@@ -510,6 +424,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
         </div>
       </div>
     );
+  };
   };
 
   return (
@@ -713,7 +628,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
         </div>
 
-        {/* ÁREA DOS 3 CANAIS DE ATENDIMENTO (DELIVERY, RETIRADA, MESAS & SALÃO) */}
+        {/* ÁREA DE PEDIDOS DE DELIVERY */}
         <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 bg-slate-50/70">
           {toastNfce && (
             <div className="mb-3 p-3 bg-cyan-50 border border-cyan-300 text-cyan-800 rounded-2xl text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-xs">
@@ -722,119 +637,54 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
-            
-            {/* ======================================================== */}
-            {/* CANAL 1: DELIVERY (VERDE/MINT) */}
-            {/* ======================================================== */}
-            <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-2xl p-3 sm:p-3.5 flex flex-col space-y-3 min-w-0 shadow-2xs">
-              {/* Header do Canal */}
-              <div className="flex items-center gap-2.5 pb-2 border-b border-[#a7f3d0]/60">
-                <div className="w-9 h-9 rounded-xl bg-[#d1fae5] text-[#059669] flex items-center justify-center border border-[#a7f3d0] shadow-2xs shrink-0">
+          {/* PAINEL PRINCIPAL DE DELIVERY (VERDE/MINT CONFORME FOTO) */}
+          <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-4 sm:p-5 flex flex-col space-y-4 min-w-0 shadow-2xs">
+            {/* Header da Seção de Delivery */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#a7f3d0]/60">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#d1fae5] text-[#059669] flex items-center justify-center border border-[#a7f3d0] shadow-2xs shrink-0">
                   <Bike className="w-5 h-5 text-[#059669]" />
                 </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-black text-slate-900 tracking-tight">
-                      DELIVERY
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-black text-slate-900 tracking-tight">
+                      PEDIDOS DE DELIVERY
                     </span>
-                    <span className="px-2 py-0.2 rounded-full bg-[#d1fae5] text-[#065f46] text-xs font-bold border border-[#a7f3d0]">
-                      {deliveryOrders.length}
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#d1fae5] text-[#065f46] text-xs font-bold border border-[#a7f3d0]">
+                      {filteredOrders.length}
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#065f46] font-medium leading-none truncate">
-                    Entregas motoboy com histórico
+                  <p className="text-xs text-[#065f46] font-medium mt-0.5">
+                    Entregas motoboy com histórico, rota no Maps e despacho integrado
                   </p>
                 </div>
               </div>
-
-              {/* Lista de Cards de Delivery */}
-              <div className="space-y-3">
-                {deliveryOrders.length === 0 ? (
-                  <div className="p-8 text-center bg-white/70 border border-dashed border-[#a7f3d0] rounded-xl text-xs text-[#065f46]/80 space-y-1">
-                    <p className="font-bold">Nenhum pedido de delivery nesta visualização.</p>
-                    <p className="text-[11px] text-slate-500">Pedidos com endereço para motoboy aparecerão aqui.</p>
-                  </div>
-                ) : (
-                  deliveryOrders.map((order) => renderCard(order, 'delivery'))
-                )}
-              </div>
             </div>
 
-            {/* ======================================================== */}
-            {/* CANAL 2: RETIRADA (BUSCAR) (AMBER/AMARELO WARM) */}
-            {/* ======================================================== */}
-            <div className="bg-[#fffbeb] border border-[#fde68a] rounded-2xl p-3 sm:p-3.5 flex flex-col space-y-3 min-w-0 shadow-2xs">
-              {/* Header do Canal */}
-              <div className="flex items-center gap-2.5 pb-2 border-b border-[#fde68a]/60">
-                <div className="w-9 h-9 rounded-xl bg-[#fef3c7] text-[#d97706] flex items-center justify-center border border-[#fde68a] shadow-2xs shrink-0">
-                  <ShoppingBag className="w-5 h-5 text-[#d97706]" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-black text-slate-900 tracking-tight">
-                      RETIRADA (BUSCAR)
-                    </span>
-                    <span className="px-2 py-0.2 rounded-full bg-[#fef3c7] text-[#92400e] text-xs font-bold border border-[#fde68a]">
-                      {retiradaOrders.length}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#92400e] font-medium leading-none truncate">
-                    Retiradas no balcão com histórico
-                  </p>
-                </div>
-              </div>
-
-              {/* Lista de Cards de Retirada */}
-              <div className="space-y-3">
-                {retiradaOrders.length === 0 ? (
-                  <div className="p-8 text-center bg-white/70 border border-dashed border-[#fde68a] rounded-xl text-xs text-[#92400e]/80 space-y-1">
-                    <p className="font-bold">Nenhum pedido de retirada no balcão.</p>
-                    <p className="text-[11px] text-slate-500">Pedidos marcados para retirada aparecerão aqui.</p>
-                  </div>
-                ) : (
-                  retiradaOrders.map((order) => renderCard(order, 'retirada'))
+            {/* Grid dos Cards de Delivery */}
+            {filteredOrders.length === 0 ? (
+              <div className="py-16 text-center bg-white/80 border border-dashed border-[#a7f3d0] rounded-2xl text-xs text-[#065f46] space-y-2">
+                <Bike className="w-10 h-10 mx-auto text-[#059669]/60" />
+                <p className="font-bold text-sm text-slate-800">Nenhum pedido de delivery encontrado neste filtro.</p>
+                <p className="text-xs text-slate-500">
+                  Novos pedidos feitos no cardápio do cliente tocarão alerta e aparecerão aqui em tempo real.
+                </p>
+                {onSimularNovoPedidoTeste && (
+                  <button
+                    type="button"
+                    onClick={onSimularNovoPedidoTeste}
+                    className="mt-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    <span>Simular Pedido de Teste</span>
+                  </button>
                 )}
               </div>
-            </div>
-
-            {/* ======================================================== */}
-            {/* CANAL 3: MESAS & SALÃO (AZUL CÉU/CYAN) */}
-            {/* ======================================================== */}
-            <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl p-3 sm:p-3.5 flex flex-col space-y-3 min-w-0 shadow-2xs">
-              {/* Header do Canal */}
-              <div className="flex items-center gap-2.5 pb-2 border-b border-[#bae6fd]/60">
-                <div className="w-9 h-9 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center border border-[#bae6fd] shadow-2xs shrink-0">
-                  <UtensilsCrossed className="w-5 h-5 text-[#0284c7]" />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-black text-slate-900 tracking-tight">
-                      MESAS & SALÃO
-                    </span>
-                    <span className="px-2 py-0.2 rounded-full bg-[#e0f2fe] text-[#0369a1] text-xs font-bold border border-[#bae6fd]">
-                      {mesaOrders.length}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#0369a1] font-medium leading-none truncate">
-                    Consumo em mesas com histórico
-                  </p>
-                </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                {filteredOrders.map((order) => renderCard(order))}
               </div>
-
-              {/* Lista de Cards de Mesas */}
-              <div className="space-y-3">
-                {mesaOrders.length === 0 ? (
-                  <div className="p-8 text-center bg-white/70 border border-dashed border-[#bae6fd] rounded-xl text-xs text-[#0369a1]/80 space-y-1">
-                    <p className="font-bold">Nenhum pedido de mesa no momento.</p>
-                    <p className="text-[11px] text-slate-500">Comandas e pedidos de mesas vinculadas aparecerão aqui.</p>
-                  </div>
-                ) : (
-                  mesaOrders.map((order) => renderCard(order, 'mesa'))
-                )}
-              </div>
-            </div>
-
+            )}
           </div>
         </div>
 
