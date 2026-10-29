@@ -3569,6 +3569,7 @@ export default function App() {
 
   // Query API Oficial BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) + Fallbacks (ConsultaProdutos, Cosmos Bluesoft, Open Food Facts)
   const consultarEANGemini = async (codigoOpcional?: string) => {
+    if (consultandoEAN) return;
     const codParaConsultar = (codigoOpcional || cadCod).trim();
     if (!codParaConsultar) {
       alert('Por favor, informe ou escaneie o código de barras primeiro!');
@@ -3734,6 +3735,7 @@ export default function App() {
   const [buscandoProdutoCodigo, setBuscandoProdutoCodigo] = useState<boolean>(false);
 
   const buscarProdutoPeloCodigo = async (codigoInformado?: string) => {
+    if (buscandoProdutoCodigo) return;
     const codLimpo = String(codigoInformado !== undefined ? codigoInformado : cadCod).trim();
     if (!codLimpo) {
       alert('Por favor, informe ou escaneie o código de barras primeiro!');
