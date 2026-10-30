@@ -5957,7 +5957,7 @@ export default function App() {
               data-1p-ignore="true"
               readOnly
               onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
-              className="input-busca"
+              className="input-busca input-busca-desktop"
               placeholder="Buscar no estoque..."
               value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
               onChange={(e) => {
@@ -6195,70 +6195,106 @@ export default function App() {
         </div>
       </header>
 
-      {/* SELETOR DE PERFIL E SESSÃO SEGURA */}
-      <div className="seletor-perfil-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          {perfilAtivo === 'dona_app' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-              <span style={{ background: '#f3e8ff', color: '#7e22ce', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #d8b4fe' }}>
-                👑 Dona do App (Master)
-              </span>
-              <select
-                className="select-perfil-header"
-                value={supermercadoAtual}
-                onChange={(e) => {
-                  const lojaSel = listaSupermercados.find((l) => l.id === e.target.value);
-                  if (lojaSel) alternarLojaAtiva(lojaSel);
-                }}
-                style={{ fontSize: '0.82rem', padding: '4px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff' }}
-                title="Alternar visualização de loja como Dono do App"
+      {/* SELETOR DE PERFIL E SESSÃO SEGURA (DESKTOP) / BARRA DE PESQUISA (CELULAR) */}
+      <div className="seletor-perfil-bar">
+        {/* CONTEÚDO NO DESKTOP: Perfil Dona do App / Loja / Logout (RETIRADO NO CELULAR) */}
+        <div className="perfil-conteudo-desktop">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {perfilAtivo === 'dona_app' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <span style={{ background: '#f3e8ff', color: '#7e22ce', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #d8b4fe' }}>
+                  👑 Dona do App (Master)
+                </span>
+                <select
+                  className="select-perfil-header"
+                  value={supermercadoAtual}
+                  onChange={(e) => {
+                    const lojaSel = listaSupermercados.find((l) => l.id === e.target.value);
+                    if (lojaSel) alternarLojaAtiva(lojaSel);
+                  }}
+                  style={{ fontSize: '0.82rem', padding: '4px 8px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff' }}
+                  title="Alternar visualização de loja como Dono do App"
+                >
+                  {listaSupermercados.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      🏪 {l.nome} {l.status === 'bloqueado' ? '🚫 [BLOQUEADA]' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {perfilAtivo === 'admin_loja' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ background: '#dcfce7', color: '#15803d', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #86efac' }}>
+                  🏢 Gerência / Dono: {nomeSupermercadoAtivo}
+                </span>
+              </div>
+            )}
+
+            {perfilAtivo === 'caixa' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #7dd3fc' }}>
+                  🛒 {opAtualLogado ? `${opAtualLogado.nome} (${opAtualLogado.cargo})` : 'Operador de Caixa'} • {nomeSupermercadoAtivo}
+                </span>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                background: '#f1f5f9',
+                color: '#334155',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                padding: '4px 8px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '3px',
+              }}
+              title="Sair da sessão ou alternar usuário com login seguro"
+            >
+              <span>🚪</span>
+              <span>Trocar / Sair</span>
+            </button>
+          </div>
+        </div>
+
+        {/* CONTEÚDO NO CELULAR: BARRA DE PESQUISA DEDICADA EM DESTAQUE NO LUGAR DO SELETOR DE PERFIL */}
+        <div className="busca-container-mobile">
+          <div className="campo-busca-mobile-wrapper">
+            <span className="icone-lupa-busca-mobile">🔍</span>
+            <input
+              type="search"
+              id="busca-mobile"
+              name="search_query_mobile"
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              className="input-busca-mobile-destaque"
+              placeholder="Buscar produto no estoque..."
+              value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
+              onChange={(e) => {
+                const v = e.target.value;
+                setBusca(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+              }}
+            />
+            {busca && (
+              <button
+                type="button"
+                className="btn-limpar-busca-mobile"
+                onClick={() => setBusca('')}
+                title="Limpar busca"
               >
-                {listaSupermercados.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    🏪 {l.nome} {l.status === 'bloqueado' ? '🚫 [BLOQUEADA]' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {perfilAtivo === 'admin_loja' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ background: '#dcfce7', color: '#15803d', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #86efac' }}>
-                🏢 Gerência / Dono: {nomeSupermercadoAtivo}
-              </span>
-            </div>
-          )}
-
-          {perfilAtivo === 'caixa' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #7dd3fc' }}>
-                🛒 {opAtualLogado ? `${opAtualLogado.nome} (${opAtualLogado.cargo})` : 'Operador de Caixa'} • {nomeSupermercadoAtivo}
-              </span>
-            </div>
-          )}
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            style={{
-              background: '#f1f5f9',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              borderRadius: '6px',
-              padding: '4px 8px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '3px',
-            }}
-            title="Sair da sessão ou alternar usuário com login seguro"
-          >
-            <span>🚪</span>
-            <span>Trocar / Sair</span>
-          </button>
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

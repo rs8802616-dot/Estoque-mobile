@@ -1926,6 +1926,24 @@
 /* OTIMIZAÇÃO MOBILE: CABEÇALHO LIMPO E DELIVERY FULLSCREEN */
 /* ======================================================== */
 
+.perfil-conteudo-desktop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.busca-container-mobile {
+    display: none;
+    width: 100%;
+}
+
+.input-busca-desktop {
+    display: block;
+}
+
 /* No celular: exibir apenas os ícones nos botões do cabeçalho */
 @media (max-width: 639px) {
     .btn-com-codigo-header .texto-btn-header,
@@ -1941,13 +1959,77 @@
     }
 }
 
-/* No celular: ocultar botões de Delivery, Painel Aberto e Relatórios do cabeçalho */
-/* (Eles permanecem acessíveis no menu de 3 traços ☰) */
+/* No celular: ocultar botões de Delivery, Painel Aberto, Relatórios e perfil/loja do cabeçalho */
+/* E colocar a barra de pesquisa em destaque no lugar do seletor de perfil */
 @media (max-width: 767px) {
     .btn-delivery-header,
     .btn-coluna-delivery,
-    .btn-relatorios-header {
+    .btn-relatorios-header,
+    .input-busca-desktop,
+    .perfil-conteudo-desktop {
         display: none !important;
+    }
+
+    .busca-container-mobile {
+        display: block !important;
+        width: 100%;
+        padding: 2px 0;
+    }
+
+    .seletor-perfil-bar {
+        padding: 8px 12px !important;
+        background: #FAF7F2 !important;
+        border-bottom: 1.5px solid #E2E8F0 !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    .campo-busca-mobile-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    .icone-lupa-busca-mobile {
+        position: absolute;
+        left: 12px;
+        font-size: 0.95rem;
+        color: #64748b;
+        pointer-events: none;
+    }
+
+    .input-busca-mobile-destaque {
+        width: 100% !important;
+        padding: 9px 36px 9px 38px !important;
+        border-radius: 10px !important;
+        border: 1.5px solid #cbd5e1 !important;
+        background: #ffffff !important;
+        font-size: 14px !important;
+        color: #0f172a !important;
+        outline: none !important;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+        box-sizing: border-box !important;
+    }
+
+    .input-busca-mobile-destaque:focus {
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+    }
+
+    .btn-limpar-busca-mobile {
+        position: absolute;
+        right: 10px;
+        background: #e2e8f0;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #475569;
+        cursor: pointer;
     }
 }
 
