@@ -1944,18 +1944,77 @@
     display: block;
 }
 
-/* No celular: exibir apenas os ícones nos botões do cabeçalho */
-@media (max-width: 639px) {
-    .btn-com-codigo-header .texto-btn-header,
-    .btn-sem-codigo-header .texto-btn-header,
-    .btn-carrinho-header .texto-carrinho-header {
+/* No celular: manter os nomes nos botões e organizar com harmonia e alinhamento */
+@media (max-width: 767px) {
+    .cabecalho {
+        padding: 6px 10px !important;
+    }
+
+    .container-cabecalho {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+
+    .barra-acoes {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex: 1 !important;
+        justify-content: flex-end !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+
+    .barra-acoes::-webkit-scrollbar {
         display: none !important;
     }
+
     .btn-com-codigo-header,
     .btn-sem-codigo-header,
     .btn-carrinho-header {
-        padding: 7px 9px !important;
-        gap: 0 !important;
+        height: 35px !important;
+        padding: 6px 9px !important;
+        font-size: 0.76rem !important;
+        font-weight: 700 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        border-radius: 8px !important;
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    .btn-com-codigo-header .texto-btn-header,
+    .btn-sem-codigo-header .texto-btn-header,
+    .btn-carrinho-header .texto-carrinho-header {
+        display: inline !important;
+        font-size: 0.76rem !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+    }
+
+    .btn-notif,
+    .btn-cam {
+        width: 35px !important;
+        height: 35px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+        font-size: 0.95rem !important;
+        border-radius: 8px !important;
+    }
+
+    .btn-menu {
+        width: 35px !important;
+        height: 35px !important;
+        flex-shrink: 0 !important;
     }
 }
 
