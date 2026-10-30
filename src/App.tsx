@@ -6004,7 +6004,7 @@ export default function App() {
                     fontSize: '0.82rem',
                     padding: '7px 10px',
                     whiteSpace: 'nowrap',
-                    gap: '4px',
+                    gap: '6px',
                     borderRadius: '8px',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
                     display: 'inline-flex',
@@ -6016,10 +6016,14 @@ export default function App() {
                   onClick={() => {
                     abrirCadastro('estoque', 'interno');
                   }}
-                  title="Cadastrar Produto sem Código de Barras"
+                  title="Cadastrar Produto sem Código de Barras (Balcão)"
                 >
-                  <span style={{ fontSize: '0.95rem' }}>✨</span>
-                  <span className="texto-btn-header">Sem Código</span>
+                  <img
+                    src="/icons/icone-balcao.png"
+                    alt="Balcão"
+                    style={{ width: '16px', height: '16px', objectFit: 'contain' }}
+                  />
+                  <span className="texto-btn-header">+ Balcão</span>
                 </button>
               </>
             )}
@@ -7490,7 +7494,12 @@ export default function App() {
                   transition: 'all 0.15s ease',
                 }}
               >
-                🍢 Balcão & Adega ({countInternos})
+                <img
+                  src="/icons/icone-balcao.png"
+                  alt="Balcão"
+                  style={{ width: '15px', height: '15px', objectFit: 'contain', verticalAlign: 'middle', marginRight: '5px' }}
+                />
+                Balcão & Adega ({countInternos})
               </button>
 
               <button

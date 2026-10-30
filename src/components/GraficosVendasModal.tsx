@@ -9,6 +9,8 @@ import {
   CartesianGrid,
   AreaChart,
   Area,
+  LineChart,
+  Line,
   Legend,
   Cell,
   PieChart,
@@ -976,6 +978,482 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   const faturamentoTotalGeral = vendasValidas.reduce((acc, v) => acc + (Number(v.valorTotal) || 0), 0);
   const totalEstornosGeral = vendasEstornadas.reduce((acc, v) => acc + (Number(v.valorTotal) || 0), 0);
 
+  // --- INÍCIO: CÁLCULOS DO NOVO PAINEL DE INTELIGÊNCIA & GRÁFICOS (Imagens 2, 3, 4 e 5) ---
+  const [periodoFiltro, setPeriodoFiltro] = useState<'hoje' | '7dias' | '30dias' | 'ano' | 'custom'>('7dias');
+  const [tipoVisualizacaoCurva, setTipoVisualizacaoCurva] = useState<'area' | 'barras' | 'linha'>('area');
+  const [metricaTop, setMetricaTop] = useState<'faturamento' | 'quantidade'>('faturamento');
+  const [filtroCategoriaTop, setFiltroCategoriaTop] = useState<string>('todas');
+  const [buscaTabela, setBuscaTabela] = useState<string>('');
+  const [hoveredTopIdx, setHoveredTopIdx] = useState<number | null>(null);
+  const [copiadoFeedback, setCopiadoFeedback] = useState<boolean>(false);
+
+  // Datas padrão para filtro
+  const hojeObj = useMemo(() => new Date(), []);
+  const hojeIsoStr = useMemo(() => hojeObj.toISOString().slice(0, 10), [hojeObj]);
+  const seteDiasAtrasIsoStr = useMemo(() => {
+    const d = new Date(hojeObj);
+    d.setDate(d.getDate() - 6);
+    return d.toISOString().slice(0, 10);
+  }, [hojeObj]);
+
+  const [dataInicioCustom, setDataInicioCustom] = useState<string>(seteDiasAtrasIsoStr);
+  const [dataFimCustom, setDataFimCustom] = useState<string>(hojeIsoStr);
+
+  // Intervalo do período ativo
+  const { dataInicioObj, dataFimObj, periodoLabel } = useMemo(() => {
+    const agora = new Date();
+    let inicio = new Date();
+    let fim = new Date();
+    let label = 'últimos 7 dias';
+
+    if (periodoFiltro === 'hoje') {
+      inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0, 0);
+      fim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+      label = 'hoje';
+    } else if (periodoFiltro === '7dias') {
+      const d = new Date(agora);
+      d.setDate(d.getDate() - 6);
+      inicio = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+      fim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+      label = 'últimos 7 dias';
+    } else if (periodoFiltro === '30dias') {
+      const d = new Date(agora);
+      d.setDate(d.getDate() - 29);
+      inicio = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+      fim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+      label = 'últimos 30 dias';
+    } else if (periodoFiltro === 'ano') {
+      inicio = new Date(agora.getFullYear(), 0, 1, 0, 0, 0, 0);
+      fim = new Date(agora.getFullYear(), 11, 31, 23, 59, 59, 999);
+      label = `ano de ${agora.getFullYear()}`;
+    } else {
+      const pIni = (dataInicioCustom || '').split('-');
+      const pFim = (dataFimCustom || '').split('-');
+      if (pIni.length === 3 && pFim.length === 3) {
+        inicio = new Date(parseInt(pIni[0]), parseInt(pIni[1]) - 1, parseInt(pIni[2]), 0, 0, 0, 0);
+        fim = new Date(parseInt(pFim[0]), parseInt(pFim[1]) - 1, parseInt(pFim[2]), 23, 59, 59, 999);
+        label = `${pIni[2]}/${pIni[1]} até ${pFim[2]}/${pFim[1]}`;
+      }
+    }
+
+    return { dataInicioObj: inicio, dataFimObj: fim, periodoLabel: label };
+  }, [periodoFiltro, dataInicioCustom, dataFimCustom]);
+
+  // Vendas do período atual e do período anterior equivalente
+  const { vendasPainel, faturamentoTotal, faturamentoAnterior, variacaoPercentual } = useMemo(() => {
+    const tIni = dataInicioObj.getTime();
+    const tFim = dataFimObj.getTime();
+    const duracaoMs = tFim - tIni;
+    const tIniAnt = tIni - duracaoMs;
+    const tFimAnt = tIni - 1;
+
+    let fatAtual = 0;
+    let fatAnt = 0;
+    const listaAtual: Venda[] = [];
+
+    vendasValidas.forEach((v) => {
+      const dt = parseDataVenda(v);
+      const ms = dt.getTime();
+      const val = Number(v.valorTotal) || 0;
+      if (ms >= tIni && ms <= tFim) {
+        listaAtual.push(v);
+        fatAtual += val;
+      } else if (ms >= tIniAnt && ms <= tFimAnt) {
+        fatAnt += val;
+      }
+    });
+
+    let varPct = 0;
+    if (fatAnt > 0) {
+      varPct = ((fatAtual - fatAnt) / fatAnt) * 100;
+    } else if (fatAtual > 0) {
+      varPct = 100;
+    }
+
+    return {
+      vendasPainel: listaAtual,
+      faturamentoTotal: fatAtual,
+      faturamentoAnterior: fatAnt,
+      variacaoPercentual: varPct,
+    };
+  }, [vendasValidas, dataInicioObj, dataFimObj]);
+
+  const volumePedidos = vendasPainel.length;
+  const ticketMedio = volumePedidos > 0 ? faturamentoTotal / volumePedidos : 0;
+
+  // Função para inferir / resolver categoria de forma robusta
+  const obterCategoriaItem = (codigo: string, nome: string): string => {
+    const normNome = (nome || '').toLowerCase();
+    const est = estoque.find((e) => e.codigo === codigo || (e.nome && e.nome.toLowerCase() === normNome));
+    if (est && est.categoria && est.categoria.trim() && est.categoria !== 'Geral') {
+      return est.categoria.trim();
+    }
+    const cat = catalogoGlobal.find((c) => c.codigo === codigo || (c.nome && c.nome.toLowerCase() === normNome));
+    if (cat && cat.categoria && cat.categoria.trim() && cat.categoria !== 'Geral') {
+      return cat.categoria.trim();
+    }
+    if (normNome.includes('pizza')) return 'Pizzas';
+    if (
+      normNome.includes('chopp') ||
+      normNome.includes('cerveja') ||
+      normNome.includes('refrigerante') ||
+      normNome.includes('coca') ||
+      normNome.includes('suco') ||
+      normNome.includes('vinho') ||
+      normNome.includes('whisky') ||
+      normNome.includes('bebida') ||
+      normNome.includes('água') ||
+      normNome.includes('agua') ||
+      normNome.includes('long neck')
+    ) return 'Bebidas';
+    if (
+      normNome.includes('batata') ||
+      normNome.includes('porção') ||
+      normNome.includes('porcao') ||
+      normNome.includes('espeto') ||
+      normNome.includes('espetinho') ||
+      normNome.includes('tábua') ||
+      normNome.includes('tabua') ||
+      normNome.includes('mandioca') ||
+      normNome.includes('pastel') ||
+      normNome.includes('calabresa')
+    ) return 'Porções & Entradas';
+    if (
+      normNome.includes('burger') ||
+      normNome.includes('hambúrguer') ||
+      normNome.includes('lanche') ||
+      normNome.includes('sanduíche') ||
+      normNome.includes('artesanal') ||
+      normNome.includes('misto')
+    ) return 'Lanches';
+    if (
+      normNome.includes('sorvete') ||
+      normNome.includes('sobremesa') ||
+      normNome.includes('petit') ||
+      normNome.includes('açai') ||
+      normNome.includes('acai') ||
+      normNome.includes('doce') ||
+      normNome.includes('pudim') ||
+      normNome.includes('torta')
+    ) return 'Sobremesas';
+    if (normNome.includes('café') || normNome.includes('cafe') || normNome.includes('expresso') || normNome.includes('cappuccino')) return 'Cafés';
+    return 'Geral';
+  };
+
+  const mapaCoresCategorias: Record<string, string> = {
+    'Pizzas': '#ef4444',
+    'Bebidas': '#3b82f6',
+    'Porções & Entradas': '#22c55e',
+    'Porções': '#22c55e',
+    'Sobremesas': '#f97316',
+    'Lanches': '#8b5cf6',
+    'Cafés': '#78350f',
+    'Adega': '#ec4899',
+    'Balcão': '#eab308',
+    'Geral': '#64748b',
+    'Diversos': '#64748b',
+  };
+
+  // Itens agregados do período
+  const itensAgregados = useMemo(() => {
+    const mapa: Record<string, {
+      codigo: string;
+      nome: string;
+      categoria: string;
+      qtdVendida: number;
+      faturamentoTotal: number;
+      precoMedio: number;
+      porcentagemTotal: number;
+    }> = {};
+
+    vendasPainel.forEach((v) => {
+      (v.itens || []).forEach((it) => {
+        const key = it.codigo || it.nome;
+        if (!mapa[key]) {
+          const cat = obterCategoriaItem(it.codigo, it.nome);
+          mapa[key] = {
+            codigo: it.codigo,
+            nome: it.nome,
+            categoria: cat,
+            qtdVendida: 0,
+            faturamentoTotal: 0,
+            precoMedio: it.preco_unitario || 0,
+            porcentagemTotal: 0,
+          };
+        }
+        mapa[key].qtdVendida += (it.quantidade || 0);
+        mapa[key].faturamentoTotal += (it.subtotal || ((it.quantidade || 0) * (it.preco_unitario || 0)));
+      });
+    });
+
+    const lista = Object.values(mapa).map((item) => ({
+      ...item,
+      precoMedio: item.qtdVendida > 0 ? item.faturamentoTotal / item.qtdVendida : item.precoMedio,
+      porcentagemTotal: faturamentoTotal > 0 ? (item.faturamentoTotal / faturamentoTotal) * 100 : 0,
+    }));
+
+    lista.sort((a, b) => b.faturamentoTotal - a.faturamentoTotal);
+    return lista;
+  }, [vendasPainel, faturamentoTotal, estoque, catalogoGlobal]);
+
+  const itemMaisVendido = itensAgregados[0] || null;
+
+  // Curva de Vendas por Período
+  const dadosCurvaVendas = useMemo(() => {
+    const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    if (periodoFiltro === '7dias') {
+      const pontos: { label: string; faturamento: number; pedidos: number }[] = [];
+      const inicio = new Date(dataInicioObj);
+      for (let i = 0; i < 7; i++) {
+        const cur = new Date(inicio);
+        cur.setDate(inicio.getDate() + i);
+        const isoDia = cur.toISOString().slice(0, 10);
+        const diaNome = diasSemana[cur.getDay()];
+
+        let fat = 0;
+        let ped = 0;
+        vendasPainel.forEach((v) => {
+          const dt = parseDataVenda(v);
+          if (dt.toISOString().slice(0, 10) === isoDia) {
+            fat += Number(v.valorTotal) || 0;
+            ped += 1;
+          }
+        });
+        pontos.push({ label: diaNome, faturamento: fat, pedidos: ped });
+      }
+      return pontos;
+    }
+
+    if (periodoFiltro === 'hoje') {
+      const horas = ['10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h'];
+      return horas.map((hStr) => {
+        const hNum = parseInt(hStr, 10);
+        let fat = 0;
+        let ped = 0;
+        vendasPainel.forEach((v) => {
+          const dt = parseDataVenda(v);
+          if (dt.getHours() === hNum) {
+            fat += Number(v.valorTotal) || 0;
+            ped += 1;
+          }
+        });
+        return { label: hStr, faturamento: fat, pedidos: ped };
+      });
+    }
+
+    if (periodoFiltro === 'ano') {
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      return meses.map((mes, idx) => {
+        let fat = 0;
+        let ped = 0;
+        vendasPainel.forEach((v) => {
+          const dt = parseDataVenda(v);
+          if (dt.getMonth() === idx) {
+            fat += Number(v.valorTotal) || 0;
+            ped += 1;
+          }
+        });
+        return { label: mes, faturamento: fat, pedidos: ped };
+      });
+    }
+
+    // 30 dias ou custom
+    const mapaDias: Record<string, { label: string; faturamento: number; pedidos: number }> = {};
+    const tIni = dataInicioObj.getTime();
+    const tFim = dataFimObj.getTime();
+    const diaMs = 24 * 60 * 60 * 1000;
+    const numDias = Math.min(31, Math.max(1, Math.round((tFim - tIni) / diaMs)));
+
+    for (let i = 0; i < numDias; i++) {
+      const d = new Date(tIni + i * diaMs);
+      const iso = d.toISOString().slice(0, 10);
+      const parts = iso.split('-');
+      const label = `${parts[2]}/${parts[1]}`;
+      mapaDias[iso] = { label, faturamento: 0, pedidos: 0 };
+    }
+
+    vendasPainel.forEach((v) => {
+      const dt = parseDataVenda(v);
+      const iso = dt.toISOString().slice(0, 10);
+      if (mapaDias[iso]) {
+        mapaDias[iso].faturamento += Number(v.valorTotal) || 0;
+        mapaDias[iso].pedidos += 1;
+      }
+    });
+
+    return Object.values(mapaDias);
+  }, [periodoFiltro, dataInicioObj, dataFimObj, vendasPainel]);
+
+  // Categorias para Donut
+  const dadosCategorias = useMemo(() => {
+    const mapa: Record<string, number> = {};
+    vendasPainel.forEach((v) => {
+      (v.itens || []).forEach((it) => {
+        const cat = obterCategoriaItem(it.codigo, it.nome);
+        const sub = it.subtotal || ((it.quantidade || 0) * (it.preco_unitario || 0));
+        mapa[cat] = (mapa[cat] || 0) + sub;
+      });
+    });
+
+    const totalCat = Object.values(mapa).reduce((a, b) => a + b, 0);
+
+    const lista = Object.entries(mapa).map(([nome, valor]) => ({
+      nome,
+      valor,
+      porcentagem: totalCat > 0 ? Math.round((valor / totalCat) * 100) : 0,
+      cor: mapaCoresCategorias[nome] || '#64748b',
+    }));
+
+    lista.sort((a, b) => b.valor - a.valor);
+    return lista;
+  }, [vendasPainel, estoque, catalogoGlobal]);
+
+  // Horários de Pico Cozinha & Salão
+  const dadosHorariosPico = useMemo(() => {
+    const faixas = [
+      { label: '18h-19h', inicioH: 18, fimH: 19 },
+      { label: '19h-20h', inicioH: 19, fimH: 20 },
+      { label: '20h-21h', inicioH: 20, fimH: 21 },
+      { label: '21h-22h', inicioH: 21, fimH: 22 },
+      { label: '22h-23h', inicioH: 22, fimH: 23 },
+      { label: '23h+', inicioH: 23, fimH: 24 },
+    ];
+
+    const contagem = faixas.map((f) => {
+      let pedidos = 0;
+      vendasPainel.forEach((v) => {
+        const dt = parseDataVenda(v);
+        const h = dt.getHours();
+        if (f.fimH === 24 ? h >= 23 : h >= f.inicioH && h < f.fimH) {
+          pedidos += 1;
+        }
+      });
+      return { faixa: f.label, pedidos };
+    });
+
+    const max = Math.max(...contagem.map((c) => c.pedidos), 0);
+    const faixaPico = contagem.find((c) => c.pedidos === max && max > 0)?.faixa || '20h - 21h30';
+
+    return { faixas: contagem, maxPedidos: max, faixaPico };
+  }, [vendasPainel]);
+
+  // Formas de Pagamento
+  const dadosFormasPagamentoPainel = useMemo(() => {
+    const formas: Record<string, { label: string; valor: number; qtd: number; cor: string; icone: string }> = {
+      pix: { label: 'PIX (Instantâneo)', valor: 0, qtd: 0, cor: '#10b981', icone: '📱' },
+      cartao_credito: { label: 'Cartão de Crédito', valor: 0, qtd: 0, cor: '#3b82f6', icone: '💳' },
+      cartao_debito: { label: 'Cartão de Débito', valor: 0, qtd: 0, cor: '#f97316', icone: '💳' },
+      dinheiro: { label: 'Dinheiro Físico', valor: 0, qtd: 0, cor: '#9ca3af', icone: '💵' },
+      outros: { label: 'Outros Meios', valor: 0, qtd: 0, cor: '#64748b', icone: '🔖' },
+    };
+
+    vendasPainel.forEach((v) => {
+      const total = Number(v.valorTotal) || 0;
+      const fNorm = (v.formaPagamento || '').toLowerCase();
+      if (fNorm.includes('pix')) {
+        formas.pix.valor += total;
+        formas.pix.qtd += 1;
+      } else if (fNorm.includes('credito') || fNorm.includes('crédito')) {
+        formas.cartao_credito.valor += total;
+        formas.cartao_credito.qtd += 1;
+      } else if (fNorm.includes('debito') || fNorm.includes('débito')) {
+        formas.cartao_debito.valor += total;
+        formas.cartao_debito.qtd += 1;
+      } else if (fNorm.includes('dinheiro')) {
+        formas.dinheiro.valor += total;
+        formas.dinheiro.qtd += 1;
+      } else {
+        formas.outros.valor += total;
+        formas.outros.qtd += 1;
+      }
+    });
+
+    const totalGeral = Object.values(formas).reduce((acc, f) => acc + f.valor, 0);
+
+    const lista = Object.values(formas)
+      .map((f) => ({
+        ...f,
+        porcentagem: totalGeral > 0 ? Math.round((f.valor / totalGeral) * 100) : 0,
+      }))
+      .filter((f) => f.valor > 0 || totalGeral === 0);
+
+    lista.sort((a, b) => b.valor - a.valor);
+
+    const lider = lista[0] || { label: 'PIX', porcentagem: 0 };
+
+    return { lista, totalGeral, lider };
+  }, [vendasPainel]);
+
+  // Categorias disponíveis para Top Produtos
+  const categoriasDisponiveisTop = useMemo(() => {
+    const cats = new Set<string>();
+    itensAgregados.forEach((it) => {
+      if (it.categoria) cats.add(it.categoria);
+    });
+    return ['Todas', ...Array.from(cats)];
+  }, [itensAgregados]);
+
+  // Top Produtos Filtrados
+  const topProdutosFiltrados = useMemo(() => {
+    let itens = [...itensAgregados];
+    if (filtroCategoriaTop !== 'todas' && filtroCategoriaTop !== 'Todas') {
+      itens = itens.filter((it) => it.categoria.toLowerCase() === filtroCategoriaTop.toLowerCase());
+    }
+    if (metricaTop === 'faturamento') {
+      itens.sort((a, b) => b.faturamentoTotal - a.faturamentoTotal);
+    } else {
+      itens.sort((a, b) => b.qtdVendida - a.qtdVendida);
+    }
+    return itens.slice(0, 8);
+  }, [itensAgregados, filtroCategoriaTop, metricaTop]);
+
+  // Tabela Analítica com Busca
+  const itensTabelaAnalitica = useMemo(() => {
+    const q = buscaTabela.toLowerCase().trim();
+    if (!q) return itensAgregados;
+    return itensAgregados.filter(
+      (it) => it.nome.toLowerCase().includes(q) || it.categoria.toLowerCase().includes(q) || it.codigo.toLowerCase().includes(q)
+    );
+  }, [itensAgregados, buscaTabela]);
+
+  // Copiar Resumo Executivo
+  const copiarResumoExecutivo = () => {
+    const dataIniFormatada = dataInicioObj.toLocaleDateString('pt-BR');
+    const dataFimFormatada = dataFimObj.toLocaleDateString('pt-BR');
+
+    const top3 = itensAgregados.slice(0, 3).map((it, idx) => `${idx + 1}. ${it.nome}: ${it.qtdVendida} un (R$ ${it.faturamentoTotal.toFixed(2).replace('.', ',')})`).join('\n');
+
+    const formas = dadosFormasPagamentoPainel.lista.map((f) => `- ${f.label}: ${f.porcentagem}% (R$ ${f.valor.toFixed(2).replace('.', ',')})`).join('\n');
+
+    const texto = `📊 *PAINEL DE INTELIGÊNCIA & GRÁFICOS DE VENDAS*
+🏪 Loja: ${nomeLoja}
+📅 Período: ${dataIniFormatada} até ${dataFimFormatada} (${periodoLabel})
+
+💰 *FATURAMENTO TOTAL:* R$ ${faturamentoTotal.toFixed(2).replace('.', ',')} (${variacaoPercentual >= 0 ? '+' : ''}${variacaoPercentual.toFixed(1)}% vs período anterior)
+📦 *VOLUME DE PEDIDOS:* ${volumePedidos} pedidos
+🎯 *TICKET MÉDIO:* R$ ${ticketMedio.toFixed(2).replace('.', ',')}
+⭐ *MAIS VENDIDO:* ${itemMaisVendido ? `${itemMaisVendido.nome} (${itemMaisVendido.qtdVendida} un - R$ ${itemMaisVendido.faturamentoTotal.toFixed(2).replace('.', ',')})` : 'Nenhum'}
+
+💳 *FORMAS DE PAGAMENTO:*
+${formas || '- Nenhuma venda registrada'}
+
+🍴 *TOP PRODUTOS DO CARDÁPIO:*
+${top3 || '- Nenhum produto vendido'}
+
+⏰ *HORÁRIO DE PICO:* ${dadosHorariosPico.faixaPico} (${dadosHorariosPico.maxPedidos} pedidos)
+`;
+
+    try {
+      navigator.clipboard.writeText(texto);
+      setCopiadoFeedback(true);
+      setTimeout(() => setCopiadoFeedback(false), 2500);
+    } catch (err) {
+      console.error('Erro ao copiar resumo:', err);
+    }
+  };
+  // --- FIM DOS CÁLCULOS DO NOVO PAINEL ---
+
   // Return null if not visible AFTER all hooks
   if (!visivel) return null;
 
@@ -1023,17 +1501,17 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
             padding: '7px 12px',
             borderRadius: '8px',
             border: 'none',
-            fontWeight: 600,
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'grafico' ? '#0284c7' : '#f1f5f9',
+            background: abaAtiva === 'grafico' ? '#111827' : '#f1f5f9',
             color: abaAtiva === 'grafico' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'grafico' ? '0 2px 4px rgba(2, 132, 199, 0.25)' : 'none',
+            boxShadow: abaAtiva === 'grafico' ? '0 2px 4px rgba(17, 24, 39, 0.25)' : 'none',
           }}
           onClick={() => setAbaAtiva('grafico')}
         >
-          📊 Faturamento & Lucro Real
+          📊 Painel de Inteligência & Gráficos
         </button>
 
         <button
@@ -1147,448 +1625,1131 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
       {/* CORPO COM ROLAGEM */}
       <div className="corpo-relatorio-cheio" style={{ gap: '14px', display: 'flex', flexDirection: 'column', paddingBottom: '24px', overflowX: 'hidden' }}>
-        {/* CARD MASTER EM DESTAQUE: VALOR VENDIDO RETIRANDO O CUSTO (MANTENDO SÓ COM O LUCRO) */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #064e3b 0%, #065f46 60%, #047857 100%)',
-            borderRadius: '12px',
-            padding: '14px 16px',
-            color: '#ffffff',
-            boxShadow: '0 4px 12px rgba(6, 78, 59, 0.25)',
-            border: '1px solid #059669',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px' }}>
-            <div
-              style={{
-                fontSize: '2rem',
-                background: 'rgba(255, 255, 255, 0.16)',
-                width: '48px',
-                height: '48px',
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              💰
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    color: '#a7f3d0',
-                    fontWeight: 800,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  Lucro Real das Vendas (Só o Lucro)
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 800,
-                    color: '#064e3b',
-                    background: '#a7f3d0',
-                    padding: '1px 6px',
-                    borderRadius: '10px',
-                  }}
-                >
-                  +{totaisFinanceirosVendas.margemLucroReal.toFixed(1)}%
-                </span>
-              </div>
-              <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#ffffff', lineHeight: 1.15, marginTop: '2px' }}>
-                R$ {totaisFinanceirosVendas.lucroRealFaturado.toFixed(2).replace('.', ',')}
-              </div>
-              <div style={{ fontSize: '0.74rem', color: '#d1fae5', marginTop: '2px' }}>
-                Valor vendido retirando o valor de custo das mercadorias
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                textAlign: 'center',
-                minWidth: '95px',
-              }}
-            >
-              <span style={{ fontSize: '0.68rem', color: '#a7f3d0', display: 'block', fontWeight: 700 }}>
-                💵 Valor Vendido
-              </span>
-              <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
-                R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
-              </b>
-            </div>
-
-            <div
-              style={{
-                background: 'rgba(220, 38, 38, 0.3)',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: '1px solid rgba(248, 113, 113, 0.4)',
-                textAlign: 'center',
-                minWidth: '95px',
-              }}
-            >
-              <span style={{ fontSize: '0.68rem', color: '#fca5a5', display: 'block', fontWeight: 700 }}>
-                🏷️ (-) Custo Retirado
-              </span>
-              <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
-                - R$ {totaisFinanceirosVendas.custoTotalVendido.toFixed(2).replace('.', ',')}
-              </b>
-            </div>
-
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.12)',
-                padding: '6px 12px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                textAlign: 'center',
-                minWidth: '95px',
-              }}
-            >
-              <span style={{ fontSize: '0.68rem', color: '#a7f3d0', display: 'block', fontWeight: 700 }}>
-                📦 Itens Faturados
-              </span>
-              <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
-                {totaisFinanceirosVendas.totalItensVendidos} un ({totaisFinanceirosVendas.totalVendasQtd} vendas)
-              </b>
-            </div>
-          </div>
-        </div>
-
-        {/* ABA 1: GRÁFICOS DE FATURAMENTO & LUCRO */}
-        {abaAtiva === 'grafico' && (
-          <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            {/* CARDS KPIS DE FATURAMENTO E LUCRO REAL */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px' }}>
-              {/* 1. Quantidade de Vendas & Volume */}
-              <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Vendas Concluídas
-                </div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
-                  {totaisFinanceirosVendas.totalVendasQtd} <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#16a34a' }}>vendas</span>
-                </div>
-                <div style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, marginTop: '3px' }}>
-                  📦 <b>{totaisFinanceirosVendas.totalItensVendidos}</b> un. faturadas
-                </div>
-              </div>
-
-              {/* 2. Valor Total Vendido (Receita Bruta) */}
-              <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.74rem', color: '#0369a1', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Receita Bruta (Vendas)
-                </div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0284c7', marginTop: '2px' }}>
-                  R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '3px' }}>
-                  Total movimentado no caixa
-                </div>
-              </div>
-
-              {/* 3. Custo das Mercadorias Retirado (CMV) */}
-              <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '10px', border: '1px solid #fed7aa', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.74rem', color: '#9a3412', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Custo dos Produtos (CMV)
-                </div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#c2410c', marginTop: '2px' }}>
-                  R$ {totaisFinanceirosVendas.custoTotalVendido.toFixed(2).replace('.', ',')}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#7c2d12', marginTop: '3px' }}>
-                  Valor retirado para repor estoque
-                </div>
-              </div>
-
-              {/* 4. VALOR DAS VENDAS SÓ COM O LUCRO (LUCRO REAL) */}
+                {/* CARD MASTER EM DESTAQUE (Apenas em outras abas para manter o painel executivo 100% fiel às imagens) */}
+        {abaAtiva !== 'grafico' && (
+          <div
+            style={{
+              background: 'linear-gradient(135deg, #064e3b 0%, #065f46 60%, #047857 100%)',
+              borderRadius: '12px',
+              padding: '14px 16px',
+              color: '#ffffff',
+              boxShadow: '0 4px 12px rgba(6, 78, 59, 0.25)',
+              border: '1px solid #059669',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '12px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px' }}>
               <div
                 style={{
-                  background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                  padding: '12px 14px',
-                  borderRadius: '10px',
-                  border: '2px solid #86efac',
-                  boxShadow: '0 2px 6px rgba(22, 163, 74, 0.12)',
+                  fontSize: '2rem',
+                  background: 'rgba(255, 255, 255, 0.16)',
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: '0.74rem', color: '#166534', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    💰 Só com o Lucro
-                  </div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#15803d', background: '#ffffff', padding: '1px 6px', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                💰
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span
+                    style={{
+                      fontSize: '0.72rem',
+                      color: '#a7f3d0',
+                      fontWeight: 800,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    Lucro Real das Vendas (Só o Lucro)
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      color: '#064e3b',
+                      background: '#a7f3d0',
+                      padding: '1px 6px',
+                      borderRadius: '10px',
+                    }}
+                  >
                     +{totaisFinanceirosVendas.margemLucroReal.toFixed(1)}%
                   </span>
                 </div>
-                <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#15803d', marginTop: '2px' }}>
+                <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#ffffff', lineHeight: 1.15, marginTop: '2px' }}>
                   R$ {totaisFinanceirosVendas.lucroRealFaturado.toFixed(2).replace('.', ',')}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: 600, marginTop: '3px' }}>
-                  Ganho líquido (Vendido - Custo)
+                <div style={{ fontSize: '0.74rem', color: '#d1fae5', marginTop: '2px' }}>
+                  Valor vendido retirando o valor de custo das mercadorias
                 </div>
               </div>
             </div>
 
-            {/* CONTROLES E SELETORES */}
-            <div className="painel-filtros-grafico" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                <div className="grupo-filtro-periodo" style={{ flex: 1, minWidth: '220px' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>Período:</span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', width: '100%' }}>
-                    {(['dia', 'semana', 'mes', 'ano'] as const).map((p) => (
-                      <button
-                        key={p}
-                        style={{
-                          padding: '7px 4px',
-                          borderRadius: '6px',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '0.78rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          textAlign: 'center',
-                          whiteSpace: 'nowrap',
-                          background: periodoGrafico === p ? '#0284c7' : '#ffffff',
-                          color: periodoGrafico === p ? '#ffffff' : '#334155',
-                        }}
-                        onClick={() => setPeriodoGrafico(p)}
-                      >
-                        {p === 'dia' && 'Por Dia'}
-                        {p === 'semana' && 'Por Sem.'}
-                        {p === 'mes' && 'Por Mês'}
-                        {p === 'ano' && 'Por Ano'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grupo-filtro-vis" style={{ minWidth: '150px' }}>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>Visualização:</span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px', width: '100%' }}>
-                    <button
-                      style={{
-                        padding: '7px 8px',
-                        borderRadius: '6px',
-                        border: '1px solid #cbd5e1',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        whiteSpace: 'nowrap',
-                        background: tipoGrafico === 'area' ? '#e0f2fe' : '#ffffff',
-                        color: tipoGrafico === 'area' ? '#0369a1' : '#475569',
-                      }}
-                      onClick={() => setTipoGrafico('area')}
-                    >
-                      📈 Área
-                    </button>
-                    <button
-                      style={{
-                        padding: '7px 8px',
-                        borderRadius: '6px',
-                        border: '1px solid #cbd5e1',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                        whiteSpace: 'nowrap',
-                        background: tipoGrafico === 'barras' ? '#e0f2fe' : '#ffffff',
-                        color: tipoGrafico === 'barras' ? '#0369a1' : '#475569',
-                      }}
-                      onClick={() => setTipoGrafico('barras')}
-                    >
-                      📊 Colunas
-                    </button>
-                  </div>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  textAlign: 'center',
+                  minWidth: '95px',
+                }}
+              >
+                <span style={{ fontSize: '0.68rem', color: '#a7f3d0', display: 'block', fontWeight: 700 }}>
+                  💵 Valor Vendido
+                </span>
+                <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
+                  R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
+                </b>
               </div>
 
-              {/* SELETOR DE MÉTRICA: LUCRO REAL VS FATURAMENTO BRUTO */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', paddingTop: '4px', borderTop: '1px solid #f1f5f9' }}>
-                <span style={{ fontSize: '0.8rem', color: '#475569', fontWeight: 700 }}>Exibir no Gráfico:</span>
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  <button
-                    style={{
-                      padding: '5px 10px',
-                      borderRadius: '6px',
-                      border: metricaGrafico === 'lucro_e_faturamento' ? '2px solid #059669' : '1px solid #cbd5e1',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      background: metricaGrafico === 'lucro_e_faturamento' ? '#f0fdf4' : '#ffffff',
-                      color: metricaGrafico === 'lucro_e_faturamento' ? '#15803d' : '#475569',
-                    }}
-                    onClick={() => setMetricaGrafico('lucro_e_faturamento')}
-                  >
-                    💰 Lucro Real & Faturamento
-                  </button>
-                  <button
-                    style={{
-                      padding: '5px 10px',
-                      borderRadius: '6px',
-                      border: metricaGrafico === 'so_lucro' ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      background: metricaGrafico === 'so_lucro' ? '#16a34a' : '#ffffff',
-                      color: metricaGrafico === 'so_lucro' ? '#ffffff' : '#475569',
-                    }}
-                    onClick={() => setMetricaGrafico('so_lucro')}
-                  >
-                    💵 Só o Lucro (Vendas - Custo)
-                  </button>
-                  <button
-                    style={{
-                      padding: '5px 10px',
-                      borderRadius: '6px',
-                      border: metricaGrafico === 'faturamento' ? '2px solid #0284c7' : '1px solid #cbd5e1',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      background: metricaGrafico === 'faturamento' ? '#0284c7' : '#ffffff',
-                      color: metricaGrafico === 'faturamento' ? '#ffffff' : '#475569',
-                    }}
-                    onClick={() => setMetricaGrafico('faturamento')}
-                  >
-                    📊 Só Faturamento Bruto
-                  </button>
-                </div>
+              <div
+                style={{
+                  background: 'rgba(220, 38, 38, 0.3)',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(248, 113, 113, 0.4)',
+                  textAlign: 'center',
+                  minWidth: '95px',
+                }}
+              >
+                <span style={{ fontSize: '0.68rem', color: '#fca5a5', display: 'block', fontWeight: 700 }}>
+                  🏷️ (-) Custo Retirado
+                </span>
+                <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
+                  - R$ {totaisFinanceirosVendas.custoTotalVendido.toFixed(2).replace('.', ',')}
+                </b>
+              </div>
+
+              <div
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  textAlign: 'center',
+                  minWidth: '95px',
+                }}
+              >
+                <span style={{ fontSize: '0.68rem', color: '#a7f3d0', display: 'block', fontWeight: 700 }}>
+                  📦 Itens Faturados
+                </span>
+                <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
+                  {totaisFinanceirosVendas.totalItensVendidos} un ({totaisFinanceirosVendas.totalVendasQtd} vendas)
+                </b>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* CONTAINER DO GRÁFICO PRINCIPAL */}
+        {/* ABA PRINCIPAL: NOVO PAINEL DE INTELIGÊNCIA & GRÁFICOS (IMAGENS 2, 3, 4 e 5) */}
+        {abaAtiva === 'grafico' && (
+          <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+            
+            {/* CONTAINER 1: CABEÇALHO DO PAINEL DE INTELIGÊNCIA COM FILTROS E AÇÕES (IMAGEM 2) */}
             <div
-              className="card-grafico-container"
               style={{
                 background: '#ffffff',
-                padding: '14px 10px',
-                borderRadius: '12px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                minHeight: '300px',
+                border: '1px solid #111827',
+                borderRadius: '8px',
+                padding: '14px 18px',
                 display: 'flex',
-                flexDirection: 'column',
-                boxSizing: 'border-box',
-                minWidth: 0,
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-                <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                  Evolução de Vendas & Lucro Real — Vista por {periodoGrafico.toUpperCase()}
-                </h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <div style={{ fontSize: '0.82rem', color: '#16a34a', fontWeight: 800, background: '#f0fdf4', padding: '4px 10px', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                    💰 Só com o Lucro: R$ {totaisFinanceirosVendas.lucroRealFaturado.toFixed(2).replace('.', ',')}
-                  </div>
-                  <div style={{ fontSize: '0.82rem', color: '#0284c7', fontWeight: 700, background: '#f0f9ff', padding: '4px 8px', borderRadius: '8px', border: '1px solid #bae6fd' }}>
-                    Vendido: R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
-                  </div>
+              <div>
+                <h1
+                  style={{
+                    margin: 0,
+                    fontSize: '1rem',
+                    fontWeight: 900,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#0f172a',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  <span
+                    style={{
+                      background: '#111827',
+                      color: '#ffffff',
+                      borderRadius: '4px',
+                      padding: '2px 5px',
+                      fontSize: '0.85rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    📊
+                  </span>
+                  PAINEL DE INTELIGÊNCIA & GRÁFICOS DE VENDAS
+                </h1>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: '#64748b' }}>
+                  Visualização interativa Recharts de faturamento por período, curva de demanda e ranking de itens mais pedidos.
+                </p>
+              </div>
+
+              {/* FILTROS E AÇÕES (DIREITA) */}
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                {/* Seletor de Data Manual */}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    border: '1px solid #111827',
+                    borderRadius: '4px',
+                    padding: '3px 8px',
+                    background: '#ffffff',
+                    fontSize: '0.76rem',
+                  }}
+                >
+                  <input
+                    type="date"
+                    value={dataInicioCustom}
+                    onChange={(e) => {
+                      setDataInicioCustom(e.target.value);
+                      setPeriodoFiltro('custom');
+                    }}
+                    style={{ border: 'none', fontSize: '0.76rem', fontWeight: 600, color: '#0f172a', outline: 'none', background: 'transparent' }}
+                  />
+                  <span style={{ color: '#64748b' }}>até</span>
+                  <input
+                    type="date"
+                    value={dataFimCustom}
+                    onChange={(e) => {
+                      setDataFimCustom(e.target.value);
+                      setPeriodoFiltro('custom');
+                    }}
+                    style={{ border: 'none', fontSize: '0.76rem', fontWeight: 600, color: '#0f172a', outline: 'none', background: 'transparent' }}
+                  />
+                  <button
+                    style={{
+                      border: 'none',
+                      background: '#f1f5f9',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      color: '#0f172a',
+                    }}
+                    onClick={() => setPeriodoFiltro('custom')}
+                  >
+                    FILTRAR
+                  </button>
+                </div>
+
+                {/* Períodos Rápidos */}
+                <div style={{ display: 'inline-flex', border: '1px solid #111827', borderRadius: '4px', overflow: 'hidden' }}>
+                  {[
+                    { id: 'hoje', label: 'Hoje' },
+                    { id: '7dias', label: '7 Dias' },
+                    { id: '30dias', label: '30 Dias' },
+                    { id: 'ano', label: 'Ano' },
+                  ].map((p) => {
+                    const ativo = periodoFiltro === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        style={{
+                          padding: '5px 12px',
+                          border: 'none',
+                          borderRight: '1px solid #111827',
+                          fontSize: '0.76rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          background: ativo ? '#111827' : '#ffffff',
+                          color: ativo ? '#ffffff' : '#111827',
+                          transition: 'all 0.15s ease',
+                        }}
+                        onClick={() => {
+                          setPeriodoFiltro(p.id as any);
+                          if (p.id === 'hoje') {
+                            setDataInicioCustom(hojeIsoStr);
+                            setDataFimCustom(hojeIsoStr);
+                          } else if (p.id === '7dias') {
+                            setDataInicioCustom(seteDiasAtrasIsoStr);
+                            setDataFimCustom(hojeIsoStr);
+                          }
+                        }}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Copiar Resumo */}
+                <button
+                  style={{
+                    background: copiadoFeedback ? '#16a34a' : '#111827',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '6px 14px',
+                    fontSize: '0.76rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'background 0.2s ease',
+                  }}
+                  onClick={copiarResumoExecutivo}
+                >
+                  {copiadoFeedback ? '✓ COPIADO!' : '📥 COPIAR RESUMO'}
+                </button>
+              </div>
+            </div>
+
+            {/* CONTAINER 2: 4 CARDS KPIS (IMAGEM 2) */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                gap: '12px',
+              }}
+            >
+              {/* 1. FATURAMENTO TOTAL */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    FATURAMENTO TOTAL
+                  </span>
+                  <span style={{ color: '#10b981', fontWeight: 900, fontSize: '0.95rem' }}>$</span>
+                </div>
+                <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0f172a', margin: '6px 0 2px 0' }}>
+                  R$ {faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: variacaoPercentual >= 0 ? '#16a34a' : '#dc2626' }}>
+                  {variacaoPercentual >= 0 ? '↗ +' : '↘ '}{variacaoPercentual.toFixed(1)}% vs período anterior
                 </div>
               </div>
 
-              <div style={{ width: '100%', height: 270, minHeight: 270, minWidth: 0 }}>
-                {dadosGraficoFaturamento.length === 0 ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b', fontSize: '0.85rem' }}>
-                    Nenhum dado registrado para o período selecionado.
+              {/* 2. VOLUME DE PEDIDOS */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    VOLUME DE PEDIDOS
+                  </span>
+                  <span style={{ color: '#3b82f6', fontWeight: 900, fontSize: '0.95rem' }}>📅</span>
+                </div>
+                <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0f172a', margin: '6px 0 2px 0' }}>
+                  {volumePedidos} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>pedidos</span>
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>
+                  100% comanda eletrônica
+                </div>
+              </div>
+
+              {/* 3. TICKET MÉDIO */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    TICKET MÉDIO
+                  </span>
+                  <span style={{ color: '#f59e0b', fontWeight: 900, fontSize: '0.95rem' }}>🎖️</span>
+                </div>
+                <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0f172a', margin: '6px 0 2px 0' }}>
+                  R$ {ticketMedio.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#475569', fontWeight: 600 }}>
+                  {ticketMedio >= 50 ? 'Meta superada (> R$ 50,00)' : 'Média por comanda'}
+                </div>
+              </div>
+
+              {/* 4. MAIS VENDIDO */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    MAIS VENDIDO
+                  </span>
+                  <span style={{ color: '#ef4444', fontWeight: 900, fontSize: '0.95rem' }}>✨</span>
+                </div>
+                <div
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 900,
+                    color: '#0f172a',
+                    margin: '6px 0 2px 0',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={itemMaisVendido ? itemMaisVendido.nome : 'Sem vendas'}
+                >
+                  {itemMaisVendido ? itemMaisVendido.nome : 'Nenhum item'}
+                </div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#ef4444' }}>
+                  {itemMaisVendido
+                    ? `${itemMaisVendido.qtdVendida} un (R$ ${itemMaisVendido.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`
+                    : 'Sem vendas'}
+                </div>
+              </div>
+            </div>
+
+            {/* CONTAINER 3: CURVA DE VENDAS POR PERÍODO (IMAGEM 2) */}
+            <div
+              style={{
+                background: '#ffffff',
+                border: '1px solid #111827',
+                borderRadius: '8px',
+                padding: '16px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ color: '#ef4444' }}>📈</span> CURVA DE VENDAS POR PERÍODO
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
+                    Faturamento consolidado ({periodoLabel}).
+                  </p>
+                </div>
+
+                {/* Toggle: Área / Barras / Linha */}
+                <div style={{ display: 'inline-flex', border: '1px solid #111827', borderRadius: '4px', overflow: 'hidden' }}>
+                  {(['area', 'barras', 'linha'] as const).map((tipo) => {
+                    const ativo = tipoVisualizacaoCurva === tipo;
+                    const label = tipo === 'area' ? 'Área' : tipo === 'barras' ? 'Barras' : 'Linha';
+                    return (
+                      <button
+                        key={tipo}
+                        style={{
+                          padding: '4px 12px',
+                          border: 'none',
+                          borderRight: tipo !== 'linha' ? '1px solid #111827' : 'none',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          background: ativo ? '#111827' : '#ffffff',
+                          color: ativo ? '#ffffff' : '#111827',
+                          transition: 'all 0.15s ease',
+                        }}
+                        onClick={() => setTipoVisualizacaoCurva(tipo)}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Gráfico Recharts */}
+              <div style={{ width: '100%', height: 260, position: 'relative' }}>
+                <ResponsiveContainer width="100%" height="100%" key={`curva_${chartKey}_${tipoVisualizacaoCurva}`}>
+                  {tipoVisualizacaoCurva === 'area' ? (
+                    <AreaChart data={dadosCurvaVendas} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
+                      <defs>
+                        <linearGradient id="corFaturamentoRed" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0.0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="label" stroke="#475569" fontSize={11} tickLine={false} />
+                      <YAxis
+                        stroke="#475569"
+                        fontSize={11}
+                        tickLine={false}
+                        tickFormatter={(val) => `R$ ${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
+                      />
+                      <Tooltip
+                        formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
+                        labelFormatter={(lbl) => `Período: ${lbl}`}
+                        contentStyle={{ background: '#111827', color: '#ffffff', borderRadius: '6px', border: 'none', fontSize: '0.8rem' }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="faturamento"
+                        stroke="#ef4444"
+                        strokeWidth={2.8}
+                        fillOpacity={1}
+                        fill="url(#corFaturamentoRed)"
+                        dot={{ r: 3, fill: '#ef4444', strokeWidth: 1, stroke: '#ffffff' }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </AreaChart>
+                  ) : tipoVisualizacaoCurva === 'barras' ? (
+                    <BarChart data={dadosCurvaVendas} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="label" stroke="#475569" fontSize={11} tickLine={false} />
+                      <YAxis
+                        stroke="#475569"
+                        fontSize={11}
+                        tickLine={false}
+                        tickFormatter={(val) => `R$ ${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
+                      />
+                      <Tooltip
+                        formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
+                        contentStyle={{ background: '#111827', color: '#ffffff', borderRadius: '6px', border: 'none', fontSize: '0.8rem' }}
+                      />
+                      <Bar dataKey="faturamento" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  ) : (
+                    <LineChart data={dadosCurvaVendas} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="label" stroke="#475569" fontSize={11} tickLine={false} />
+                      <YAxis
+                        stroke="#475569"
+                        fontSize={11}
+                        tickLine={false}
+                        tickFormatter={(val) => `R$ ${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
+                      />
+                      <Tooltip
+                        formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
+                        contentStyle={{ background: '#111827', color: '#ffffff', borderRadius: '6px', border: 'none', fontSize: '0.8rem' }}
+                      />
+                      <Line type="monotone" dataKey="faturamento" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, fill: '#ef4444' }} />
+                    </LineChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+
+              {/* Legenda centralizada */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.74rem', color: '#ef4444', fontWeight: 700 }}>
+                <span>--o--</span> <span>Faturamento (R$)</span>
+              </div>
+            </div>
+
+            {/* CONTAINER 4: LINHA DO MEIO: TOP PRODUTOS E CATEGORIAS (IMAGEM 3) */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '14px',
+              }}
+            >
+              {/* ESQUERDA: TOP PRODUTOS MAIS VENDIDOS */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>🍴</span> TOP PRODUTOS MAIS VENDIDOS
+                    </h3>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                      Classificação por volume de vendas e faturamento gerado.
+                    </p>
                   </div>
-                ) : (
-                  <ResponsiveContainer key={`fat-${chartKey}-${periodoGrafico}-${tipoGrafico}-${metricaGrafico}`} width="100%" height={270} minWidth={100} minHeight={270}>
-                    {tipoGrafico === 'area' ? (
-                      <AreaChart data={dadosGraficoFaturamento} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
-                        <defs>
-                          <linearGradient id="colorFaturamento" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#0284c7" stopOpacity={0.7} />
-                            <stop offset="95%" stopColor="#0284c7" stopOpacity={0.05} />
-                          </linearGradient>
-                          <linearGradient id="colorLucro" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#16a34a" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#16a34a" stopOpacity={0.1} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis dataKey="label" stroke="#64748b" fontSize={10} tickLine={false} interval={0} tick={{ fontSize: 10, fill: '#64748b' }} dy={4} />
-                        <YAxis stroke="#64748b" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#64748b' }} />
-                        <Tooltip
-                          formatter={(val: any, name: any) => [
-                            `R$ ${Number(val).toFixed(2).replace('.', ',')}`,
-                            name === 'lucro'
-                              ? '💰 Lucro Real (Só o Lucro)'
-                              : name === 'faturamento'
-                              ? '💵 Valor Total Vendido'
-                              : '🏷️ Custo dos Produtos',
-                          ]}
-                          labelFormatter={(lbl) => `Período: ${lbl}`}
-                          contentStyle={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.8rem', padding: '6px 10px' }}
-                          wrapperStyle={{ zIndex: 1000 }}
-                        />
-                        <Legend wrapperStyle={{ fontSize: '0.78rem', paddingTop: '6px' }} />
-                        {(metricaGrafico === 'lucro_e_faturamento' || metricaGrafico === 'faturamento') && (
-                          <Area
-                            type="monotone"
-                            dataKey="faturamento"
-                            stroke="#0284c7"
-                            strokeWidth={2}
-                            dot={{ r: 2.5, fill: '#0284c7' }}
-                            fillOpacity={1}
-                            fill="url(#colorFaturamento)"
-                            name="Valor Vendido (R$)"
+                  <div style={{ display: 'inline-flex', border: '1px solid #111827', borderRadius: '4px', overflow: 'hidden' }}>
+                    <button
+                      style={{
+                        padding: '4px 10px',
+                        border: 'none',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: metricaTop === 'faturamento' ? '#111827' : '#ffffff',
+                        color: metricaTop === 'faturamento' ? '#ffffff' : '#111827',
+                      }}
+                      onClick={() => setMetricaTop('faturamento')}
+                    >
+                      Faturamento (R$)
+                    </button>
+                    <button
+                      style={{
+                        padding: '4px 10px',
+                        border: 'none',
+                        borderLeft: '1px solid #111827',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: metricaTop === 'quantidade' ? '#111827' : '#ffffff',
+                        color: metricaTop === 'quantidade' ? '#ffffff' : '#111827',
+                      }}
+                      onClick={() => setMetricaTop('quantidade')}
+                    >
+                      Qtd Vendida (un)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filtro por Categoria Pills */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginRight: '4px' }}>
+                    CATEGORIA:
+                  </span>
+                  {categoriasDisponiveisTop.map((catNome) => {
+                    const ativa = filtroCategoriaTop.toLowerCase() === catNome.toLowerCase();
+                    const count = catNome === 'Todas'
+                      ? itensAgregados.length
+                      : itensAgregados.filter((i) => i.categoria.toLowerCase() === catNome.toLowerCase()).length;
+                    return (
+                      <button
+                        key={catNome}
+                        style={{
+                          padding: '3px 10px',
+                          borderRadius: '16px',
+                          border: ativa ? 'none' : '1px solid #cbd5e1',
+                          background: ativa ? '#dc2626' : '#ffffff',
+                          color: ativa ? '#ffffff' : '#334155',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          boxShadow: ativa ? '0 1px 3px rgba(220, 38, 38, 0.3)' : 'none',
+                        }}
+                        onClick={() => setFiltroCategoriaTop(catNome)}
+                      >
+                        {catNome} {count > 0 ? `(${count})` : ''}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Barras Horizontais com Tooltip escuro */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '6px', position: 'relative' }}>
+                  {topProdutosFiltrados.map((item, idx) => {
+                    const valor = metricaTop === 'faturamento' ? item.faturamentoTotal : item.qtdVendida;
+                    const maxValor = topProdutosFiltrados[0]
+                      ? (metricaTop === 'faturamento' ? topProdutosFiltrados[0].faturamentoTotal : topProdutosFiltrados[0].qtdVendida)
+                      : 1;
+                    const pct = maxValor > 0 ? (valor / maxValor) * 100 : 0;
+                    const corBarra = mapaCoresCategorias[item.categoria] || '#ef4444';
+                    const isHovered = hoveredTopIdx === idx;
+
+                    return (
+                      <div
+                        key={idx}
+                        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative' }}
+                        onMouseEnter={() => setHoveredTopIdx(idx)}
+                        onMouseLeave={() => setHoveredTopIdx(null)}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: '#1e293b' }}>
+                          <span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                            {item.nome}
+                          </span>
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                            {metricaTop === 'faturamento'
+                              ? `R$ ${item.faturamentoTotal.toFixed(2).replace('.', ',')}`
+                              : `${item.qtdVendida} un`}
+                          </span>
+                        </div>
+                        <div style={{ position: 'relative', width: '100%', height: '22px', background: '#f8fafc', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                          <div
+                            style={{
+                              width: `${Math.max(pct, 2)}%`,
+                              height: '100%',
+                              background: corBarra,
+                              borderRadius: '3px',
+                              border: '1px solid rgba(0,0,0,0.15)',
+                              transition: 'width 0.4s ease',
+                            }}
                           />
+                        </div>
+
+                        {/* Tooltip escuro ao passar o mouse / tocar */}
+                        {isHovered && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '-10px',
+                              left: '20px',
+                              zIndex: 100,
+                              background: '#18181b',
+                              color: '#ffffff',
+                              border: '1px solid #3f3f46',
+                              borderRadius: '6px',
+                              padding: '10px 14px',
+                              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
+                              pointerEvents: 'none',
+                              minWidth: '220px',
+                            }}
+                          >
+                            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#f59e0b', marginBottom: '6px' }}>
+                              {item.nome}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
+                              <span>Qtd Vendida:</span>
+                              <b style={{ color: '#ffffff' }}>{item.qtdVendida} unidades</b>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
+                              <span>Faturamento:</span>
+                              <b style={{ color: '#4ade80' }}>R$ {item.faturamentoTotal.toFixed(2).replace('.', ',')}</b>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
+                              <span>Preço Médio:</span>
+                              <b style={{ color: '#ffffff' }}>R$ {item.precoMedio.toFixed(2).replace('.', ',')}</b>
+                            </div>
+                          </div>
                         )}
-                        {(metricaGrafico === 'lucro_e_faturamento' || metricaGrafico === 'so_lucro') && (
-                          <Area
-                            type="monotone"
-                            dataKey="lucro"
-                            stroke="#15803d"
-                            strokeWidth={2.8}
-                            dot={{ r: 3.5, fill: '#15803d', stroke: '#ffffff', strokeWidth: 1.5 }}
-                            activeDot={{ r: 6 }}
-                            fillOpacity={1}
-                            fill="url(#colorLucro)"
-                            name="Lucro Real (Só o Lucro R$)"
-                          />
-                        )}
-                      </AreaChart>
-                    ) : (
-                      <BarChart data={dadosGraficoFaturamento} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis dataKey="label" stroke="#64748b" fontSize={10} tickLine={false} interval={0} tick={{ fontSize: 10, fill: '#64748b' }} dy={4} />
-                        <YAxis stroke="#64748b" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#64748b' }} />
-                        <Tooltip
-                          formatter={(val: any, name: any) => [
-                            `R$ ${Number(val).toFixed(2).replace('.', ',')}`,
-                            name === 'lucro'
-                              ? '💰 Lucro Real (Só o Lucro)'
-                              : name === 'faturamento'
-                              ? '💵 Valor Total Vendido'
-                              : '🏷️ Custo dos Produtos',
-                          ]}
-                          labelFormatter={(lbl) => `Período: ${lbl}`}
-                          contentStyle={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.8rem', padding: '6px 10px' }}
-                          wrapperStyle={{ zIndex: 1000 }}
-                        />
-                        <Legend wrapperStyle={{ fontSize: '0.78rem', paddingTop: '6px' }} />
-                        {(metricaGrafico === 'lucro_e_faturamento' || metricaGrafico === 'faturamento') && (
-                          <Bar dataKey="faturamento" fill="#0284c7" radius={[4, 4, 0, 0]} name="Valor Vendido (R$)" />
-                        )}
-                        {(metricaGrafico === 'lucro_e_faturamento' || metricaGrafico === 'so_lucro') && (
-                          <Bar dataKey="lucro" fill="#16a34a" radius={[4, 4, 0, 0]} name="Lucro Real (Só o Lucro R$)" />
-                        )}
-                      </BarChart>
-                    )}
+                      </div>
+                    );
+                  })}
+                  {topProdutosFiltrados.length === 0 && (
+                    <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '16px', textAlign: 'center' }}>
+                      Nenhum produto vendido nesta categoria.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* DIREITA: VENDAS POR CATEGORIA (DONUT CHART) */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                  <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>🕒</span> VENDAS POR CATEGORIA
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                    Participação de cada categoria no faturamento total.
+                  </p>
+                </div>
+
+                {/* Donut Chart com texto central */}
+                <div style={{ width: '100%', height: 190, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={dadosCategorias}
+                        dataKey="valor"
+                        nameKey="nome"
+                        innerRadius={55}
+                        outerRadius={80}
+                        paddingAngle={2}
+                      >
+                        {dadosCategorias.map((c, i) => (
+                          <Cell key={i} fill={c.cor} stroke="#ffffff" strokeWidth={1.5} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
+                        contentStyle={{ background: '#111827', color: '#ffffff', borderRadius: '6px', border: 'none', fontSize: '0.78rem' }}
+                      />
+                    </PieChart>
                   </ResponsiveContainer>
-                )}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px' }}>TOTAL MIX</div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 900, color: '#0f172a' }}>
+                      R$ {faturamentoTotal.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Lista da Legenda com % e R$ */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                  {dadosCategorias.map((cat, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ width: '10px', height: '10px', background: cat.cor, borderRadius: '2px', display: 'inline-block' }} />
+                        <span style={{ color: '#1e293b', fontWeight: 600 }}>{cat.nome}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', color: '#475569' }}>
+                        <span style={{ fontWeight: 700, color: '#0f172a' }}>{cat.porcentagem}%</span>
+                        <span style={{ color: '#64748b' }}>
+                          R$ {cat.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {dadosCategorias.length === 0 && (
+                    <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '12px', textAlign: 'center' }}>
+                      Nenhuma categoria registrada.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* CONTAINER 5: LINHA DE BAIXO: HORÁRIOS DE PICO E FORMAS DE PAGAMENTO (IMAGEM 4) */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '14px',
+              }}
+            >
+              {/* ESQUERDA: HORÁRIOS DE PICO */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>🕒</span> HORÁRIOS DE PICO DA COZINHA & SALÃO
+                    </h3>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                      Distribuição de pedidos por faixa horária para planejamento de equipe e pré-preparo de massas.
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      background: '#f3e8ff',
+                      color: '#6b21a8',
+                      border: '1px solid #d8b4fe',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Pico {dadosHorariosPico.faixaPico}
+                  </span>
+                </div>
+
+                {/* Gráfico de Barras por Faixa Horária */}
+                <div style={{ width: '100%', height: 220 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={dadosHorariosPico.faixas} margin={{ top: 20, right: 15, left: -10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="faixa" stroke="#475569" fontSize={11} tickLine={false} />
+                      <YAxis stroke="#475569" fontSize={11} tickLine={false} />
+                      <Tooltip
+                        formatter={(val: any) => [`${val} pedidos`, 'Volume de Pedidos']}
+                        contentStyle={{
+                          background: '#ffffff',
+                          color: '#0f172a',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          fontSize: '0.8rem',
+                          boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                        }}
+                      />
+                      <Bar dataKey="pedidos" radius={[2, 2, 0, 0]}>
+                        {dadosHorariosPico.faixas.map((entry, index) => {
+                          let cor = '#3b82f6';
+                          if (entry.pedidos === dadosHorariosPico.maxPedidos && entry.pedidos > 0) {
+                            cor = '#dc2626'; // Pico em Vermelho
+                          } else if (entry.pedidos >= dadosHorariosPico.maxPedidos * 0.7 && entry.pedidos > 0) {
+                            cor = '#f59e0b'; // Alto em Laranja
+                          } else if (entry.pedidos === 0) {
+                            cor = '#cbd5e1'; // Zero em cinza
+                          }
+                          return <Cell key={`bar-${index}`} fill={cor} stroke="#111827" strokeWidth={1} />;
+                        })}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* DIREITA: VENDAS POR FORMA DE PAGAMENTO */}
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>💳</span> VENDAS POR FORMA DE PAGAMENTO
+                    </h3>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                      Reconciliação dos pagamentos registrados nas comandas e faturamento bruto.
+                    </p>
+                  </div>
+                  <span
+                    style={{
+                      background: '#dcfce7',
+                      color: '#15803d',
+                      border: '1px solid #86efac',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {dadosFormasPagamentoPainel.lider.label.split(' ')[0]} Lidera ({dadosFormasPagamentoPainel.lider.porcentagem}%)
+                  </span>
+                </div>
+
+                {/* Barras de progresso elegantes */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '6px' }}>
+                  {dadosFormasPagamentoPainel.lista.map((forma, idx) => (
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
+                        <span style={{ fontWeight: 600, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>{forma.icone}</span>
+                          <span>{forma.label}</span>
+                        </span>
+                        <span style={{ color: '#475569', fontWeight: 700, fontSize: '0.8rem' }}>
+                          <span style={{ marginRight: '8px' }}>{forma.porcentagem}%</span>
+                          <span style={{ color: '#0f172a' }}>
+                            R$ {forma.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </span>
+                      </div>
+                      <div style={{ width: '100%', height: '10px', background: '#e2e8f0', borderRadius: '2px', border: '1px solid #111827', overflow: 'hidden' }}>
+                        <div
+                          style={{
+                            width: `${Math.min(100, Math.max(forma.porcentagem, 1))}%`,
+                            height: '100%',
+                            background: forma.cor,
+                            transition: 'width 0.4s ease',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {dadosFormasPagamentoPainel.lista.length === 0 && (
+                    <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '12px', textAlign: 'center' }}>
+                      Nenhum pagamento registrado no período.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* CONTAINER 6: TABELA ANALÍTICA DE PERFORMANCE DE CARDÁPIO (IMAGEM 5) */}
+            <div
+              style={{
+                background: '#ffffff',
+                border: '1px solid #111827',
+                borderRadius: '8px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', textTransform: 'uppercase' }}>
+                    TABELA ANALÍTICA DE PERFORMANCE DE CARDÁPIO
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                    Auditoria de faturamento individual por item com ordenação decrescente de vendas.
+                  </p>
+                </div>
+
+                {/* Campo de Busca */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '4px',
+                    padding: '4px 10px',
+                    background: '#ffffff',
+                    minWidth: '220px',
+                  }}
+                >
+                  <span style={{ fontSize: '0.8rem', color: '#64748b' }}>🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Buscar item no ranking..."
+                    value={buscaTabela}
+                    onChange={(e) => setBuscaTabela(e.target.value)}
+                    style={{
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: '0.78rem',
+                      width: '100%',
+                      color: '#0f172a',
+                    }}
+                  />
+                  {buscaTabela && (
+                    <button
+                      onClick={() => setBuscaTabela('')}
+                      style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '0.75rem', color: '#94a3b8' }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Tabela Formatada Estilo Imagem 5 */}
+              <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '4px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
+                  <thead>
+                    <tr style={{ background: '#111827', color: '#ffffff', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      <th style={{ padding: '10px 12px', width: '60px' }}>RANK</th>
+                      <th style={{ padding: '10px 12px' }}>PRODUTO / SABOR</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'center' }}>CATEGORIA</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>PREÇO MÉDIO</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'center' }}>QTD VENDIDA</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>FATURAMENTO TOTAL</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>% DO TOTAL</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itensTabelaAnalitica.map((item, index) => {
+                      const rank = index + 1;
+                      const bgRank = rank === 1 ? '#f59e0b' : rank === 2 ? '#94a3b8' : rank === 3 ? '#b45309' : '#f1f5f9';
+                      const corTextoRank = rank <= 3 ? '#ffffff' : '#475569';
+                      const corBordaCat = mapaCoresCategorias[item.categoria] || '#94a3b8';
+
+                      return (
+                        <tr
+                          key={`${item.codigo}_${index}`}
+                          style={{
+                            borderBottom: '1px solid #f1f5f9',
+                            background: index % 2 === 0 ? '#ffffff' : '#fafafa',
+                          }}
+                        >
+                          <td style={{ padding: '10px 12px' }}>
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '22px',
+                                height: '22px',
+                                background: bgRank,
+                                color: corTextoRank,
+                                borderRadius: '4px',
+                                fontWeight: 800,
+                                fontSize: '0.75rem',
+                              }}
+                            >
+                              {rank}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px 12px', fontWeight: 600, color: '#0f172a' }}>
+                            {item.nome}
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'center' }}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                                fontSize: '0.68rem',
+                                fontWeight: 700,
+                                textTransform: 'uppercase',
+                                color: corBordaCat,
+                                border: `1px solid ${corBordaCat}`,
+                                background: `${corBordaCat}15`,
+                              }}
+                            >
+                              {item.categoria}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'right', color: '#475569' }}>
+                            R$ {item.precoMedio.toFixed(2).replace('.', ',')}
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'center', fontWeight: 600, color: '#1e293b' }}>
+                            {item.qtdVendida} un
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 800, color: '#059669' }}>
+                            R$ {item.faturamentoTotal.toFixed(2).replace('.', ',')}
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end', minWidth: '70px' }}>
+                              <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#334155' }}>
+                                {item.porcentagemTotal.toFixed(1)}%
+                              </span>
+                              <div style={{ width: '40px', height: '5px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ width: `${Math.min(100, Math.max(item.porcentagemTotal * 2.5, 3))}%`, height: '100%', background: '#ef4444' }} />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {itensTabelaAnalitica.length === 0 && (
+                      <tr>
+                        <td colSpan={7} style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
+                          Nenhum item localizado no cardápio para o período.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
