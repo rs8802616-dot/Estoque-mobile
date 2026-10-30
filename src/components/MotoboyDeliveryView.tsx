@@ -9,7 +9,6 @@ import {
   Check,
   CheckCircle2,
   DollarSign,
-  UtensilsCrossed,
   ChevronRight,
   ArrowRight,
   ShieldCheck,
@@ -443,9 +442,8 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
         {/* CARD 4: ITENS DO PEDIDO */}
         <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-2.5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black text-purple-700 tracking-wider uppercase flex items-center gap-1.5">
-              <UtensilsCrossed className="w-4 h-4" />
-              <span>ITENS DO PEDIDO ({pedido.itens.length})</span>
+            <span className="text-xs font-black text-purple-700 tracking-wider uppercase">
+              ITENS DO PEDIDO ({pedido.itens.length})
             </span>
             <span className="text-[11px] text-slate-400 font-semibold">
               Ver detalhes &gt;
@@ -456,17 +454,14 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
             {pedido.itens.map((it, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between text-xs p-2 rounded-xl bg-slate-50 border border-slate-100"
+                className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50 border border-slate-100"
               >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs shrink-0">
-                    🍔
-                  </span>
-                  <span className="text-slate-800 font-medium truncate">
-                    <strong className="text-slate-900 mr-1">{it.quantidade}x</strong>
+                <div className="min-w-0 pr-2">
+                  <span className="text-slate-800 font-medium truncate block">
+                    <strong className="text-slate-900 mr-1.5 font-black">{it.quantidade}x</strong>
                     {it.nome}
                     {it.gelado && (
-                      <span className="ml-1 text-[9px] px-1 py-0.2 rounded bg-cyan-100 text-cyan-800">
+                      <span className="ml-1.5 text-[9px] px-1 py-0.2 rounded bg-cyan-100 text-cyan-800">
                         ❄️
                       </span>
                     )}
