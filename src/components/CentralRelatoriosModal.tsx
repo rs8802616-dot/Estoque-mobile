@@ -421,22 +421,22 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
       style={{ zIndex: 99999 }}
     >
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
+      <div className="bg-[#FAF7F2] border-2 border-stone-300 rounded-2xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
         
         {/* CABEÇALHO PRINCIPAL COM LOGO & ABAS */}
-        <div className="p-4 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 bg-[#F4EFEA] border-b border-stone-300 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
+              <h2 className="text-lg sm:text-xl font-black flex items-center gap-2 text-slate-900">
                 Central de Relatórios & Desempenho
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
                   {nomeLoja || 'Loja Principal'}
                 </span>
               </h2>
-              <p className="text-xs text-[#9CA3AF]">
+              <p className="text-xs text-stone-600 font-medium">
                 Faturamento real, histórico de vendas, estoque, lote e métricas do Delivery em um único lugar
               </p>
             </div>
@@ -444,20 +444,20 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
           <button
             onClick={onFechar}
-            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition border border-slate-200"
+            className="p-2 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 hover:text-stone-900 transition border border-stone-300"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* NAVEGAÇÃO ENTRE ABAS */}
-        <div className="flex border-b border-slate-200 bg-slate-100/70 overflow-x-auto px-4 gap-2 pt-2 scrollbar-none">
+        <div className="flex border-b border-stone-300 bg-[#EFECE6] overflow-x-auto px-4 gap-2 pt-2 scrollbar-none">
           <button
             onClick={() => setAbaAtiva('faturamento')}
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'faturamento'
                 ? 'bg-[#141414] text-white border-2 border-[#292524] rounded-t-lg shadow-[2px_2px_0px_#292524] font-bold'
-                : 'bg-white text-[#141414] border-2 border-[#292524] rounded-t-lg hover:bg-slate-100'
+                : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
             <TrendingUp className="w-4 h-4" />
@@ -469,7 +469,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'vendas'
                 ? 'bg-[#141414] text-white border-2 border-[#292524] rounded-t-lg shadow-[2px_2px_0px_#292524] font-bold'
-                : 'bg-white text-[#141414] border-2 border-[#292524] rounded-t-lg hover:bg-slate-100'
+                : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
             <Receipt className="w-4 h-4" />
@@ -481,7 +481,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'estoque'
                 ? 'bg-[#141414] text-white border-2 border-[#292524] rounded-t-lg shadow-[2px_2px_0px_#292524] font-bold'
-                : 'bg-white text-[#141414] border-2 border-[#292524] rounded-t-lg hover:bg-slate-100'
+                : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
             <Package className="w-4 h-4" />
@@ -493,7 +493,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'delivery'
                 ? 'bg-[#141414] text-white border-2 border-[#292524] rounded-t-lg shadow-[2px_2px_0px_#292524] font-bold'
-                : 'bg-white text-[#141414] border-2 border-[#292524] rounded-t-lg hover:bg-slate-100'
+                : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
             <Bike className="w-4 h-4" />
@@ -502,7 +502,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
         </div>
 
         {/* CORPO PRINCIPAL COM CONTEÚDO DA ABA */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-[#FAF7F2]">
 
           {/* ======================================================== */}
           {/* ABA 1: FATURAMENTO & LUCRO REAL                         */}
@@ -511,7 +511,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             <div className="space-y-6">
               
               {/* Barra de Filtro de Período */}
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-[#E4E3E0] p-3 rounded-xl border-2 border-[#292524] shadow-[3px_3px_0px_#292524] shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-[#EAE5DD] p-3 rounded-xl border-2 border-[#292524] shadow-[3px_3px_0px_#292524] shadow-sm">
                 <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
                   <Calendar className="w-4 h-4 text-emerald-400" />
                   <span>Filtrar período de vendas:</span>
@@ -869,7 +869,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                               </div>
                             </div>
 
-                            <div className="bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl shadow-xs">
+                            <div className="bg-[#ECFDF5] border border-emerald-300 px-3 py-1 rounded-xl shadow-xs">
                               <div className="text-[10px] text-emerald-700 font-bold uppercase">
                                 Só Lucro Real:
                               </div>
@@ -1023,33 +1023,33 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </span>
                 </div>
 
-                <div className="bg-white border border-slate-200 shadow-sm p-3.5 rounded-xl">
-                  <span className="text-xs text-slate-400">Valor em Custo:</span>
+                <div className="bg-gradient-to-br from-rose-50 to-red-100/60 border border-rose-200 shadow-sm p-3.5 rounded-xl">
+                  <span className="text-xs font-bold text-rose-800">Valor em Custo:</span>
                   <div className="text-xl font-bold text-rose-600 mt-1">
                     R$ {metricasEstoque.valorCustoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <span className="text-[11px] text-slate-400">Capital imobilizado</span>
                 </div>
 
-                <div className="bg-white border border-slate-200 shadow-sm p-3.5 rounded-xl">
-                  <span className="text-xs text-slate-400">Potencial de Venda:</span>
+                <div className="bg-gradient-to-br from-blue-50 to-sky-100/60 border border-blue-200 shadow-sm p-3.5 rounded-xl">
+                  <span className="text-xs font-bold text-blue-800">Potencial de Venda:</span>
                   <div className="text-xl font-bold text-blue-600 mt-1">
                     R$ {metricasEstoque.valorVendaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <span className="text-[11px] text-slate-400">Faturamento projetado</span>
                 </div>
 
-                <div className="bg-gradient-to-br from-emerald-950/60 to-emerald-900/30 border border-emerald-500/30 p-3.5 rounded-xl">
-                  <span className="text-xs text-emerald-700">Lucro Projetado Estoque:</span>
-                  <div className="text-xl font-bold text-emerald-400 mt-1">
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-100/80 border-2 border-emerald-300 p-3.5 rounded-xl shadow-sm">
+                  <span className="text-xs font-bold text-emerald-800">Lucro Projetado Estoque:</span>
+                  <div className="text-xl font-extrabold font-mono text-emerald-700 mt-1">
                     R$ {metricasEstoque.lucroProjetado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
-                  <span className="text-[11px] text-emerald-700/80">Se vender todos os itens</span>
+                  <span className="text-[11px] font-medium text-emerald-800/80">Se vender todos os itens</span>
                 </div>
               </div>
 
               {/* FILTROS DE ESTOQUE */}
-              <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+              <div className="bg-[#EAE5DD] border border-stone-300 shadow-sm p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
                 <div className="relative flex-1 min-w-[220px]">
                   <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
                   <input
@@ -1204,9 +1204,9 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-100/70 border border-emerald-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-emerald-400">
+                    <span className="text-xs uppercase tracking-wider font-bold text-emerald-800">
                       🏷️ Taxas de Entrega Arrecadadas
                     </span>
                     <DollarSign className="w-4 h-4 text-emerald-400" />
@@ -1219,24 +1219,24 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-100/70 border border-blue-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-blue-400">
+                    <span className="text-xs uppercase tracking-wider font-bold text-blue-800">
                       🎯 Ticket Médio Delivery
                     </span>
-                    <Percent className="w-4 h-4 text-blue-400" />
+                    <Percent className="w-4 h-4 text-blue-600" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-blue-200">
+                  <div className="text-2xl sm:text-3xl font-extrabold font-mono text-blue-600">
                     R$ {metricasDelivery.ticketMedio.toFixed(2)}
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-blue-800/80 font-medium mt-1">
                     Média por pedido despachado
                   </p>
                 </div>
 
-                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+                <div className="bg-gradient-to-br from-amber-50 to-orange-100/60 border border-amber-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-amber-400">
+                    <span className="text-xs uppercase tracking-wider font-bold text-amber-800">
                       ⏱️ Status em Tempo Real
                     </span>
                     <Clock className="w-4 h-4 text-amber-400" />
