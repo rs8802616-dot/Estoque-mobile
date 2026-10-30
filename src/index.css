@@ -1975,10 +1975,9 @@
     }
 
     .btn-com-codigo-header,
-    .btn-sem-codigo-header,
-    .btn-carrinho-header {
+    .btn-sem-codigo-header {
         height: 35px !important;
-        padding: 6px 9px !important;
+        padding: 6px 10px !important;
         font-size: 0.76rem !important;
         font-weight: 700 !important;
         display: inline-flex !important;
@@ -1990,12 +1989,27 @@
     }
 
     .btn-com-codigo-header .texto-btn-header,
-    .btn-sem-codigo-header .texto-btn-header,
-    .btn-carrinho-header .texto-carrinho-header {
+    .btn-sem-codigo-header .texto-btn-header {
         display: inline !important;
         font-size: 0.76rem !important;
         font-weight: 700 !important;
         white-space: nowrap !important;
+    }
+
+    /* Carrinho no celular: apenas o ícone 🛒 com contador, sem o texto */
+    .btn-carrinho-header .texto-carrinho-header {
+        display: none !important;
+    }
+
+    .btn-carrinho-header {
+        height: 35px !important;
+        padding: 0 10px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 8px !important;
+        flex-shrink: 0 !important;
+        gap: 3px !important;
     }
 
     .btn-notif,
