@@ -3161,8 +3161,9 @@ export default function App() {
       const stream = await obterStreamCameraOtimizado();
       mediaStreamRef.current = stream;
 
-      if (videoRef.current) {
-        await prepararVideoElement(videoRef.current, stream);
+      const videoEl = videoRef.current || (document.getElementById('video-webcam') as HTMLVideoElement);
+      if (videoEl) {
+        await prepararVideoElement(videoEl, stream);
       }
 
       let escaneou = false;
@@ -8009,7 +8010,18 @@ export default function App() {
       </div>
 
       {/* CAMERA BARCODE SCANNER & AI VISION SCREEN */}
-      <div className="leitor-tela" id="tela-leitor" style={{ display: leitorAtivo ? 'flex' : 'none', overflowY: 'auto' }}>
+      <div
+        className="leitor-tela"
+        id="tela-leitor"
+        style={{
+          display: leitorAtivo ? 'flex' : 'none',
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999999,
+          overflowY: 'auto',
+          background: '#000000',
+        }}
+      >
         {/* CABEÇALHO DO LEITOR */}
         <div style={{ textAlign: 'center', marginBottom: '10px', maxWidth: '420px', width: '100%' }}>
           {destinoLeitor === 'carrinho' ? (
@@ -8040,7 +8052,7 @@ export default function App() {
         </div>
 
         {/* FEED DA CÂMERA COM MIRA */}
-        <div id="video-container" style={{ position: 'relative', width: '100%', maxWidth: '380px', height: '240px' }}>
+        <div id="video-container" style={{ position: 'relative', width: '100%', maxWidth: '400px', height: '280px', borderRadius: '14px', overflow: 'hidden', background: '#0f172a' }}>
           <video id="video-webcam" ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }}></video>
           <div className="mira-scanner">
             <div className="linha-laser"></div>
@@ -8281,37 +8293,6 @@ export default function App() {
               <span>Ler Agora</span>
             </button>
           </div>
-
-          {/* UPLOAD DE FOTO ALTERNATIVO DA GALERIA */}
-          {destinoLeitor !== 'lote' && (
-            <label
-              style={{
-                background: 'rgba(30, 41, 59, 0.85)',
-                border: '1px dashed #64748b',
-                color: '#cbd5e1',
-                borderRadius: '8px',
-                padding: '7px 12px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                textAlign: 'center',
-              }}
-            >
-              <span>📁</span>
-              <span>Escolher Foto ou Tirar com Câmera Nativa</span>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                style={{ display: 'none' }}
-                onChange={processarArquivoFotoManual}
-              />
-            </label>
-          )}
 
           {/* BOTÃO FECHAR */}
           <button

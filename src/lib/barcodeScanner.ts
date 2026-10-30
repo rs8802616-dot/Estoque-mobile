@@ -150,45 +150,51 @@ export function criarMultiFormatReaderPuro(): MultiFormatReader {
   return reader;
 }
 
-// Solicita a câmera com parâmetros otimizados para iPhone e dispositivos móveis
+// Solicita a câmera com parâmetros otimizados e altamente compatíveis com Android e iPhone
 export async function obterStreamCameraOtimizado(
   facingMode: 'environment' | 'user' = 'environment'
 ): Promise<MediaStream> {
-  // 1. Tenta alta resolução com foco contínuo
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    throw new Error('Câmera não suportada neste navegador ou ambiente sem HTTPS.');
+  }
+
+  // 1. Tenta câmera traseira com resolução ideal (sem min rígido que falhe em celulares)
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
         facingMode: { ideal: facingMode },
-        width: { ideal: 1920, min: 1280 },
-        height: { ideal: 1080, min: 720 },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
       },
     });
     configurarTrackCamera(stream);
     return stream;
   } catch (err1) {
-    // 2. Tenta resolução padrão 1280x720
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: facingMode,
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-      configurarTrackCamera(stream);
-      return stream;
-    } catch (err2) {
-      // 3. Fallback genérico para qualquer câmera disponível
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: true,
-      });
-      configurarTrackCamera(stream);
-      return stream;
-    }
+    console.warn('Tentativa 1 getUserMedia com resolução ideal falhou, tentando modo ideal simples:', err1);
   }
+
+  // 2. Tenta apenas facingMode ideal sem constraints de dimensão
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: { ideal: facingMode },
+      },
+    });
+    configurarTrackCamera(stream);
+    return stream;
+  } catch (err2) {
+    console.warn('Tentativa 2 getUserMedia falhou, tentando fallback genérico:', err2);
+  }
+
+  // 3. Fallback genérico para qualquer câmera disponível
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: false,
+    video: true,
+  });
+  configurarTrackCamera(stream);
+  return stream;
 }
 
 // Configura foco contínuo e parâmetros do sensor

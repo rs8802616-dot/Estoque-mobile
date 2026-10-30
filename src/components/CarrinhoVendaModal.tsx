@@ -845,35 +845,8 @@ export const CarrinhoVendaModal: React.FC<CarrinhoVendaModalProps> = ({
                     textAlign: 'center',
                   }}
                 >
-                  📱 <b>Dica iPhone:</b> Distância de 15-20cm. Para códigos pequenos, use <b>Zoom 1.5x / 2x</b> ou <b>Ler Agora</b>!
+                  📱 <b>Dica:</b> Aponte a câmera a 15-20cm do código. Use <b>Zoom 1.5x / 2x</b> ou <b>Ler Agora</b> para códigos pequenos!
                 </p>
-
-                <label
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    border: '1px dashed #64748b',
-                    color: '#cbd5e1',
-                    borderRadius: '6px',
-                    padding: '4px 10px',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    marginTop: '2px',
-                  }}
-                >
-                  <span>📁</span>
-                  <span>Escanear de Foto da Galeria / Câmera Nativa</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    style={{ display: 'none' }}
-                    onChange={processarArquivoFoto}
-                  />
-                </label>
               </div>
             </div>
           )}
