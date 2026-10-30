@@ -54,14 +54,24 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
     setTimeout(() => setCopiedDeliveryLink(false), 2500);
   };
 
-  // Despacho no WhatsApp do motoboy com link de rota do Google Maps
+  // Despacho no WhatsApp do motoboy com link de rota do Google Maps e Painel Exclusivo
   const handleDespacharMotoboy = (pedido: PedidoDelivery) => {
     if (pedido.status === 'pendente' || pedido.status === 'em_separacao') {
       onAtualizarStatus(pedido.id, 'saiu_para_entrega');
     }
 
+    if (!pedido.motoboyToken) {
+      pedido.motoboyToken = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(`motoboy_pedido_${pedido.numeroPedido}`, JSON.stringify(pedido));
+      } catch {}
+    }
+    const linkMotoboy = `${window.location.origin}/?motoboy=1&pedido=${pedido.numeroPedido}&token=${pedido.motoboyToken}`;
+
     const end = pedido.enderecoEntrega;
-    const enderecoCompleto = `${end.logradouro}, ${end.numero}${end.complemento ? ' ' + end.complemento : ''}, ${end.bairro}, ${end.cidade}`;
+    const enderecoCompleto = `${end.logradouro}, ${end.numero}${end.complemento ? ' ' + end.complemento : ''}, ${end.bairro}, ${end.cidade || ''}`;
     const linkMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(enderecoCompleto)}`;
 
     const listaItens = (pedido.itens || [])
@@ -77,7 +87,8 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       `📦 *Itens a Entregar:*\n${listaItens}\n\n` +
       `💳 *Forma de Pgto:* ${pedido.formaPagamento.toUpperCase()}\n` +
       (pedido.trocoPara ? `💵 *Troco para:* R$ ${pedido.trocoPara.toFixed(2)}\n` : '') +
-      `💰 *Total a Cobrar:* R$ ${pedido.valorTotal.toFixed(2)}\n` +
+      `💰 *Total a Cobrar:* R$ ${pedido.valorTotal.toFixed(2)}\n\n` +
+      `📱 *LINK EXCLUSIVO DO ENTREGADOR (GPS & ITENS):*\n${linkMotoboy}\n\n` +
       `🔐 *PIN de Confirmação:* O cliente fornecerá o PIN de 4 dígitos no ato da entrega.`;
 
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;

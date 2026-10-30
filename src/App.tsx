@@ -75,6 +75,7 @@ import { CentralRelatoriosModal } from './components/CentralRelatoriosModal';
 import { GestaoDeliveryModal } from './components/GestaoDeliveryModal';
 import { CardapioClienteDeliveryModal } from './components/CardapioClienteDeliveryModal';
 import { CustomerDeliveryView } from './components/CustomerDeliveryView';
+import { MotoboyDeliveryView } from './components/MotoboyDeliveryView';
 import { CaixaDeliveryPanel } from './components/CaixaDeliveryPanel';
 import { CupomVendaModal } from './components/CupomVendaModal';
 import { EtiquetasModal } from './components/EtiquetasModal';
@@ -364,6 +365,14 @@ export default function App() {
     (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
   const painelParamAtivo = urlParamsAtivo?.get('painel');
   const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo);
+
+  // Detecta se a URL é a rota exclusiva do Entregador/Motoboy (?motoboy=1&pedido=209&token=...)
+  const isMotoboyRoute = Boolean(
+    urlParamsAtivo?.get('motoboy') === '1' ||
+    urlParamsAtivo?.get('motoboy') === 'true'
+  );
+  const motoboyPedidoParam = urlParamsAtivo?.get('pedido');
+  const motoboyTokenParam = urlParamsAtivo?.get('token');
 
   // Global & Store States
   const [supermercadoAtual, setSupermercadoAtual] = useState<string>(() => {
@@ -5845,6 +5854,43 @@ export default function App() {
   const isProdAtualVencido = prodAtual
     ? new Date(prodAtual.validade + 'T00:00:00').getTime() <= hoje.getTime()
     : false;
+
+  // 0. SE FOR A ROTA DO ENTREGADOR / MOTOBOY (?motoboy=1&pedido=209&token=...)
+  if (isMotoboyRoute) {
+    let pedidoMotoboy = pedidosDelivery.find(
+      (p) =>
+        (motoboyPedidoParam && String(p.numeroPedido) === String(motoboyPedidoParam)) ||
+        (motoboyTokenParam && p.motoboyToken === motoboyTokenParam)
+    );
+
+    // Se não encontrou no estado em memória (ex: motoboy abrindo em outro aparelho), tenta recuperar do localStorage
+    if (!pedidoMotoboy && typeof window !== 'undefined') {
+      try {
+        const salvo = localStorage.getItem(`motoboy_pedido_${motoboyPedidoParam}`);
+        if (salvo) pedidoMotoboy = JSON.parse(salvo);
+      } catch {}
+    }
+
+    if (!pedidoMotoboy && pedidosDelivery.length > 0) {
+      pedidoMotoboy = pedidosDelivery[0];
+    }
+
+    if (pedidoMotoboy) {
+      const lojaMotoboy =
+        listaSupermercados.find((l) => l.id === pedidoMotoboy!.lojaId) ||
+        listaSupermercados[0] ||
+        null;
+
+      return (
+        <MotoboyDeliveryView
+          pedido={pedidoMotoboy}
+          loja={lojaMotoboy}
+          onAtualizarStatus={handleAtualizarStatusPedidoDelivery}
+          onConfirmarEntregaPin={handleConfirmarEntregaPin}
+        />
+      );
+    }
+  }
 
   // 1. SE O PARÂMETRO ?loja= OU ?delivery= ESTIVER PRESENTE NA URL SEM ?painel=, RENDERIZA EXCLUSIVAMENTE O CUSTOMER DELIVERY VIEW EM TELA CHEIA (IDENTICO AO ATENDEJÁ)
   if (isModoCliente && publicLojaSlugAtivo) {

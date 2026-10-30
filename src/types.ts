@@ -517,4 +517,6 @@ export interface PedidoDelivery {
   dataFinalizacao?: string;
   horaFinalizacao?: string;
   entregadorNome?: string;
+  motoboyToken?: string;
+  chegouAoEndereco?: boolean;
 }
