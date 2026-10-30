@@ -1076,7 +1076,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   </li>
                   <li className="flex items-start gap-1.5 text-emerald-700 font-semibold pt-0.5">
                     <span>🛡️</span>
-                    <span>Expira 5 minutos após confirmada a entrega (proteção LGPD)</span>
+                    <span>Expira 3 minutos após confirmada a entrega (proteção LGPD)</span>
                   </li>
                 </ul>
               </div>

@@ -503,45 +503,49 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                   ))}
                 </div>
 
-                {/* Barra Inferior com Box TOTAL e Botões de Ação */}
-                <div className="pt-2 border-t border-[#a7f3d0]/60 flex items-center justify-between gap-1.5">
-                  {/* Caixa TOTAL estilo Mint */}
-                  <div className="bg-[#d1fae5]/80 border border-[#6ee7b7] rounded-xl px-2.5 py-1.5 flex flex-col justify-center shrink-0 min-w-[95px]">
-                    <span className="text-[9px] font-extrabold text-[#065f46] tracking-wider uppercase leading-none">
-                      TOTAL
-                    </span>
-                    <span className="text-sm sm:text-base font-black text-stone-900 font-mono tracking-tight leading-tight mt-0.5">
-                      {formatCurrency(order.valorTotal)}
-                    </span>
-                    <span className="text-[9px] text-[#065f46] font-medium leading-none mt-0.5">
-                      {order.taxaEntrega > 0 ? `(+${formatCurrency(order.taxaEntrega)} taxa)` : 'Taxa Grátis'}
-                    </span>
-                  </div>
+                {/* Barra Inferior com Box TOTAL e Botões de Ação Perfeitamente Encaixados */}
+                <div className="pt-2 border-t border-[#a7f3d0]/60 space-y-2">
+                  {/* Linha 1: Box TOTAL e Botão Imprimir */}
+                  <div className="flex items-center justify-between gap-2">
+                    {/* Caixa TOTAL estilo Mint */}
+                    <div className="bg-[#d1fae5]/80 border border-[#6ee7b7] rounded-xl px-2.5 py-1.5 flex items-baseline gap-2">
+                      <span className="text-[9px] font-extrabold text-[#065f46] tracking-wider uppercase leading-none">
+                        TOTAL
+                      </span>
+                      <span className="text-sm sm:text-base font-black text-stone-900 font-mono tracking-tight leading-tight">
+                        {formatCurrency(order.valorTotal)}
+                      </span>
+                      <span className="text-[9px] text-[#065f46] font-medium leading-none">
+                        {order.taxaEntrega > 0 ? `(+${formatCurrency(order.taxaEntrega)} taxa)` : 'Taxa Grátis'}
+                      </span>
+                    </div>
 
-                  {/* Botões de Ação da Direita (Proporcionais e sem cortes) */}
-                  <div className="flex items-center gap-1.5 shrink-0">
                     {/* Botão Imprimir */}
                     {onImprimirComanda && (
                       <button
                         type="button"
                         onClick={() => onImprimirComanda(order)}
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#6ee7b7] bg-white hover:bg-emerald-50 text-[#047857] flex items-center justify-center shadow-xs transition cursor-pointer shrink-0 active:scale-95"
+                        className="h-8 px-2.5 rounded-xl border border-[#6ee7b7] bg-white hover:bg-emerald-50 text-[#047857] flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer shrink-0 active:scale-95 text-xs font-bold"
                         title="Imprimir comanda térmica"
                       >
-                        <Printer className="w-4 h-4 text-[#047857]" />
+                        <Printer className="w-3.5 h-3.5 text-[#047857]" />
+                        <span>Imprimir</span>
                       </button>
                     )}
+                  </div>
 
+                  {/* Linha 2: Botões de Ação que ocupam 100% da largura sem nunca saltar fora do card */}
+                  <div className="flex items-center gap-1.5 w-full">
                     {/* Botão Roxo: Link Motoboy (Aparece somente após o pedido ser aceito) */}
                     {order.status !== 'pendente' && order.status !== 'entregue' && order.status !== 'cancelado' && (
                       <button
                         type="button"
                         onClick={() => setPedidoLinkMotoboy(order)}
-                        className="px-2.5 sm:px-3 py-2 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        className="flex-1 py-2 px-2 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
                         title="Abrir link exclusivo do motoboy com rota e dados da entrega"
                       >
-                        <Bike className="w-3.5 h-3.5" />
-                        <span>Link Motoboy</span>
+                        <Bike className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Link Motoboy</span>
                       </button>
                     )}
 
@@ -554,36 +558,36 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                           setPinDigitado('');
                           setErroPin('');
                         }}
-                        className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        className="flex-1 py-2 px-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
                         title="Confirmar entrega digitando o PIN de 4 dígitos do cliente"
                       >
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        <span>Confirmar Entrega</span>
+                        <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />
+                        <span className="truncate">Confirmar Entrega</span>
                       </button>
                     ) : isNovo ? (
                       <button
                         type="button"
                         onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
-                        className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        className="w-full py-2 px-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95"
                         title="Aceitar pedido e iniciar separação com baixa FEFO"
                       >
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />
                         <span>Aceitar Pedido</span>
                       </button>
                     ) : isPreparo ? (
                       <button
                         type="button"
                         onClick={() => onAtualizarStatus(order.id, isDelivery ? 'saiu_para_entrega' : 'entregue')}
-                        className="px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-sm transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
+                        className="flex-1 py-2 px-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
                         title={isDelivery ? 'Despachar entrega para o motoboy' : 'Finalizar retirada'}
                       >
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        <span>Despachar</span>
+                        <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />
+                        <span className="truncate">{isDelivery ? 'Despachar' : 'Finalizar Retirada'}</span>
                       </button>
                     ) : isEntregue ? (
-                      <span className="px-2.5 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-xl">
+                      <div className="w-full text-center py-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-xl">
                         ✓ Entregue
-                      </span>
+                      </div>
                     ) : null}
                   </div>
                 </div>
@@ -712,7 +716,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                 </li>
                 <li className="flex items-start gap-1.5 text-emerald-700 font-semibold pt-0.5">
                   <span>🛡️</span>
-                  <span>Expira 5 minutos após confirmada a entrega (proteção LGPD)</span>
+                  <span>Expira 3 minutos após confirmada a entrega (proteção LGPD)</span>
                 </li>
               </ul>
             </div>

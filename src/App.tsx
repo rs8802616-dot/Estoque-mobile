@@ -5572,13 +5572,25 @@ export default function App() {
       }
     }
 
+    const agoraTs = Date.now();
+    if (novoStatus === 'entregue') {
+      try {
+        localStorage.setItem(`motoboy_entregue_ts_${pedidoAlvo.numeroPedido}`, String(agoraTs));
+      } catch {}
+    }
+
     const novosPedidos = pedidosDelivery.map((p) => {
       if (p.id === pedidoId) {
-        return {
+        const atualizado = {
           ...p,
           status: novoStatus,
           motivoCancelamento: motivo || p.motivoCancelamento,
+          ...(novoStatus === 'entregue' ? { entregueEmTimestamp: agoraTs } : {}),
         };
+        try {
+          localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(atualizado));
+        } catch {}
+        return atualizado;
       }
       return p;
     });
@@ -5598,14 +5610,24 @@ export default function App() {
     }
 
     const agora = new Date();
+    const agoraTs = agora.getTime();
+    try {
+      localStorage.setItem(`motoboy_entregue_ts_${pedidoAlvo.numeroPedido}`, String(agoraTs));
+    } catch {}
+
     const novosPedidos = pedidosDelivery.map((p) => {
       if (p.id === pedidoId) {
-        return {
+        const atualizado = {
           ...p,
           status: 'entregue' as StatusPedidoDelivery,
           dataFinalizacao: agora.toISOString().slice(0, 10),
           horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          entregueEmTimestamp: agoraTs,
         };
+        try {
+          localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(atualizado));
+        } catch {}
+        return atualizado;
       }
       return p;
     });

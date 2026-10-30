@@ -519,4 +519,5 @@ export interface PedidoDelivery {
   entregadorNome?: string;
   motoboyToken?: string;
   chegouAoEndereco?: boolean;
+  entregueEmTimestamp?: number;
 }

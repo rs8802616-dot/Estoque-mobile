@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bike,
   Phone,
@@ -17,6 +17,9 @@ import {
   ChevronLeft,
   X,
   KeyRound,
+  Lock,
+  ShieldAlert,
+  Clock,
 } from 'lucide-react';
 import { PedidoDelivery, StatusPedidoDelivery, Supermercado } from '../types';
 import { formatCurrency } from '../utils/formatters';
@@ -40,6 +43,46 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
   const [pinDigitado, setPinDigitado] = useState('');
   const [erroPin, setErroPin] = useState('');
   const [entregaSucesso, setEntregaSucesso] = useState(pedido.status === 'entregue');
+
+  // Regra LGPD: O link do motoboy é desativado após 3 minutos da confirmação da entrega
+  const EXPIRACAO_MINUTOS = 3;
+  const EXPIRACAO_MS = EXPIRACAO_MINUTOS * 60 * 1000;
+
+  const [entregueTimestamp, setEntregueTimestamp] = useState<number | null>(() => {
+    if (pedido.entregueEmTimestamp) return pedido.entregueEmTimestamp;
+    if (typeof window !== 'undefined') {
+      const salvo = localStorage.getItem(`motoboy_entregue_ts_${pedido.numeroPedido}`);
+      if (salvo) return Number(salvo);
+      if (pedido.status === 'entregue') {
+        const agora = Date.now();
+        localStorage.setItem(`motoboy_entregue_ts_${pedido.numeroPedido}`, String(agora));
+        return agora;
+      }
+    }
+    return null;
+  });
+
+  const [tempoRestanteSegundos, setTempoRestanteSegundos] = useState<number>(() => {
+    if (!entregueTimestamp) return EXPIRACAO_MINUTOS * 60;
+    const diff = Math.floor((entregueTimestamp + EXPIRACAO_MS - Date.now()) / 1000);
+    return Math.max(0, diff);
+  });
+
+  useEffect(() => {
+    if (!entregueTimestamp) return;
+
+    const timer = setInterval(() => {
+      const diff = Math.floor((entregueTimestamp + EXPIRACAO_MS - Date.now()) / 1000);
+      if (diff <= 0) {
+        setTempoRestanteSegundos(0);
+        clearInterval(timer);
+      } else {
+        setTempoRestanteSegundos(diff);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [entregueTimestamp]);
 
   const end = pedido.enderecoEntrega;
   const enderecoCompleto = `${end.logradouro}, ${end.numero}${end.complemento ? ' ' + end.complemento : ''}, ${end.bairro}, ${end.cidade || ''}`;
@@ -76,6 +119,26 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
     setErroPin('');
   };
 
+  const registrarConclusaoEntrega = () => {
+    const agora = Date.now();
+    setEntregaSucesso(true);
+    setEntregueTimestamp(agora);
+    setTempoRestanteSegundos(EXPIRACAO_MINUTOS * 60);
+    setModalPinAberto(false);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(`motoboy_entregue_ts_${pedido.numeroPedido}`, String(agora));
+        const salvoPedido = localStorage.getItem(`motoboy_pedido_${pedido.numeroPedido}`);
+        if (salvoPedido) {
+          const p = JSON.parse(salvoPedido);
+          p.status = 'entregue';
+          p.entregueEmTimestamp = agora;
+          localStorage.setItem(`motoboy_pedido_${pedido.numeroPedido}`, JSON.stringify(p));
+        }
+      } catch {}
+    }
+  };
+
   const handleFinalizarEntregaSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onConfirmarEntregaPin) {
@@ -85,22 +148,82 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
       }
       const ok = onConfirmarEntregaPin(pedido.id, pinDigitado);
       if (ok) {
-        setEntregaSucesso(true);
-        setModalPinAberto(false);
+        registrarConclusaoEntrega();
       } else {
         setErroPin('PIN incorreto! Solicite o código ao cliente.');
       }
     } else if (onAtualizarStatus) {
       onAtualizarStatus(pedido.id, 'entregue');
-      setEntregaSucesso(true);
-      setModalPinAberto(false);
+      registrarConclusaoEntrega();
+    } else {
+      registrarConclusaoEntrega();
     }
   };
 
   const isEntregue = pedido.status === 'entregue' || entregaSucesso;
+  const isExpirado = Boolean(entregueTimestamp && tempoRestanteSegundos <= 0);
+
+  // Formatação do tempo restante mm:ss
+  const minRestantes = Math.floor(tempoRestanteSegundos / 60);
+  const segRestantes = tempoRestanteSegundos % 60;
+  const timerTexto = `${String(minRestantes).padStart(2, '0')}:${String(segRestantes).padStart(2, '0')}`;
+
+  // TELA DE LINK EXPIRADO (PROTEÇÃO LGPD APÓS 3 MINUTOS)
+  if (isExpirado) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col items-center justify-center p-4 text-center select-none font-sans">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 shadow-xl space-y-4 animate-fadeIn">
+          <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-700 mx-auto flex items-center justify-center border-2 border-slate-200">
+            <Lock className="w-8 h-8 text-slate-700" />
+          </div>
+
+          <div className="space-y-1">
+            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wide inline-block">
+              ✓ Entrega Finalizada
+            </span>
+            <h1 className="text-xl font-black text-slate-900 tracking-tight pt-1">
+              Link Desativado
+            </h1>
+            <p className="text-xs font-mono font-bold text-slate-500">
+              Pedido #{pedido.numeroPedido} • {loja?.nome || 'Filial'}
+            </p>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 space-y-1.5 text-left">
+            <div className="flex items-center gap-1.5 font-black text-amber-800">
+              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-700" />
+              <span>Privacidade & LGPD</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-amber-800/90">
+              Por segurança e proteção da privacidade do cliente, este link foi <strong>desativado automaticamente 3 minutos</strong> após a confirmação da entrega.
+            </p>
+            <p className="text-[10px] text-amber-700 pt-0.5 font-medium">
+              Os dados de contato, endereço e itens do cliente não estão mais acessíveis.
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (window.opener) {
+                  window.close();
+                } else {
+                  window.location.href = '/';
+                }
+              }}
+              className="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition cursor-pointer active:scale-95"
+            >
+              Concluir e Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans select-none pb-32">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col font-sans select-none pb-56">
       {/* 1. BARRA SUPERIOR (HEADER) */}
       <header className="bg-white border-b border-slate-200 px-4 py-3 sticky top-0 z-30 flex items-center justify-between shadow-2xs">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -129,9 +252,9 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
 
         <div>
           {isEntregue ? (
-            <span className="bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold text-xs px-3 py-1 rounded-full flex items-center gap-1 shadow-2xs">
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold text-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow-2xs">
               <Check className="w-3.5 h-3.5 stroke-[3]" />
-              <span>ENTREGUE</span>
+              <span className="font-mono">{timerTexto}</span>
             </span>
           ) : (
             <span className="bg-amber-50 text-amber-700 border border-amber-300 font-bold text-xs px-3 py-1 rounded-full flex items-center gap-1.5 shadow-2xs animate-pulse">
@@ -145,15 +268,27 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
       {/* 2. CONTEÚDO PRINCIPAL (CARDS EMPILHADOS ESTILO ATENDEJÁ) */}
       <main className="max-w-md w-full mx-auto p-4 space-y-3.5 flex-1">
         
-        {/* SUCESSO DE ENTREGA (BANNER) */}
+        {/* SUCESSO DE ENTREGA (BANNER COM CONTAGEM REGRESSIVA LGPD) */}
         {isEntregue && (
-          <div className="bg-emerald-500 text-white p-4 rounded-2xl shadow-md flex items-center gap-3 animate-fadeIn">
-            <CheckCircle2 className="w-7 h-7 text-white shrink-0" />
-            <div>
-              <h2 className="font-black text-sm">Entrega Concluída com Sucesso!</h2>
-              <p className="text-xs text-emerald-100">
-                O pedido foi finalizado e baixado no sistema da loja.
-              </p>
+          <div className="bg-emerald-500 text-white p-4 rounded-2xl shadow-md space-y-2.5 animate-fadeIn">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-7 h-7 text-white shrink-0" />
+              <div>
+                <h2 className="font-black text-sm">Entrega Concluída com Sucesso!</h2>
+                <p className="text-xs text-emerald-100">
+                  O pedido foi finalizado e baixado no sistema da loja.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-emerald-600/70 border border-emerald-400/40 rounded-xl px-3 py-2 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-1.5 font-semibold text-emerald-100 text-[11px]">
+                <ShieldCheck className="w-4 h-4 text-white shrink-0" />
+                <span>Link desativa em (LGPD):</span>
+              </span>
+              <span className="font-mono font-black text-white bg-black/25 px-2.5 py-0.5 rounded-lg text-xs tracking-wider">
+                ⏱️ {timerTexto}
+              </span>
             </div>
           </div>
         )}
@@ -374,9 +509,15 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
 
           {/* Botão Principal Verde Gigante */}
           {isEntregue ? (
-            <div className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 text-white font-black text-sm flex items-center justify-center gap-2 shadow-md">
-              <CheckCircle2 className="w-5 h-5 text-white" />
-              <span>Entrega Finalizada!</span>
+            <div className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 text-white font-black text-sm flex items-center justify-between shadow-md">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-white" />
+                <span>Entrega Finalizada!</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-mono font-black bg-emerald-700/80 px-2.5 py-1 rounded-xl">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Expira em {timerTexto}</span>
+              </div>
             </div>
           ) : (
             <button
