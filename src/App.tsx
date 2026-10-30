@@ -5969,7 +5969,7 @@ export default function App() {
             {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
               <>
                 <button
-                  className="btn"
+                  className="btn btn-com-codigo-header"
                   style={{
                     background: '#16a34a',
                     color: '#fff',
@@ -5991,11 +5991,12 @@ export default function App() {
                   }}
                   title="Cadastrar Produto com Código de Barras"
                 >
-                  <span>➕ Com Código</span>
+                  <span style={{ fontSize: '0.95rem' }}>➕</span>
+                  <span className="texto-btn-header">Com Código</span>
                 </button>
 
                 <button
-                  className="btn"
+                  className="btn btn-sem-codigo-header"
                   style={{
                     background: '#0284c7',
                     color: '#fff',
@@ -6017,7 +6018,8 @@ export default function App() {
                   }}
                   title="Cadastrar Produto sem Código de Barras"
                 >
-                  <span>✨ Sem Código</span>
+                  <span style={{ fontSize: '0.95rem' }}>✨</span>
+                  <span className="texto-btn-header">Sem Código</span>
                 </button>
               </>
             )}
@@ -6063,7 +6065,7 @@ export default function App() {
                 }}
               >
                 <span style={{ fontSize: '1rem' }}>🛒</span>
-                <span className="texto-carrinho-header" style={{ display: 'inline' }}>
+                <span className="texto-carrinho-header">
                   Carrinho
                 </span>
                 {carrinho.length > 0 && (
@@ -6828,7 +6830,6 @@ export default function App() {
                   className="sidebar-item"
                   style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fcd34d' }}
                   onClick={() => {
-                    setColunaDeliveryFixaVisivel(true);
                     abrirGestaoDelivery();
                     fecharMenu();
                   }}
@@ -7673,10 +7674,10 @@ export default function App() {
             </div>
               </div>
 
-              {/* COLUNA FIXA DE PEDIDOS DO DELIVERY (ESTILO ATENDEJÁ CAIXAVIEW) */}
+              {/* COLUNA FIXA DE PEDIDOS DO DELIVERY (ESTILO ATENDEJÁ CAIXAVIEW) - SOMENTE DESKTOP */}
               {colunaDeliveryFixaVisivel && (
                 <div
-                  className="coluna-delivery-fixa-lateral"
+                  className="coluna-delivery-fixa-lateral hidden lg:block"
                   style={{
                     position: 'sticky',
                     top: '75px',

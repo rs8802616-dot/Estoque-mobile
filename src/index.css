@@ -1922,4 +1922,44 @@
     }
 }
 
+/* ======================================================== */
+/* OTIMIZAÇÃO MOBILE: CABEÇALHO LIMPO E DELIVERY FULLSCREEN */
+/* ======================================================== */
+
+/* No celular: exibir apenas os ícones nos botões do cabeçalho */
+@media (max-width: 639px) {
+    .btn-com-codigo-header .texto-btn-header,
+    .btn-sem-codigo-header .texto-btn-header,
+    .btn-carrinho-header .texto-carrinho-header {
+        display: none !important;
+    }
+    .btn-com-codigo-header,
+    .btn-sem-codigo-header,
+    .btn-carrinho-header {
+        padding: 7px 9px !important;
+        gap: 0 !important;
+    }
+}
+
+/* No celular: ocultar botões de Delivery, Painel Aberto e Relatórios do cabeçalho */
+/* (Eles permanecem acessíveis no menu de 3 traços ☰) */
+@media (max-width: 767px) {
+    .btn-delivery-header,
+    .btn-coluna-delivery,
+    .btn-relatorios-header {
+        display: none !important;
+    }
+}
+
+/* No celular / tablet: não exibir a coluna lateral fixa de Delivery no Caixa */
+@media (max-width: 1023px) {
+    .coluna-delivery-fixa-lateral {
+        display: none !important;
+    }
+    .layout-caixa-delivery-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+
 

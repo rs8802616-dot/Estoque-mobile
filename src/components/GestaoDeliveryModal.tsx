@@ -465,13 +465,13 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto"
       style={{ zIndex: 9999999 }}
     >
-      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-7xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
+      <div className="bg-white border-0 sm:border border-slate-200 rounded-none sm:rounded-3xl w-full max-w-7xl h-full sm:h-auto sm:max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
         
         {/* CABEÇALHO DO PAINEL DE DELIVERY EM MODO CLARO */}
-        <div className="p-4 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-3 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-md shadow-purple-500/20 text-white">
               <Bike className="w-6 h-6" />
@@ -508,7 +508,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             {/* Botão Copiar Link do Cardápio */}
             <button
               onClick={handleCopiarLinkCardapio}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl font-bold text-xs shadow-2xs transition cursor-pointer border ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl font-bold text-xs shadow-2xs transition cursor-pointer border ${
                 copiedLink
                   ? 'bg-emerald-600 text-white border-emerald-600'
                   : 'bg-white hover:bg-slate-50 text-purple-700 border-purple-200'
@@ -516,24 +516,24 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               title="Copiar link para enviar aos clientes no WhatsApp"
             >
               {copiedLink ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-              <span>{copiedLink ? 'Link Copiado!' : 'Copiar Link Cardápio'}</span>
+              <span className="hidden sm:inline">{copiedLink ? 'Link Copiado!' : 'Copiar Link Cardápio'}</span>
             </button>
 
             {/* Botão Abrir Cardápio */}
             <button
               onClick={onAbrirCardapioCliente}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-2xs transition cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-2xs transition cursor-pointer"
               title="Abrir o Cardápio do Cliente para testar ou criar pedidos"
             >
               <ExternalLink className="w-4 h-4" />
-              <span>Ver Cardápio</span>
+              <span className="hidden sm:inline">Ver Cardápio</span>
             </button>
 
             {/* Simulação de Pedido Teste */}
             {onSimularNovoPedidoTeste && (
               <button
                 onClick={onSimularNovoPedidoTeste}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition border border-slate-200 shadow-2xs cursor-pointer"
+                className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition border border-slate-200 shadow-2xs cursor-pointer"
                 title="Cria um pedido de teste para testar o alarme e o fluxo"
               >
                 <PlusCircle className="w-4 h-4 text-emerald-600" />
