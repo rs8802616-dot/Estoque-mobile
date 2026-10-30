@@ -590,7 +590,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-bold text-purple-800">
-                      🛵 Delivery vs 🛒 Balcão
+                      🛵 Delivery vs 🍢 Balcão
                     </span>
                     <Bike className="w-4 h-4 text-purple-400" />
                   </div>
@@ -602,7 +602,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-slate-800">
-                      <span className="text-xs text-slate-400">🛒 Balcão ({metricasGerais.qtdBalcao}):</span>
+                      <span className="text-xs text-slate-400">🍢 Balcão ({metricasGerais.qtdBalcao}):</span>
                       <span className="font-bold font-mono text-blue-700">
                         R$ {metricasGerais.faturamentoBalcao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
@@ -753,7 +753,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       className="w-full bg-white border border-slate-300 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todos">Todas as Origens</option>
-                      <option value="balcao">🛒 Balcão / PDV</option>
+                      <option value="balcao">🍢 Balcão / PDV</option>
                       <option value="delivery">🛵 Delivery (Zé Delivery)</option>
                     </select>
                   </div>
@@ -828,7 +828,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                         <div className="p-4 flex flex-wrap items-center justify-between gap-3">
                           <div className="flex items-center gap-3">
                             <span className="text-lg">
-                              {isDelivery ? '🛵' : '🛒'}
+                              {isDelivery ? '🛵' : '🍢'}
                             </span>
                             <div>
                               <div className="flex items-center gap-2">

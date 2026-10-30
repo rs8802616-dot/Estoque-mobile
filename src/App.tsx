@@ -6018,11 +6018,7 @@ export default function App() {
                   }}
                   title="Cadastrar Produto sem Código de Barras (Balcão)"
                 >
-                  <img
-                    src="/icons/icone-balcao.png"
-                    alt="Balcão"
-                    style={{ width: '16px', height: '16px', objectFit: 'contain' }}
-                  />
+                  <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>🍢</span>
                   <span className="texto-btn-header">+ Balcão</span>
                 </button>
               </>
@@ -7494,11 +7490,7 @@ export default function App() {
                   transition: 'all 0.15s ease',
                 }}
               >
-                <img
-                  src="/icons/icone-balcao.png"
-                  alt="Balcão"
-                  style={{ width: '15px', height: '15px', objectFit: 'contain', verticalAlign: 'middle', marginRight: '5px' }}
-                />
+                <span style={{ fontSize: '0.95rem', marginRight: '5px' }}>🍢</span>
                 Balcão & Adega ({countInternos})
               </button>
 
