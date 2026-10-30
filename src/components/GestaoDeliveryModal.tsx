@@ -392,8 +392,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               <Printer className="w-3.5 h-3.5" />
             </button>
 
-            {/* Botão Link Motoboy com Token e GPS (Estilo AtendeJá) */}
-            {order.status !== 'entregue' && order.status !== 'cancelado' && (
+            {/* Botão Link Motoboy com Token e GPS (Exibido apenas após o pedido ser aceito) */}
+            {order.status !== 'pendente' && order.status !== 'entregue' && order.status !== 'cancelado' && (
               <button
                 type="button"
                 onClick={() => setPedidoLinkMotoboy(order)}

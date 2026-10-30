@@ -9,7 +9,7 @@ if (typeof window !== 'undefined') {
   if ('caches' in window) {
     caches.keys().then((names) => {
       names.forEach((name) => {
-        if (name !== 'estoque-mobile-pwa-v55') {
+        if (name !== 'estoque-mobile-pwa-v56') {
           caches.delete(name).catch(() => {});
         }
       });
