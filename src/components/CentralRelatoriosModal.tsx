@@ -57,7 +57,7 @@ interface CentralRelatoriosModalProps {
   abaInicial?: 'faturamento' | 'vendas' | 'estoque' | 'delivery';
 }
 
-const CORES_PIE = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1'];
+const CORES_PIE = ['#10B981', '#2563EB', '#D97706', '#6B7280', '#9333EA', '#DC2626'];
 
 export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   visivel,
@@ -557,7 +557,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 {/* 2. RECEITA BRUTA */}
                 <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
+                    <span className="text-xs uppercase tracking-wider font-bold text-slate-700">
                       💵 Faturamento Bruto
                     </span>
                     <DollarSign className="w-4 h-4 text-blue-400" />
@@ -573,12 +573,12 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 {/* 3. CUSTO DAS MERCADORIAS (CMV) */}
                 <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-rose-400">
+                    <span className="text-xs uppercase tracking-wider font-bold text-rose-700">
                       🏷️ (-) Custo Produtos (CMV)
                     </span>
                     <Percent className="w-4 h-4 text-rose-400" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-rose-300">
+                  <div className="text-2xl sm:text-3xl font-extrabold font-mono text-rose-600">
                     R$ {metricasGerais.custoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <p className="text-xs text-slate-400 mt-1">
@@ -597,18 +597,18 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between items-center text-slate-800">
                       <span className="text-xs text-slate-400">🛵 Delivery ({metricasGerais.qtdDelivery}):</span>
-                      <span className="font-bold text-purple-300">
+                      <span className="font-bold font-mono text-purple-700">
                         R$ {metricasGerais.faturamentoDelivery.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
                     <div className="flex justify-between items-center text-slate-800">
                       <span className="text-xs text-slate-400">🛒 Balcão ({metricasGerais.qtdBalcao}):</span>
-                      <span className="font-bold text-blue-300">
+                      <span className="font-bold font-mono text-blue-700">
                         R$ {metricasGerais.faturamentoBalcao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1 pt-1 border-t border-slate-700">
+                  <p className="text-xs text-slate-400 mt-1 pt-1 border-t border-slate-200">
                     Ticket Médio: R$ {metricasGerais.ticketMedio.toFixed(2)}
                   </p>
                 </div>
@@ -618,8 +618,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* Gráfico de Evolução de Faturamento & Lucro */}
-                <div className="lg:col-span-2 bg-slate-800/60 border border-slate-700/70 p-4 rounded-2xl">
-                  <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <div className="lg:col-span-2 bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                  <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-emerald-400" />
                     Evolução Diária: Lucro Líquido vs Faturamento Bruto
                   </h3>
@@ -629,29 +629,36 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                         <AreaChart data={dadosGraficoEvolucao} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                           <defs>
                             <linearGradient id="corLucro" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
+                              <stop offset="5%" stopColor="#10B981" stopOpacity={0.5}/>
+                              <stop offset="95%" stopColor="#10B981" stopOpacity={0.02}/>
                             </linearGradient>
                             <linearGradient id="corFat" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.6}/>
-                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
+                              <stop offset="5%" stopColor="#2563EB" stopOpacity={0.4}/>
+                              <stop offset="95%" stopColor="#2563EB" stopOpacity={0.02}/>
                             </linearGradient>
                           </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
-                          <XAxis dataKey="dataFormatada" stroke="#64748b" fontSize={11} />
-                          <YAxis stroke="#64748b" fontSize={11} tickFormatter={(v) => `R$${v}`} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+                          <XAxis dataKey="dataFormatada" stroke="#64748B" fontSize={11} tick={{ fill: '#334155', fontWeight: 600 }} />
+                          <YAxis stroke="#64748B" fontSize={11} tick={{ fill: '#334155', fontWeight: 600 }} tickFormatter={(v) => `R${v}`} />
                           <Tooltip
-                            contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#0f172a', borderRadius: '0.75rem' }}
+                            contentStyle={{ backgroundColor: '#141414', borderColor: '#292524', color: '#FFFFFF', borderRadius: '0.75rem', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                            itemStyle={{ color: '#34D399', fontWeight: 700 }}
+                            labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
                             formatter={(value: any, name: any) => [
                               `R$ ${Number(value).toFixed(2)}`,
                               name === 'lucro' ? '💰 Só Lucro Real' : '💵 Faturamento Bruto',
                             ]}
                           />
                           <Legend
-                            formatter={(v) => (v === 'lucro' ? '💰 Só Lucro Real' : '💵 Faturamento')}
+                            wrapperStyle={{ paddingTop: 8 }}
+                            formatter={(v) => (
+                              <span style={{ color: '#0F172A', fontWeight: 700, fontSize: '0.78rem' }}>
+                                {v === 'lucro' ? '💰 Só Lucro Real' : '💵 Faturamento Bruto'}
+                              </span>
+                            )}
                           />
-                          <Area type="monotone" dataKey="faturamento" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#corFat)" />
-                          <Area type="monotone" dataKey="lucro" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#corLucro)" />
+                          <Area type="monotone" dataKey="faturamento" stroke="#2563EB" strokeWidth={2.5} fillOpacity={1} fill="url(#corFat)" />
+                          <Area type="monotone" dataKey="lucro" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#corLucro)" />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -722,7 +729,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       value={buscaVendas}
                       onChange={(e) => setBuscaVendas(e.target.value)}
                       placeholder="Buscar por código, produto, ID ou operador..."
-                      className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                      className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
@@ -743,7 +750,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     <select
                       value={origemFiltro}
                       onChange={(e) => setOrigemFiltro(e.target.value as any)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todos">Todas as Origens</option>
                       <option value="balcao">🛒 Balcão / PDV</option>
@@ -756,7 +763,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     <select
                       value={statusVendaFiltro}
                       onChange={(e) => setStatusVendaFiltro(e.target.value as any)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todas">Todos os Status</option>
                       <option value="concluida">✅ Concluídas</option>
@@ -769,7 +776,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     <select
                       value={formaPgtoFiltro}
                       onChange={(e) => setFormaPgtoFiltro(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todas">Todos os Pagamentos</option>
                       <option value="pix">PIX</option>
@@ -785,7 +792,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     <select
                       value={operadorFiltro}
                       onChange={(e) => setOperadorFiltro(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todos">Todos os Operadores</option>
                       {operadores.map((op) => (
@@ -941,10 +948,10 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
                                     <div className="flex items-center gap-4 text-right">
                                       <div>
-                                        <div className="text-slate-300 font-medium">
+                                        <div className="text-slate-700 font-semibold">
                                           Venda: R$ {subtotal.toFixed(2)}
                                         </div>
-                                        <div className="text-[10px] text-slate-400">
+                                        <div className="text-[10px] text-slate-500 font-medium">
                                           Custo: R$ {custoTotalItem.toFixed(2)}
                                         </div>
                                       </div>
@@ -966,7 +973,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     );
                   })
                 ) : (
-                  <div className="p-8 text-center bg-slate-800/40 border border-slate-700/50 rounded-2xl text-slate-400">
+                  <div className="p-8 text-center bg-white border border-slate-200 rounded-2xl text-slate-600 shadow-sm">
                     Nenhuma venda encontrada com os filtros selecionados.
                   </div>
                 )}
@@ -1006,7 +1013,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               
               {/* KPIS DE ESTOQUE */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-slate-800/80 border border-slate-700 p-3.5 rounded-xl">
+                <div className="bg-white border border-slate-200 shadow-sm p-3.5 rounded-xl">
                   <span className="text-xs text-slate-400">Itens / Lotes:</span>
                   <div className="text-xl font-bold text-slate-900 mt-1">
                     {metricasEstoque.totalItensUnicos} lotes
@@ -1016,28 +1023,28 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </span>
                 </div>
 
-                <div className="bg-slate-800/80 border border-slate-700 p-3.5 rounded-xl">
+                <div className="bg-white border border-slate-200 shadow-sm p-3.5 rounded-xl">
                   <span className="text-xs text-slate-400">Valor em Custo:</span>
-                  <div className="text-xl font-bold text-rose-300 mt-1">
+                  <div className="text-xl font-bold text-rose-600 mt-1">
                     R$ {metricasEstoque.valorCustoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <span className="text-[11px] text-slate-400">Capital imobilizado</span>
                 </div>
 
-                <div className="bg-slate-800/80 border border-slate-700 p-3.5 rounded-xl">
+                <div className="bg-white border border-slate-200 shadow-sm p-3.5 rounded-xl">
                   <span className="text-xs text-slate-400">Potencial de Venda:</span>
-                  <div className="text-xl font-bold text-blue-300 mt-1">
+                  <div className="text-xl font-bold text-blue-600 mt-1">
                     R$ {metricasEstoque.valorVendaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <span className="text-[11px] text-slate-400">Faturamento projetado</span>
                 </div>
 
                 <div className="bg-gradient-to-br from-emerald-950/60 to-emerald-900/30 border border-emerald-500/30 p-3.5 rounded-xl">
-                  <span className="text-xs text-emerald-300">Lucro Projetado Estoque:</span>
+                  <span className="text-xs text-emerald-700">Lucro Projetado Estoque:</span>
                   <div className="text-xl font-bold text-emerald-400 mt-1">
                     R$ {metricasEstoque.lucroProjetado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
-                  <span className="text-[11px] text-emerald-300/80">Se vender todos os itens</span>
+                  <span className="text-[11px] text-emerald-700/80">Se vender todos os itens</span>
                 </div>
               </div>
 
@@ -1050,7 +1057,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     value={buscaEstoque}
                     onChange={(e) => setBuscaEstoque(e.target.value)}
                     placeholder="Buscar no estoque por produto, código ou lote..."
-                    className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none"
                   />
                 </div>
 
@@ -1124,11 +1131,11 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                           const dataVal = new Date(it.validade + 'T23:59:59');
                           const diffDias = Math.ceil((dataVal.getTime() - agora.getTime()) / (1000 * 3600 * 24));
                           if (diffDias < 0) {
-                            badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300">Vencido ({it.validade})</span>;
+                            badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-600">Vencido ({it.validade})</span>;
                           } else if (diffDias <= 7) {
-                            badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">7 dias ({it.validade})</span>;
+                            badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700">7 dias ({it.validade})</span>;
                           } else {
-                            badgeValidade = <span className="text-slate-300">{it.validade}</span>;
+                            badgeValidade = <span className="text-slate-600 font-medium">{it.validade}</span>;
                           }
                         }
 
@@ -1136,15 +1143,15 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                           <tr key={idx} className="hover:bg-slate-50 transition">
                             <td className="p-3 font-semibold text-slate-900 flex items-center gap-2">
                               {it.foto ? (
-                                <img src={it.foto} alt="" className="w-7 h-7 object-cover rounded-lg border border-slate-700" />
+                                <img src={it.foto} alt="" className="w-7 h-7 object-cover rounded-lg border border-slate-200" />
                               ) : (
-                                <div className="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center text-xs">
+                                <div className="w-7 h-7 bg-slate-100 border border-slate-200 rounded-lg flex items-center justify-center text-xs">
                                   📦
                                 </div>
                               )}
                               <span>{it.nome}</span>
                             </td>
-                            <td className="p-3 text-slate-400">
+                            <td className="p-3 text-slate-600">
                               <div>{it.codigo}</div>
                               {it.lote && <span className="text-[10px] text-slate-400">Lote: {it.lote}</span>}
                             </td>
@@ -1152,8 +1159,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                             <td className="p-3 text-right font-bold text-slate-900">
                               {it.estoqueIlimitado ? '∞ Ilimitado' : it.quantidade}
                             </td>
-                            <td className="p-3 text-right text-rose-300">R$ {custo.toFixed(2)}</td>
-                            <td className="p-3 text-right text-blue-300">R$ {venda.toFixed(2)}</td>
+                            <td className="p-3 text-right text-rose-600">R$ {custo.toFixed(2)}</td>
+                            <td className="p-3 text-right text-blue-600">R$ {venda.toFixed(2)}</td>
                             <td className="p-3 text-right font-semibold text-emerald-400">
                               +R$ {lucro.toFixed(2)}
                             </td>
@@ -1184,7 +1191,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100/60 border border-purple-300 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-purple-300">
+                    <span className="text-xs uppercase tracking-wider font-semibold text-purple-700">
                       🛵 Faturamento Delivery
                     </span>
                     <Bike className="w-5 h-5 text-purple-400" />
@@ -1204,7 +1211,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     </span>
                     <DollarSign className="w-4 h-4 text-emerald-400" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-300">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-700">
                     R$ {metricasDelivery.taxasTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <p className="text-xs text-slate-400 mt-1">
@@ -1237,15 +1244,15 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">🟡 Pendentes / Em Curso:</span>
-                      <span className="font-bold text-amber-300">{metricasDelivery.pendentes}</span>
+                      <span className="font-bold text-amber-700">{metricasDelivery.pendentes}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">🟢 Finalizados (PIN):</span>
-                      <span className="font-bold text-emerald-300">{metricasDelivery.entregues}</span>
+                      <span className="font-bold text-emerald-700">{metricasDelivery.entregues}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">🔴 Cancelados:</span>
-                      <span className="font-bold text-rose-300">{metricasDelivery.cancelados}</span>
+                      <span className="font-bold text-rose-600">{metricasDelivery.cancelados}</span>
                     </div>
                   </div>
                 </div>
@@ -1265,7 +1272,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       {metricasDelivery.topBairros.map((b, i) => (
                         <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                           <span className="font-semibold text-slate-800 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-[10px]">
+                            <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-700 flex items-center justify-center font-bold text-[10px]">
                               {i + 1}
                             </span>
                             {b.bairro}
@@ -1332,7 +1339,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   value={motivoEstorno}
                   onChange={(e) => setMotivoEstorno(e.target.value)}
                   placeholder="Ex: Cliente desistiu, item incorreto, etc."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-900"
+                  className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800"
                 />
                 {erroEstorno && <p className="text-xs text-rose-400 mt-1">{erroEstorno}</p>}
               </div>

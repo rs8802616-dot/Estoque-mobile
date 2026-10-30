@@ -3201,84 +3201,93 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 4: VISÃO GERAL DO ESTOQUE */}
         {abaAtiva === 'estoque_chart' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            {/* CARDS RESUMO DO ESTOQUE */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>📦 Peças em Estoque Físico</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
+            {/* CARDS RESUMO DO ESTOQUE (VIBRANTES E COM VIDA) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
+              <div style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', border: '1px solid #93C5FD', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(37, 99, 235, 0.08)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#1E40AF', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>📦</span> Peças em Estoque Físico
+                </span>
+                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1D4ED8', fontFamily: 'monospace', marginTop: '3px' }}>
                   {dadosEstoqueGrafico.totalPecasEstoque} un
                 </div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>💵 Valor Venda (Físico)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
+              <div style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)', border: '1px solid #86EFAC', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(22, 163, 74, 0.08)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>💵</span> Valor Venda (Físico)
+                </span>
+                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#15803D', fontFamily: 'monospace', marginTop: '3px' }}>
                   R$ {dadosEstoqueGrafico.totalValorVendaEstoque.toFixed(2).replace('.', ',')}
                 </div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>🏷️ Custo Total (Físico)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
+              <div style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', border: '1px solid #A5B4FC', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(79, 70, 229, 0.08)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#3730A3', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>🏷️</span> Custo Total (Físico)
+                </span>
+                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#4338CA', fontFamily: 'monospace', marginTop: '3px' }}>
                   R$ {dadosEstoqueGrafico.totalValorCustoEstoque.toFixed(2).replace('.', ',')}
                 </div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>✨ Margem Bruta Projetada</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
+              <div style={{ background: 'linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%)', border: '1px solid #5EEAD4', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(13, 148, 136, 0.08)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#115E59', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span>✨</span> Margem Bruta Projetada
+                </span>
+                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F766E', fontFamily: 'monospace', marginTop: '3px' }}>
                   R$ {dadosEstoqueGrafico.lucroBrutoProjetado.toFixed(2).replace('.', ',')}
                 </div>
               </div>
             </div>
 
-            {/* CARD MASTER: VENDAS REALIZADAS RETIRANDO O CUSTO (MANTENDO SÓ COM O LUCRO) */}
+            {/* CARD MASTER: VENDAS REALIZADAS RETIRANDO O CUSTO (MANTENDO SÓ COM O LUCRO - VIBRANTE) */}
             <div
               style={{
-                background: '#ffffff',
-                border: '1px solid #111827',
-                borderRadius: '8px',
-                padding: '14px',
+                background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
+                border: '2px solid #6EE7B7',
+                borderRadius: '12px',
+                padding: '14px 18px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
-                gap: '10px',
+                gap: '12px',
+                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.12)',
               }}
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>💰</span>
-                  <b style={{ fontSize: '0.9rem', color: '#111827', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '1.3rem' }}>💰</span>
+                  <b style={{ fontSize: '0.92rem', color: '#065F46', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Vendas Realizadas (Só com o Lucro)
                   </b>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#111827', background: '#f8fafc', padding: '2px 8px', borderRadius: '6px', border: '1px solid #111827' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#065F46', background: '#A7F3D0', padding: '2px 8px', borderRadius: '10px', border: '1px solid #6EE7B7' }}>
                     +{totaisFinanceirosVendas.margemLucroReal.toFixed(1)}% margem
                   </span>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#4b5563', marginTop: '3px' }}>
+                <div style={{ fontSize: '0.76rem', color: '#047857', marginTop: '3px' }}>
                   Valor total vendido retirando o custo das mercadorias vendidas
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#6b7280', display: 'block', fontWeight: 700 }}>Total Vendido:</span>
-                  <b style={{ fontSize: '0.95rem', color: '#111827' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#047857', display: 'block', fontWeight: 700 }}>Total Vendido:</span>
+                  <b style={{ fontSize: '1rem', color: '#1E40AF', fontFamily: 'monospace', fontWeight: 800 }}>
                     R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
                   </b>
                 </div>
-                <div style={{ textAlign: 'right', borderLeft: '1px solid #111827', paddingLeft: '10px' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#6b7280', display: 'block', fontWeight: 700 }}>(-) Custo Retirado:</span>
-                  <b style={{ fontSize: '0.95rem', color: '#dc2626' }}>
+                <div style={{ textAlign: 'right', borderLeft: '1px solid #A7F3D0', paddingLeft: '12px' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#DC2626', display: 'block', fontWeight: 700 }}>(-) Custo Retirado:</span>
+                  <b style={{ fontSize: '1rem', color: '#DC2626', fontFamily: 'monospace', fontWeight: 800 }}>
                     - R$ {totaisFinanceirosVendas.custoTotalVendido.toFixed(2).replace('.', ',')}
                   </b>
                 </div>
-                <div style={{ textAlign: 'right', borderLeft: '1px solid #111827', paddingLeft: '12px' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#111827', fontWeight: 800, display: 'block' }}>
-                    (=) Só o Lucro:
+                <div style={{ textAlign: 'right', borderLeft: '2px solid #34D399', paddingLeft: '14px' }}>
+                  <span style={{ fontSize: '0.74rem', color: '#065F46', fontWeight: 900, display: 'block' }}>
+                    (=) Só o Lucro Real:
                   </span>
-                  <b style={{ fontSize: '1.35rem', color: '#16a34a', fontWeight: 900 }}>
+                  <b style={{ fontSize: '1.45rem', color: '#047857', fontWeight: 900, fontFamily: 'monospace' }}>
                     R$ {totaisFinanceirosVendas.lucroRealFaturado.toFixed(2).replace('.', ',')}
                   </b>
                 </div>
@@ -3376,7 +3385,7 @@ ${top3 || '- Nenhum produto vendido'}
                       <XAxis type="number" stroke="#6b7280" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                       <YAxis dataKey="nome" type="category" width={85} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} tickFormatter={(n) => truncarTexto(n, 12)} />
                       <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2)}`, 'Valor em Loja']} />
-                      <Bar dataKey="valorVendaTotal" fill="#111827" radius={[0, 4, 4, 0]} name="Valor Venda (R$)" />
+                      <Bar dataKey="valorVendaTotal" fill="#10B981" radius={[0, 4, 4, 0]} name="Valor Venda (R$)" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -3394,7 +3403,7 @@ ${top3 || '- Nenhum produto vendido'}
                       <XAxis type="number" stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} />
                       <YAxis dataKey="nome" type="category" width={85} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} tickFormatter={(n) => truncarTexto(n, 12)} />
                       <Tooltip formatter={(val: any) => [`${val} un`, 'Quantidade']} />
-                      <Bar dataKey="quantidade" fill="#4b5563" radius={[0, 4, 4, 0]} name="Unidades" />
+                      <Bar dataKey="quantidade" fill="#3B82F6" radius={[0, 4, 4, 0]} name="Unidades" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -3434,57 +3443,61 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
             </div>
 
-            {/* MAIS VENDIDOS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                🔥 Produtos Mais Vendidos
+            {/* MAIS VENDIDOS (COM VIDA E CORES VIBRANTES) */}
+            <div style={{ background: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #BBF7D0', boxShadow: '0 4px 8px rgba(22, 163, 74, 0.06)' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 900, color: '#15803D', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                <span>🔥</span> Produtos Mais Vendidos
               </h3>
               {maisVendidos.length === 0 ? (
-                <div style={{ color: '#6b7280', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
                   Nenhum registro de vendas no período.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
-                  {maisVendidos.map((prod, index) => (
-                    <div
-                      key={`mais_vendido_${prod.codigo || 'cod'}_${index}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '10px 12px',
-                        background: '#ffffff',
-                        borderRadius: '6px',
-                        border: '1px solid #111827',
-                        gap: '8px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
-                        <span style={{ fontWeight: 800, color: '#ffffff', background: '#111827', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', flexShrink: 0 }}>
-                          #{index + 1}
-                        </span>
-                        <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                          <b style={{ fontSize: '0.85rem', color: '#111827', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
-                          <small style={{ color: '#4b5563', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
+                  {maisVendidos.map((prod, index) => {
+                    const bgBadge = index === 0 ? '#F59E0B' : index === 1 ? '#94A3B8' : index === 2 ? '#B45309' : '#10B981';
+                    return (
+                      <div
+                        key={`mais_vendido_${prod.codigo || 'cod'}_${index}`}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '10px 14px',
+                          background: '#F0FDF4',
+                          borderRadius: '8px',
+                          border: '1px solid #BBF7D0',
+                          gap: '10px',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                          <span style={{ fontWeight: 900, color: '#ffffff', background: bgBadge, padding: '3px 8px', borderRadius: '6px', fontSize: '0.82rem', flexShrink: 0, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                            #{index + 1}
+                          </span>
+                          <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                            <b style={{ fontSize: '0.88rem', color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
+                            <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <div style={{ fontWeight: 900, color: '#15803D', fontSize: '0.95rem', fontFamily: 'monospace' }}>{prod.qtdVendida} un</div>
+                          <small style={{ color: '#166534', fontSize: '0.76rem', fontWeight: 700, fontFamily: 'monospace' }}>R$ {prod.totalFaturado.toFixed(2)}</small>
                         </div>
                       </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontWeight: 800, color: '#16a34a', fontSize: '0.88rem' }}>{prod.qtdVendida} un</div>
-                        <small style={{ color: '#6b7280', fontSize: '0.72rem', fontWeight: 600 }}>R$ {prod.totalFaturado.toFixed(2)}</small>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
 
-            {/* MENOS VENDIDOS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                🧊 Produtos Menos Vendidos
+            {/* MENOS VENDIDOS (COM VIDA E CORES VIBRANTES) */}
+            <div style={{ background: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #FECACA', boxShadow: '0 4px 8px rgba(220, 38, 38, 0.06)' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 900, color: '#DC2626', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                <span>🧊</span> Produtos Menos Vendidos
               </h3>
               {menosVendidos.length === 0 ? (
-                <div style={{ color: '#6b7280', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
+                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
                   Nenhum registro de vendas no período.
                 </div>
               ) : (
@@ -3496,25 +3509,26 @@ ${top3 || '- Nenhum produto vendido'}
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '10px 12px',
-                        background: '#ffffff',
-                        borderRadius: '6px',
-                        border: '1px solid #111827',
-                        gap: '8px',
+                        padding: '10px 14px',
+                        background: '#FEF2F2',
+                        borderRadius: '8px',
+                        border: '1px solid #FECACA',
+                        gap: '10px',
+                        transition: 'all 0.15s ease',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
-                        <span style={{ fontWeight: 800, color: '#111827', background: '#f1f5f9', border: '1px solid #111827', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                        <span style={{ fontWeight: 900, color: '#ffffff', background: '#EF4444', padding: '3px 8px', borderRadius: '6px', fontSize: '0.82rem', flexShrink: 0, boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)' }}>
                           #{index + 1}
                         </span>
                         <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                          <b style={{ fontSize: '0.85rem', color: '#111827', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
-                          <small style={{ color: '#4b5563', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
+                          <b style={{ fontSize: '0.88rem', color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
+                          <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
                         </div>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontWeight: 800, color: '#dc2626', fontSize: '0.88rem' }}>{prod.qtdVendida} un</div>
-                        <small style={{ color: '#6b7280', fontSize: '0.72rem', fontWeight: 600 }}>R$ {prod.totalFaturado.toFixed(2)}</small>
+                        <div style={{ fontWeight: 900, color: '#DC2626', fontSize: '0.95rem', fontFamily: 'monospace' }}>{prod.qtdVendida} un</div>
+                        <small style={{ color: '#991B1B', fontSize: '0.76rem', fontWeight: 700, fontFamily: 'monospace' }}>R$ {prod.totalFaturado.toFixed(2)}</small>
                       </div>
                     </div>
                   ))}
@@ -3527,59 +3541,60 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 6: INTELIGÊNCIA DE ESTOQUE E CONSELHOS AO DONO */}
         {abaAtiva === 'inteligencia' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            {/* PAINEL INFORMATIVO */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            {/* PAINEL INFORMATIVO (COM VIDA E CORES VIBRANTES) */}
+            <div style={{ background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)', padding: '14px 18px', borderRadius: '12px', border: '1px solid #BAE6FD', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', boxShadow: '0 2px 6px rgba(2, 132, 199, 0.08)' }}>
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0 }}>
-                  🧠 Inteligência de Estoque (Para o Dono)
+                <h3 style={{ fontSize: '1rem', fontWeight: 900, color: '#0369A1', marginBottom: '2px', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>🧠</span> Inteligência de Estoque (Para o Dono)
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0, marginTop: '2px' }}>
-                  Identifica onde investir mais e onde pausar compras.
+                <p style={{ fontSize: '0.8rem', color: '#0C4A6E', margin: 0, marginTop: '2px' }}>
+                  Identifica onde investir mais e onde pausar compras para maximizar o lucro.
                 </p>
               </div>
 
               {insightsEstoque.totalCapitalParado > 0 && (
-                <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700 }}>Capital em Estoque Parado</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>
+                <div style={{ background: '#FFFFFF', padding: '8px 14px', borderRadius: '8px', border: '1px solid #FECACA', textAlign: 'right', boxShadow: '0 2px 6px rgba(220, 38, 38, 0.08)' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#991B1B', fontWeight: 800 }}>Capital em Estoque Parado</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#DC2626', fontFamily: 'monospace' }}>
                     R$ {insightsEstoque.totalCapitalParado.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* SEÇÃO 1: EVITAR COMPRAR MAIS (ESTOQUE PARADO) */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
-              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                🛑 Estoque Parado / Pausar Compras
+            {/* SEÇÃO 1: EVITAR COMPRAR MAIS (ESTOQUE PARADO - AMBER/ORANGE VIBRANTE) */}
+            <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #FDE68A', boxShadow: '0 4px 8px rgba(217, 119, 6, 0.06)' }}>
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 900, color: '#92400E', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                <span>🛑</span> Estoque Parado / Pausar Compras
               </h3>
               {insightsEstoque.naoInvestir.length === 0 ? (
-                <div style={{ color: '#16a34a', fontSize: '0.82rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #111827', marginTop: '8px' }}>
+                <div style={{ color: '#16A34A', fontSize: '0.82rem', padding: '12px', background: '#F0FDF4', borderRadius: '8px', border: '1px solid #86EFAC', marginTop: '8px' }}>
                   🎉 Excelente! Nenhum produto detectado com excesso de estoque parado sem vendas.
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px', marginTop: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginTop: '10px' }}>
                   {insightsEstoque.naoInvestir.map((item, idx) => (
                     <div
                       key={`nao_investir_${item.codigo}_${idx}`}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #111827',
-                        borderRadius: '6px',
+                        background: '#FFFBEB',
+                        border: '1px solid #FDE68A',
+                        borderRadius: '8px',
                         padding: '12px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
+                        boxShadow: '0 2px 4px rgba(217, 119, 6, 0.06)',
                       }}
                     >
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px', gap: '6px' }}>
-                          <b style={{ fontSize: '0.85rem', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
-                          <span style={{ fontSize: '0.7rem', background: '#f8fafc', color: '#111827', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid #111827', flexShrink: 0 }}>
+                          <b style={{ fontSize: '0.88rem', color: '#78350F', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
+                          <span style={{ fontSize: '0.7rem', background: '#FEF3C7', color: '#92400E', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, border: '1px solid #FCD34D', flexShrink: 0 }}>
                             Cód: {item.codigo}
                           </span>
                         </div>
-                        <p style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.35, margin: '4px 0' }}>
+                        <p style={{ fontSize: '0.78rem', color: '#92400E', lineHeight: 1.35, margin: '6px 0' }}>
                           {item.motivo}
                         </p>
                       </div>
@@ -3589,11 +3604,12 @@ ${top3 || '- Nenhum produto vendido'}
                           marginTop: '6px',
                           display: 'flex',
                           justifyContent: 'space-between',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          color: '#111827',
-                          borderTop: '1px dashed #d1d5db',
+                          fontSize: '0.76rem',
+                          fontWeight: 800,
+                          color: '#B45309',
+                          borderTop: '1px dashed #FCD34D',
                           paddingTop: '6px',
+                          fontFamily: 'monospace',
                         }}
                       >
                         <span>📦 Estoque: {item.qtdEstoque} un</span>
@@ -3605,38 +3621,39 @@ ${top3 || '- Nenhum produto vendido'}
               )}
             </div>
 
-            {/* SEÇÃO 2: PRODUTOS PARA INVESTIR MAIS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
-              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                🚀 Produtos para Reposição Urgente (Alto Giro)
+            {/* SEÇÃO 2: PRODUTOS PARA INVESTIR MAIS (EMERALD/GREEN VIBRANTE) */}
+            <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #86EFAC', boxShadow: '0 4px 8px rgba(22, 163, 74, 0.06)' }}>
+              <h3 style={{ fontSize: '0.96rem', fontWeight: 900, color: '#15803D', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                <span>🚀</span> Produtos para Reposição Urgente (Alto Giro)
               </h3>
               {insightsEstoque.investirMais.length === 0 ? (
-                <div style={{ color: '#4b5563', fontSize: '0.82rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #111827', marginTop: '8px' }}>
+                <div style={{ color: '#4B5563', fontSize: '0.82rem', padding: '12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', marginTop: '8px' }}>
                   Nenhum alerta de reposição urgente no momento.
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '10px', marginTop: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginTop: '10px' }}>
                   {insightsEstoque.investirMais.map((item, idx) => (
                     <div
                       key={`investir_${item.codigo}_${idx}`}
                       style={{
-                        background: '#ffffff',
-                        border: '1px solid #111827',
-                        borderRadius: '6px',
+                        background: '#F0FDF4',
+                        border: '1px solid #86EFAC',
+                        borderRadius: '8px',
                         padding: '12px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
+                        boxShadow: '0 2px 4px rgba(22, 163, 74, 0.06)',
                       }}
                     >
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px', gap: '6px' }}>
-                          <b style={{ fontSize: '0.85rem', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
-                          <span style={{ fontSize: '0.7rem', background: '#f8fafc', color: '#111827', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid #111827', flexShrink: 0 }}>
+                          <b style={{ fontSize: '0.88rem', color: '#14532D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
+                          <span style={{ fontSize: '0.7rem', background: '#DCFCE7', color: '#166534', padding: '2px 6px', borderRadius: '4px', fontWeight: 800, border: '1px solid #86EFAC', flexShrink: 0 }}>
                             Cód: {item.codigo}
                           </span>
                         </div>
-                        <p style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.35, margin: '4px 0' }}>
+                        <p style={{ fontSize: '0.78rem', color: '#166534', lineHeight: 1.35, margin: '6px 0' }}>
                           {item.motivo}
                         </p>
                       </div>
@@ -3646,11 +3663,12 @@ ${top3 || '- Nenhum produto vendido'}
                           marginTop: '6px',
                           display: 'flex',
                           justifyContent: 'space-between',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          color: '#16a34a',
-                          borderTop: '1px dashed #d1d5db',
+                          fontSize: '0.76rem',
+                          fontWeight: 800,
+                          color: '#15803D',
+                          borderTop: '1px dashed #BBF7D0',
                           paddingTop: '6px',
+                          fontFamily: 'monospace',
                         }}
                       >
                         <span>📦 Estoque: {item.qtdEstoque} un</span>
