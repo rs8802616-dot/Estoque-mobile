@@ -1496,18 +1496,19 @@ ${top3 || '- Nenhum produto vendido'}
           boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
         }}
       >
-        <button
+                <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
             fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'grafico' ? '#111827' : '#f1f5f9',
-            color: abaAtiva === 'grafico' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'grafico' ? '0 2px 4px rgba(17, 24, 39, 0.25)' : 'none',
+            background: abaAtiva === 'grafico' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'grafico' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('grafico')}
         >
@@ -1516,16 +1517,17 @@ ${top3 || '- Nenhum produto vendido'}
 
         <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 600,
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'formas_pgto' ? '#16a34a' : '#f1f5f9',
-            color: abaAtiva === 'formas_pgto' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'formas_pgto' ? '0 2px 4px rgba(22, 163, 74, 0.25)' : 'none',
+            background: abaAtiva === 'formas_pgto' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'formas_pgto' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('formas_pgto')}
         >
@@ -1534,16 +1536,17 @@ ${top3 || '- Nenhum produto vendido'}
 
         <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 600,
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'devolucoes' ? '#dc2626' : '#f1f5f9',
-            color: abaAtiva === 'devolucoes' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'devolucoes' ? '0 2px 4px rgba(220, 38, 38, 0.25)' : 'none',
+            background: abaAtiva === 'devolucoes' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'devolucoes' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('devolucoes')}
         >
@@ -1552,16 +1555,17 @@ ${top3 || '- Nenhum produto vendido'}
 
         <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 600,
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'perdas' ? '#d97706' : '#f1f5f9',
-            color: abaAtiva === 'perdas' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'perdas' ? '0 2px 4px rgba(217, 119, 6, 0.25)' : 'none',
+            background: abaAtiva === 'perdas' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'perdas' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('perdas')}
         >
@@ -1570,16 +1574,17 @@ ${top3 || '- Nenhum produto vendido'}
 
         <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 600,
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'estoque_chart' ? '#4f46e5' : '#f1f5f9',
-            color: abaAtiva === 'estoque_chart' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'estoque_chart' ? '0 2px 4px rgba(79, 70, 229, 0.25)' : 'none',
+            background: abaAtiva === 'estoque_chart' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'estoque_chart' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('estoque_chart')}
         >
@@ -1588,16 +1593,17 @@ ${top3 || '- Nenhum produto vendido'}
 
         <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 600,
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'ranking' ? '#0284c7' : '#f1f5f9',
-            color: abaAtiva === 'ranking' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'ranking' ? '0 2px 4px rgba(2, 132, 199, 0.25)' : 'none',
+            background: abaAtiva === 'ranking' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'ranking' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('ranking')}
         >
@@ -1606,16 +1612,17 @@ ${top3 || '- Nenhum produto vendido'}
 
         <button
           style={{
-            padding: '7px 12px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 600,
+            padding: '7px 14px',
+            borderRadius: '6px',
+            border: '1px solid #111827',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'inteligencia' ? '#16a34a' : '#f1f5f9',
-            color: abaAtiva === 'inteligencia' ? '#ffffff' : '#475569',
-            boxShadow: abaAtiva === 'inteligencia' ? '0 2px 4px rgba(22, 163, 74, 0.25)' : 'none',
+            background: abaAtiva === 'inteligencia' ? '#111827' : '#ffffff',
+            color: abaAtiva === 'inteligencia' ? '#ffffff' : '#111827',
+            boxShadow: 'none',
+            transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('inteligencia')}
         >
@@ -1625,133 +1632,7 @@ ${top3 || '- Nenhum produto vendido'}
 
       {/* CORPO COM ROLAGEM */}
       <div className="corpo-relatorio-cheio" style={{ gap: '14px', display: 'flex', flexDirection: 'column', paddingBottom: '24px', overflowX: 'hidden' }}>
-                {/* CARD MASTER EM DESTAQUE (Apenas em outras abas para manter o painel executivo 100% fiel às imagens) */}
-        {abaAtiva !== 'grafico' && (
-          <div
-            style={{
-              background: 'linear-gradient(135deg, #064e3b 0%, #065f46 60%, #047857 100%)',
-              borderRadius: '12px',
-              padding: '14px 16px',
-              color: '#ffffff',
-              boxShadow: '0 4px 12px rgba(6, 78, 59, 0.25)',
-              border: '1px solid #059669',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '12px',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '220px' }}>
-              <div
-                style={{
-                  fontSize: '2rem',
-                  background: 'rgba(255, 255, 255, 0.16)',
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                💰
-              </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span
-                    style={{
-                      fontSize: '0.72rem',
-                      color: '#a7f3d0',
-                      fontWeight: 800,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                    }}
-                  >
-                    Lucro Real das Vendas (Só o Lucro)
-                  </span>
-                  <span
-                    style={{
-                      fontSize: '0.68rem',
-                      fontWeight: 800,
-                      color: '#064e3b',
-                      background: '#a7f3d0',
-                      padding: '1px 6px',
-                      borderRadius: '10px',
-                    }}
-                  >
-                    +{totaisFinanceirosVendas.margemLucroReal.toFixed(1)}%
-                  </span>
-                </div>
-                <div style={{ fontSize: '1.65rem', fontWeight: 900, color: '#ffffff', lineHeight: 1.15, marginTop: '2px' }}>
-                  R$ {totaisFinanceirosVendas.lucroRealFaturado.toFixed(2).replace('.', ',')}
-                </div>
-                <div style={{ fontSize: '0.74rem', color: '#d1fae5', marginTop: '2px' }}>
-                  Valor vendido retirando o valor de custo das mercadorias
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <div
-                style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  textAlign: 'center',
-                  minWidth: '95px',
-                }}
-              >
-                <span style={{ fontSize: '0.68rem', color: '#a7f3d0', display: 'block', fontWeight: 700 }}>
-                  💵 Valor Vendido
-                </span>
-                <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
-                  R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
-                </b>
-              </div>
-
-              <div
-                style={{
-                  background: 'rgba(220, 38, 38, 0.3)',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(248, 113, 113, 0.4)',
-                  textAlign: 'center',
-                  minWidth: '95px',
-                }}
-              >
-                <span style={{ fontSize: '0.68rem', color: '#fca5a5', display: 'block', fontWeight: 700 }}>
-                  🏷️ (-) Custo Retirado
-                </span>
-                <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
-                  - R$ {totaisFinanceirosVendas.custoTotalVendido.toFixed(2).replace('.', ',')}
-                </b>
-              </div>
-
-              <div
-                style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  textAlign: 'center',
-                  minWidth: '95px',
-                }}
-              >
-                <span style={{ fontSize: '0.68rem', color: '#a7f3d0', display: 'block', fontWeight: 700 }}>
-                  📦 Itens Faturados
-                </span>
-                <b style={{ fontSize: '0.95rem', color: '#ffffff' }}>
-                  {totaisFinanceirosVendas.totalItensVendidos} un ({totaisFinanceirosVendas.totalVendasQtd} vendas)
-                </b>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ABA PRINCIPAL: NOVO PAINEL DE INTELIGÊNCIA & GRÁFICOS (IMAGENS 2, 3, 4 e 5) */}
+                {/* ABA PRINCIPAL: NOVO PAINEL DE INTELIGÊNCIA & GRÁFICOS (IMAGENS 2, 3, 4 e 5) */}
         {abaAtiva === 'grafico' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             
@@ -2760,12 +2641,12 @@ ${top3 || '- Nenhum produto vendido'}
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             
             {/* SELETOR DE PERÍODO ESPECÍFICO DE FORMAS DE PAGAMENTO */}
-            <div style={{ background: '#ffffff', padding: '12px 14px', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span>📅</span> Filtrar Período de Pagamento:
                 </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#0284c7', background: '#e0f2fe', padding: '3px 8px', borderRadius: '6px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827', background: '#f8fafc', padding: '3px 8px', borderRadius: '6px', border: '1px solid #111827' }}>
                   Período Atual: <b>{dadosFormasPagamento.labelPeriodo}</b>
                 </span>
               </div>
@@ -2783,18 +2664,18 @@ ${top3 || '- Nenhum produto vendido'}
                   <button
                     key={item.id}
                     style={{
-                      padding: '8px 6px',
-                      borderRadius: '8px',
-                      border: periodoFormaPgto === item.id ? '2px solid #0284c7' : '1px solid #cbd5e1',
+                      padding: '7px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #111827',
                       fontSize: '0.78rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       textAlign: 'center',
                       whiteSpace: 'nowrap',
-                      background: periodoFormaPgto === item.id ? '#0284c7' : '#ffffff',
-                      color: periodoFormaPgto === item.id ? '#ffffff' : '#475569',
+                      background: periodoFormaPgto === item.id ? '#111827' : '#ffffff',
+                      color: periodoFormaPgto === item.id ? '#ffffff' : '#111827',
                       transition: 'all 0.15s ease',
-                      boxShadow: periodoFormaPgto === item.id ? '0 2px 5px rgba(2,132,199,0.25)' : 'none',
+                      boxShadow: 'none',
                     }}
                     onClick={() => setPeriodoFormaPgto(item.id as any)}
                   >
@@ -2805,25 +2686,25 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* BANNER PRINCIPAL COM MÉTRICAS DO PERÍODO */}
-            <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: '12px', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#166534', marginBottom: '2px', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span>💳</span> Formas de Pagamento & Faturamento ({dadosFormasPagamento.labelPeriodo})
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#15803d', margin: 0, marginTop: '2px' }}>
-                  Total de <b>{dadosFormasPagamento.totalQtd} vendas</b> registradas neste período.
+                <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0, marginTop: '2px' }}>
+                  Total de <b style={{ color: '#111827' }}>{dadosFormasPagamento.totalQtd} vendas</b> registradas neste período.
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '8px', border: '1px solid #86efac', textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600 }}>Total Faturado</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#15803d' }}>
+                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700 }}>Total Faturado</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827' }}>
                     R$ {dadosFormasPagamento.totalGeral.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
-                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '8px', border: '1px solid #86efac', textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600 }}>Ticket Médio</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0284c7' }}>
+                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700 }}>Ticket Médio</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827' }}>
                     R$ {dadosFormasPagamento.ticketMedioGeral.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
@@ -2837,22 +2718,20 @@ ${top3 || '- Nenhum produto vendido'}
                   key={item.chave}
                   style={{
                     background: '#ffffff',
-                    border: `1px solid ${item.cor}33`,
-                    borderLeft: `4px solid ${item.cor}`,
-                    padding: '10px',
+                    border: '1px solid #111827',
+                    padding: '12px',
                     borderRadius: '8px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                   }}
                 >
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: item.cor }}>{item.nome}</div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827' }}>{item.nome}</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
                     R$ {item.valor.toFixed(2).replace('.', ',')}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#4b5563', display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
                     <span>{item.qtd} {item.qtd === 1 ? 'venda' : 'vendas'}</span>
-                    <span style={{ fontWeight: 700, color: item.cor }}>{item.porcentagem.toFixed(1)}%</span>
+                    <span style={{ fontWeight: 800, color: '#111827' }}>{item.porcentagem.toFixed(1)}%</span>
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: '#0284c7', marginTop: '2px', borderTop: '1px dashed #e2e8f0', paddingTop: '3px' }}>
+                  <div style={{ fontSize: '0.7rem', color: '#111827', marginTop: '4px', borderTop: '1px dashed #d1d5db', paddingTop: '4px' }}>
                     Média: <b>R$ {item.ticketMedio.toFixed(2).replace('.', ',')}</b>
                   </div>
                 </div>
@@ -2860,14 +2739,14 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* PAINEL DE INTELIGÊNCIA & DIAGNÓSTICO FINANCEIRO */}
-            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '12px', border: '1px solid #cbd5e1', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '1.1rem' }}>🧠</span>
                 <div>
-                  <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                  <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#111827', margin: 0 }}>
                     Inteligência & Diagnóstico Financeiro ({dadosFormasPagamento.labelPeriodo})
                   </h4>
-                  <p style={{ fontSize: '0.78rem', color: '#64748b', margin: 0 }}>
+                  <p style={{ fontSize: '0.78rem', color: '#4b5563', margin: 0 }}>
                     Análise automática do comportamento de pagamento e liquidez do seu caixa.
                   </p>
                 </div>
@@ -2875,61 +2754,61 @@ ${top3 || '- Nenhum produto vendido'}
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px' }}>
                 {/* INSIGHT 1: MÉTODO CAMPEÃO */}
-                <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0284c7', marginBottom: '2px' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     🏆 Mais Utilizado pelos Clientes
                   </div>
                   {dadosFormasPagamento.insights.lider ? (
-                    <div style={{ fontSize: '0.85rem', color: '#1e293b' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#111827' }}>
                       <b>{dadosFormasPagamento.insights.lider.nome}</b> com{' '}
                       <b style={{ color: '#16a34a' }}>{dadosFormasPagamento.insights.lider.porcentagem.toFixed(1)}%</b> do faturamento total (R$ {dadosFormasPagamento.insights.lider.valor.toFixed(2).replace('.', ',')}).
                     </div>
                   ) : (
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Nenhum dado registrado.</div>
+                    <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>Nenhum dado registrado.</div>
                   )}
                 </div>
 
                 {/* INSIGHT 2: LIQUIDEZ IMEDIATA */}
-                <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#16a34a', marginBottom: '2px' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     ⚡ Liquidez Imediata (PIX + Dinheiro)
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#1e293b' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#111827' }}>
                     <b>R$ {dadosFormasPagamento.insights.valorAVista.toFixed(2).replace('.', ',')}</b> ({dadosFormasPagamento.insights.pctAVista.toFixed(1)}% do total).
-                    <div style={{ fontSize: '0.72rem', color: '#15803d', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#16a34a', marginTop: '2px', fontWeight: 600 }}>
                       Cai direto na conta/gaveta sem taxas de maquininha.
                     </div>
                   </div>
                 </div>
 
                 {/* INSIGHT 3: TICKET MÉDIO POR CANAL */}
-                <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7c3aed', marginBottom: '2px' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     🎫 Maior Ticket Médio
                   </div>
                   {dadosFormasPagamento.insights.maiorTicket ? (
-                    <div style={{ fontSize: '0.85rem', color: '#1e293b' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#111827' }}>
                       <b>{dadosFormasPagamento.insights.maiorTicket.nome}</b> tem a maior média por venda: <b>R$ {dadosFormasPagamento.insights.maiorTicket.ticketMedio.toFixed(2).replace('.', ',')}</b>.
                     </div>
                   ) : (
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Nenhum dado registrado.</div>
+                    <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>Nenhum dado registrado.</div>
                   )}
                 </div>
 
                 {/* INSIGHT 4: VENDAS A PRAZO / FIADO */}
-                <div style={{ background: '#ffffff', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#dc2626', marginBottom: '2px' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     📝 Vendas a Prazo / Fiado
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#1e293b' }}>
+                  <div style={{ fontSize: '0.85rem', color: '#111827' }}>
                     <b>R$ {dadosFormasPagamento.insights.valorFiado.toFixed(2).replace('.', ',')}</b> ({dadosFormasPagamento.insights.pctFiado.toFixed(1)}% do total).
                     {dadosFormasPagamento.insights.pctFiado > 15 ? (
-                      <div style={{ fontSize: '0.72rem', color: '#b91c1c', marginTop: '2px', fontWeight: 600 }}>
+                      <div style={{ fontSize: '0.72rem', color: '#dc2626', marginTop: '2px', fontWeight: 700 }}>
                         ⚠️ Atenção: Mais de 15% das vendas foram a prazo. Mantenha as cobranças em dia!
                       </div>
                     ) : (
-                      <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
-                        Nível de fiado sob controle no período.
+                      <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '2px' }}>
+                        Nível de fiado sob controle ({dadosFormasPagamento.insights.pctFiado.toFixed(1)}%).
                       </div>
                     )}
                   </div>
@@ -2937,59 +2816,60 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
             </div>
 
-            {/* GRÁFICOS DE FORMAS DE PAGAMENTO */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
-              {/* GRÁFICO DE PIZZA / ROSCA */}
-              <div style={{ background: '#ffffff', padding: '14px 10px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '280px', minWidth: 0 }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1e293b', marginBottom: '10px', margin: 0 }}>
-                  🥧 Participação Percentual (%)
+            {/* SEÇÃO DE GRÁFICOS: PIZZA (DISTRIBUIÇÃO) E BARRAS (FATURAMENTO) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+              {/* GRÁFICO 1: PIZZA DE DISTRIBUIÇÃO */}
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '280px', minWidth: 0 }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
+                  🥧 Distribuição Percentual das Formas de Pgto
                 </h4>
                 <div style={{ width: '100%', height: 240, minHeight: 240, minWidth: 0 }}>
                   {dadosFormasPagamento.lista.length === 0 ? (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280', fontSize: '0.85rem' }}>
                       Nenhuma venda registrada no período ({dadosFormasPagamento.labelPeriodo}).
                     </div>
                   ) : (
                     <ResponsiveContainer key={`fp-pie-${chartKey}-${periodoFormaPgto}`} width="100%" height={240} minWidth={100} minHeight={240}>
-                      <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                      <PieChart>
                         <Pie
                           data={dadosFormasPagamento.lista}
-                          dataKey="valor"
-                          nameKey="nome"
                           cx="50%"
                           cy="50%"
-                          outerRadius={70}
-                          innerRadius={35}
+                          innerRadius={50}
+                          outerRadius={80}
                           paddingAngle={3}
+                          dataKey="valor"
+                          nameKey="nome"
+                          label={({ name, percent }: any) => `${name} (${((percent || 0) * 100).toFixed(0)}%)`}
+                          labelLine={false}
                         >
                           {dadosFormasPagamento.lista.map((entry, index) => (
-                            <Cell key={`cell-fp-${index}`} fill={entry.cor} />
+                            <Cell key={`cell-${index}`} fill={entry.cor} stroke="#ffffff" strokeWidth={2} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']} />
-                        <Legend iconType="circle" wrapperStyle={{ fontSize: '0.74rem', paddingTop: '6px' }} />
+                        <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Total']} />
                       </PieChart>
                     </ResponsiveContainer>
                   )}
                 </div>
               </div>
 
-              {/* GRÁFICO DE BARRAS DE FORMAS DE PGTO */}
-              <div style={{ background: '#ffffff', padding: '14px 10px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '280px', minWidth: 0 }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1e293b', marginBottom: '10px', margin: 0 }}>
+              {/* GRÁFICO 2: BARRAS DE FATURAMENTO TOTAL */}
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '280px', minWidth: 0 }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   📊 Volume Financeiro por Método (R$)
                 </h4>
                 <div style={{ width: '100%', height: 240, minHeight: 240, minWidth: 0 }}>
                   {dadosFormasPagamento.lista.length === 0 ? (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#6b7280', fontSize: '0.85rem' }}>
                       Nenhuma venda registrada no período ({dadosFormasPagamento.labelPeriodo}).
                     </div>
                   ) : (
                     <ResponsiveContainer key={`fp-bar-${chartKey}-${periodoFormaPgto}`} width="100%" height={240} minWidth={100} minHeight={240}>
                       <BarChart layout="vertical" data={dadosFormasPagamento.lista} margin={{ top: 5, right: 15, left: 10, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                        <XAxis type="number" stroke="#64748b" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#64748b' }} />
-                        <YAxis dataKey="nome" type="category" width={95} stroke="#64748b" fontSize={10} tick={{ fontSize: 10, fill: '#64748b' }} />
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
+                        <XAxis type="number" stroke="#6b7280" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
+                        <YAxis dataKey="nome" type="category" width={95} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} />
                         <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Total']} />
                         <Bar dataKey="valor" radius={[0, 4, 4, 0]} name="Valor (R$)">
                           {dadosFormasPagamento.lista.map((entry, index) => (
@@ -3004,40 +2884,40 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* TABELA DE MÉTRICAS COMPLETAS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155', marginBottom: '10px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 📋 Tabela Detalhada por Meio de Pagamento ({dadosFormasPagamento.labelPeriodo})
               </h4>
               <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '460px' }}>
                   <thead>
-                    <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                      <th style={{ padding: '8px 10px' }}>Método</th>
-                      <th style={{ padding: '8px 10px', textAlign: 'right' }}>Qtd Vendas</th>
-                      <th style={{ padding: '8px 10px', textAlign: 'right' }}>Total (R$)</th>
-                      <th style={{ padding: '8px 10px', textAlign: 'right' }}>Ticket Médio</th>
-                      <th style={{ padding: '8px 10px', textAlign: 'right' }}>Maior Venda</th>
-                      <th style={{ padding: '8px 10px', textAlign: 'right' }}>% Total</th>
+                    <tr style={{ background: '#111827', color: '#ffffff', textAlign: 'left' }}>
+                      <th style={{ padding: '9px 12px', borderRadius: '4px 0 0 0' }}>Método</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right' }}>Qtd Vendas</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right' }}>Total (R$)</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right' }}>Ticket Médio</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right' }}>Maior Venda</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', borderRadius: '0 4px 0 0' }}>% Total</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dadosFormasPagamento.lista.map((m) => (
-                      <tr key={m.chave} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '8px 10px', fontWeight: 700, color: '#1e293b' }}>
+                      <tr key={m.chave} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 700, color: '#111827' }}>
                           <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: m.cor, marginRight: '6px' }}></span>
                           {m.nome}
                         </td>
-                        <td style={{ padding: '8px 10px', textAlign: 'right', color: '#475569' }}>{m.qtd}</td>
-                        <td style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', color: '#4b5563' }}>{m.qtd}</td>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 800, color: '#111827' }}>
                           R$ {m.valor.toFixed(2).replace('.', ',')}
                         </td>
-                        <td style={{ padding: '8px 10px', textAlign: 'right', color: '#0284c7', fontWeight: 600 }}>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', color: '#111827', fontWeight: 600 }}>
                           R$ {m.ticketMedio.toFixed(2).replace('.', ',')}
                         </td>
-                        <td style={{ padding: '8px 10px', textAlign: 'right', color: '#16a34a', fontWeight: 600 }}>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', color: '#16a34a', fontWeight: 700 }}>
                           R$ {m.maiorVenda.toFixed(2).replace('.', ',')}
                         </td>
-                        <td style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 700, color: m.cor }}>
+                        <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 800, color: '#111827' }}>
                           {m.porcentagem.toFixed(1)}%
                         </td>
                       </tr>
@@ -3052,17 +2932,17 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 2: GRÁFICO DE DEVOLUÇÕES & ESTORNOS */}
         {abaAtiva === 'devolucoes' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            <div style={{ background: '#fef2f2', padding: '14px', borderRadius: '10px', border: '1px solid #fecaca', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#991b1b', marginBottom: '2px', margin: 0 }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0 }}>
                   🔄 Devoluções & Vendas Estornadas
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#7f1d1d', margin: 0, marginTop: '2px' }}>
+                <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0, marginTop: '2px' }}>
                   Acompanhe os valores devolvidos aos clientes ao longo do tempo.
                 </p>
               </div>
-              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '8px', border: '1px solid #fca5a5', textAlign: 'right' }}>
-                <div style={{ fontSize: '0.72rem', color: '#991b1b', fontWeight: 600 }}>Total Devolvido</div>
+              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700 }}>Total Devolvido</div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>
                   R$ {totalEstornosGeral.toFixed(2).replace('.', ',')}
                 </div>
@@ -3070,23 +2950,24 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* SELEÇÃO DE PERÍODO PARA DEVOLUÇÕES */}
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', background: '#ffffff', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Agrupar por:</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', flex: 1 }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <span style={{ fontSize: '0.8rem', color: '#111827', fontWeight: 800 }}>Agrupar por:</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', flex: 1 }}>
                 {(['dia', 'semana', 'mes', 'ano'] as const).map((p) => (
                   <button
                     key={p}
                     style={{
-                      padding: '5px 4px',
+                      padding: '6px 8px',
                       borderRadius: '6px',
-                      border: '1px solid #cbd5e1',
+                      border: '1px solid #111827',
                       fontSize: '0.75rem',
-                      fontWeight: 600,
+                      fontWeight: 700,
                       cursor: 'pointer',
                       textAlign: 'center',
                       whiteSpace: 'nowrap',
-                      background: periodoGrafico === p ? '#dc2626' : '#ffffff',
-                      color: periodoGrafico === p ? '#ffffff' : '#334155',
+                      background: periodoGrafico === p ? '#111827' : '#ffffff',
+                      color: periodoGrafico === p ? '#ffffff' : '#111827',
+                      transition: 'all 0.15s ease',
                     }}
                     onClick={() => setPeriodoGrafico(p)}
                   >
@@ -3097,34 +2978,34 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* GRÁFICO RECHARTS DE DEVOLUÇÕES */}
-            <div style={{ background: '#ffffff', padding: '14px 10px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '280px', minWidth: 0 }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#991b1b', marginBottom: '10px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '280px', minWidth: 0 }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 Evolução do Valor Estornado (R$) — Por {periodoGrafico.toUpperCase()}
               </h4>
               <div style={{ width: '100%', height: 240, minHeight: 240, minWidth: 0 }}>
                 <ResponsiveContainer key={`dev-${chartKey}-${periodoGrafico}`} width="100%" height={240} minWidth={100} minHeight={240}>
                   <BarChart data={dadosGraficoDevolucoes} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="label" stroke="#64748b" fontSize={10} tickLine={false} interval={0} tick={{ fontSize: 10, fill: '#64748b' }} dy={4} />
-                    <YAxis stroke="#64748b" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#64748b' }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                    <XAxis dataKey="label" stroke="#6b7280" fontSize={10} tickLine={false} interval={0} tick={{ fontSize: 10, fill: '#6b7280' }} dy={4} />
+                    <YAxis stroke="#6b7280" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                     <Tooltip
                       formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Valor Estornado']}
                       labelFormatter={(lbl) => `Período: ${lbl}`}
-                      contentStyle={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #fca5a5', fontSize: '0.8rem', padding: '6px 10px' }}
+                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #111827', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
                     />
-                    <Bar dataKey="estornado" fill="#ef4444" radius={[4, 4, 0, 0]} name="Valor Estornado (R$)" />
+                    <Bar dataKey="estornado" fill="#dc2626" radius={[4, 4, 0, 0]} name="Valor Estornado (R$)" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* LISTA DE DEVOLUÇÕES RECENTES */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155', marginBottom: '10px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 📋 Histórico de Transações Estornadas / Canceladas
               </h4>
               {vendasEstornadas.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '14px', textAlign: 'center' }}>
+                <div style={{ color: '#6b7280', fontSize: '0.82rem', padding: '14px', textAlign: 'center' }}>
                   Nenhum estorno ou devolução registrado até o momento.
                 </div>
               ) : (
@@ -3133,10 +3014,10 @@ ${top3 || '- Nenhum produto vendido'}
                     <div
                       key={v.id}
                       style={{
-                        padding: '8px 10px',
-                        background: '#fef2f2',
-                        borderRadius: '8px',
-                        border: '1px solid #fecaca',
+                        padding: '10px 12px',
+                        background: '#ffffff',
+                        borderRadius: '6px',
+                        border: '1px solid #111827',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -3145,18 +3026,18 @@ ${top3 || '- Nenhum produto vendido'}
                       }}
                     >
                       <div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#991b1b' }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#111827' }}>
                           Venda #{v.id} — {v.data} {v.hora}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#475569' }}>
-                          Operador: <b>{v.operadorNome}</b> | Motivo: <i>{v.motivoEstorno || 'Não especificado'}</i>
+                        <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+                          Operador: <b style={{ color: '#111827' }}>{v.operadorNome}</b> | Motivo: <i>{v.motivoEstorno || 'Não especificado'}</i>
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#dc2626' }}>
                           R$ {(v.valorTotal || 0).toFixed(2)}
                         </div>
-                        <small style={{ color: '#991b1b', fontWeight: 600, fontSize: '0.7rem' }}>ESTORNADA</small>
+                        <span style={{ color: '#ffffff', background: '#dc2626', fontWeight: 800, fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px' }}>ESTORNADA</span>
                       </div>
                     </div>
                   ))}
@@ -3169,18 +3050,18 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 3: GRÁFICO DE PERDAS & VENCIDOS */}
         {abaAtiva === 'perdas' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            <div style={{ background: '#fffbeb', padding: '14px', borderRadius: '10px', border: '1px solid #fde68a', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#92400e', marginBottom: '2px', margin: 0 }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0 }}>
                   🛑 Perdas & Riscos por Validade do Estoque
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#78350f', margin: 0, marginTop: '2px' }}>
+                <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0, marginTop: '2px' }}>
                   Mapeia produtos com validade vencida ou prestes a vencer.
                 </p>
               </div>
-              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '8px', border: '1px solid #fcd34d', textAlign: 'right' }}>
-                <div style={{ fontSize: '0.72rem', color: '#92400e', fontWeight: 600 }}>Perda em Vencidos</div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#b45309' }}>
+              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700 }}>Perda em Vencidos</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>
                   R$ {dadosPerdas.totalVencidosValor.toFixed(2).replace('.', ',')}
                 </div>
               </div>
@@ -3188,49 +3069,52 @@ ${top3 || '- Nenhum produto vendido'}
 
             {/* RESUMO CARD DE PERDAS */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
-              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '10px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#991b1b', fontWeight: 700 }}>❌ Já Vencidos</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>❌ Já Vencidos</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#dc2626', marginTop: '2px' }}>
                   R$ {dadosPerdas.totalVencidosValor.toFixed(2)}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#7f1d1d' }}>{dadosPerdas.totalVencidosQtd} un</div>
+                <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: 600 }}>{dadosPerdas.totalVencidosQtd} un</div>
               </div>
 
-              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', padding: '10px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#92400e', fontWeight: 700 }}>⚠️ Até 7 dias</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>⚠️ Até 7 dias</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
                   R$ {dadosPerdas.totalAVencer7DiasValor.toFixed(2)}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#78350f' }}>{dadosPerdas.totalAVencer7DiasQtd} un</div>
+                <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: 600 }}>{dadosPerdas.totalAVencer7DiasQtd} un</div>
               </div>
 
-              <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '10px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 700 }}>📅 Até 30 dias</span>
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#2563eb', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>📅 Até 30 dias</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#2563eb', marginTop: '2px' }}>
                   R$ {dadosPerdas.totalAVencer30DiasValor.toFixed(2)}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#1e3a8a' }}>{dadosPerdas.totalAVencer30DiasQtd} un</div>
+                <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: 600 }}>{dadosPerdas.totalAVencer30DiasQtd} un</div>
               </div>
             </div>
 
             {/* GRÁFICO RECHARTS DE RISCO DE PERDA */}
-            <div style={{ background: '#ffffff', padding: '14px 10px', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '260px', minWidth: 0 }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155', marginBottom: '10px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '260px', minWidth: 0 }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 Distribuição Financeira de Perdas e Vencimentos (R$)
               </h4>
               <div style={{ width: '100%', height: 240, minHeight: 240, minWidth: 0 }}>
                 <ResponsiveContainer key={`perdas-${chartKey}`} width="100%" height={240} minWidth={100} minHeight={240}>
                   <BarChart data={dadosPerdas.graficoRisco} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis dataKey="label" stroke="#64748b" fontSize={10} tickLine={false} tick={{ fontSize: 10, fill: '#64748b' }} dy={4} />
-                    <YAxis stroke="#64748b" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#64748b' }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                    <XAxis dataKey="label" stroke="#6b7280" fontSize={10} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={4} />
+                    <YAxis stroke="#6b7280" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                     <Tooltip
                       formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Valor em Risco']}
-                      contentStyle={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.8rem', padding: '6px 10px' }}
+                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #111827', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
                     />
                     <Bar dataKey="valorR$" radius={[4, 4, 0, 0]} name="Valor em R$ (Perda / Risco)">
                       {dadosPerdas.graficoRisco.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.label.includes('Vencido') ? '#dc2626' : entry.label.includes('7 Dias') ? '#d97706' : '#2563eb'} 
+                        />
                       ))}
                     </Bar>
                   </BarChart>
@@ -3238,60 +3122,51 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
             </div>
 
-            {/* TABELA DE PRODUTOS CRÍTICOS / PERDAS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#334155', marginBottom: '10px', margin: 0 }}>
-                🚨 Produtos Críticos Vencidos ou a Vencer
+            {/* TABELA DE PRODUTOS CRÍTICOS / VENCIDOS */}
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
+                📋 Detalhamento dos Lotes em Risco
               </h4>
               {dadosPerdas.listaVencidos.length === 0 ? (
-                <div style={{ color: '#16a34a', fontSize: '0.82rem', padding: '14px', textAlign: 'center', background: '#f0fdf4', borderRadius: '8px' }}>
-                  🎉 Excelente! Nenhum produto vencido ou com validade próxima no estoque.
+                <div style={{ color: '#16a34a', fontSize: '0.85rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #111827' }}>
+                  🎉 Excelente! Não há lotes vencidos ou a vencer nos próximos 30 dias.
                 </div>
               ) : (
                 <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem', minWidth: '400px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '460px' }}>
                     <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
-                        <th style={{ padding: '6px 8px' }}>Status</th>
-                        <th style={{ padding: '6px 8px' }}>Produto</th>
-                        <th style={{ padding: '6px 8px' }}>Lote</th>
-                        <th style={{ padding: '6px 8px' }}>Validade</th>
-                        <th style={{ padding: '6px 8px' }}>Qtd</th>
-                        <th style={{ padding: '6px 8px', textAlign: 'right' }}>Perda (R$)</th>
+                      <tr style={{ background: '#111827', color: '#ffffff', textAlign: 'left' }}>
+                        <th style={{ padding: '8px 10px', borderRadius: '4px 0 0 0' }}>Status</th>
+                        <th style={{ padding: '8px 10px' }}>Produto</th>
+                        <th style={{ padding: '8px 10px' }}>Lote</th>
+                        <th style={{ padding: '8px 10px' }}>Validade</th>
+                        <th style={{ padding: '8px 10px' }}>Qtd</th>
+                        <th style={{ padding: '8px 10px', textAlign: 'right', borderRadius: '0 4px 0 0' }}>Perda (R$)</th>
                       </tr>
                     </thead>
                     <tbody>
                       {dadosPerdas.listaVencidos.map((item, idx) => (
-                        <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '6px 8px' }}>
+                        <tr key={idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                          <td style={{ padding: '8px 10px' }}>
                             <span
                               style={{
-                                padding: '2px 6px',
+                                padding: '2px 8px',
                                 borderRadius: '4px',
-                                fontWeight: 700,
+                                fontWeight: 800,
                                 fontSize: '0.7rem',
-                                background:
-                                  item.status === 'Vencido'
-                                    ? '#fef2f2'
-                                    : item.status === 'Vence em até 7 dias'
-                                    ? '#fffbeb'
-                                    : '#eff6ff',
-                                color:
-                                  item.status === 'Vencido'
-                                    ? '#dc2626'
-                                    : item.status === 'Vence em até 7 dias'
-                                    ? '#b45309'
-                                    : '#2563eb',
+                                border: '1px solid #111827',
+                                background: item.status === 'Vencido' ? '#111827' : '#ffffff',
+                                color: item.status === 'Vencido' ? '#ffffff' : '#111827',
                               }}
                             >
                               {item.status}
                             </span>
                           </td>
-                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{item.nome}</td>
-                          <td style={{ padding: '6px 8px', color: '#64748b' }}>{item.lote || '-'}</td>
-                          <td style={{ padding: '6px 8px', fontWeight: 600 }}>{item.validade}</td>
-                          <td style={{ padding: '6px 8px' }}>{item.qtd} un</td>
-                          <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 700, color: item.status === 'Vencido' ? '#dc2626' : '#d97706' }}>
+                          <td style={{ padding: '8px 10px', fontWeight: 700, color: '#111827' }}>{item.nome}</td>
+                          <td style={{ padding: '8px 10px', color: '#4b5563' }}>{item.lote || '-'}</td>
+                          <td style={{ padding: '8px 10px', fontWeight: 600, color: '#111827' }}>{item.validade}</td>
+                          <td style={{ padding: '8px 10px', color: '#111827' }}>{item.qtd} un</td>
+                          <td style={{ padding: '8px 10px', textAlign: 'right', fontWeight: 800, color: item.status === 'Vencido' ? '#dc2626' : '#d97706' }}>
                             R$ {item.perdaTotalR$.toFixed(2)}
                           </td>
                         </tr>
@@ -3309,30 +3184,30 @@ ${top3 || '- Nenhum produto vendido'}
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             {/* CARDS RESUMO DO ESTOQUE */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '10px 12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>📦 Peças em Estoque Físico</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#3b82f6', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>📦 Peças em Estoque Físico</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
                   {dadosEstoqueGrafico.totalPecasEstoque} un
                 </div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '10px 12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>💵 Valor Venda (Físico)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#16a34a', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>💵 Valor Venda (Físico)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
                   R$ {dadosEstoqueGrafico.totalValorVendaEstoque.toFixed(2).replace('.', ',')}
                 </div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '10px 12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>🏷️ Custo Total (Físico)</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#6366f1', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>🏷️ Custo Total (Físico)</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
                   R$ {dadosEstoqueGrafico.totalValorCustoEstoque.toFixed(2).replace('.', ',')}
                 </div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '10px 12px', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>✨ Margem Bruta Projetada</span>
-                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0d9488', marginTop: '2px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>✨ Margem Bruta Projetada</span>
+                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#111827', marginTop: '2px' }}>
                   R$ {dadosEstoqueGrafico.lucroBrutoProjetado.toFixed(2).replace('.', ',')}
                 </div>
               </div>
@@ -3341,51 +3216,50 @@ ${top3 || '- Nenhum produto vendido'}
             {/* CARD MASTER: VENDAS REALIZADAS RETIRANDO O CUSTO (MANTENDO SÓ COM O LUCRO) */}
             <div
               style={{
-                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                border: '2px solid #86efac',
-                borderRadius: '10px',
-                padding: '12px 14px',
+                background: '#ffffff',
+                border: '1px solid #111827',
+                borderRadius: '8px',
+                padding: '14px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '10px',
-                boxShadow: '0 2px 6px rgba(22, 163, 74, 0.12)',
               }}
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '1.2rem' }}>💰</span>
-                  <b style={{ fontSize: '0.88rem', color: '#166534', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <b style={{ fontSize: '0.9rem', color: '#111827', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Vendas Realizadas (Só com o Lucro)
                   </b>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#15803d', background: '#ffffff', padding: '1px 7px', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#111827', background: '#f8fafc', padding: '2px 8px', borderRadius: '6px', border: '1px solid #111827' }}>
                     +{totaisFinanceirosVendas.margemLucroReal.toFixed(1)}% margem
                   </span>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#14532d', marginTop: '3px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#4b5563', marginTop: '3px' }}>
                   Valor total vendido retirando o custo das mercadorias vendidas
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', fontWeight: 600 }}>Total Vendido:</span>
-                  <b style={{ fontSize: '0.92rem', color: '#0284c7' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#6b7280', display: 'block', fontWeight: 700 }}>Total Vendido:</span>
+                  <b style={{ fontSize: '0.95rem', color: '#111827' }}>
                     R$ {totaisFinanceirosVendas.valorTotalVendido.toFixed(2).replace('.', ',')}
                   </b>
                 </div>
-                <div style={{ textAlign: 'right', borderLeft: '1px solid #bbf7d0', paddingLeft: '10px' }}>
-                  <span style={{ fontSize: '0.7rem', color: '#64748b', display: 'block', fontWeight: 600 }}>(-) Custo Retirado:</span>
-                  <b style={{ fontSize: '0.92rem', color: '#dc2626' }}>
+                <div style={{ textAlign: 'right', borderLeft: '1px solid #111827', paddingLeft: '10px' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#6b7280', display: 'block', fontWeight: 700 }}>(-) Custo Retirado:</span>
+                  <b style={{ fontSize: '0.95rem', color: '#dc2626' }}>
                     - R$ {totaisFinanceirosVendas.custoTotalVendido.toFixed(2).replace('.', ',')}
                   </b>
                 </div>
-                <div style={{ textAlign: 'right', borderLeft: '2px solid #86efac', paddingLeft: '12px' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#166534', fontWeight: 800, display: 'block' }}>
+                <div style={{ textAlign: 'right', borderLeft: '1px solid #111827', paddingLeft: '12px' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#111827', fontWeight: 800, display: 'block' }}>
                     (=) Só o Lucro:
                   </span>
-                  <b style={{ fontSize: '1.35rem', color: '#15803d', fontWeight: 900 }}>
+                  <b style={{ fontSize: '1.35rem', color: '#16a34a', fontWeight: 900 }}>
                     R$ {totaisFinanceirosVendas.lucroRealFaturado.toFixed(2).replace('.', ',')}
                   </b>
                 </div>
@@ -3396,10 +3270,10 @@ ${top3 || '- Nenhum produto vendido'}
             {dadosEstoqueGrafico.totalItensBalcao > 0 && (
               <div
                 style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '10px',
-                  padding: '12px 14px',
+                  background: '#ffffff',
+                  border: '1px solid #111827',
+                  borderRadius: '8px',
+                  padding: '14px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -3408,14 +3282,14 @@ ${top3 || '- Nenhum produto vendido'}
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: '1.4rem', background: '#eff6ff', padding: '6px 8px', borderRadius: '8px', border: '1px solid #dbeafe' }}>
+                  <div style={{ fontSize: '1.4rem', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px', border: '1px solid #111827' }}>
                     🍢
                   </div>
                   <div>
-                    <b style={{ fontSize: '0.85rem', color: '#1e293b', display: 'block' }}>
+                    <b style={{ fontSize: '0.85rem', color: '#111827', display: 'block' }}>
                       Produtos de Balcão & Adega ({dadosEstoqueGrafico.totalItensBalcao} itens com estoque sob demanda)
                     </b>
-                    <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                    <span style={{ fontSize: '0.74rem', color: '#4b5563' }}>
                       Itens com estoque contínuo/ilimitado contabilizam estritamente pelo valor real vendido no caixa.
                     </span>
                   </div>
@@ -3427,41 +3301,41 @@ ${top3 || '- Nenhum produto vendido'}
                     alignItems: 'center',
                     gap: '10px',
                     background: '#ffffff',
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #111827',
                     flexWrap: 'wrap',
                   }}
                 >
                   <div>
-                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, display: 'block' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       Faturamento Caixa:
                     </span>
-                    <b style={{ fontSize: '0.92rem', color: '#0284c7' }}>
+                    <b style={{ fontSize: '0.95rem', color: '#111827' }}>
                       R$ {dadosEstoqueGrafico.totalFaturadoBalcao.toFixed(2).replace('.', ',')}
                     </b>
                   </div>
-                  <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
-                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, display: 'block' }}>
+                  <div style={{ borderLeft: '1px solid #111827', paddingLeft: '8px' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       (-) Custo Balcão:
                     </span>
                     <b style={{ fontSize: '0.92rem', color: '#dc2626' }}>
                       - R$ {dadosEstoqueGrafico.totalCustoBalcao.toFixed(2).replace('.', ',')}
                     </b>
                   </div>
-                  <div style={{ borderLeft: '2px solid #86efac', paddingLeft: '8px' }}>
-                    <span style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 800, display: 'block' }}>
+                  <div style={{ borderLeft: '1px solid #111827', paddingLeft: '8px' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       (=) Só Lucro Balcão:
                     </span>
-                    <b style={{ fontSize: '1rem', color: '#15803d', fontWeight: 900 }}>
+                    <b style={{ fontSize: '1rem', color: '#16a34a', fontWeight: 900 }}>
                       R$ {dadosEstoqueGrafico.totalLucroBalcao.toFixed(2).replace('.', ',')}
                     </b>
                   </div>
-                  <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
-                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, display: 'block' }}>
+                  <div style={{ borderLeft: '1px solid #111827', paddingLeft: '8px' }}>
+                    <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       Vendas:
                     </span>
-                    <b style={{ fontSize: '0.92rem', color: '#3b82f6' }}>
+                    <b style={{ fontSize: '0.92rem', color: '#111827' }}>
                       {dadosEstoqueGrafico.totalQtdVendidaBalcao} un
                     </b>
                   </div>
@@ -3472,36 +3346,36 @@ ${top3 || '- Nenhum produto vendido'}
             {/* GRÁFICOS DE ESTOQUE */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
               {/* TOP 10 MAIOR VALOR FINANCEIRO EM ESTOQUE */}
-              <div style={{ background: '#ffffff', padding: '14px 10px', borderRadius: '12px', border: '1px solid #e2e8f0', minWidth: 0 }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1e293b', marginBottom: '10px', margin: 0 }}>
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minWidth: 0 }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   💰 Top 10 Produtos por Valor Total em Estoque Físico (R$)
                 </h4>
                 <div style={{ width: '100%', height: 260, minHeight: 260, minWidth: 0 }}>
                   <ResponsiveContainer key={`est-val-${chartKey}`} width="100%" height={260} minWidth={100} minHeight={260}>
                     <BarChart layout="vertical" data={dadosEstoqueGrafico.topMaiorValor} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                      <XAxis type="number" stroke="#64748b" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#64748b' }} />
-                      <YAxis dataKey="nome" type="category" width={85} stroke="#64748b" fontSize={10} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(n) => truncarTexto(n, 12)} />
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
+                      <XAxis type="number" stroke="#6b7280" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
+                      <YAxis dataKey="nome" type="category" width={85} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} tickFormatter={(n) => truncarTexto(n, 12)} />
                       <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2)}`, 'Valor em Loja']} />
-                      <Bar dataKey="valorVendaTotal" fill="#10b981" radius={[0, 4, 4, 0]} name="Valor Venda (R$)" />
+                      <Bar dataKey="valorVendaTotal" fill="#111827" radius={[0, 4, 4, 0]} name="Valor Venda (R$)" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
               {/* TOP 10 MAIOR QUANTIDADE DE UNIDADES */}
-              <div style={{ background: '#ffffff', padding: '14px 10px', borderRadius: '12px', border: '1px solid #e2e8f0', minWidth: 0 }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1e293b', marginBottom: '10px', margin: 0 }}>
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minWidth: 0 }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   📦 Top 10 Produtos por Quantidade em Estoque Físico
                 </h4>
                 <div style={{ width: '100%', height: 260, minHeight: 260, minWidth: 0 }}>
                   <ResponsiveContainer key={`est-qtd-${chartKey}`} width="100%" height={260} minWidth={100} minHeight={260}>
                     <BarChart layout="vertical" data={dadosEstoqueGrafico.topMaiorQtd} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                      <XAxis type="number" stroke="#64748b" fontSize={10} tick={{ fontSize: 10, fill: '#64748b' }} />
-                      <YAxis dataKey="nome" type="category" width={85} stroke="#64748b" fontSize={10} tick={{ fontSize: 10, fill: '#64748b' }} tickFormatter={(n) => truncarTexto(n, 12)} />
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
+                      <XAxis type="number" stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} />
+                      <YAxis dataKey="nome" type="category" width={85} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} tickFormatter={(n) => truncarTexto(n, 12)} />
                       <Tooltip formatter={(val: any) => [`${val} un`, 'Quantidade']} />
-                      <Bar dataKey="quantidade" fill="#6366f1" radius={[0, 4, 4, 0]} name="Unidades" />
+                      <Bar dataKey="quantidade" fill="#4b5563" radius={[0, 4, 4, 0]} name="Unidades" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -3510,16 +3384,44 @@ ${top3 || '- Nenhum produto vendido'}
           </div>
         )}
 
-        {/* ABA 5: MAIS E MENOS VENDIDOS */}
+        {/* ABA 5: RANKING DE PRODUTOS MAIS E MENOS VENDIDOS */}
         {abaAtiva === 'ranking' && (
-          <div className="aba-conteudo-painel" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+          <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+            {/* SELEÇÃO DE PERÍODO PARA O RANKING */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <span style={{ fontSize: '0.8rem', color: '#111827', fontWeight: 800 }}>Período do Ranking:</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', flex: 1 }}>
+                {(['dia', 'semana', 'mes', 'ano'] as const).map((p) => (
+                  <button
+                    key={p}
+                    style={{
+                      padding: '6px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #111827',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      whiteSpace: 'nowrap',
+                      background: periodoGrafico === p ? '#111827' : '#ffffff',
+                      color: periodoGrafico === p ? '#ffffff' : '#111827',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onClick={() => setPeriodoGrafico(p)}
+                  >
+                    {p.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* MAIS VENDIDOS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#16a34a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
                 🔥 Produtos Mais Vendidos
               </h3>
               {maisVendidos.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
+                <div style={{ color: '#6b7280', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
                   Nenhum registro de vendas no período.
                 </div>
               ) : (
@@ -3531,23 +3433,25 @@ ${top3 || '- Nenhum produto vendido'}
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        background: '#f0fdf4',
-                        borderRadius: '8px',
-                        border: '1px solid #bbf7d0',
+                        padding: '10px 12px',
+                        background: '#ffffff',
+                        borderRadius: '6px',
+                        border: '1px solid #111827',
                         gap: '8px',
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
-                        <span style={{ fontWeight: 800, color: '#16a34a', fontSize: '0.9rem', width: '22px', flexShrink: 0 }}>#{index + 1}</span>
+                        <span style={{ fontWeight: 800, color: '#ffffff', background: '#111827', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', flexShrink: 0 }}>
+                          #{index + 1}
+                        </span>
                         <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                          <b style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
-                          <small style={{ color: '#475569', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
+                          <b style={{ fontSize: '0.85rem', color: '#111827', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
+                          <small style={{ color: '#4b5563', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
                         </div>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontWeight: 700, color: '#16a34a', fontSize: '0.85rem' }}>{prod.qtdVendida} un</div>
-                        <small style={{ color: '#64748b', fontSize: '0.72rem' }}>R$ {prod.totalFaturado.toFixed(2)}</small>
+                        <div style={{ fontWeight: 800, color: '#16a34a', fontSize: '0.88rem' }}>{prod.qtdVendida} un</div>
+                        <small style={{ color: '#6b7280', fontSize: '0.72rem', fontWeight: 600 }}>R$ {prod.totalFaturado.toFixed(2)}</small>
                       </div>
                     </div>
                   ))}
@@ -3556,12 +3460,12 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* MENOS VENDIDOS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#dc2626', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
                 🧊 Produtos Menos Vendidos
               </h3>
               {menosVendidos.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
+                <div style={{ color: '#6b7280', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
                   Nenhum registro de vendas no período.
                 </div>
               ) : (
@@ -3573,23 +3477,25 @@ ${top3 || '- Nenhum produto vendido'}
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        background: '#fef2f2',
-                        borderRadius: '8px',
-                        border: '1px solid #fecaca',
+                        padding: '10px 12px',
+                        background: '#ffffff',
+                        borderRadius: '6px',
+                        border: '1px solid #111827',
                         gap: '8px',
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
-                        <span style={{ fontWeight: 800, color: '#dc2626', fontSize: '0.9rem', width: '22px', flexShrink: 0 }}>#{index + 1}</span>
+                        <span style={{ fontWeight: 800, color: '#111827', background: '#f1f5f9', border: '1px solid #111827', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', flexShrink: 0 }}>
+                          #{index + 1}
+                        </span>
                         <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                          <b style={{ fontSize: '0.82rem', color: '#0f172a', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
-                          <small style={{ color: '#475569', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
+                          <b style={{ fontSize: '0.85rem', color: '#111827', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
+                          <small style={{ color: '#4b5563', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
                         </div>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontWeight: 700, color: '#dc2626', fontSize: '0.85rem' }}>{prod.qtdVendida} un</div>
-                        <small style={{ color: '#64748b', fontSize: '0.72rem' }}>R$ {prod.totalFaturado.toFixed(2)}</small>
+                        <div style={{ fontWeight: 800, color: '#dc2626', fontSize: '0.88rem' }}>{prod.qtdVendida} un</div>
+                        <small style={{ color: '#6b7280', fontSize: '0.72rem', fontWeight: 600 }}>R$ {prod.totalFaturado.toFixed(2)}</small>
                       </div>
                     </div>
                   ))}
@@ -3603,20 +3509,20 @@ ${top3 || '- Nenhum produto vendido'}
         {abaAtiva === 'inteligencia' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             {/* PAINEL INFORMATIVO */}
-            <div style={{ background: '#f0f9ff', padding: '14px', borderRadius: '10px', border: '1px solid #bae6fd', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0369a1', marginBottom: '2px', margin: 0 }}>
+                <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0 }}>
                   🧠 Inteligência de Estoque (Para o Dono)
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: '#0c4a6e', margin: 0, marginTop: '2px' }}>
+                <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0, marginTop: '2px' }}>
                   Identifica onde investir mais e onde pausar compras.
                 </p>
               </div>
 
               {insightsEstoque.totalCapitalParado > 0 && (
-                <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '8px', border: '1px solid #7dd3fc', textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 600 }}>Capital em Estoque Parado</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#b45309' }}>
+                <div style={{ background: '#ffffff', padding: '8px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700 }}>Capital em Estoque Parado</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>
                     R$ {insightsEstoque.totalCapitalParado.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
@@ -3624,12 +3530,12 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* SEÇÃO 1: EVITAR COMPRAR MAIS (ESTOQUE PARADO) */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#b45309', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
                 🛑 Estoque Parado / Pausar Compras
               </h3>
               {insightsEstoque.naoInvestir.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '12px', background: '#f8fafc', borderRadius: '8px', marginTop: '8px' }}>
+                <div style={{ color: '#16a34a', fontSize: '0.82rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #111827', marginTop: '8px' }}>
                   🎉 Excelente! Nenhum produto detectado com excesso de estoque parado sem vendas.
                 </div>
               ) : (
@@ -3638,10 +3544,10 @@ ${top3 || '- Nenhum produto vendido'}
                     <div
                       key={`nao_investir_${item.codigo}_${idx}`}
                       style={{
-                        background: '#fffbeb',
-                        border: '1px solid #fde68a',
-                        borderRadius: '8px',
-                        padding: '10px',
+                        background: '#ffffff',
+                        border: '1px solid #111827',
+                        borderRadius: '6px',
+                        padding: '12px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
@@ -3649,12 +3555,12 @@ ${top3 || '- Nenhum produto vendido'}
                     >
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px', gap: '6px' }}>
-                          <b style={{ fontSize: '0.85rem', color: '#78350f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
-                          <span style={{ fontSize: '0.7rem', background: '#fef3c7', color: '#92400e', padding: '1px 5px', borderRadius: '4px', fontWeight: 600, flexShrink: 0 }}>
+                          <b style={{ fontSize: '0.85rem', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
+                          <span style={{ fontSize: '0.7rem', background: '#f8fafc', color: '#111827', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid #111827', flexShrink: 0 }}>
                             Cód: {item.codigo}
                           </span>
                         </div>
-                        <p style={{ fontSize: '0.78rem', color: '#92400e', lineHeight: 1.35, margin: '4px 0' }}>
+                        <p style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.35, margin: '4px 0' }}>
                           {item.motivo}
                         </p>
                       </div>
@@ -3666,9 +3572,9 @@ ${top3 || '- Nenhum produto vendido'}
                           justifyContent: 'space-between',
                           fontSize: '0.75rem',
                           fontWeight: 700,
-                          color: '#b45309',
-                          borderTop: '1px dashed #fcd34d',
-                          paddingTop: '4px',
+                          color: '#111827',
+                          borderTop: '1px dashed #d1d5db',
+                          paddingTop: '6px',
                         }}
                       >
                         <span>📦 Estoque: {item.qtdEstoque} un</span>
@@ -3681,12 +3587,12 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* SEÇÃO 2: PRODUTOS PARA INVESTIR MAIS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#15803d', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#111827', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
                 🚀 Produtos para Reposição Urgente (Alto Giro)
               </h3>
               {insightsEstoque.investirMais.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '12px', background: '#f8fafc', borderRadius: '8px', marginTop: '8px' }}>
+                <div style={{ color: '#4b5563', fontSize: '0.82rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #111827', marginTop: '8px' }}>
                   Nenhum alerta de reposição urgente no momento.
                 </div>
               ) : (
@@ -3695,10 +3601,10 @@ ${top3 || '- Nenhum produto vendido'}
                     <div
                       key={`investir_${item.codigo}_${idx}`}
                       style={{
-                        background: '#f0fdf4',
-                        border: '1px solid #86efac',
-                        borderRadius: '8px',
-                        padding: '10px',
+                        background: '#ffffff',
+                        border: '1px solid #111827',
+                        borderRadius: '6px',
+                        padding: '12px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between',
@@ -3706,12 +3612,12 @@ ${top3 || '- Nenhum produto vendido'}
                     >
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px', gap: '6px' }}>
-                          <b style={{ fontSize: '0.85rem', color: '#14532d', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
-                          <span style={{ fontSize: '0.7rem', background: '#dcfce7', color: '#166534', padding: '1px 5px', borderRadius: '4px', fontWeight: 600, flexShrink: 0 }}>
+                          <b style={{ fontSize: '0.85rem', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.nome}</b>
+                          <span style={{ fontSize: '0.7rem', background: '#f8fafc', color: '#111827', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, border: '1px solid #111827', flexShrink: 0 }}>
                             Cód: {item.codigo}
                           </span>
                         </div>
-                        <p style={{ fontSize: '0.78rem', color: '#166534', lineHeight: 1.35, margin: '4px 0' }}>
+                        <p style={{ fontSize: '0.78rem', color: '#4b5563', lineHeight: 1.35, margin: '4px 0' }}>
                           {item.motivo}
                         </p>
                       </div>
@@ -3723,9 +3629,9 @@ ${top3 || '- Nenhum produto vendido'}
                           justifyContent: 'space-between',
                           fontSize: '0.75rem',
                           fontWeight: 700,
-                          color: '#15803d',
-                          borderTop: '1px dashed #bbf7d0',
-                          paddingTop: '4px',
+                          color: '#16a34a',
+                          borderTop: '1px dashed #d1d5db',
+                          paddingTop: '6px',
                         }}
                       >
                         <span>📦 Estoque: {item.qtdEstoque} un</span>

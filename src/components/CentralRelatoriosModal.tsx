@@ -418,25 +418,25 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto"
       style={{ zIndex: 99999 }}
     >
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-100">
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
         
         {/* CABEÇALHO PRINCIPAL COM LOGO & ABAS */}
-        <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
+              <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-slate-900">
                 Central de Relatórios & Desempenho
                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   {nomeLoja || 'Loja Principal'}
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Faturamento real, histórico de vendas, estoque, lote e métricas do Delivery em um único lugar
               </p>
             </div>
@@ -444,20 +444,20 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
           <button
             onClick={onFechar}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition border border-slate-200"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* NAVEGAÇÃO ENTRE ABAS */}
-        <div className="flex border-b border-slate-800 bg-slate-900/60 overflow-x-auto px-4 gap-2 pt-2 scrollbar-none">
+        <div className="flex border-b border-slate-200 bg-slate-100/70 overflow-x-auto px-4 gap-2 pt-2 scrollbar-none">
           <button
             onClick={() => setAbaAtiva('faturamento')}
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'faturamento'
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10 rounded-t-lg'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-emerald-600 text-emerald-800 bg-white rounded-t-lg shadow-sm font-bold'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
             <TrendingUp className="w-4 h-4" />
@@ -468,8 +468,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             onClick={() => setAbaAtiva('vendas')}
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'vendas'
-                ? 'border-blue-500 text-blue-400 bg-blue-500/10 rounded-t-lg'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-blue-600 text-blue-800 bg-white rounded-t-lg shadow-sm font-bold'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
             <Receipt className="w-4 h-4" />
@@ -480,8 +480,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             onClick={() => setAbaAtiva('estoque')}
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'estoque'
-                ? 'border-amber-500 text-amber-400 bg-amber-500/10 rounded-t-lg'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-amber-600 text-amber-800 bg-white rounded-t-lg shadow-sm font-bold'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
             <Package className="w-4 h-4" />
@@ -492,8 +492,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             onClick={() => setAbaAtiva('delivery')}
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
               abaAtiva === 'delivery'
-                ? 'border-purple-500 text-purple-400 bg-purple-500/10 rounded-t-lg'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-purple-600 text-purple-800 bg-white rounded-t-lg shadow-sm font-bold'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
             }`}
           >
             <Bike className="w-4 h-4" />
@@ -511,8 +511,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             <div className="space-y-6">
               
               {/* Barra de Filtro de Período */}
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
-                <div className="flex items-center gap-2 text-sm text-slate-300">
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
                   <Calendar className="w-4 h-4 text-emerald-400" />
                   <span>Filtrar período de vendas:</span>
                 </div>
@@ -524,7 +524,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
                         periodoFiltro === p
                           ? 'bg-emerald-600 text-white shadow-md'
-                          : 'bg-slate-700 text-slate-300 hover:bg-slate-650'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
                       }`}
                     >
                       {p === 'hoje' ? 'Hoje' : p === '7dias' ? 'Últimos 7 dias' : p === '30dias' ? 'Últimos 30 dias' : p === 'mes' ? 'Este Mês' : 'Todo o Período'}
@@ -537,32 +537,32 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 
                 {/* 1. SÓ COM O LUCRO (DESTAQUE MÁXIMO) */}
-                <div className="bg-gradient-to-br from-emerald-950/80 to-emerald-900/40 border border-emerald-500/40 p-4 rounded-2xl shadow-xl relative overflow-hidden">
+                <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/60 border border-emerald-300 p-4 rounded-2xl shadow-sm relative overflow-hidden">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-emerald-300">
+                    <span className="text-xs uppercase tracking-wider font-bold text-emerald-800">
                       💰 Só com o Lucro Real
                     </span>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                       +{metricasGerais.margemGeral.toFixed(1)}%
                     </span>
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-emerald-700">
                     R$ {metricasGerais.lucroReal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
-                  <p className="text-xs text-emerald-200/70 mt-1">
+                  <p className="text-xs text-emerald-800/80 mt-1">
                     Ganho líquido retirando todo o custo das mercadorias
                   </p>
                 </div>
 
                 {/* 2. RECEITA BRUTA */}
-                <div className="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
                       💵 Faturamento Bruto
                     </span>
                     <DollarSign className="w-4 h-4 text-blue-400" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-100">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                     R$ {metricasGerais.faturamentoBruto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                   <p className="text-xs text-slate-400 mt-1">
@@ -571,7 +571,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 </div>
 
                 {/* 3. CUSTO DAS MERCADORIAS (CMV) */}
-                <div className="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-semibold text-rose-400">
                       🏷️ (-) Custo Produtos (CMV)
@@ -587,21 +587,21 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 </div>
 
                 {/* 4. BALCÃO VS DELIVERY */}
-                <div className="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-purple-300">
+                    <span className="text-xs uppercase tracking-wider font-bold text-purple-800">
                       🛵 Delivery vs 🛒 Balcão
                     </span>
                     <Bike className="w-4 h-4 text-purple-400" />
                   </div>
                   <div className="text-sm space-y-1">
-                    <div className="flex justify-between items-center text-slate-200">
+                    <div className="flex justify-between items-center text-slate-800">
                       <span className="text-xs text-slate-400">🛵 Delivery ({metricasGerais.qtdDelivery}):</span>
                       <span className="font-bold text-purple-300">
                         R$ {metricasGerais.faturamentoDelivery.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center text-slate-200">
+                    <div className="flex justify-between items-center text-slate-800">
                       <span className="text-xs text-slate-400">🛒 Balcão ({metricasGerais.qtdBalcao}):</span>
                       <span className="font-bold text-blue-300">
                         R$ {metricasGerais.faturamentoBalcao.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -619,7 +619,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 
                 {/* Gráfico de Evolução de Faturamento & Lucro */}
                 <div className="lg:col-span-2 bg-slate-800/60 border border-slate-700/70 p-4 rounded-2xl">
-                  <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <TrendingUp className="w-4 h-4 text-emerald-400" />
                     Evolução Diária: Lucro Líquido vs Faturamento Bruto
                   </h3>
@@ -637,11 +637,11 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                               <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
                             </linearGradient>
                           </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
-                          <XAxis dataKey="dataFormatada" stroke="#94a3b8" fontSize={11} />
-                          <YAxis stroke="#94a3b8" fontSize={11} tickFormatter={(v) => `R$${v}`} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.5} />
+                          <XAxis dataKey="dataFormatada" stroke="#64748b" fontSize={11} />
+                          <YAxis stroke="#64748b" fontSize={11} tickFormatter={(v) => `R$${v}`} />
                           <Tooltip
-                            contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem' }}
+                            contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#0f172a', borderRadius: '0.75rem' }}
                             formatter={(value: any, name: any) => [
                               `R$ ${Number(value).toFixed(2)}`,
                               name === 'lucro' ? '💰 Só Lucro Real' : '💵 Faturamento Bruto',
@@ -663,8 +663,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 </div>
 
                 {/* Gráfico de Formas de Pagamento */}
-                <div className="bg-slate-800/60 border border-slate-700/70 p-4 rounded-2xl flex flex-col">
-                  <h3 className="text-sm font-bold text-slate-200 mb-2 flex items-center gap-2">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm flex flex-col">
+                  <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-blue-400" />
                     Vendas por Forma de Pagamento
                   </h3>
@@ -686,7 +686,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                             ))}
                           </Pie>
                           <Tooltip
-                            contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem' }}
+                            contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', color: '#0f172a', borderRadius: '0.75rem' }}
                             formatter={(v: any) => `R$ ${Number(v).toFixed(2)}`}
                           />
                           <Legend />
@@ -712,7 +712,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
             <div className="space-y-4">
               
               {/* FILTROS E BUSCA */}
-              <div className="bg-slate-800/60 border border-slate-700/70 p-4 rounded-2xl space-y-3">
+              <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-2xl space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   {/* Busca */}
                   <div className="relative flex-1 min-w-[240px]">
@@ -722,7 +722,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       value={buscaVendas}
                       onChange={(e) => setBuscaVendas(e.target.value)}
                       placeholder="Buscar por código, produto, ID ou operador..."
-                      className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-500"
+                      className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
@@ -739,11 +739,11 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 {/* Filtros em linha */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
                   <div>
-                    <label className="text-slate-400 mb-1 block">Origem:</label>
+                    <label className="text-slate-600 font-semibold mb-1 block">Origem:</label>
                     <select
                       value={origemFiltro}
                       onChange={(e) => setOrigemFiltro(e.target.value as any)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todos">Todas as Origens</option>
                       <option value="balcao">🛒 Balcão / PDV</option>
@@ -752,11 +752,11 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-slate-400 mb-1 block">Status:</label>
+                    <label className="text-slate-600 font-semibold mb-1 block">Status:</label>
                     <select
                       value={statusVendaFiltro}
                       onChange={(e) => setStatusVendaFiltro(e.target.value as any)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todas">Todos os Status</option>
                       <option value="concluida">✅ Concluídas</option>
@@ -765,11 +765,11 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-slate-400 mb-1 block">Pagamento:</label>
+                    <label className="text-slate-600 font-semibold mb-1 block">Pagamento:</label>
                     <select
                       value={formaPgtoFiltro}
                       onChange={(e) => setFormaPgtoFiltro(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todas">Todos os Pagamentos</option>
                       <option value="pix">PIX</option>
@@ -781,11 +781,11 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-slate-400 mb-1 block">Operador:</label>
+                    <label className="text-slate-600 font-semibold mb-1 block">Operador:</label>
                     <select
                       value={operadorFiltro}
                       onChange={(e) => setOperadorFiltro(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-800"
                     >
                       <option value="todos">Todos os Operadores</option>
                       {operadores.map((op) => (
@@ -811,10 +811,10 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                         key={venda.id}
                         className={`border rounded-2xl transition overflow-hidden ${
                           venda.status === 'estornada'
-                            ? 'bg-rose-950/20 border-rose-900/40 opacity-80'
+                            ? 'bg-rose-50 border-rose-200 opacity-90'
                             : isDelivery
-                            ? 'bg-slate-850/90 border-purple-500/30'
-                            : 'bg-slate-800/70 border-slate-700/80'
+                            ? 'bg-purple-50/40 border-purple-200 shadow-sm'
+                            : 'bg-white border-slate-200 shadow-sm'
                         }`}
                       >
                         {/* CABEÇALHO DO CARD DE VENDA */}
@@ -825,19 +825,19 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                             </span>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-100 text-sm">
+                                <span className="font-bold text-slate-900 text-sm">
                                   {isDelivery ? 'Delivery' : 'Balcão'} #{venda.id.slice(-6)}
                                 </span>
                                 {isDelivery && (
-                                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 border border-purple-200">
                                     Zé Delivery
                                   </span>
                                 )}
                                 <span
                                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                                     venda.status === 'estornada'
-                                      ? 'bg-rose-500/20 text-rose-300'
-                                      : 'bg-emerald-500/20 text-emerald-300'
+                                      ? 'bg-rose-100 text-rose-700 border border-rose-200'
+                                      : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                                   }`}
                                 >
                                   {venda.status === 'estornada' ? 'Estornada' : 'Concluída'}
@@ -857,18 +857,18 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                           <div className="flex items-center gap-4 text-right">
                             <div>
                               <div className="text-xs text-slate-400">Total Vendido:</div>
-                              <div className="text-base font-bold text-slate-100">
+                              <div className="text-base font-bold text-slate-900">
                                 R$ {m.valorTotal.toFixed(2)}
                               </div>
                             </div>
 
-                            <div className="bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-xl">
-                              <div className="text-[10px] text-emerald-300 font-semibold uppercase">
+                            <div className="bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl shadow-xs">
+                              <div className="text-[10px] text-emerald-700 font-bold uppercase">
                                 Só Lucro Real:
                               </div>
-                              <div className="text-sm font-extrabold text-emerald-400">
+                              <div className="text-sm font-extrabold text-emerald-700">
                                 R$ {m.lucroReal.toFixed(2)}{' '}
-                                <span className="text-[10px] font-normal text-emerald-300">
+                                <span className="text-[10px] font-medium text-emerald-600">
                                   ({m.margemPercentual.toFixed(0)}%)
                                 </span>
                               </div>
@@ -880,7 +880,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                                 <button
                                   onClick={() => onVerCupom(venda)}
                                   title="Imprimir Cupom"
-                                  className="p-2 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-slate-300 hover:text-white transition"
+                                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
                                 >
                                   <Printer className="w-4 h-4" />
                                 </button>
@@ -894,7 +894,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                                     setErroEstorno('');
                                   }}
                                   title="Estornar Venda"
-                                  className="p-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 hover:text-rose-100 transition"
+                                  className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 transition border border-rose-200"
                                 >
                                   <RotateCcw className="w-4 h-4" />
                                 </button>
@@ -902,7 +902,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
                               <button
                                 onClick={() => setVendaExpandidaId(isExpandida ? null : venda.id)}
-                                className="p-2 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-slate-300 transition"
+                                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200"
                               >
                                 {isExpandida ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                               </button>
@@ -912,8 +912,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
                         {/* DETALHES DOS ITENS EXPANDIDOS */}
                         {isExpandida && (
-                          <div className="p-4 bg-slate-900/80 border-t border-slate-700/60 space-y-2">
-                            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                          <div className="p-4 bg-slate-50 border-t border-slate-200 space-y-2">
+                            <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                               Itens da Venda ({venda.itens?.length || 0}):
                             </h4>
                             <div className="space-y-1.5">
@@ -928,10 +928,10 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                                 return (
                                   <div
                                     key={idx}
-                                    className="flex items-center justify-between p-2 rounded-lg bg-slate-800/40 text-xs border border-slate-750"
+                                    className="flex items-center justify-between p-2 rounded-lg bg-white text-xs border border-slate-200 shadow-xs"
                                   >
                                     <div>
-                                      <span className="font-semibold text-slate-200">
+                                      <span className="font-semibold text-slate-800">
                                         {qtd}x {it.nome}
                                       </span>
                                       <div className="text-[10px] text-slate-400">
@@ -949,9 +949,9 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                                         </div>
                                       </div>
 
-                                      <div className="text-emerald-400 font-bold">
+                                      <div className="text-emerald-700 font-bold">
                                         +R$ {lucroItem.toFixed(2)}
-                                        <div className="text-[10px] text-emerald-300 font-normal">
+                                        <div className="text-[10px] text-emerald-600 font-medium">
                                           ({margemItem.toFixed(0)}%)
                                         </div>
                                       </div>
@@ -978,7 +978,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     disabled={paginaAtual === 1}
                     onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
-                    className="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs disabled:opacity-40"
+                    className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs disabled:opacity-40 shadow-xs"
                   >
                     Anterior
                   </button>
@@ -988,7 +988,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     disabled={paginaAtual === totalPaginas}
                     onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
-                    className="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs disabled:opacity-40"
+                    className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs disabled:opacity-40 shadow-xs"
                   >
                     Próxima
                   </button>
@@ -1008,7 +1008,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-slate-800/80 border border-slate-700 p-3.5 rounded-xl">
                   <span className="text-xs text-slate-400">Itens / Lotes:</span>
-                  <div className="text-xl font-bold text-slate-100 mt-1">
+                  <div className="text-xl font-bold text-slate-900 mt-1">
                     {metricasEstoque.totalItensUnicos} lotes
                   </div>
                   <span className="text-[11px] text-slate-400">
@@ -1042,7 +1042,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               </div>
 
               {/* FILTROS DE ESTOQUE */}
-              <div className="bg-slate-800/60 border border-slate-700 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+              <div className="bg-white border border-slate-200 shadow-sm p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
                 <div className="relative flex-1 min-w-[220px]">
                   <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
                   <input
@@ -1050,7 +1050,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     value={buscaEstoque}
                     onChange={(e) => setBuscaEstoque(e.target.value)}
                     placeholder="Buscar no estoque por produto, código ou lote..."
-                    className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-400 focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
                   />
                 </div>
 
@@ -1058,7 +1058,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     onClick={() => setFiltroEstoqueValidade('todos')}
                     className={`px-3 py-1.5 rounded-lg font-semibold transition ${
-                      filtroEstoqueValidade === 'todos' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-300'
+                      filtroEstoqueValidade === 'todos' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Todos
@@ -1066,7 +1066,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     onClick={() => setFiltroEstoqueValidade('vencidos')}
                     className={`px-3 py-1.5 rounded-lg font-semibold transition ${
-                      filtroEstoqueValidade === 'vencidos' ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-300'
+                      filtroEstoqueValidade === 'vencidos' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     ⚠️ Vencidos ({metricasEstoque.vencidos})
@@ -1074,7 +1074,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     onClick={() => setFiltroEstoqueValidade('vencendo7')}
                     className={`px-3 py-1.5 rounded-lg font-semibold transition ${
-                      filtroEstoqueValidade === 'vencendo7' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300'
+                      filtroEstoqueValidade === 'vencendo7' ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Vencendo em 7 dias ({metricasEstoque.vencendo7})
@@ -1082,7 +1082,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     onClick={() => setFiltroEstoqueValidade('baixo')}
                     className={`px-3 py-1.5 rounded-lg font-semibold transition ${
-                      filtroEstoqueValidade === 'baixo' ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300'
+                      filtroEstoqueValidade === 'baixo' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Estoque Baixo ({metricasEstoque.estoqueBaixo})
@@ -1091,7 +1091,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
                 <button
                   onClick={() => exportarEstoqueCSV(estoqueFiltrado, nomeLoja)}
-                  className="flex items-center gap-2 px-3.5 py-2 bg-slate-700 hover:bg-slate-650 text-white text-xs font-semibold rounded-xl transition"
+                  className="flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition shadow-sm"
                 >
                   <Download className="w-4 h-4" />
                   Exportar Estoque (CSV)
@@ -1099,9 +1099,9 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               </div>
 
               {/* LISTAGEM DE ITENS DE ESTOQUE */}
-              <div className="overflow-x-auto border border-slate-700/80 rounded-2xl bg-slate-800/40">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-900/80 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-700">
+              <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead className="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
                     <tr>
                       <th className="p-3">Produto</th>
                       <th className="p-3">Código / Lote</th>
@@ -1112,7 +1112,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       <th className="p-3 text-right">Lucro Unitário</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/60">
+                  <tbody className="divide-y divide-slate-100">
                     {estoqueFiltrado.length > 0 ? (
                       estoqueFiltrado.slice(0, 50).map((it, idx) => {
                         const custo = Number(it.preco_custo) || 0;
@@ -1133,8 +1133,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                         }
 
                         return (
-                          <tr key={idx} className="hover:bg-slate-700/30 transition">
-                            <td className="p-3 font-semibold text-slate-100 flex items-center gap-2">
+                          <tr key={idx} className="hover:bg-slate-50 transition">
+                            <td className="p-3 font-semibold text-slate-900 flex items-center gap-2">
                               {it.foto ? (
                                 <img src={it.foto} alt="" className="w-7 h-7 object-cover rounded-lg border border-slate-700" />
                               ) : (
@@ -1149,7 +1149,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                               {it.lote && <span className="text-[10px] text-slate-400">Lote: {it.lote}</span>}
                             </td>
                             <td className="p-3">{badgeValidade || '-'}</td>
-                            <td className="p-3 text-right font-bold text-slate-100">
+                            <td className="p-3 text-right font-bold text-slate-900">
                               {it.estoqueIlimitado ? '∞ Ilimitado' : it.quantidade}
                             </td>
                             <td className="p-3 text-right text-rose-300">R$ {custo.toFixed(2)}</td>
@@ -1182,22 +1182,22 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               
               {/* CARDS MASTER DE DELIVERY */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-purple-950/80 to-purple-900/40 border border-purple-500/40 p-4 rounded-2xl shadow-xl">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100/60 border border-purple-300 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-semibold text-purple-300">
                       🛵 Faturamento Delivery
                     </span>
                     <Bike className="w-5 h-5 text-purple-400" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-purple-200">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-purple-800">
                     R$ {metricasDelivery.faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
-                  <p className="text-xs text-purple-300/70 mt-1">
+                  <p className="text-xs text-purple-700/80 mt-1">
                     {metricasDelivery.entregues} pedidos entregues com sucesso
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-semibold text-emerald-400">
                       🏷️ Taxas de Entrega Arrecadadas
@@ -1212,7 +1212,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-semibold text-blue-400">
                       🎯 Ticket Médio Delivery
@@ -1227,7 +1227,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl shadow-md">
+                <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs uppercase tracking-wider font-semibold text-amber-400">
                       ⏱️ Status em Tempo Real
@@ -1255,16 +1255,16 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Bairros mais atendidos */}
-                <div className="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl">
-                  <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                <div className="bg-white border border-slate-200 shadow-sm p-5 rounded-2xl">
+                  <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-rose-400" />
                     Bairros com Mais Pedidos de Entrega
                   </h3>
                   {metricasDelivery.topBairros.length > 0 ? (
                     <div className="space-y-2.5">
                       {metricasDelivery.topBairros.map((b, i) => (
-                        <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
-                          <span className="font-semibold text-slate-200 flex items-center gap-2">
+                        <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                          <span className="font-semibold text-slate-800 flex items-center gap-2">
                             <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-[10px]">
                               {i + 1}
                             </span>
@@ -1282,17 +1282,17 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 </div>
 
                 {/* Produtos mais pedidos no delivery */}
-                <div className="bg-slate-800/60 border border-slate-700/80 p-5 rounded-2xl">
-                  <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                <div className="bg-white border border-slate-200 shadow-sm p-5 rounded-2xl">
+                  <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-emerald-400" />
                     Bebidas & Produtos Campeões no Delivery
                   </h3>
                   {metricasDelivery.topProdutos.length > 0 ? (
                     <div className="space-y-2.5">
                       {metricasDelivery.topProdutos.map((prod, i) => (
-                        <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
+                        <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                           <div>
-                            <span className="font-semibold text-slate-200">{prod.nome}</span>
+                            <span className="font-semibold text-slate-800">{prod.nome}</span>
                             <div className="text-[10px] text-slate-400">{prod.qtd} unidades entregues</div>
                           </div>
                           <span className="font-bold text-emerald-400">
@@ -1315,13 +1315,13 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
         {/* MODAL DE CONFIRMAÇÃO DE ESTORNO */}
         {vendaEstornar && (
-          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl text-slate-800">
               <div className="flex items-center gap-3 text-rose-400">
                 <AlertTriangle className="w-6 h-6" />
                 <h3 className="text-base font-bold">Estornar Venda #{vendaEstornar.id.slice(-6)}?</h3>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-600">
                 Ao estornar, o valor de <strong>R$ {vendaEstornar.valorTotal.toFixed(2)}</strong> será cancelado e todos os produtos voltarão automaticamente ao estoque da loja.
               </p>
 
@@ -1332,7 +1332,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   value={motivoEstorno}
                   onChange={(e) => setMotivoEstorno(e.target.value)}
                   placeholder="Ex: Cliente desistiu, item incorreto, etc."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-slate-900"
                 />
                 {erroEstorno && <p className="text-xs text-rose-400 mt-1">{erroEstorno}</p>}
               </div>
@@ -1340,7 +1340,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   onClick={() => setVendaEstornar(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl"
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold rounded-xl"
                 >
                   Voltar
                 </button>
