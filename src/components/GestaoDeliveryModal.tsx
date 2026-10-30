@@ -8,6 +8,7 @@ import {
 } from '../types';
 import { tocarAlertaNovoPedidoDelivery } from '../lib/soundUtils';
 import { formatCurrency } from '../utils/formatters';
+import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import {
   X,
   Bike,
@@ -480,16 +481,22 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
                   Gestão de Pedidos & Delivery
                 </h2>
-                <span
-                  className={`text-xs px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1.5 ${
-                    configDelivery.ativo
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : 'bg-rose-50 text-rose-700 border border-rose-200'
-                  }`}
-                >
-                  <span className={`w-2 h-2 rounded-full ${configDelivery.ativo ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
-                  {configDelivery.ativo ? 'Loja Aberta' : 'Loja Fechada'}
-                </span>
+                {(() => {
+                  const status = verificarStatusFuncionamentoDelivery(configDelivery);
+                  return (
+                    <span
+                      className={`text-xs px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1.5 ${
+                        status.aberta
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      }`}
+                      title={status.motivo || `Delivery aberto das ${status.horarioFormatado}`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${status.aberta ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                      {status.aberta ? 'Loja Aberta' : 'Loja Fechada'}
+                    </span>
+                  );
+                })()}
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 Painel integrado de pedidos com canais de Delivery, Retirada e Mesas
@@ -913,6 +920,49 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   >
                     {formConfig.ativo ? '🟢 ABERTA' : '🔴 FECHADA'}
                   </button>
+                </div>
+
+                {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
+                <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-purple-950 flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-purple-600" />
+                      <span>Horário de Funcionamento do Delivery:</span>
+                    </span>
+                    <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">
+                      Bloqueio Automático
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-0.5">
+                    <div>
+                      <label className="text-slate-700 block mb-1 font-semibold text-[11px]">
+                        Horário de Início (Abertura):
+                      </label>
+                      <input
+                        type="time"
+                        value={formConfig.horarioAbertura || '08:00'}
+                        onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioAbertura: e.target.value }))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-slate-700 block mb-1 font-semibold text-[11px]">
+                        Horário de Término (Fechamento):
+                      </label>
+                      <input
+                        type="time"
+                        value={formConfig.horarioFechamento || '23:00'}
+                        onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioFechamento: e.target.value }))}
+                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-purple-800/80 leading-tight">
+                    💡 Fora deste horário, o cliente não conseguirá enviar pedidos pelo cardápio online e verá o aviso de loja fechada.
+                  </p>
                 </div>
 
                 {/* Taxa de Entrega e Raio */}

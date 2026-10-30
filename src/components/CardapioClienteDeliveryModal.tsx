@@ -7,6 +7,7 @@ import {
   ItemPedidoDelivery,
   TaxaBairro,
 } from '../types';
+import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import {
   X,
   Search,
@@ -310,8 +311,17 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     setTimeout(() => setPixCopiado(false), 2500);
   };
 
+  // Status de funcionamento do delivery (aberto/fechado por horário e botão)
+  const statusLoja = useMemo(() => {
+    return verificarStatusFuncionamentoDelivery(configDelivery);
+  }, [configDelivery]);
+
   // Finalizar Pedido
   const handleFinalizarPedido = () => {
+    if (!statusLoja.aberta) {
+      alert(statusLoja.motivo || 'A loja está fechada para delivery no momento!');
+      return;
+    }
     if (!nomeCliente.trim() || !telefoneCliente.trim()) {
       alert('Por favor, informe seu nome e WhatsApp para contato.');
       return;
@@ -549,6 +559,29 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
           {/* ======================================================== */}
           {etapa === 'vitrine' && (
             <div className="space-y-3.5">
+
+              {/* AVISO DE LOJA FECHADA / FORA DO HORÁRIO */}
+              {!statusLoja.aberta && (
+                <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-3.5 text-rose-900 flex items-start gap-3 shadow-xs animate-fadeIn">
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-black text-sm text-rose-900">🔴 Loja Fechada no Momento</span>
+                      <span className="text-[10px] font-bold bg-rose-200 text-rose-800 px-2 py-0.5 rounded-full uppercase">
+                        Fora do Horário
+                      </span>
+                    </div>
+                    <p className="text-xs text-rose-800 mt-1 leading-snug">
+                      {statusLoja.motivo}
+                    </p>
+                    <p className="text-[11px] text-rose-700 font-medium mt-1">
+                      Você pode navegar pelo catálogo, mas o envio de novos pedidos está pausado até o início do atendimento.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* BARRA DE PESQUISA RÁPIDA (SEM AUTOFILL INDESEJADO) */}
               <div className="relative w-full">
@@ -1229,9 +1262,16 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
               <button
                 type="button"
                 onClick={handleFinalizarPedido}
-                className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-base rounded-2xl shadow-xl transition transform active:scale-98 cursor-pointer"
+                disabled={!statusLoja.aberta}
+                className={`w-full py-4 text-white font-black text-base rounded-2xl shadow-xl transition transform active:scale-98 ${
+                  statusLoja.aberta
+                    ? 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer'
+                    : 'bg-rose-600 opacity-90 cursor-not-allowed'
+                }`}
               >
-                CONFIRMAR PEDIDO (R$ {valorTotalFinal.toFixed(2)})
+                {statusLoja.aberta
+                  ? `CONFIRMAR PEDIDO (R$ ${valorTotalFinal.toFixed(2)})`
+                  : `🚫 LOJA FECHADA (${statusLoja.horarioFormatado})`}
               </button>
             </div>
           )}
