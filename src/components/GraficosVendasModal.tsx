@@ -1095,18 +1095,63 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
     if (normNome.includes('pizza')) return 'Pizzas';
     if (
+      normNome.includes('whisky') ||
+      normNome.includes('vodka') ||
+      normNome.includes('gin ') ||
+      normNome.includes('cachaça') ||
+      normNome.includes('cachaca') ||
+      normNome.includes('licor') ||
+      normNome.includes('vinho')
+    ) return 'Destilados & Whiskies';
+    if (
       normNome.includes('chopp') ||
       normNome.includes('cerveja') ||
+      normNome.includes('long neck')
+    ) return 'Cervejas';
+    if (
       normNome.includes('refrigerante') ||
       normNome.includes('coca') ||
+      normNome.includes('pepsi') ||
       normNome.includes('suco') ||
-      normNome.includes('vinho') ||
-      normNome.includes('whisky') ||
       normNome.includes('bebida') ||
+      normNome.includes('energético') ||
+      normNome.includes('energetico') ||
+      normNome.includes('gatorade') ||
+      normNome.includes('chá') ||
+      normNome.includes('cha ') ||
       normNome.includes('água') ||
-      normNome.includes('agua') ||
-      normNome.includes('long neck')
+      normNome.includes('agua')
     ) return 'Bebidas';
+    if (
+      normNome.includes('arroz') ||
+      normNome.includes('feijão') ||
+      normNome.includes('feijao') ||
+      normNome.includes('macarrão') ||
+      normNome.includes('macarrao') ||
+      normNome.includes('óleo') ||
+      normNome.includes('oleo') ||
+      normNome.includes('açúcar') ||
+      normNome.includes('acucar') ||
+      normNome.includes('farinha')
+    ) return 'Mercearia';
+    if (
+      normNome.includes('nescau') ||
+      normNome.includes('toddy') ||
+      normNome.includes('achocolatado') ||
+      normNome.includes('leite') ||
+      normNome.includes('café') ||
+      normNome.includes('cafe') ||
+      normNome.includes('expresso') ||
+      normNome.includes('cappuccino')
+    ) return 'Cafés & Matinais';
+    if (
+      normNome.includes('isqueiro') ||
+      normNome.includes('carvão') ||
+      normNome.includes('carvao') ||
+      normNome.includes('gelo') ||
+      normNome.includes('tabaco') ||
+      normNome.includes('palheiro')
+    ) return 'Tabacaria & Conveniência';
     if (
       normNome.includes('batata') ||
       normNome.includes('porção') ||
@@ -1117,8 +1162,10 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       normNome.includes('tabua') ||
       normNome.includes('mandioca') ||
       normNome.includes('pastel') ||
-      normNome.includes('calabresa')
-    ) return 'Porções & Entradas';
+      normNome.includes('calabresa') ||
+      normNome.includes('salgadinho') ||
+      normNome.includes('fandangos')
+    ) return 'Porções & Snacks';
     if (
       normNome.includes('burger') ||
       normNome.includes('hambúrguer') ||
@@ -1137,24 +1184,56 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       normNome.includes('pudim') ||
       normNome.includes('torta')
     ) return 'Sobremesas';
-    if (normNome.includes('café') || normNome.includes('cafe') || normNome.includes('expresso') || normNome.includes('cappuccino')) return 'Cafés';
     return 'Geral';
   };
 
-  // PRD Neo-Brutalista Gourmet: Mapeamento Semântico de Categorias
+  // PRD Neo-Brutalista Gourmet: Mapeamento Semântico de Categorias (Cores Vibrantes e Vivas)
+  const PALETA_VIBRANTE_CATEGORIAS = [
+    '#DC2626', // Vermelho Napolitano
+    '#2563EB', // Azul Royal
+    '#16A34A', // Verde Esmeralda
+    '#D97706', // Âmbar Caramelo
+    '#9333EA', // Roxo Ametista
+    '#0891B2', // Ciano Turquesa
+    '#EA580C', // Laranja Vibrante
+    '#DB2777', // Rosa Gourmet
+    '#4F46E5', // Índigo Real
+  ];
+
   const mapaCoresCategorias: Record<string, string> = {
-    'Pizzas': '#DC2626',            // 🍕 Vermelho Napolitano (Red 600)
-    'Bebidas': '#2563EB',           // 🥤 Azul Royal (Blue 600)
-    'Sobremesas': '#D97706',        // 🍰 Âmbar Caramelo (Amber 600)
-    'Porções & Entradas': '#16A34A',// 🍟 Verde Esmeralda (Green 600)
-    'Porções': '#16A34A',           // 🍟 Verde Esmeralda (Green 600)
-    'Lanches': '#9333EA',           // 🍔 Roxo Ametista (Purple 600)
-    'Cafés': '#78350F',             // ☕ Marrom Espresso (Amber 900)
-    'Adega': '#2563EB',             // Bebidas
-    'Balcão': '#4B5563',            // Cinza Chumbo
-    'Outros': '#4B5563',            // 🏷️ Cinza Chumbo (Gray 600)
-    'Geral': '#4B5563',
-    'Diversos': '#4B5563',
+    'Pizzas': '#DC2626',                   // 🍕 Vermelho Napolitano (Red 600)
+    'Bebidas': '#2563EB',                  // 🥤 Azul Royal (Blue 600)
+    'Bebidas Alcoólicas': '#EA580C',       // 🍺 Laranja Malte (Orange 600)
+    'Cervejas': '#EA580C',                 // 🍺 Laranja Malte
+    'Destilados & Whiskies': '#D97706',    // 🥃 Âmbar Ouro (Amber 600)
+    'Sobremesas': '#DB2777',               // 🍰 Rosa Gourmet (Pink 600)
+    'Porções & Entradas': '#16A34A',       // 🍟 Verde Esmeralda (Green 600)
+    'Porções & Snacks': '#16A34A',         // 🍟 Verde Esmeralda
+    'Porções': '#16A34A',                  // 🍟 Verde Esmeralda
+    'Mercearia': '#10B981',                // 🛒 Esmeralda Vivo
+    'Lanches': '#9333EA',                  // 🍔 Roxo Ametista (Purple 600)
+    'Tabacaria & Conveniência': '#9333EA', // 🔥 Roxo Ametista
+    'Cafés': '#B45309',                    // ☕ Marrom Café Quente
+    'Cafés & Matinais': '#0891B2',         // ☕ Ciano Turquesa
+    'Adega': '#2563EB',                    // 🍷 Azul Royal
+    'Balcão': '#E11D48',                   // 🍢 Vermelho Rubi
+    'Outros': '#6366F1',                   // 🏷️ Índigo Vibrante
+    'Geral': '#0D9488',                    // 📦 Verde-Água Vibrante
+    'Diversos': '#8B5CF6',                 // ✨ Violeta
+  };
+
+  const obterCorVivaCategoria = (nomeCategoria: string, indexFallback: number = 0): string => {
+    if (mapaCoresCategorias[nomeCategoria]) return mapaCoresCategorias[nomeCategoria];
+    const norm = (nomeCategoria || '').toLowerCase();
+    if (norm.includes('pizza')) return '#DC2626';
+    if (norm.includes('bebida') || norm.includes('refrig') || norm.includes('suco') || norm.includes('agua')) return '#2563EB';
+    if (norm.includes('cervej') || norm.includes('chopp') || norm.includes('alcool')) return '#EA580C';
+    if (norm.includes('destilad') || norm.includes('whisk') || norm.includes('vinho') || norm.includes('vodka')) return '#D97706';
+    if (norm.includes('mercear') || norm.includes('alimento') || norm.includes('porc') || norm.includes('snack')) return '#16A34A';
+    if (norm.includes('tabacar') || norm.includes('conveni') || norm.includes('lanche')) return '#9333EA';
+    if (norm.includes('cafe') || norm.includes('matina') || norm.includes('latic')) return '#0891B2';
+    if (norm.includes('doce') || norm.includes('sobremesa') || norm.includes('bombon')) return '#DB2777';
+    return PALETA_VIBRANTE_CATEGORIAS[indexFallback % PALETA_VIBRANTE_CATEGORIAS.length];
   };
 
   // Itens agregados do período
@@ -1301,14 +1380,16 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
     const totalCat = Object.values(mapa).reduce((a, b) => a + b, 0);
 
-    const lista = Object.entries(mapa).map(([nome, valor]) => ({
+    const entries = Object.entries(mapa);
+    entries.sort((a, b) => b[1] - a[1]);
+
+    const lista = entries.map(([nome, valor], idx) => ({
       nome,
       valor,
       porcentagem: totalCat > 0 ? Math.round((valor / totalCat) * 100) : 0,
-      cor: mapaCoresCategorias[nome] || '#64748b',
+      cor: obterCorVivaCategoria(nome, idx),
     }));
 
-    lista.sort((a, b) => b.valor - a.valor);
     return lista;
   }, [vendasPainel, estoque, catalogoGlobal]);
 
@@ -2077,173 +2158,242 @@ ${top3 || '- Nenhum produto vendido'}
                 style={{
                   background: '#FFFFFF',
                   border: '2px solid #292524',
-                  borderRadius: '8px',
-                  padding: '16px',
+                  borderRadius: '10px',
+                  padding: '0',
                   boxShadow: '3px 3px 0px #292524',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px',
+                  overflow: 'hidden',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    background: 'linear-gradient(135deg, #FEF2F2 0%, #FFFBEB 100%)',
+                    borderBottom: '2px solid #292524',
+                    padding: '12px 16px',
+                  }}
+                >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>🍴</span> TOP PRODUTOS MAIS VENDIDOS
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#991B1B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>🏆</span> TOP PRODUTOS MAIS VENDIDOS
                     </h3>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#78350F', fontWeight: 600 }}>
                       Classificação por volume de vendas e faturamento gerado.
                     </p>
                   </div>
-                  <div style={{ display: 'inline-flex', border: '1px solid #111827', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ display: 'inline-flex', border: '1.5px solid #292524', borderRadius: '6px', overflow: 'hidden', background: '#FFFFFF' }}>
                     <button
                       style={{
-                        padding: '4px 10px',
+                        padding: '5px 10px',
                         border: 'none',
                         fontSize: '0.74rem',
-                        fontWeight: 700,
+                        fontWeight: 800,
                         cursor: 'pointer',
-                        background: metricaTop === 'faturamento' ? '#111827' : '#ffffff',
-                        color: metricaTop === 'faturamento' ? '#ffffff' : '#111827',
+                        background: metricaTop === 'faturamento' ? '#DC2626' : '#ffffff',
+                        color: metricaTop === 'faturamento' ? '#ffffff' : '#1E293B',
                       }}
                       onClick={() => setMetricaTop('faturamento')}
                     >
-                      Faturamento (R$)
+                      💰 Faturamento (R$)
                     </button>
                     <button
                       style={{
-                        padding: '4px 10px',
+                        padding: '5px 10px',
                         border: 'none',
-                        borderLeft: '1px solid #111827',
+                        borderLeft: '1.5px solid #292524',
                         fontSize: '0.74rem',
-                        fontWeight: 700,
+                        fontWeight: 800,
                         cursor: 'pointer',
-                        background: metricaTop === 'quantidade' ? '#111827' : '#ffffff',
-                        color: metricaTop === 'quantidade' ? '#ffffff' : '#111827',
+                        background: metricaTop === 'quantidade' ? '#2563EB' : '#ffffff',
+                        color: metricaTop === 'quantidade' ? '#ffffff' : '#1E293B',
                       }}
                       onClick={() => setMetricaTop('quantidade')}
                     >
-                      Qtd Vendida (un)
+                      📦 Qtd Vendida (un)
                     </button>
                   </div>
                 </div>
 
-                {/* Filtro por Categoria Pills */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginRight: '4px' }}>
-                    CATEGORIA:
-                  </span>
-                  {categoriasDisponiveisTop.map((catNome) => {
-                    const ativa = filtroCategoriaTop.toLowerCase() === catNome.toLowerCase();
-                    const count = catNome === 'Todas'
-                      ? itensAgregados.length
-                      : itensAgregados.filter((i) => i.categoria.toLowerCase() === catNome.toLowerCase()).length;
-                    return (
-                      <button
-                        key={catNome}
-                        style={{
-                          padding: '3px 10px',
-                          borderRadius: '16px',
-                          border: ativa ? 'none' : '1px solid #cbd5e1',
-                          background: ativa ? '#dc2626' : '#ffffff',
-                          color: ativa ? '#ffffff' : '#334155',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          boxShadow: ativa ? '0 1px 3px rgba(220, 38, 38, 0.3)' : 'none',
-                        }}
-                        onClick={() => setFiltroCategoriaTop(catNome)}
-                      >
-                        {catNome} {count > 0 ? `(${count})` : ''}
-                      </button>
-                    );
-                  })}
-                </div>
+                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Filtro por Categoria Pills */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflowX: 'auto', paddingBottom: '4px', scrollbarWidth: 'none' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginRight: '4px' }}>
+                      CATEGORIA:
+                    </span>
+                    {categoriasDisponiveisTop.map((catNome, cIdx) => {
+                      const ativa = filtroCategoriaTop.toLowerCase() === catNome.toLowerCase();
+                      const count = catNome === 'Todas'
+                        ? itensAgregados.length
+                        : itensAgregados.filter((i) => i.categoria.toLowerCase() === catNome.toLowerCase()).length;
+                      const corCatPill = catNome === 'Todas' ? '#DC2626' : obterCorVivaCategoria(catNome, cIdx);
+                      return (
+                        <button
+                          key={catNome}
+                          style={{
+                            padding: '4px 11px',
+                            borderRadius: '16px',
+                            border: ativa ? `1.5px solid ${corCatPill}` : '1px solid #cbd5e1',
+                            background: ativa ? corCatPill : '#F8FAFC',
+                            color: ativa ? '#ffffff' : '#334155',
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            boxShadow: ativa ? `0 2px 5px ${corCatPill}40` : 'none',
+                          }}
+                          onClick={() => setFiltroCategoriaTop(catNome)}
+                        >
+                          {catNome} {count > 0 ? `(${count})` : ''}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                {/* Barras Horizontais com Tooltip escuro */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '6px', position: 'relative' }}>
-                  {topProdutosFiltrados.map((item, idx) => {
-                    const valor = metricaTop === 'faturamento' ? item.faturamentoTotal : item.qtdVendida;
-                    const maxValor = topProdutosFiltrados[0]
-                      ? (metricaTop === 'faturamento' ? topProdutosFiltrados[0].faturamentoTotal : topProdutosFiltrados[0].qtdVendida)
-                      : 1;
-                    const pct = maxValor > 0 ? (valor / maxValor) * 100 : 0;
-                    const corBarra = mapaCoresCategorias[item.categoria] || '#ef4444';
-                    const isHovered = hoveredTopIdx === idx;
+                  {/* Barras Horizontais Vibrantes com Pódio e Tooltip escuro */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
+                    {topProdutosFiltrados.map((item, idx) => {
+                      const valor = metricaTop === 'faturamento' ? item.faturamentoTotal : item.qtdVendida;
+                      const maxValor = topProdutosFiltrados[0]
+                        ? (metricaTop === 'faturamento' ? topProdutosFiltrados[0].faturamentoTotal : topProdutosFiltrados[0].qtdVendida)
+                        : 1;
+                      const pct = maxValor > 0 ? (valor / maxValor) * 100 : 0;
+                      const corBarra = obterCorVivaCategoria(item.categoria, idx);
+                      const isHovered = hoveredTopIdx === idx;
+                      const bgCardItem = idx === 0 ? '#FFFBEB' : idx === 1 ? '#F0F9FF' : idx === 2 ? '#FDF2F8' : '#F8FAFC';
+                      const borderCardItem = idx === 0 ? '#FDE68A' : idx === 1 ? '#BAE6FD' : idx === 2 ? '#FBCFE8' : '#E2E8F0';
+                      const medalha = idx === 0 ? '🥇 #1' : idx === 1 ? '🥈 #2' : idx === 2 ? '🥉 #3' : `#${idx + 1}`;
+                      const bgMedalha = idx === 0 ? '#FBBF24' : idx === 1 ? '#94A3B8' : idx === 2 ? '#D97706' : '#E2E8F0';
+                      const txtMedalha = idx === 2 ? '#FFFFFF' : '#0F172A';
 
-                    return (
-                      <div
-                        key={idx}
-                        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative' }}
-                        onMouseEnter={() => setHoveredTopIdx(idx)}
-                        onMouseLeave={() => setHoveredTopIdx(null)}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: '#1e293b' }}>
-                          <span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
-                            {item.nome}
-                          </span>
-                          <span style={{ fontWeight: 700, color: '#0f172a' }}>
-                            {metricaTop === 'faturamento'
-                              ? `R$ ${item.faturamentoTotal.toFixed(2).replace('.', ',')}`
-                              : `${item.qtdVendida} un`}
-                          </span>
-                        </div>
-                        <div style={{ position: 'relative', width: '100%', height: '22px', background: '#f8fafc', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                          <div
-                            style={{
-                              width: `${Math.max(pct, 2)}%`,
-                              height: '100%',
-                              background: corBarra,
-                              borderRadius: '3px',
-                              border: '1px solid rgba(0,0,0,0.15)',
-                              transition: 'width 0.4s ease',
-                            }}
-                          />
-                        </div>
-
-                        {/* Tooltip escuro ao passar o mouse / tocar */}
-                        {isHovered && (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: '-10px',
-                              left: '20px',
-                              zIndex: 100,
-                              background: '#18181b',
-                              color: '#ffffff',
-                              border: '1px solid #3f3f46',
-                              borderRadius: '6px',
-                              padding: '10px 14px',
-                              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
-                              pointerEvents: 'none',
-                              minWidth: '220px',
-                            }}
-                          >
-                            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#f59e0b', marginBottom: '6px' }}>
-                              {item.nome}
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '5px',
+                            position: 'relative',
+                            background: bgCardItem,
+                            border: `1.5px solid ${borderCardItem}`,
+                            borderRadius: '8px',
+                            padding: '8px 10px',
+                          }}
+                          onMouseEnter={() => setHoveredTopIdx(idx)}
+                          onMouseLeave={() => setHoveredTopIdx(null)}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#1e293b', gap: '6px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flex: 1 }}>
+                              <span
+                                style={{
+                                  background: bgMedalha,
+                                  color: txtMedalha,
+                                  fontWeight: 900,
+                                  fontSize: '0.68rem',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  flexShrink: 0,
+                                  border: '1px solid rgba(0,0,0,0.12)',
+                                }}
+                              >
+                                {medalha}
+                              </span>
+                              <span style={{ fontWeight: 800, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {item.nome}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: '0.65rem',
+                                  fontWeight: 700,
+                                  background: `${corBarra}18`,
+                                  color: corBarra,
+                                  border: `1px solid ${corBarra}40`,
+                                  padding: '1px 6px',
+                                  borderRadius: '10px',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {item.categoria}
+                              </span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
-                              <span>Qtd Vendida:</span>
-                              <b style={{ color: '#ffffff' }}>{item.qtdVendida} unidades</b>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
-                              <span>Faturamento:</span>
-                              <b style={{ color: '#4ade80' }}>R$ {item.faturamentoTotal.toFixed(2).replace('.', ',')}</b>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
-                              <span>Preço Médio:</span>
-                              <b style={{ color: '#ffffff' }}>R$ {item.precoMedio.toFixed(2).replace('.', ',')}</b>
-                            </div>
+                            <span
+                              style={{
+                                fontWeight: 900,
+                                color: '#047857',
+                                background: '#ECFDF5',
+                                border: '1px solid #A7F3D0',
+                                padding: '2px 7px',
+                                borderRadius: '6px',
+                                fontSize: '0.76rem',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {metricaTop === 'faturamento'
+                                ? `R$ ${item.faturamentoTotal.toFixed(2).replace('.', ',')}`
+                                : `${item.qtdVendida} un`}
+                            </span>
                           </div>
-                        )}
+                          <div style={{ position: 'relative', width: '100%', height: '18px', background: '#FFFFFF', borderRadius: '5px', overflow: 'hidden', border: '1px solid #CBD5E1' }}>
+                            <div
+                              style={{
+                                width: `${Math.max(pct, 4)}%`,
+                                height: '100%',
+                                background: `linear-gradient(90deg, ${corBarra} 0%, ${corBarra}dd 100%)`,
+                                borderRadius: '4px',
+                                transition: 'width 0.4s ease',
+                              }}
+                            />
+                          </div>
+
+                          {/* Tooltip escuro ao passar o mouse / tocar */}
+                          {isHovered && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '-10px',
+                                left: '20px',
+                                zIndex: 100,
+                                background: '#141414',
+                                color: '#ffffff',
+                                border: '1.5px solid #292524',
+                                borderRadius: '8px',
+                                padding: '10px 14px',
+                                boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
+                                pointerEvents: 'none',
+                                minWidth: '220px',
+                              }}
+                            >
+                              <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#FBBF24', marginBottom: '6px' }}>
+                                {item.nome}
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
+                                <span>Qtd Vendida:</span>
+                                <b style={{ color: '#ffffff' }}>{item.qtdVendida} unidades</b>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
+                                <span>Faturamento:</span>
+                                <b style={{ color: '#34D399' }}>R$ {item.faturamentoTotal.toFixed(2).replace('.', ',')}</b>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', margin: '2px 0' }}>
+                                <span>Preço Médio:</span>
+                                <b style={{ color: '#ffffff' }}>R$ {item.precoMedio.toFixed(2).replace('.', ',')}</b>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {topProdutosFiltrados.length === 0 && (
+                      <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '16px', textAlign: 'center' }}>
+                        Nenhum produto vendido nesta categoria.
                       </div>
-                    );
-                  })}
-                  {topProdutosFiltrados.length === 0 && (
-                    <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '16px', textAlign: 'center' }}>
-                      Nenhum produto vendido nesta categoria.
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -2252,83 +2402,124 @@ ${top3 || '- Nenhum produto vendido'}
                 style={{
                   background: '#FFFFFF',
                   border: '2px solid #292524',
-                  borderRadius: '8px',
-                  padding: '16px',
+                  borderRadius: '10px',
+                  padding: '0',
                   boxShadow: '3px 3px 0px #292524',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px',
+                  overflow: 'hidden',
                 }}
               >
-                <div style={{ borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
-                  <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>🕒</span> VENDAS POR CATEGORIA
+                <div
+                  style={{
+                    background: 'linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%)',
+                    borderBottom: '2px solid #292524',
+                    padding: '12px 16px',
+                  }}
+                >
+                  <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#1E40AF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>🍩</span> VENDAS POR CATEGORIA
                   </h3>
-                  <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#4338CA', fontWeight: 600 }}>
                     Participação de cada categoria no faturamento total.
                   </p>
                 </div>
 
-                {/* Donut Chart com texto central */}
-                <div style={{ width: '100%', height: 190, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={dadosCategorias}
-                        dataKey="valor"
-                        nameKey="nome"
-                        innerRadius={55}
-                        outerRadius={80}
-                        paddingAngle={2}
-                      >
-                        {dadosCategorias.map((c, i) => (
-                          <Cell key={i} fill={c.cor} stroke="#ffffff" strokeWidth={1.5} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
-                        contentStyle={{ background: '#111827', color: '#ffffff', borderRadius: '6px', border: 'none', fontSize: '0.78rem' }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      textAlign: 'center',
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px' }}>TOTAL MIX</div>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 900, color: '#0f172a' }}>
-                      R$ {faturamentoTotal.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
+                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {/* Donut Chart com texto central colorido */}
+                  <div style={{ width: '100%', height: 195, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={dadosCategorias}
+                          dataKey="valor"
+                          nameKey="nome"
+                          innerRadius={56}
+                          outerRadius={82}
+                          paddingAngle={3}
+                        >
+                          {dadosCategorias.map((c, i) => (
+                            <Cell key={i} fill={c.cor} stroke="#ffffff" strokeWidth={2} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
+                          contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '8px', border: '1px solid #334155', fontSize: '0.78rem' }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        textAlign: 'center',
+                        pointerEvents: 'none',
+                        background: '#EFF6FF',
+                        border: '1.5px solid #BFDBFE',
+                        borderRadius: '50%',
+                        width: '94px',
+                        height: '94px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#1D4ED8', letterSpacing: '0.5px' }}>TOTAL MIX</div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 900, color: '#0F172A' }}>
+                        R$ {faturamentoTotal.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Lista da Legenda com % e R$ */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
-                  {dadosCategorias.map((cat, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ width: '10px', height: '10px', background: cat.cor, borderRadius: '2px', display: 'inline-block' }} />
-                        <span style={{ color: '#1e293b', fontWeight: 600 }}>{cat.nome}</span>
+                  {/* Lista da Legenda com % e R$ em Cards Pastel */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+                    {dadosCategorias.map((cat, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '0.78rem',
+                          background: `${cat.cor}10`,
+                          border: `1px solid ${cat.cor}35`,
+                          borderLeft: `5px solid ${cat.cor}`,
+                          borderRadius: '6px',
+                          padding: '6px 10px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ width: '10px', height: '10px', background: cat.cor, borderRadius: '50%', display: 'inline-block' }} />
+                          <span style={{ color: '#0F172A', fontWeight: 800 }}>{cat.nome}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span
+                            style={{
+                              fontWeight: 900,
+                              color: '#FFFFFF',
+                              background: cat.cor,
+                              padding: '1px 7px',
+                              borderRadius: '10px',
+                              fontSize: '0.72rem',
+                            }}
+                          >
+                            {cat.porcentagem}%
+                          </span>
+                          <span style={{ color: '#0F172A', fontWeight: 800 }}>
+                            R$ {cat.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', gap: '10px', color: '#475569' }}>
-                        <span style={{ fontWeight: 700, color: '#0f172a' }}>{cat.porcentagem}%</span>
-                        <span style={{ color: '#64748b' }}>
-                          R$ {cat.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
+                    ))}
+                    {dadosCategorias.length === 0 && (
+                      <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '12px', textAlign: 'center' }}>
+                        Nenhuma categoria registrada.
                       </div>
-                    </div>
-                  ))}
-                  {dadosCategorias.length === 0 && (
-                    <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '12px', textAlign: 'center' }}>
-                      Nenhuma categoria registrada.
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2346,73 +2537,99 @@ ${top3 || '- Nenhum produto vendido'}
                 style={{
                   background: '#FFFFFF',
                   border: '2px solid #292524',
-                  borderRadius: '8px',
-                  padding: '16px',
+                  borderRadius: '10px',
+                  padding: '0',
                   boxShadow: '3px 3px 0px #292524',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px',
+                  overflow: 'hidden',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    background: 'linear-gradient(135deg, #F5F3FF 0%, #FDF2F8 100%)',
+                    borderBottom: '2px solid #292524',
+                    padding: '12px 16px',
+                  }}
+                >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#6B21A8', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>🕒</span> HORÁRIOS DE PICO DA COZINHA & SALÃO
                     </h3>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
-                      Distribuição de pedidos por faixa horária para planejamento de equipe e pré-preparo de massas.
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#86198F', fontWeight: 600 }}>
+                      Distribuição de pedidos por faixa horária para planejamento de equipe.
                     </p>
                   </div>
                   <span
                     style={{
-                      background: '#f3e8ff',
-                      color: '#6b21a8',
-                      border: '1px solid #d8b4fe',
-                      padding: '3px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
+                      background: '#DC2626',
+                      color: '#FFFFFF',
+                      border: '1.5px solid #292524',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.74rem',
+                      fontWeight: 900,
                       whiteSpace: 'nowrap',
+                      boxShadow: '2px 2px 0px #292524',
                     }}
                   >
-                    Pico {dadosHorariosPico.faixaPico}
+                    🔥 Pico {dadosHorariosPico.faixaPico}
                   </span>
                 </div>
 
-                {/* Gráfico de Barras por Faixa Horária */}
-                <div style={{ width: '100%', height: 220 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dadosHorariosPico.faixas} margin={{ top: 20, right: 15, left: -10, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis dataKey="faixa" stroke="#475569" fontSize={11} tickLine={false} />
-                      <YAxis stroke="#475569" fontSize={11} tickLine={false} />
-                      <Tooltip
-                        formatter={(val: any) => [`${val} pedidos`, 'Volume de Pedidos']}
-                        contentStyle={{
-                          background: '#ffffff',
-                          color: '#0f172a',
-                          borderRadius: '6px',
-                          border: '1px solid #cbd5e1',
-                          fontSize: '0.8rem',
-                          boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                        }}
-                      />
-                      <Bar dataKey="pedidos" radius={[2, 2, 0, 0]}>
-                        {dadosHorariosPico.faixas.map((entry, index) => {
-                          // PRD Neo-Brutalista: Picos de Horário
-                          let cor = '#3B82F6'; // Horário Regular (< 50 ped. / baixo)
-                          if (entry.pedidos >= 80 || (entry.pedidos === dadosHorariosPico.maxPedidos && entry.pedidos > 0)) {
-                            cor = '#DC2626'; // Horário de Pico Máximo (Vermelho Alerta)
-                          } else if (entry.pedidos >= 50 || (entry.pedidos >= dadosHorariosPico.maxPedidos * 0.6 && entry.pedidos > 0)) {
-                            cor = '#F59E0B'; // Horário Médio-Alto (Âmbar Quente)
-                          } else if (entry.pedidos === 0) {
-                            cor = '#E5E7EB'; // Grade Suave
-                          }
-                          return <Cell key={`bar-${index}`} fill={cor} stroke="#292524" strokeWidth={1.5} />;
-                        })}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {/* Legenda rápida de cores de horário */}
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', fontSize: '0.72rem', fontWeight: 700 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FEF2F2', color: '#B91C1C', padding: '2px 8px', borderRadius: '12px', border: '1px solid #FECACA' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#DC2626' }} /> Pico Máximo
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#FFFBEB', color: '#B45309', padding: '2px 8px', borderRadius: '12px', border: '1px solid #FDE68A' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#F59E0B' }} /> Movimento Alto
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#EFF6FF', color: '#1D4ED8', padding: '2px 8px', borderRadius: '12px', border: '1px solid #BFDBFE' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6' }} /> Horário Regular
+                    </span>
+                  </div>
+
+                  {/* Gráfico de Barras por Faixa Horária */}
+                  <div style={{ width: '100%', height: 210, background: '#FAF7F2', borderRadius: '8px', border: '1px solid #E2E8F0', padding: '6px 4px 0 0' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={dadosHorariosPico.faixas} margin={{ top: 15, right: 15, left: -10, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#CBD5E1" />
+                        <XAxis dataKey="faixa" stroke="#0F172A" fontSize={11} fontWeight={700} tickLine={false} />
+                        <YAxis stroke="#334155" fontSize={11} fontWeight={700} tickLine={false} />
+                        <Tooltip
+                          formatter={(val: any) => [`${val} pedidos`, 'Volume de Pedidos']}
+                          contentStyle={{
+                            background: '#141414',
+                            color: '#FBBF24',
+                            borderRadius: '8px',
+                            border: '1.5px solid #292524',
+                            fontSize: '0.8rem',
+                            fontWeight: 700,
+                          }}
+                        />
+                        <Bar dataKey="pedidos" radius={[4, 4, 0, 0]}>
+                          {dadosHorariosPico.faixas.map((entry, index) => {
+                            let cor = '#3B82F6';
+                            if (entry.pedidos >= 80 || (entry.pedidos === dadosHorariosPico.maxPedidos && entry.pedidos > 0)) {
+                              cor = '#DC2626';
+                            } else if (entry.pedidos >= 50 || (entry.pedidos >= dadosHorariosPico.maxPedidos * 0.6 && entry.pedidos > 0)) {
+                              cor = '#F59E0B';
+                            } else if (entry.pedidos === 0) {
+                              cor = '#CBD5E1';
+                            }
+                            return <Cell key={`bar-${index}`} fill={cor} stroke="#292524" strokeWidth={1.5} />;
+                          })}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
 
@@ -2421,67 +2638,132 @@ ${top3 || '- Nenhum produto vendido'}
                 style={{
                   background: '#FFFFFF',
                   border: '2px solid #292524',
-                  borderRadius: '8px',
-                  padding: '16px',
+                  borderRadius: '10px',
+                  padding: '0',
                   boxShadow: '3px 3px 0px #292524',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '12px',
+                  overflow: 'hidden',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', borderBottom: '1px solid #111827', paddingBottom: '10px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    background: 'linear-gradient(135deg, #ECFDF5 0%, #EFF6FF 100%)',
+                    borderBottom: '2px solid #292524',
+                    padding: '12px 16px',
+                  }}
+                >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#065F46', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>💳</span> VENDAS POR FORMA DE PAGAMENTO
                     </h3>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b' }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#047857', fontWeight: 600 }}>
                       Reconciliação dos pagamentos registrados nas comandas e faturamento bruto.
                     </p>
                   </div>
                   <span
                     style={{
-                      background: '#dcfce7',
-                      color: '#15803d',
-                      border: '1px solid #86efac',
-                      padding: '3px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.72rem',
-                      fontWeight: 800,
+                      background: '#10B981',
+                      color: '#FFFFFF',
+                      border: '1.5px solid #292524',
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '0.74rem',
+                      fontWeight: 900,
                       whiteSpace: 'nowrap',
+                      boxShadow: '2px 2px 0px #292524',
                     }}
                   >
-                    {dadosFormasPagamentoPainel.lider.label.split(' ')[0]} Lidera ({dadosFormasPagamentoPainel.lider.porcentagem}%)
+                    🏆 {dadosFormasPagamentoPainel.lider.label.split(' ')[0]} Lidera ({dadosFormasPagamentoPainel.lider.porcentagem}%)
                   </span>
                 </div>
 
-                {/* Barras de progresso elegantes */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '6px' }}>
-                  {dadosFormasPagamentoPainel.lista.map((forma, idx) => (
-                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem' }}>
-                        <span style={{ fontWeight: 600, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span>{forma.icone}</span>
-                          <span>{forma.label}</span>
-                        </span>
-                        <span style={{ color: '#475569', fontWeight: 700, fontSize: '0.8rem' }}>
-                          <span style={{ marginRight: '8px' }}>{forma.porcentagem}%</span>
-                          <span style={{ color: '#0f172a' }}>
-                            R$ {forma.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {/* Cards de Formas de Pagamento com Cores Pastel Vivas */}
+                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {dadosFormasPagamentoPainel.lista.map((forma, idx) => {
+                    const bgPastel =
+                      forma.cor === '#10B981'
+                        ? '#ECFDF5'
+                        : forma.cor === '#2563EB'
+                        ? '#EFF6FF'
+                        : forma.cor === '#D97706'
+                        ? '#FFFBEB'
+                        : '#F5F3FF';
+                    const borderPastel =
+                      forma.cor === '#10B981'
+                        ? '#A7F3D0'
+                        : forma.cor === '#2563EB'
+                        ? '#BFDBFE'
+                        : forma.cor === '#D97706'
+                        ? '#FDE68A'
+                        : '#DDD6FE';
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                          background: bgPastel,
+                          border: `1.5px solid ${borderPastel}`,
+                          borderRadius: '8px',
+                          padding: '10px 12px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem' }}>
+                          <span style={{ fontWeight: 800, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '1rem' }}>{forma.icone}</span>
+                            <span>{forma.label}</span>
+                            <span
+                              style={{
+                                fontSize: '0.68rem',
+                                fontWeight: 700,
+                                background: '#FFFFFF',
+                                color: '#475569',
+                                border: '1px solid #CBD5E1',
+                                padding: '1px 6px',
+                                borderRadius: '10px',
+                              }}
+                            >
+                              {forma.qtd} {forma.qtd === 1 ? 'venda' : 'vendas'}
+                            </span>
                           </span>
-                        </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span
+                              style={{
+                                background: forma.cor,
+                                color: '#FFFFFF',
+                                fontWeight: 900,
+                                fontSize: '0.72rem',
+                                padding: '2px 7px',
+                                borderRadius: '10px',
+                              }}
+                            >
+                              {forma.porcentagem}%
+                            </span>
+                            <span style={{ color: '#0F172A', fontWeight: 900, fontSize: '0.86rem' }}>
+                              R$ {forma.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ width: '100%', height: '12px', background: '#FFFFFF', borderRadius: '6px', border: '1.5px solid #292524', overflow: 'hidden' }}>
+                          <div
+                            style={{
+                              width: `${Math.min(100, Math.max(forma.porcentagem, 3))}%`,
+                              height: '100%',
+                              background: forma.cor,
+                              transition: 'width 0.4s ease',
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div style={{ width: '100%', height: '10px', background: '#e2e8f0', borderRadius: '2px', border: '1px solid #111827', overflow: 'hidden' }}>
-                        <div
-                          style={{
-                            width: `${Math.min(100, Math.max(forma.porcentagem, 1))}%`,
-                            height: '100%',
-                            background: forma.cor,
-                            transition: 'width 0.4s ease',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {dadosFormasPagamentoPainel.lista.length === 0 && (
                     <div style={{ color: '#64748b', fontSize: '0.8rem', padding: '12px', textAlign: 'center' }}>
                       Nenhum pagamento registrado no período.
@@ -2571,7 +2853,7 @@ ${top3 || '- Nenhum produto vendido'}
                       // PRD Neo-Brutalista: Pódios de Classificação
                       const bgRank = rank === 1 ? '#FBBF24' : rank === 2 ? '#D1D5DB' : rank === 3 ? '#B45309' : '#F1F5F9';
                       const corTextoRank = rank === 1 ? '#000000' : rank === 2 ? '#000000' : rank === 3 ? '#FFFFFF' : '#141414';
-                      const corBordaCat = mapaCoresCategorias[item.categoria] || '#94a3b8';
+                      const corBordaCat = obterCorVivaCategoria(item.categoria, index);
 
                       return (
                         <tr
