@@ -290,8 +290,23 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             </span>
           </div>
 
-          {/* Badge de Status no Canto Direito */}
-          <div>
+          {/* Botão Cancelar (No topo ao lado do status) + Badge de Status no Canto Direito */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {!isEntregue && !isCancelado && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPedidoParaCancelar(order);
+                  setMotivoCancelamento('');
+                }}
+                className="px-2 py-0.5 rounded-md bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95"
+                title="Cancelar ou recusar este pedido de entrega"
+              >
+                <X className="w-3 h-3 stroke-[2.5] shrink-0" />
+                <span>Cancelar</span>
+              </button>
+            )}
+
             {isNovo && (
               <span className="bg-red-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs animate-pulse">
                 ● NOVO
@@ -476,22 +491,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               >
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
                 <span>Entregue</span>
-              </button>
-            )}
-
-            {/* Botão Cancelar / Recusar Pedido */}
-            {!isEntregue && !isCancelado && (
-              <button
-                type="button"
-                onClick={() => {
-                  setPedidoParaCancelar(order);
-                  setMotivoCancelamento('');
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Recusar ou cancelar este pedido de entrega"
-              >
-                <X className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>{isNovo ? 'Recusar' : 'Cancelar'}</span>
               </button>
             )}
 

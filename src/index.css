@@ -26,7 +26,7 @@
     color: var(--texto);
     width: 100%;
     min-height: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body { 
@@ -35,7 +35,7 @@
     min-height: 100vh;
     min-height: 100dvh;
     width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
     padding-bottom: 30px; 
   }
 
@@ -49,15 +49,22 @@
   }
 }
 
+.topo-fixo-sistema {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    width: 100%;
+    background: var(--fundo);
+}
+
 .cabecalho {
-    position: sticky; 
-    top: 0; 
-    left: 0; 
-    right: 0; 
+    position: relative; 
     background: var(--primario);
     padding: 8px 14px; 
     box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
-    z-index: 200;
+    z-index: 201;
     width: 100%;
     box-sizing: border-box;
 }

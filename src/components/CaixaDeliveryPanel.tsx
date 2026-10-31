@@ -260,9 +260,9 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   }, []);
 
   return (
-    <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3 flex-1 flex flex-col text-stone-900 w-full min-w-0">
-      {/* 1. Header do Painel de Delivery */}
-      <div className="flex items-center justify-between gap-2 pb-1 border-b border-[#a7f3d0]/60">
+    <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3 flex-1 flex flex-col text-stone-900 w-full min-w-0 lg:h-[calc(100vh-110px)] lg:max-h-[calc(100vh-110px)] lg:overflow-hidden">
+      {/* 1. Header do Painel de Delivery (Fixo no Topo do Painel) */}
+      <div className="flex items-center justify-between gap-2 pb-1 border-b border-[#a7f3d0]/60 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-10 h-10 rounded-2xl bg-[#a7f3d0]/80 text-[#047857] flex items-center justify-center border border-[#6ee7b7]/60 shadow-xs shrink-0">
             <Bike className="w-5 h-5 text-[#047857]" />
@@ -297,8 +297,8 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         </div>
       </div>
 
-      {/* 2. Filtros de Status */}
-      <div className="flex items-center gap-1.5 text-xs font-bold overflow-x-auto pb-0.5 scrollbar-none">
+      {/* 2. Filtros de Status (Fixos no Topo do Painel) */}
+      <div className="flex items-center gap-1.5 text-xs font-bold overflow-x-auto pb-0.5 scrollbar-none shrink-0">
         {/* Ativos */}
         <button
           type="button"
@@ -369,8 +369,8 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         )}
       </div>
 
-      {/* 3. Barra de Pesquisa Rápida (com espaçamento corrigido sem sobreposição de ícone) */}
-      <div className="relative w-full">
+      {/* 3. Barra de Pesquisa Rápida (Fixa no Topo do Painel) */}
+      <div className="relative w-full shrink-0">
         <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-stone-400">
           <Search className="w-4 h-4" />
         </div>
@@ -403,8 +403,8 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         )}
       </div>
 
-      {/* 4. Lista de Cards de Pedidos */}
-      <div className="space-y-3 max-h-[68vh] overflow-y-auto pr-1 flex-1">
+      {/* 4. Lista de Cards de Pedidos (Rola independentemente mantendo o topo do painel fixo) */}
+      <div className="space-y-3 max-h-[68vh] lg:max-h-none overflow-y-auto pr-1 flex-1 min-h-0">
         {filteredOrders.length === 0 ? (
           <div className="py-12 text-center text-[#065f46]/70 text-xs space-y-2 bg-white/70 rounded-2xl border border-dashed border-[#a7f3d0]">
             <Bike className="w-10 h-10 mx-auto text-[#047857]/50" />
@@ -460,34 +460,51 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                     </span>
                   </div>
 
-                  {/* Tag de Status no Topo Direito */}
-                  {isNovo && (
-                    <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1 animate-pulse">
-                      ● NOVO
-                    </span>
-                  )}
-                  {isPreparo && (
-                    <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-                      <Flame className="w-3 h-3" />
-                      <span>EM PREPARO</span>
-                    </span>
-                  )}
-                  {isACaminho && (
-                    <span className="bg-[#047857] text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-                      <Bike className="w-3 h-3" />
-                      <span>A CAMINHO</span>
-                    </span>
-                  )}
-                  {isEntregue && (
-                    <span className="bg-stone-700 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-                      ✓ ENTREGUE
-                    </span>
-                  )}
-                  {isCancelado && (
-                    <span className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-                      ✕ CANCELADO
-                    </span>
-                  )}
+                  {/* Botão Cancelar (No local marcado em vermelho) + Tag de Status no Topo Direito */}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {!isEntregue && !isCancelado && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPedidoParaCancelar(order);
+                          setMotivoCancelamento('');
+                        }}
+                        className="px-2 py-0.5 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 transition cursor-pointer active:scale-95 shadow-2xs"
+                        title="Cancelar ou recusar este pedido de entrega"
+                      >
+                        <X className="w-3 h-3 stroke-[2.5] shrink-0" />
+                        <span>Cancelar</span>
+                      </button>
+                    )}
+
+                    {isNovo && (
+                      <span className="bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1 animate-pulse">
+                        ● NOVO
+                      </span>
+                    )}
+                    {isPreparo && (
+                      <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                        <Flame className="w-3 h-3" />
+                        <span>EM PREPARO</span>
+                      </span>
+                    )}
+                    {isACaminho && (
+                      <span className="bg-[#047857] text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                        <Bike className="w-3 h-3" />
+                        <span>A CAMINHO</span>
+                      </span>
+                    )}
+                    {isEntregue && (
+                      <span className="bg-stone-700 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                        ✓ ENTREGUE
+                      </span>
+                    )}
+                    {isCancelado && (
+                      <span className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                        ✕ CANCELADO
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Dados do Cliente e Entrega */}
@@ -620,11 +637,11 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                       <button
                         type="button"
                         onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
-                        className="flex-1 py-2 px-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
+                        className="w-full py-2 px-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95"
                         title="Aceitar pedido e iniciar separação com baixa FEFO"
                       >
                         <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />
-                        <span className="truncate">Aceitar Pedido</span>
+                        <span>Aceitar Pedido</span>
                       </button>
                     ) : isPreparo ? (
                       <button
@@ -645,22 +662,6 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                         ✕ Cancelado {order.motivoCancelamento ? `— ${order.motivoCancelamento}` : ''}
                       </div>
                     ) : null}
-
-                    {/* Botão Cancelar / Recusar Pedido (Disponível enquanto o pedido não estiver entregue nem cancelado) */}
-                    {!isEntregue && !isCancelado && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPedidoParaCancelar(order);
-                          setMotivoCancelamento('');
-                        }}
-                        className="py-2 px-2.5 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 font-bold text-xs flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
-                        title="Recusar ou cancelar este pedido de entrega"
-                      >
-                        <X className="w-3.5 h-3.5 stroke-[2.5] shrink-0" />
-                        <span>{isNovo ? 'Recusar' : 'Cancelar'}</span>
-                      </button>
-                    )}
                   </div>
                 </div>
               </div>

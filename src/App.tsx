@@ -6118,6 +6118,7 @@ export default function App() {
 
   return (
     <>
+      <div className="topo-fixo-sistema">
       {/* HEADER */}
       <header className="cabecalho">
         <div className="container-cabecalho">
@@ -6480,6 +6481,7 @@ export default function App() {
             )}
           </div>
         </div>
+      </div>
       </div>
 
       {/* SIDEBAR (MENU DE TRÊS TRAÇOS COM ISOLAMENTO DE ACESSO) */}
@@ -7901,8 +7903,9 @@ export default function App() {
                   className="coluna-delivery-fixa-lateral hidden lg:block"
                   style={{
                     position: 'sticky',
-                    top: '75px',
-                    zIndex: 10,
+                    top: '100px',
+                    zIndex: 40,
+                    alignSelf: 'start',
                   }}
                 >
                   <CaixaDeliveryPanel
