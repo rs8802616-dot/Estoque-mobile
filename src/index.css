@@ -1893,21 +1893,56 @@
     }
 }
 
-/* REGRAS DE IMPRESSÃO (PRINT MEDIA) */
+/* REGRAS DE IMPRESSÃO (PRINT MEDIA) - FORMATADO PARA IMPRESSORAS TÉRMICAS E ETIQUETAS */
 @media print {
+    @page {
+        size: 80mm auto;
+        margin: 0mm;
+    }
+    html, body {
+        width: 80mm !important;
+        max-width: 80mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
     body * {
         visibility: hidden;
     }
-    .cupom-termico-box, .cupom-termico-box *, .grid-etiquetas-impressao, .grid-etiquetas-impressao * {
+    .cupom-termico-box, .cupom-termico-box *, #area-impressao-termica, #area-impressao-termica *, .grid-etiquetas-impressao, .grid-etiquetas-impressao * {
         visibility: visible;
     }
-    .cupom-termico-box {
+    .cupom-termico-box, #area-impressao-termica {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100%;
-        border: none;
-        box-shadow: none;
+        width: 74mm !important;
+        max-width: 74mm !important;
+        margin: 0 auto !important;
+        padding: 2mm 1mm 4mm 1mm !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Courier New', Courier, monospace !important;
+        font-size: 11px !important;
+        line-height: 1.25 !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-inside: avoid !important;
+    }
+    .cupom-divisor {
+        border-bottom: 1px dashed #000000 !important;
+        height: 1px !important;
+        margin: 4px 0 !important;
+        color: transparent !important;
     }
     .grid-etiquetas-impressao {
         position: absolute;
@@ -1919,12 +1954,17 @@
         grid-template-columns: repeat(3, 1fr);
     }
     .modal-overlay, .modal-container {
+        position: static !important;
         background: transparent !important;
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
+        border: none !important;
+        width: auto !important;
+        height: auto !important;
+        overflow: visible !important;
     }
-    .btn, .btn-fechar-modal, button {
+    .btn, .btn-fechar-modal, button, .no-print {
         display: none !important;
     }
 }

@@ -10985,6 +10985,8 @@ export default function App() {
         lojaId={supermercadoAtual}
         nomeLoja={nomeSupermercadoAtivo}
         operadorAtualNome={listaOperadores.find((op) => op.id === operadorAtivoId)?.nome || 'Operador'}
+        estoque={estoque}
+        catalogoGlobal={catalogoGlobal}
         onSalvarCliente={handleSalvarClienteDevedor}
         onExcluirCliente={handleExcluirClienteDevedor}
         onRegistrarPagamento={handleRegistrarPagamentoFiado}
