@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { PedidoDelivery, StatusPedidoDelivery, Supermercado } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { tocarAlertaNovoPedidoDelivery } from '../lib/soundUtils';
 
 interface CaixaDeliveryPanelProps {
   pedidos: PedidoDelivery[];
@@ -284,6 +285,17 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
+          {/* Botão Testar Toque Delivery */}
+          <button
+            type="button"
+            onClick={() => tocarAlertaNovoPedidoDelivery()}
+            className="px-2.5 py-1.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold shadow-xs transition flex items-center gap-1 cursor-pointer active:scale-95"
+            title="Testar o toque sonoro e falado de Novo Pedido (Delivery!)"
+          >
+            <span>🔔</span>
+            <span className="hidden sm:inline">Testar Toque</span>
+          </button>
+
           {/* Botão Copiar Link Cardápio */}
           <button
             type="button"

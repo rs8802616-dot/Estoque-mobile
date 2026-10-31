@@ -6,7 +6,7 @@ import {
   ItemEstoque,
   Supermercado,
 } from '../types';
-import { tocarAlertaNovoPedidoDelivery } from '../lib/soundUtils';
+import { tocarAlertaNovoPedidoDelivery, tocarSomEntregaFinalizadaMotoboy } from '../lib/soundUtils';
 import { formatCurrency } from '../utils/formatters';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import { mascaraTelefone } from '../lib/mascaras';
@@ -576,6 +576,25 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             >
               <ExternalLink className="w-4 h-4" />
               <span className="hidden sm:inline">Ver Cardápio</span>
+            </button>
+
+            {/* Botões de Testar Sons de Delivery */}
+            <button
+              onClick={() => tocarAlertaNovoPedidoDelivery()}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition border border-emerald-300 shadow-2xs cursor-pointer"
+              title="Testar som de Novo Pedido (Campainha + Voz Delivery)"
+            >
+              <span>🔔</span>
+              <span className="hidden md:inline">Testar Toque Delivery</span>
+            </button>
+
+            <button
+              onClick={() => tocarSomEntregaFinalizadaMotoboy()}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs transition border border-sky-300 shadow-2xs cursor-pointer"
+              title="Testar som de Entrega Concluída pelo Motoboy"
+            >
+              <span>🛵</span>
+              <span className="hidden md:inline">Testar Toque Motoboy</span>
             </button>
 
             {/* Simulação de Pedido Teste */}
