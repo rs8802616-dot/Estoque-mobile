@@ -193,6 +193,8 @@ import {
   subscribeLogsAuditoria,
   salvarPedidoDeliveryFirestore,
   subscribePedidosDelivery,
+  salvarConfigDeliveryFirestore,
+  subscribeConfigDelivery,
   sanitizarItemEstoque,
   obterQuantidadeTotalCatalogoFirestore,
 } from './lib/firestoreSync';
@@ -1373,6 +1375,13 @@ export default function App() {
       } catch (e) {}
     }
 
+    // Subscribe em tempo real às Configurações de Delivery da loja (horários, status aberto/fechado, taxas)
+    const unsubConfigDelivery = subscribeConfigDelivery(supermercadoAtual, (cfgRemota) => {
+      if (cfgRemota) {
+        setConfigDelivery(cfgRemota);
+      }
+    });
+
     // Subscribe em tempo real aos Pedidos de Delivery (atualiza instantaneamente sem precisar dar F5)
     let cargaInicialPedidosConcluida = false;
     const unsubPedidosDelivery = subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
@@ -1461,11 +1470,12 @@ export default function App() {
     });
 
     // Se a tela estiver sendo acessada como Cardápio do Cliente (Delivery / WhatsApp),
-    // NÃO carrega vendas, operadores, devedores nem auditoria. O cliente só precisa do estoque e pedidos de delivery da loja!
+    // NÃO carrega vendas, operadores, devedores nem auditoria. O cliente só precisa do estoque, config e pedidos de delivery da loja!
     if (isModoCliente) {
       return () => {
         unsubEstoque();
         unsubPedidosDelivery();
+        unsubConfigDelivery();
       };
     }
 
@@ -1517,6 +1527,7 @@ export default function App() {
     return () => {
       unsubEstoque();
       unsubPedidosDelivery();
+      unsubConfigDelivery();
       unsubVendas();
       unsubOperadores();
       unsubDevedores();
@@ -5693,6 +5704,12 @@ export default function App() {
     setConfigDelivery(novaConfig);
     const storeId = supermercadoAtual || 'loja_matriz_01';
     safeLocalStorageSet(`config_delivery_${storeId}`, JSON.stringify(novaConfig));
+    salvarConfigDeliveryFirestore(storeId, novaConfig);
+    const lojaObj = listaSupermercados.find((l) => l.id === storeId);
+    if (lojaObj?.slug && lojaObj.slug !== storeId) {
+      safeLocalStorageSet(`config_delivery_${lojaObj.slug}`, JSON.stringify(novaConfig));
+      salvarConfigDeliveryFirestore(lojaObj.slug, novaConfig);
+    }
     notificarSincronizacao();
   };
 

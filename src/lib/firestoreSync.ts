@@ -29,6 +29,7 @@ import {
   OperadorCaixa,
   ClienteDevedor,
   PedidoDelivery,
+  ConfiguracaoDelivery,
 } from '../types';
 
 // Real-time listener for Supermercados (reflete deleções e adições instantaneamente)
@@ -1274,4 +1275,77 @@ export async function obterQuantidadeTotalCatalogoFirestore(): Promise<number> {
     console.warn('Aviso ao consultar contagem do catálogo:', e);
   }
   return 14207;
+}
+
+// =========================================================================
+// CONFIGURAÇÕES DE DELIVERY (SINCRONIZAÇÃO EM TEMPO REAL LOJA E CLIENTE)
+// =========================================================================
+
+export async function salvarConfigDeliveryFirestore(lojaId: string, config: ConfiguracaoDelivery) {
+  const cleanLojaId = sanitizarIdDoc(lojaId || 'loja_matriz_01');
+  if (!cleanLojaId) return;
+
+  // Atualiza cache local instantâneo
+  safeLocalStorageSet(`config_delivery_${cleanLojaId}`, JSON.stringify(config));
+
+  try {
+    const docRef = doc(db, 'config_delivery', cleanLojaId);
+    await setDoc(docRef, limparUndefined(config), { merge: true });
+
+    // Espelha no documento da loja em 'supermercados' para compatibilidade total
+    const superRef = doc(db, 'supermercados', cleanLojaId);
+    await setDoc(
+      superRef,
+      limparUndefined({
+        taxa_entrega: config.taxaEntregaFixa,
+        tempo_estimado_entrega: `${config.tempoMinimoMinutos || 25}-${config.tempoMaximoMinutos || 45} min`,
+      }),
+      { merge: true }
+    ).catch(() => {});
+  } catch (err: any) {
+    console.warn('Aviso ao salvar config de delivery no Firestore (mantido localmente):', err);
+  }
+}
+
+export function subscribeConfigDelivery(
+  lojaId: string,
+  callback: (config: ConfiguracaoDelivery) => void
+) {
+  const cleanLojaId = sanitizarIdDoc(lojaId || 'loja_matriz_01');
+  if (!cleanLojaId) return () => {};
+
+  const docRef = doc(db, 'config_delivery', cleanLojaId);
+
+  return onSnapshot(
+    docRef,
+    (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data() as ConfiguracaoDelivery;
+        if (data) {
+          safeLocalStorageSet(`config_delivery_${cleanLojaId}`, JSON.stringify(data));
+          callback(data);
+          return;
+        }
+      }
+
+      // Se não existe na nuvem mas existe no localStorage, faz o seed para a nuvem
+      try {
+        const salvo = localStorage.getItem(`config_delivery_${cleanLojaId}`);
+        if (salvo) {
+          const parsed = JSON.parse(salvo);
+          salvarConfigDeliveryFirestore(cleanLojaId, parsed).catch(() => {});
+          callback(parsed);
+        }
+      } catch (e) {}
+    },
+    (_err) => {
+      // Fallback offline
+      try {
+        const salvo = localStorage.getItem(`config_delivery_${cleanLojaId}`);
+        if (salvo) {
+          callback(JSON.parse(salvo));
+        }
+      } catch (e) {}
+    }
+  );
 }
