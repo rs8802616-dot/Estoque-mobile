@@ -1295,36 +1295,58 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
           {/* ======================================================== */}
           {etapa === 'rastreio' && pedidoAtivoRastreio && (
             <div className="space-y-4 max-w-lg mx-auto text-center py-2">
-              
-              <div className="w-16 h-16 rounded-3xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
+              {pedidoAtivoRastreio.status === 'cancelado' ? (
+                <>
+                  <div className="w-16 h-16 rounded-3xl bg-red-100 text-red-600 flex items-center justify-center mx-auto border border-red-200">
+                    <X className="w-10 h-10 stroke-[2.5]" />
+                  </div>
+                  <div>
+                    <span className="text-xs uppercase font-extrabold tracking-widest text-red-600">
+                      Pedido Cancelado pelo Estabelecimento
+                    </span>
+                    <h2 className="text-2xl font-black text-stone-900 mt-1 font-mono">
+                      Pedido #{pedidoAtivoRastreio.numeroPedido}
+                    </h2>
+                    {pedidoAtivoRastreio.motivoCancelamento && (
+                      <div className="mt-3 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold">
+                        Motivo: {pedidoAtivoRastreio.motivoCancelamento}
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 rounded-3xl bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto border border-emerald-200">
+                    <CheckCircle2 className="w-10 h-10" />
+                  </div>
 
-              <div>
-                <span className="text-xs uppercase font-extrabold tracking-widest text-emerald-700">
-                  Pedido Recebido com Sucesso!
-                </span>
-                <h2 className="text-2xl font-black text-stone-900 mt-1 font-mono">
-                  Pedido #{pedidoAtivoRastreio.numeroPedido}
-                </h2>
-                <p className="text-xs text-stone-500 mt-1">
-                  Tempo estimado: <strong>{loja?.tempo_estimado_entrega || `${configDelivery.tempoMinimoMinutos || 25} a ${configDelivery.tempoMaximoMinutos || 45} min`}</strong>
-                </p>
-              </div>
+                  <div>
+                    <span className="text-xs uppercase font-extrabold tracking-widest text-emerald-700">
+                      Pedido Recebido com Sucesso!
+                    </span>
+                    <h2 className="text-2xl font-black text-stone-900 mt-1 font-mono">
+                      Pedido #{pedidoAtivoRastreio.numeroPedido}
+                    </h2>
+                    <p className="text-xs text-stone-500 mt-1">
+                      Tempo estimado: <strong>{loja?.tempo_estimado_entrega || `${configDelivery.tempoMinimoMinutos || 25} a ${configDelivery.tempoMaximoMinutos || 45} min`}</strong>
+                    </p>
+                  </div>
 
-              {/* CARD DE DESTAQUE DO PIN DE ENTREGA (ESTILO ATENDEJÁ) */}
-              <div className="bg-gradient-to-br from-emerald-600 to-teal-700 p-5 rounded-3xl text-white shadow-xl space-y-2">
-                <div className="flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider text-emerald-100">
-                  <KeyRound className="w-4 h-4" />
-                  <span>Código de Segurança (PIN de Entrega)</span>
-                </div>
-                <div className="text-4xl font-mono font-black tracking-widest py-1">
-                  {pedidoAtivoRastreio.codigoEntregaPin}
-                </div>
-                <p className="text-xs text-emerald-100 font-medium">
-                  Informe este código de 4 dígitos para o entregador para confirmar o recebimento!
-                </p>
-              </div>
+                  {/* CARD DE DESTAQUE DO PIN DE ENTREGA (ESTILO ATENDEJÁ) */}
+                  <div className="bg-gradient-to-br from-emerald-600 to-teal-700 p-5 rounded-3xl text-white shadow-xl space-y-2">
+                    <div className="flex items-center justify-center gap-1.5 text-xs font-black uppercase tracking-wider text-emerald-100">
+                      <KeyRound className="w-4 h-4" />
+                      <span>Código de Segurança (PIN de Entrega)</span>
+                    </div>
+                    <div className="text-4xl font-mono font-black tracking-widest py-1">
+                      {pedidoAtivoRastreio.codigoEntregaPin}
+                    </div>
+                    <p className="text-xs text-emerald-100 font-medium">
+                      Informe este código de 4 dígitos para o entregador para confirmar o recebimento!
+                    </p>
+                  </div>
+                </>
+              )}
 
               {/* BOTÃO ENVIAR PEDIDO NO WHATSAPP DA LOJA */}
               <button
@@ -1342,33 +1364,40 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                   Status do Pedido:
                 </h4>
 
-                <div className="space-y-2.5 text-xs">
-                  <div className="flex items-center gap-3 text-emerald-700 font-bold">
-                    <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">✓</div>
-                    <span>1. Pedido Recebido na Loja</span>
+                {pedidoAtivoRastreio.status === 'cancelado' ? (
+                  <div className="flex items-center gap-3 text-red-600 font-bold text-xs">
+                    <div className="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs shrink-0">✕</div>
+                    <span>Pedido cancelado ({pedidoAtivoRastreio.motivoCancelamento || 'Cancelado pelo estabelecimento'})</span>
                   </div>
-
-                  <div className={`flex items-center gap-3 ${pedidoAtivoRastreio.status !== 'pendente' ? 'text-amber-700 font-bold' : 'text-stone-400'}`}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${pedidoAtivoRastreio.status !== 'pendente' ? 'bg-amber-500 text-white font-bold' : 'bg-stone-200 text-stone-500'}`}>
-                      2
+                ) : (
+                  <div className="space-y-2.5 text-xs">
+                    <div className="flex items-center gap-3 text-emerald-700 font-bold">
+                      <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs">✓</div>
+                      <span>1. Pedido Recebido na Loja</span>
                     </div>
-                    <span>2. Em Preparo e Separação</span>
-                  </div>
 
-                  <div className={`flex items-center gap-3 ${pedidoAtivoRastreio.status === 'saiu_para_entrega' || pedidoAtivoRastreio.status === 'entregue' ? 'text-purple-700 font-bold' : 'text-stone-400'}`}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${pedidoAtivoRastreio.status === 'saiu_para_entrega' || pedidoAtivoRastreio.status === 'entregue' ? 'bg-purple-600 text-white font-bold' : 'bg-stone-200 text-stone-500'}`}>
-                      3
+                    <div className={`flex items-center gap-3 ${pedidoAtivoRastreio.status !== 'pendente' ? 'text-amber-700 font-bold' : 'text-stone-400'}`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${pedidoAtivoRastreio.status !== 'pendente' ? 'bg-amber-500 text-white font-bold' : 'bg-stone-200 text-stone-500'}`}>
+                        2
+                      </div>
+                      <span>2. Em Preparo e Separação</span>
                     </div>
-                    <span>3. Motoboy a Caminho do Endereço</span>
-                  </div>
 
-                  <div className={`flex items-center gap-3 ${pedidoAtivoRastreio.status === 'entregue' ? 'text-emerald-700 font-bold' : 'text-stone-400'}`}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${pedidoAtivoRastreio.status === 'entregue' ? 'bg-emerald-600 text-white font-bold' : 'bg-stone-200 text-stone-500'}`}>
-                      4
+                    <div className={`flex items-center gap-3 ${pedidoAtivoRastreio.status === 'saiu_para_entrega' || pedidoAtivoRastreio.status === 'entregue' ? 'text-purple-700 font-bold' : 'text-stone-400'}`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${pedidoAtivoRastreio.status === 'saiu_para_entrega' || pedidoAtivoRastreio.status === 'entregue' ? 'bg-purple-600 text-white font-bold' : 'bg-stone-200 text-stone-500'}`}>
+                        3
+                      </div>
+                      <span>3. Motoboy a Caminho do Endereço</span>
                     </div>
-                    <span>4. Entregue com Sucesso via PIN</span>
+
+                    <div className={`flex items-center gap-3 ${pedidoAtivoRastreio.status === 'entregue' ? 'text-emerald-700 font-bold' : 'text-stone-400'}`}>
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${pedidoAtivoRastreio.status === 'entregue' ? 'bg-emerald-600 text-white font-bold' : 'bg-stone-200 text-stone-500'}`}>
+                        4
+                      </div>
+                      <span>4. Entregue com Sucesso via PIN</span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Resumo dos Itens */}
@@ -1436,7 +1465,9 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                           #{p.numeroPedido}
                         </span>
                         <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] uppercase ${
-                          p.status === 'pendente'
+                          p.status === 'cancelado'
+                            ? 'bg-red-100 text-red-700 border border-red-200'
+                            : p.status === 'pendente'
                             ? 'bg-red-100 text-red-700 border border-red-200'
                             : p.status === 'em_separacao'
                             ? 'bg-amber-100 text-amber-700 border border-amber-200'
@@ -1444,9 +1475,23 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                             ? 'bg-purple-100 text-purple-700 border border-purple-200'
                             : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                         }`}>
-                          {p.status === 'pendente' ? '● Pendente' : p.status === 'em_separacao' ? '🔥 Em Preparo' : p.status === 'saiu_para_entrega' ? '🛵 A Caminho' : '✓ Entregue'}
+                          {p.status === 'cancelado'
+                            ? '✕ Cancelado'
+                            : p.status === 'pendente'
+                            ? '● Pendente'
+                            : p.status === 'em_separacao'
+                            ? '🔥 Em Preparo'
+                            : p.status === 'saiu_para_entrega'
+                            ? '🛵 A Caminho'
+                            : '✓ Entregue'}
                         </span>
                       </div>
+
+                      {p.status === 'cancelado' && p.motivoCancelamento && (
+                        <div className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[11px] font-semibold">
+                          Motivo: {p.motivoCancelamento}
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-200">
                         <span className="text-emerald-900 font-bold">PIN de Entrega:</span>

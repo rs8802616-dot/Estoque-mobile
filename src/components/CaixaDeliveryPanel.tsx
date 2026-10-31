@@ -37,7 +37,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   onAbrirCardapioCliente,
   onImprimirComanda,
 }) => {
-  const [deliveryFilter, setDeliveryFilter] = useState<'ativos' | 'novo' | 'em_preparo' | 'a_caminho' | 'todos'>('ativos');
+  const [deliveryFilter, setDeliveryFilter] = useState<'ativos' | 'novo' | 'em_preparo' | 'a_caminho' | 'cancelados' | 'todos'>('ativos');
   const [deliverySearch, setDeliverySearch] = useState<string>('');
   const [copiedDeliveryLink, setCopiedDeliveryLink] = useState(false);
 
@@ -49,6 +49,10 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   // Modal de Link do Motoboy com token exclusivo
   const [pedidoLinkMotoboy, setPedidoLinkMotoboy] = useState<PedidoDelivery | null>(null);
   const [copiouLinkMotoboy, setCopiouLinkMotoboy] = useState(false);
+
+  // Modal de Cancelamento de Pedido pelo Lojista
+  const [pedidoParaCancelar, setPedidoParaCancelar] = useState<PedidoDelivery | null>(null);
+  const [motivoCancelamento, setMotivoCancelamento] = useState('');
 
   // Copiar link do cardápio digital
   const handleCopyDeliveryLink = () => {
@@ -188,6 +192,30 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
     return pedidos.filter((p) => p.status === 'saiu_para_entrega').length;
   }, [pedidos]);
 
+  const countCanceladosDelivery = useMemo(() => {
+    return pedidos.filter((p) => p.status === 'cancelado').length;
+  }, [pedidos]);
+
+  const handleConfirmarCancelamento = (avisarWhatsApp: boolean) => {
+    if (!pedidoParaCancelar) return;
+    const motivoFinal = motivoCancelamento.trim() || 'Cancelado pelo estabelecimento';
+    onAtualizarStatus(pedidoParaCancelar.id, 'cancelado', motivoFinal);
+
+    if (avisarWhatsApp && pedidoParaCancelar.cliente?.telefone) {
+      const foneLimpo = pedidoParaCancelar.cliente.telefone.replace(/\D/g, '');
+      const foneComDdi = foneLimpo.startsWith('55') ? foneLimpo : `55${foneLimpo}`;
+      const texto =
+        `Olá, *${pedidoParaCancelar.cliente.nome}*!\n` +
+        `Infelizmente precisamos cancelar o seu *Pedido #${pedidoParaCancelar.numeroPedido}* em *${loja?.nome || 'nossa loja'}*.\n\n` +
+        `📌 *Motivo:* ${motivoFinal}\n\n` +
+        `Pedimos desculpas pelo transtorno! Qualquer dúvida estamos à disposição.`;
+      window.open(`https://api.whatsapp.com/send?phone=${foneComDdi}&text=${encodeURIComponent(texto)}`, '_blank');
+    }
+
+    setPedidoParaCancelar(null);
+    setMotivoCancelamento('');
+  };
+
   // Lista filtrada de pedidos
   const filteredOrders = useMemo(() => {
     return pedidos
@@ -196,6 +224,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         if (deliveryFilter === 'novo') return p.status === 'pendente';
         if (deliveryFilter === 'em_preparo') return p.status === 'em_separacao';
         if (deliveryFilter === 'a_caminho') return p.status === 'saiu_para_entrega';
+        if (deliveryFilter === 'cancelados') return p.status === 'cancelado';
         return true;
       })
       .filter((p) => {
@@ -323,6 +352,21 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
           <span>A Caminho 🛵</span>
           {countACaminhoDelivery > 0 && <span>({countACaminhoDelivery})</span>}
         </button>
+
+        {/* Cancelados */}
+        {countCanceladosDelivery > 0 && (
+          <button
+            type="button"
+            onClick={() => setDeliveryFilter('cancelados')}
+            className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
+              deliveryFilter === 'cancelados'
+                ? 'bg-stone-700 text-white shadow-xs'
+                : 'bg-white border border-stone-300 text-stone-600 hover:bg-stone-100'
+            }`}
+          >
+            <span>Cancelados ({countCanceladosDelivery})</span>
+          </button>
+        )}
       </div>
 
       {/* 3. Barra de Pesquisa Rápida (com espaçamento corrigido sem sobreposição de ícone) */}
@@ -375,6 +419,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             const isPreparo = order.status === 'em_separacao';
             const isACaminho = order.status === 'saiu_para_entrega';
             const isEntregue = order.status === 'entregue';
+            const isCancelado = order.status === 'cancelado';
             const isDelivery = order.tipo_pedido !== 'retirada';
 
             // Formatação de data e verificação se é anterior ou hoje
@@ -388,7 +433,9 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             const bairroTexto = order.enderecoEntrega.bairro ? `(Bairro: ${order.enderecoEntrega.bairro})` : '';
 
             // Borda colorida idêntica à imagem
-            const borderCardClass = isACaminho
+            const borderCardClass = isCancelado
+              ? 'border border-red-200 opacity-80'
+              : isACaminho
               ? 'border-2 border-[#a855f7]'
               : isNovo
               ? 'border-2 border-red-500 ring-2 ring-red-500/10'
@@ -434,6 +481,11 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                   {isEntregue && (
                     <span className="bg-stone-700 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
                       ✓ ENTREGUE
+                    </span>
+                  )}
+                  {isCancelado && (
+                    <span className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                      ✕ CANCELADO
                     </span>
                   )}
                 </div>
@@ -568,11 +620,11 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                       <button
                         type="button"
                         onClick={() => onAtualizarStatus(order.id, 'em_separacao')}
-                        className="w-full py-2 px-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95"
+                        className="flex-1 py-2 px-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
                         title="Aceitar pedido e iniciar separação com baixa FEFO"
                       >
                         <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />
-                        <span>Aceitar Pedido</span>
+                        <span className="truncate">Aceitar Pedido</span>
                       </button>
                     ) : isPreparo ? (
                       <button
@@ -588,7 +640,27 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                       <div className="w-full text-center py-1.5 text-xs font-bold text-emerald-800 bg-emerald-100 rounded-xl">
                         ✓ Entregue
                       </div>
+                    ) : isCancelado ? (
+                      <div className="w-full text-left py-1.5 px-2.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 rounded-xl">
+                        ✕ Cancelado {order.motivoCancelamento ? `— ${order.motivoCancelamento}` : ''}
+                      </div>
                     ) : null}
+
+                    {/* Botão Cancelar / Recusar Pedido (Disponível enquanto o pedido não estiver entregue nem cancelado) */}
+                    {!isEntregue && !isCancelado && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPedidoParaCancelar(order);
+                          setMotivoCancelamento('');
+                        }}
+                        className="py-2 px-2.5 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 font-bold text-xs flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
+                        title="Recusar ou cancelar este pedido de entrega"
+                      >
+                        <X className="w-3.5 h-3.5 stroke-[2.5] shrink-0" />
+                        <span>{isNovo ? 'Recusar' : 'Cancelar'}</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -596,6 +668,111 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
           })
         )}
       </div>
+
+      {/* Modal de Cancelamento / Recusa de Pedido */}
+      {pedidoParaCancelar && (
+        <div
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3"
+          style={{ zIndex: 10000001 }}
+        >
+          <div className="bg-white border border-stone-200 rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl text-stone-900">
+            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl bg-red-100 text-red-600 flex items-center justify-center border border-red-200">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-stone-900">
+                    Cancelar Pedido #{pedidoParaCancelar.numeroPedido}
+                  </h3>
+                  <p className="text-[11px] text-stone-500">
+                    Cliente: {pedidoParaCancelar.cliente.nome} ({formatCurrency(pedidoParaCancelar.valorTotal)})
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPedidoParaCancelar(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {pedidoParaCancelar.status !== 'pendente' && (
+              <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium">
+                ⚠️ Como este pedido já havia sido aceito, os produtos retornarão automaticamente ao estoque e a venda será estornada do caixa.
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-700 block">
+                Selecione ou digite o motivo do cancelamento:
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  'Fora da área de entrega',
+                  'Produto em falta no estoque',
+                  'Sem motoboy disponível no momento',
+                  'Loja encerrando expediente',
+                  'Endereço não localizado',
+                  'Cancelado a pedido do cliente',
+                ].map((sugestao) => (
+                  <button
+                    key={sugestao}
+                    type="button"
+                    onClick={() => setMotivoCancelamento(sugestao)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition cursor-pointer ${
+                      motivoCancelamento === sugestao
+                        ? 'bg-red-600 text-white border-red-600'
+                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-red-50 hover:border-red-200'
+                    }`}
+                  >
+                    {sugestao}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="text"
+                value={motivoCancelamento}
+                onChange={(e) => setMotivoCancelamento(e.target.value)}
+                placeholder="Ou digite outro motivo (opcional)..."
+                className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-300 text-xs text-stone-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setPedidoParaCancelar(null)}
+                className="py-2.5 px-3 rounded-xl border border-stone-300 text-stone-700 text-xs font-bold hover:bg-stone-50 transition cursor-pointer"
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleConfirmarCancelamento(false)}
+                className="flex-1 py-2.5 px-3 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <X className="w-4 h-4 stroke-[2.5]" />
+                <span>Confirmar Cancelamento</span>
+              </button>
+              {pedidoParaCancelar.cliente?.telefone && (
+                <button
+                  type="button"
+                  onClick={() => handleConfirmarCancelamento(true)}
+                  className="flex-1 py-2.5 px-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                  title="Cancela o pedido e abre o WhatsApp com mensagem pronta para avisar o cliente"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Cancelar + WhatsApp</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Validação de PIN de 4 Dígitos */}
       {validandoPinPedido && (
