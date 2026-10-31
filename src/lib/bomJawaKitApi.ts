@@ -89,6 +89,100 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
   return null;
 }
 
+export interface SI5PesquisaPaginadaRetorno {
+  produtos: SI5ProdutoRetorno[];
+  total: number;
+  currentPage: number;
+  lastPage: number;
+  chaveUtilizada: number;
+}
+
+/**
+ * Pesquisa de produtos por NOME na API SI5 Global (https://global.si5.com.br/api/produtos?q=TERMO)
+ * Utiliza a cascata de 4 tokens (até 400 consultas diárias) e retorna produtos diretamente da API oficial.
+ */
+export async function pesquisarSI5GlobalPorNome(
+  termo: string,
+  page: number = 1
+): Promise<SI5PesquisaPaginadaRetorno | null> {
+  const cleanTermo = (termo || '').trim();
+  if (cleanTermo.length < 3) {
+    return { produtos: [], total: 0, currentPage: page, lastPage: 1, chaveUtilizada: 1 };
+  }
+
+  const dataHoje = new Date().toISOString().slice(0, 10);
+
+  for (let i = 0; i < SI5_GLOBAL_TOKENS.length; i++) {
+    const token = SI5_GLOBAL_TOKENS[i];
+    const chaveStorage = `si5_token_esgotado_${i}_${dataHoje}`;
+
+    if (typeof window !== 'undefined') {
+      try {
+        if (localStorage.getItem(chaveStorage) === 'true') {
+          continue;
+        }
+      } catch {}
+    }
+
+    try {
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 8500);
+
+      const url = `https://global.si5.com.br/api/produtos?q=${encodeURIComponent(cleanTermo)}&page=${page}`;
+      const res = await fetch(url, {
+        method: 'GET',
+        signal: ctrl.signal,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      });
+      clearTimeout(timeoutId);
+
+      if (res.status === 429) {
+        console.warn(`[SI5 Global] Token #${i + 1} atingiu limite diário ao pesquisar nome. Passando para o próximo token...`);
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem(chaveStorage, 'true');
+          } catch {}
+        }
+        continue;
+      }
+
+      if (res.ok) {
+        const json = await res.json();
+        const listaRaw: any[] = Array.isArray(json?.data) ? json.data : [];
+        const total = Number(json?.meta?.total || listaRaw.length);
+        const lastPage = Number(json?.meta?.last_page || 1);
+        const currentPage = Number(json?.meta?.current_page || page);
+
+        const produtos: SI5ProdutoRetorno[] = listaRaw.map((item) => ({
+          ean: String(item.codbar || '').trim(),
+          nomeProduto: String(item.produto || '').trim(),
+          marca: String(item.marca || '').trim(),
+          categoria: String(item.categoria || 'Geral').trim(),
+          fotoUrl: String(item.imagem_url || item.codigo_barras_url || '').trim(),
+          ncm: String(item.ncm || '').trim(),
+          descricao: String(item.peso || item.embalagem || item.ncm_descricao || '').trim(),
+          fonte: `API Oficial SI5 Global`,
+        }));
+
+        return {
+          produtos,
+          total,
+          currentPage,
+          lastPage,
+          chaveUtilizada: i + 1,
+        };
+      }
+    } catch (e: any) {
+      console.warn(`[SI5 Global] Erro na busca por nome com token #${i + 1}:`, e?.message || e);
+    }
+  }
+
+  return null;
+}
+
 // Motor Duplo de Consulta de Produtos (Dual-API Engine):
 // 1º PRIORIDADE PRINCIPAL (API 1): Bluesoft Cosmos (https://api.cosmos.bluesoft.com.br) - Header: X-Cosmos-Token: 2Vu6HJqH8130Bk_YhL8Osg
 // 2º CONTINGÊNCIA / COMPLEMENTO (API 2): BomJawaKit (https://produtos.bomjawakit.com.br/api/v1) - Header: X-API-Key: sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU

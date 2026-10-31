@@ -10740,12 +10740,11 @@ export default function App() {
         estoque={estoque}
       />
 
-      {/* MODAL DE PESQUISAR PRODUTO NO CATÁLOGO OFICIAL & API (NOME, FOTO, MARCA & CÓDIGO) */}
+      {/* MODAL DE PESQUISAR PRODUTO DIRETO NA API OFICIAL SI5 GLOBAL */}
       <ModalPesquisaCatalogo
         visivel={modalPesquisaCatalogoVisivel}
         onFechar={() => setModalPesquisaCatalogoVisivel(false)}
-        catalogoGlobal={catalogoGlobal}
-        termoInicial={cadNome || cadCod || ''}
+        termoInicial={cadNome || ''}
         onSelecionarProduto={handleSelecionarProdutoPesquisa}
       />
 

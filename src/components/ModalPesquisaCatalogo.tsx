@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ProdutoCatalogo } from '../types';
-import { carregarCatalogoOfflineJSON, buscarProdutosCosmosBluesoft } from '../lib/bomJawaKitApi';
+import React, { useState, useEffect, useRef } from 'react';
+import { pesquisarSI5GlobalPorNome, SI5ProdutoRetorno } from '../lib/bomJawaKitApi';
 
 export interface ProdutoPesquisaItem {
   codigo: string;
@@ -14,189 +13,111 @@ export interface ProdutoPesquisaItem {
 interface ModalPesquisaCatalogoProps {
   visivel: boolean;
   onFechar: () => void;
-  catalogoGlobal: ProdutoCatalogo[];
   termoInicial?: string;
   onSelecionarProduto: (produto: ProdutoPesquisaItem) => void;
 }
 
-const CATEGORIAS_RAPIDAS = [
-  'Todos',
-  'Carnes & Frios',
-  'Bebidas',
-  'Cervejas',
-  'Mercearia',
-  'Doces & Biscoitos',
-  'Higiene & Limpeza',
-  'Padaria & Congelados',
+const SUGESTOES_RAPIDAS = [
+  'Picanha',
+  'Heineken',
+  'Brahma',
+  'Coca-Cola',
+  'Arroz',
+  'Feijão',
+  'Vodka',
+  'Red Bull',
+  'Amendoim',
+  'Carvão',
 ];
 
 export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
   visivel,
   onFechar,
-  catalogoGlobal,
   termoInicial = '',
   onSelecionarProduto,
 }) => {
   const [termo, setTermo] = useState(termoInicial);
-  const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
-  const [itensOffline, setItensOffline] = useState<ProdutoPesquisaItem[]>([]);
-  const [carregandoOffline, setCarregandoOffline] = useState(false);
-  const [buscandoAPIExterna, setBuscandoAPIExterna] = useState(false);
-  const [resultadosExternos, setResultadosExternos] = useState<ProdutoPesquisaItem[]>([]);
+  const [produtosAPI, setProdutosAPI] = useState<SI5ProdutoRetorno[]>([]);
+  const [carregando, setCarregando] = useState(false);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [totalItens, setTotalItens] = useState(0);
+  const [jaPesquisou, setJaPesquisou] = useState(false);
+  const [erroMensagem, setErroMensagem] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sincroniza termo inicial quando o modal abre
+  // Executa busca direta e exclusivamente na API Oficial https://global.si5.com.br
+  const executarBuscaAPI = async (termoParaBuscar: string, pagina: number = 1, anexar: boolean = false) => {
+    const limpo = (termoParaBuscar || '').trim();
+    if (limpo.length < 3) {
+      alert('Por favor, digite pelo menos 3 letras para pesquisar na API Oficial SI5 Global (ex: Picanha, Cerveja, Nescau).');
+      return;
+    }
+
+    setCarregando(true);
+    setErroMensagem(null);
+    setJaPesquisou(true);
+
+    try {
+      const res = await pesquisarSI5GlobalPorNome(limpo, pagina);
+      if (res && Array.isArray(res.produtos)) {
+        if (anexar) {
+          setProdutosAPI((prev) => [...prev, ...res.produtos]);
+        } else {
+          setProdutosAPI(res.produtos);
+        }
+        setTotalItens(res.total);
+        setPaginaAtual(res.currentPage);
+        setTotalPaginas(res.lastPage);
+      } else {
+        if (!anexar) setProdutosAPI([]);
+        setErroMensagem('Nenhum resultado retornado pela API ou limite de consultas temporariamente atingido.');
+      }
+    } catch (err: any) {
+      console.warn('[ModalPesquisaCatalogo] Erro ao consultar SI5 Global:', err);
+      setErroMensagem('Falha ao comunicar com a API Oficial SI5 Global. Verifique sua conexão.');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // Quando o modal abre, foca no input e executa se já tiver termo
   useEffect(() => {
     if (visivel) {
-      setTermo(termoInicial || '');
-      setResultadosExternos([]);
+      const t = (termoInicial || '').trim();
+      setTermo(t);
+      setProdutosAPI([]);
+      setJaPesquisou(false);
+      setErroMensagem(null);
+      setPaginaAtual(1);
+      setTotalPaginas(1);
+      setTotalItens(0);
+
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 100);
+      }, 120);
+
+      // Se já veio com nome do produto do formulário (com pelo menos 3 caracteres), busca direto na API
+      if (t.length >= 3) {
+        executarBuscaAPI(t, 1, false);
+      }
     }
   }, [visivel, termoInicial]);
 
-  // Carrega base offline de 13.357 produtos sob demanda
-  useEffect(() => {
-    let cancelado = false;
-    if (visivel && itensOffline.length === 0) {
-      setCarregandoOffline(true);
-      carregarCatalogoOfflineJSON()
-        .then((dados) => {
-          if (!cancelado && dados?.produtos) {
-            const mapeados: ProdutoPesquisaItem[] = dados.produtos.map((p) => ({
-              codigo: p.ean,
-              nome: p.nomeProduto,
-              marca: p.marca || '',
-              categoria: p.categoria || 'Geral',
-              foto: p.fotoUrl || '',
-              origem: 'Catálogo Oficial (Base Nacional)',
-            }));
-            setItensOffline(mapeados);
-          }
-        })
-        .catch((err) => {
-          console.warn('[ModalPesquisaCatalogo] Falha ao carregar catálogo offline:', err);
-        })
-        .finally(() => {
-          if (!cancelado) setCarregandoOffline(false);
-        });
+  const handleSubmeterBusca = (e: React.FormEvent) => {
+    e.preventDefault();
+    executarBuscaAPI(termo, 1, false);
+  };
+
+  const handleCarregarMais = () => {
+    if (paginaAtual < totalPaginas && !carregando) {
+      executarBuscaAPI(termo, paginaAtual + 1, true);
     }
-    return () => {
-      cancelado = true;
-    };
-  }, [visivel, itensOffline.length]);
+  };
 
-  // Combina produtos do Catálogo Global (memória/loja) + Base Offline (13k itens) sem duplicados
-  const catalogoCombinado = useMemo(() => {
-    const mapa = new Map<string, ProdutoPesquisaItem>();
-
-    // 1. Catálogo Global existente no App (maior prioridade)
-    catalogoGlobal.forEach((p) => {
-      const cod = (p.codigo || '').trim();
-      if (cod && !mapa.has(cod)) {
-        mapa.set(cod, {
-          codigo: cod,
-          nome: p.nome || '',
-          marca: p.marca || '',
-          categoria: p.categoria || 'Geral',
-          foto: p.foto || p.imagem || p.foto_url || '',
-          origem: 'Catálogo do Sistema',
-        });
-      }
-    });
-
-    // 2. Base Oficial de 13.357 itens
-    itensOffline.forEach((p) => {
-      const cod = (p.codigo || '').trim();
-      if (cod && !mapa.has(cod)) {
-        mapa.set(cod, p);
-      }
-    });
-
-    // 3. Resultados adicionais de API Externa (se consultado)
-    resultadosExternos.forEach((p) => {
-      const cod = (p.codigo || '').trim();
-      if (cod && !mapa.has(cod)) {
-        mapa.set(cod, p);
-      }
-    });
-
-    return Array.from(mapa.values());
-  }, [catalogoGlobal, itensOffline, resultadosExternos]);
-
-  // Filtragem rápida em tempo real por nome, marca ou código de barras
-  const produtosFiltrados = useMemo(() => {
-    const termoLimpo = termo.trim().toLowerCase();
-    const categoriaFiltro = categoriaAtiva.toLowerCase();
-
-    return catalogoCombinado.filter((prod) => {
-      // Filtro de categoria
-      if (categoriaAtiva !== 'Todos') {
-        const catProd = (prod.categoria || '').toLowerCase();
-        if (!catProd.includes(categoriaFiltro)) {
-          // Casos especiais de categoria
-          if (categoriaAtiva === 'Carnes & Frios' && !catProd.includes('carne') && !catProd.includes('frio') && !catProd.includes('bovino') && !catProd.includes('aves')) {
-            return false;
-          } else if (categoriaAtiva === 'Cervejas' && !catProd.includes('cerveja') && !prod.nome.toLowerCase().includes('cerveja') && !prod.nome.toLowerCase().includes('chopp')) {
-            return false;
-          } else if (categoriaAtiva === 'Bebidas' && !catProd.includes('bebida') && !catProd.includes('refrigerante') && !catProd.includes('suco') && !catProd.includes('cerveja')) {
-            return false;
-          }
-        }
-      }
-
-      // Se não digitou busca, exibe os primeiros itens da categoria
-      if (!termoLimpo) return true;
-
-      // Busca por código exato ou parcial
-      if (prod.codigo.toLowerCase().includes(termoLimpo)) return true;
-
-      // Busca por palavras no nome (suporta múltiplos termos, ex: "picanha friboi" ou "cerveja heineken")
-      const termosIndividuais = termoLimpo.split(/\s+/).filter(Boolean);
-      const nomeProd = prod.nome.toLowerCase();
-      const marcaProd = (prod.marca || '').toLowerCase();
-      const catProd = (prod.categoria || '').toLowerCase();
-
-      const bateuTodosTermos = termosIndividuais.every(
-        (t) => nomeProd.includes(t) || marcaProd.includes(t) || catProd.includes(t)
-      );
-
-      return bateuTodosTermos;
-    });
-  }, [catalogoCombinado, termo, categoriaAtiva]);
-
-  // Limita a exibição a 60 itens para manter performance suave no mobile
-  const itensExibidos = useMemo(() => {
-    return produtosFiltrados.slice(0, 60);
-  }, [produtosFiltrados]);
-
-  // Buscar online via Bluesoft Cosmos
-  const handleBuscarOnline = async () => {
-    const t = termo.trim();
-    if (!t) return;
-    setBuscandoAPIExterna(true);
-    try {
-      const online = await buscarProdutosCosmosBluesoft(t);
-      if (Array.isArray(online) && online.length > 0) {
-        const convertidos: ProdutoPesquisaItem[] = online.map((item) => ({
-          codigo: item.ean,
-          nome: item.nomeProduto,
-          marca: item.marca || '',
-          categoria: item.categoria || 'Geral',
-          foto: item.fotoUrl || '',
-          origem: 'API Oficial Bluesoft Cosmos',
-        }));
-        setResultadosExternos(convertidos);
-      } else {
-        alert('Nenhum produto adicional retornado pela API externa.');
-      }
-    } catch (e: any) {
-      console.warn('Erro ao consultar API externa:', e);
-      alert('Não foi possível conectar com a API externa no momento.');
-    } finally {
-      setBuscandoAPIExterna(false);
-    }
+  const handleSelecionarSugestao = (sugestao: string) => {
+    setTermo(sugestao);
+    executarBuscaAPI(sugestao, 1, false);
   };
 
   if (!visivel) return null;
@@ -209,7 +130,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        backgroundColor: 'rgba(15, 23, 42, 0.78)',
         backdropFilter: 'blur(4px)',
         zIndex: 999999,
         display: 'flex',
@@ -224,12 +145,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
       <div
         style={{
           width: '100%',
-          maxWidth: '680px',
+          maxWidth: '660px',
           maxHeight: '92vh',
           backgroundColor: '#FAF7F2',
           borderRadius: '16px',
           border: '2px solid #292524',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.35)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -251,33 +172,48 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '10px',
                 backgroundColor: '#EFF6FF',
-                border: '1px solid #BFDBFE',
+                border: '1.5px solid #3B82F6',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.25rem',
+                fontSize: '1.35rem',
               }}
             >
-              🔍
+              🌐
             </div>
             <div>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: '1.05rem',
-                  fontWeight: 800,
-                  color: '#1C1917',
-                  lineHeight: 1.2,
-                }}
-              >
-                Pesquisar Produto
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: '1.05rem',
+                    fontWeight: 800,
+                    color: '#1C1917',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Pesquisar Produto na API Oficial
+                </h3>
+                <span
+                  style={{
+                    fontSize: '0.68rem',
+                    fontWeight: 700,
+                    backgroundColor: '#ECFDF5',
+                    color: '#047857',
+                    border: '1px solid #A7F3D0',
+                    padding: '2px 6px',
+                    borderRadius: '12px',
+                  }}
+                >
+                  SI5 Global
+                </span>
+              </div>
               <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B' }}>
-                Localize por nome (ex: Picanha, Heineken, Nescau...) e preencha tudo em 1 toque
+                Busca oficial em tempo real (Nome, Foto, Marca e Código de Barras EAN)
               </p>
             </div>
           </div>
@@ -297,7 +233,6 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.15s ease',
             }}
             title="Fechar pesquisa"
           >
@@ -305,146 +240,157 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
           </button>
         </div>
 
-        {/* CAMPO DE PESQUISA & FILTROS */}
-        <div style={{ padding: '14px 20px 8px 20px', backgroundColor: '#FFFFFF' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: '#F8FAFC',
-              border: '2px solid #292524',
-              borderRadius: '10px',
-              padding: '6px 12px',
-              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)',
-            }}
-          >
-            <span style={{ fontSize: '1.1rem', color: '#64748B' }}>🔎</span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={termo}
-              onChange={(e) => setTermo(e.target.value)}
-              placeholder="Digite o nome do produto (ex: Picanha, Heineken, Nescau...)"
+        {/* CAMPO DE BUSCA DIRETO NA API */}
+        <div style={{ padding: '14px 20px 10px 20px', backgroundColor: '#FFFFFF' }}>
+          <form onSubmit={handleSubmeterBusca} style={{ display: 'flex', gap: '8px' }}>
+            <div
               style={{
                 flex: 1,
-                border: 'none',
-                outline: 'none',
-                background: 'transparent',
-                fontSize: '0.92rem',
-                fontWeight: 600,
-                color: '#0F172A',
-                padding: '4px 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: '#F8FAFC',
+                border: '2px solid #292524',
+                borderRadius: '10px',
+                padding: '6px 12px',
               }}
-            />
-            {termo && (
-              <button
-                type="button"
-                onClick={() => setTermo('')}
+            >
+              <span style={{ fontSize: '1.1rem', color: '#64748B' }}>🔍</span>
+              <input
+                ref={inputRef}
+                type="text"
+                value={termo}
+                onChange={(e) => setTermo(e.target.value)}
+                placeholder="Digite o nome do produto (ex: Picanha, Heineken, Nescau...)"
                 style={{
-                  background: '#E2E8F0',
+                  flex: 1,
                   border: 'none',
-                  borderRadius: '50%',
-                  width: '22px',
-                  height: '22px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.72rem',
-                  color: '#475569',
-                  cursor: 'pointer',
+                  outline: 'none',
+                  background: 'transparent',
+                  fontSize: '0.92rem',
+                  fontWeight: 600,
+                  color: '#0F172A',
+                  padding: '4px 0',
                 }}
-                title="Limpar busca"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+              />
+              {termo && (
+                <button
+                  type="button"
+                  onClick={() => setTermo('')}
+                  style={{
+                    background: '#E2E8F0',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '22px',
+                    height: '22px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.72rem',
+                    color: '#475569',
+                    cursor: 'pointer',
+                  }}
+                  title="Limpar busca"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
 
-          {/* CHIPS DE CATEGORIA */}
+            <button
+              type="submit"
+              disabled={carregando || termo.trim().length < 3}
+              style={{
+                padding: '0 18px',
+                borderRadius: '10px',
+                backgroundColor: '#0284C7',
+                color: '#FFFFFF',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '0.88rem',
+                cursor: carregando || termo.trim().length < 3 ? 'not-allowed' : 'pointer',
+                opacity: carregando || termo.trim().length < 3 ? 0.6 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 2px 4px rgba(2, 132, 199, 0.25)',
+              }}
+            >
+              {carregando ? '⏳ Buscando...' : '🔍 Buscar na API'}
+            </button>
+          </form>
+
+          {/* SUGESTÕES RÁPIDAS DE CONSULTA */}
           <div
             style={{
               display: 'flex',
               gap: '6px',
               overflowX: 'auto',
               paddingTop: '10px',
-              paddingBottom: '4px',
+              paddingBottom: '2px',
               scrollbarWidth: 'none',
+              alignItems: 'center',
             }}
           >
-            {CATEGORIAS_RAPIDAS.map((cat) => {
-              const ativo = categoriaAtiva === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategoriaAtiva(cat)}
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: '20px',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    whiteSpace: 'nowrap',
-                    cursor: 'pointer',
-                    border: ativo ? '1.5px solid #0284C7' : '1px solid #CBD5E1',
-                    backgroundColor: ativo ? '#0284C7' : '#F1F5F9',
-                    color: ativo ? '#FFFFFF' : '#334155',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {cat}
-                </button>
-              );
-            })}
+            <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, whiteSpace: 'nowrap' }}>
+              Exemplos:
+            </span>
+            {SUGESTOES_RAPIDAS.map((sug) => (
+              <button
+                key={sug}
+                type="button"
+                onClick={() => handleSelecionarSugestao(sug)}
+                style={{
+                  padding: '3px 8px',
+                  borderRadius: '14px',
+                  fontSize: '0.74rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  border: '1px solid #CBD5E1',
+                  backgroundColor: '#F1F5F9',
+                  color: '#334155',
+                }}
+              >
+                {sug}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* STATUS DA BASE / CONTAGEM */}
+        {/* BARRA DE STATUS DA CONSULTA */}
         <div
           style={{
-            padding: '6px 20px',
+            padding: '7px 20px',
             backgroundColor: '#F1F5F9',
             borderBottom: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontSize: '0.75rem',
-            color: '#64748B',
+            fontSize: '0.76rem',
+            color: '#475569',
           }}
         >
           <span>
-            {carregandoOffline ? (
-              '⏳ Carregando acervo de +13.000 produtos...'
-            ) : (
+            {carregando ? (
+              '⏳ Consultando API Oficial SI5 Global (https://global.si5.com.br)...'
+            ) : jaPesquisou ? (
               <>
-                📦 <b>{produtosFiltrados.length}</b> produtos encontrados
-                {termo.trim() ? ` para "${termo.trim()}"` : ''}
+                🌐 <b>{totalItens}</b> produtos encontrados na API para "<b>{termo}</b>" (Página {paginaAtual} de {totalPaginas})
               </>
+            ) : (
+              '💡 Digite o nome do produto e clique em Buscar para consultar a base nacional'
             )}
           </span>
-          <button
-            type="button"
-            onClick={handleBuscarOnline}
-            disabled={buscandoAPIExterna || !termo.trim()}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: termo.trim() ? '#0284C7' : '#94A3B8',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              cursor: termo.trim() ? 'pointer' : 'default',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: 0,
-            }}
-            title="Consultar na API Oficial Bluesoft Cosmos na nuvem"
-          >
-            {buscandoAPIExterna ? '⏳ Consultando API...' : '🌐 Buscar na Nuvem (API)'}
-          </button>
+          {jaPesquisou && totalItens > 0 && (
+            <span style={{ color: '#0369A1', fontWeight: 700 }}>
+              {produtosAPI.length} itens carregados
+            </span>
+          )}
         </div>
 
-        {/* LISTA DE PRODUTOS */}
+        {/* LISTA DE RESULTADOS RETORNADOS PELA API */}
         <div
           style={{
             flex: 1,
@@ -455,197 +401,223 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
             gap: '8px',
           }}
         >
-          {itensExibidos.length === 0 ? (
-            <div
-              style={{
-                padding: '40px 20px',
-                textAlign: 'center',
-                color: '#64748B',
-              }}
-            >
+          {carregando && produtosAPI.length === 0 ? (
+            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748B' }}>
+              <div style={{ fontSize: '2.4rem', marginBottom: '8px' }}>⏳</div>
+              <div style={{ fontSize: '0.96rem', fontWeight: 700, color: '#1E293B', marginBottom: '4px' }}>
+                Consultando API Oficial SI5 Global...
+              </div>
+              <p style={{ fontSize: '0.82rem', margin: 0, color: '#64748B' }}>
+                Buscando cadastros nacionais oficiais para "<b>{termo}</b>". Aguarde um instante...
+              </p>
+            </div>
+          ) : !jaPesquisou ? (
+            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748B' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🥩 🍺 🛒</div>
+              <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#1E293B', marginBottom: '4px' }}>
+                Pesquisa Direta na API Oficial SI5 Global
+              </div>
+              <p style={{ fontSize: '0.84rem', maxWidth: '420px', margin: '0 auto', lineHeight: 1.45 }}>
+                Digite o nome de qualquer produto (como <b>Picanha</b>, <b>Heineken</b>, <b>Nescau</b>, etc.) para buscar diretamente na API oficial e preencher o código de barras, foto e dados no cadastro.
+              </p>
+            </div>
+          ) : produtosAPI.length === 0 ? (
+            <div style={{ padding: '40px 20px', textAlign: 'center', color: '#64748B' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🔍</div>
               <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1E293B', marginBottom: '4px' }}>
-                Nenhum produto encontrado
+                Nenhum produto retornado pela API
               </div>
-              <p style={{ fontSize: '0.82rem', maxWidth: '380px', margin: '0 auto 16px auto', lineHeight: 1.4 }}>
-                Não encontramos produtos com "<b>{termo}</b>". Tente palavras-chave simples como <i>picanha</i>, <i>heineken</i> ou <i>nescau</i>.
+              <p style={{ fontSize: '0.82rem', maxWidth: '380px', margin: '0 auto', lineHeight: 1.4 }}>
+                {erroMensagem || `Não encontramos produtos com "${termo}" na API oficial. Tente palavras mais simples como "picanha", "cerveja" ou "leite".`}
               </p>
-              {termo.trim() && (
-                <button
-                  type="button"
-                  onClick={handleBuscarOnline}
-                  disabled={buscandoAPIExterna}
-                  style={{
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    backgroundColor: '#0284C7',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.82rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {buscandoAPIExterna ? 'Consultando...' : '🌐 Buscar na Nuvem (Bluesoft Cosmos)'}
-                </button>
-              )}
             </div>
           ) : (
-            itensExibidos.map((prod) => (
-              <div
-                key={prod.codigo + prod.nome}
-                onClick={() => {
-                  onSelecionarProduto(prod);
-                  onFechar();
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '10px 14px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '12px',
-                  border: '1.5px solid #E2E8F0',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#0284C7';
-                  e.currentTarget.style.backgroundColor = '#F0F9FF';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#E2E8F0';
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                }}
-              >
-                {/* FOTO OU PLACEHOLDER */}
+            <>
+              {produtosAPI.map((prod) => (
                 <div
+                  key={prod.ean + prod.nomeProduto}
+                  onClick={() => {
+                    onSelecionarProduto({
+                      codigo: prod.ean,
+                      nome: prod.nomeProduto,
+                      marca: prod.marca || '',
+                      categoria: prod.categoria || 'Geral',
+                      foto: prod.fotoUrl || '',
+                      origem: prod.fonte || 'API Oficial SI5 Global',
+                    });
+                    onFechar();
+                  }}
                   style={{
-                    width: '52px',
-                    height: '52px',
-                    borderRadius: '8px',
-                    backgroundColor: '#F8FAFC',
-                    border: '1px solid #CBD5E1',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    flexShrink: 0,
+                    gap: '12px',
+                    padding: '10px 14px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '12px',
+                    border: '1.5px solid #E2E8F0',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#0284C7';
+                    e.currentTarget.style.backgroundColor = '#F0F9FF';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.backgroundColor = '#FFFFFF';
                   }}
                 >
-                  {prod.foto ? (
-                    <img
-                      src={prod.foto}
-                      alt={prod.nome}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                      loading="lazy"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <span style={{ fontSize: '1.5rem' }}>📦</span>
-                  )}
-                </div>
-
-                {/* DADOS DO PRODUTO */}
-                <div style={{ flex: 1, minWidth: 0 }}>
+                  {/* FOTO RETORNADA PELA API */}
                   <div
                     style={{
-                      fontSize: '0.88rem',
-                      fontWeight: 700,
-                      color: '#0F172A',
-                      whiteSpace: 'nowrap',
+                      width: '54px',
+                      height: '54px',
+                      borderRadius: '8px',
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid #CBD5E1',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      marginBottom: '3px',
+                      flexShrink: 0,
                     }}
-                    title={prod.nome}
                   >
-                    {prod.nome}
+                    {prod.fotoUrl ? (
+                      <img
+                        src={prod.fotoUrl}
+                        alt={prod.nomeProduto}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '1.5rem' }}>📦</span>
+                    )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                    {/* CÓDIGO DE BARRAS OFICIAL */}
-                    <span
+                  {/* INFORMAÇÕES DO PRODUTO NA API */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
                       style={{
-                        fontFamily: 'monospace',
-                        fontSize: '0.74rem',
+                        fontSize: '0.88rem',
                         fontWeight: 700,
-                        backgroundColor: '#FEF3C7',
-                        color: '#92400E',
-                        padding: '1px 6px',
-                        borderRadius: '4px',
-                        border: '1px solid #FDE68A',
+                        color: '#0F172A',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        marginBottom: '4px',
                       }}
+                      title={prod.nomeProduto}
                     >
-                      🏷️ {prod.codigo}
-                    </span>
+                      {prod.nomeProduto}
+                    </div>
 
-                    {/* MARCA */}
-                    {prod.marca && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      {/* CÓDIGO DE BARRAS OFICIAL EAN */}
                       <span
                         style={{
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          backgroundColor: '#EFF6FF',
-                          color: '#1E40AF',
-                          padding: '1px 6px',
+                          fontFamily: 'monospace',
+                          fontSize: '0.76rem',
+                          fontWeight: 700,
+                          backgroundColor: '#FEF3C7',
+                          color: '#92400E',
+                          padding: '1px 7px',
                           borderRadius: '4px',
+                          border: '1px solid #FDE68A',
                         }}
                       >
-                        {prod.marca}
+                        🏷️ {prod.ean}
                       </span>
-                    )}
 
-                    {/* CATEGORIA */}
-                    {prod.categoria && (
+                      {/* MARCA */}
+                      {prod.marca && (
+                        <span
+                          style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 600,
+                            backgroundColor: '#EFF6FF',
+                            color: '#1E40AF',
+                            padding: '1px 6px',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          {prod.marca}
+                        </span>
+                      )}
+
+                      {/* FONTE OFICIAL */}
                       <span
                         style={{
-                          fontSize: '0.72rem',
+                          fontSize: '0.70rem',
                           fontWeight: 600,
                           backgroundColor: '#F1F5F9',
-                          color: '#475569',
+                          color: '#047857',
                           padding: '1px 6px',
                           borderRadius: '4px',
                         }}
                       >
-                        {prod.categoria}
+                        ✓ SI5 Global
                       </span>
-                    )}
+                    </div>
                   </div>
-                </div>
 
-                {/* BOTÃO DE SELEÇÃO */}
-                <button
-                  type="button"
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    backgroundColor: '#0284C7',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.78rem',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                  title="Usar este produto no cadastro"
-                >
-                  <span>✓</span>
-                  <span>Usar</span>
-                </button>
-              </div>
-            ))
+                  {/* BOTÃO USAR */}
+                  <button
+                    type="button"
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      backgroundColor: '#0284C7',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.80rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                    title="Usar este produto no cadastro"
+                  >
+                    <span>✓</span>
+                    <span>Usar</span>
+                  </button>
+                </div>
+              ))}
+
+              {/* BOTÃO CARREGAR MAIS PRODUTOS DA API */}
+              {paginaAtual < totalPaginas && (
+                <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                  <button
+                    type="button"
+                    onClick={handleCarregarMais}
+                    disabled={carregando}
+                    style={{
+                      padding: '9px 18px',
+                      borderRadius: '8px',
+                      backgroundColor: '#FFFFFF',
+                      color: '#0369A1',
+                      border: '2px solid #0284C7',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: carregando ? 'wait' : 'pointer',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                    }}
+                  >
+                    {carregando ? '⏳ Carregando mais produtos...' : `⬇️ Puxar mais 20 produtos da API (Pág. ${paginaAtual + 1} de ${totalPaginas})`}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
-        {/* RODAPÉ INFORMATIVO */}
+        {/* RODAPÉ */}
         <div
           style={{
             padding: '10px 16px',
@@ -658,7 +630,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
             color: '#64748B',
           }}
         >
-          <span>💡 Clique em qualquer produto para preencher o código de barras, nome e foto automaticamente.</span>
+          <span>💡 Clique em qualquer produto retornado pela API para preencher os dados automaticamente.</span>
           <button
             type="button"
             onClick={onFechar}
