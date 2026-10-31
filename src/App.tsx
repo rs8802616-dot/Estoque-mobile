@@ -82,6 +82,7 @@ import { EtiquetasModal } from './components/EtiquetasModal';
 import { GestaoCaixaModal } from './components/GestaoCaixaModal';
 import { AlertasWhatsAppModal } from './components/AlertasWhatsAppModal';
 import { GestaoDevedoresModal } from './components/GestaoDevedoresModal';
+import { EntradaNotaFiscalModal } from './components/EntradaNotaFiscalModal';
 import { CentroNotificacoesModal } from './components/CentroNotificacoesModal';
 import { TelaLogin } from './components/TelaLogin';
 import { TermoConcordanciaModal } from './components/TermoConcordanciaModal';
@@ -787,8 +788,29 @@ export default function App() {
   const [cadVal, setCadVal] = useState<string>('');
   const [cadCusto, setCadCusto] = useState<string>('');
   const [cadPreco, setCadPreco] = useState<string>('');
+  const [cadMargemLucro, setCadMargemLucro] = useState<string>('');
+  const [modalEntradaNotaVisivel, setModalEntradaNotaVisivel] = useState<boolean>(false);
   const [fotoTemp, setFotoTemp] = useState<string>('');
   const [msgCad, setMsgCad] = useState<React.ReactNode>('');
+
+  // Helpers para cálculo bidirecional de margem de lucro (%) e preço de venda
+  const calcularPrecoPorMargem = (custoStr: string, margemStr: string): string => {
+    const c = parseFloat(String(custoStr || '').replace(',', '.'));
+    const m = parseFloat(String(margemStr || '').replace(',', '.'));
+    if (!isNaN(c) && c > 0 && !isNaN(m)) {
+      return (c * (1 + m / 100)).toFixed(2);
+    }
+    return '';
+  };
+
+  const calcularMargemPorPreco = (custoStr: string, precoStr: string): string => {
+    const c = parseFloat(String(custoStr || '').replace(',', '.'));
+    const p = parseFloat(String(precoStr || '').replace(',', '.'));
+    if (!isNaN(c) && c > 0 && !isNaN(p) && p > 0) {
+      return (((p - c) / c) * 100).toFixed(1);
+    }
+    return '';
+  };
 
   // Identifica se o produto já existe no Catálogo Global do Banco de Dados Central
   const itemCatalogoExistente = useMemo(() => {
@@ -4829,6 +4851,95 @@ export default function App() {
     notificarSincronizacao();
   };
 
+  // Handler para Entrada de Estoque por Nota Fiscal Eletrônica (XML / NF-e)
+  const handleConfirmarEntradaNotaFiscal = async (
+    itensEntrada: {
+      codigo: string;
+      codigo_barras?: string;
+      nome: string;
+      quantidadeEntrada: number;
+      precoCusto: number;
+      precoVenda: number;
+      produtoExistente?: ItemEstoque;
+    }[],
+    dadosNF: {
+      numeroNF: string;
+      fornecedorNome: string;
+      chaveAcesso: string;
+      dataEmissao: string;
+      valorTotal: number;
+    }
+  ) => {
+    if (!supermercadoAtual) return;
+
+    let estoqueAtualizado = [...estoque];
+
+    for (const item of itensEntrada) {
+      const idx = estoqueAtualizado.findIndex(
+        (e) => String(e.codigo || '').trim() === String(item.codigo || '').trim()
+      );
+
+      if (idx >= 0) {
+        // Atualiza quantidade e custos do produto já existente
+        const antigo = estoqueAtualizado[idx];
+        const novaQtd = (antigo.quantidade || 0) + item.quantidadeEntrada;
+        estoqueAtualizado[idx] = {
+          ...antigo,
+          quantidade: novaQtd,
+          preco_custo: item.precoCusto,
+          preco_venda: item.precoVenda > 0 ? item.precoVenda : antigo.preco_venda,
+        };
+        try {
+          await salvarItemEstoqueFirestore(estoqueAtualizado[idx], supermercadoAtual);
+        } catch (e) {}
+      } else {
+        // Cadastra novo produto no estoque
+        const novoItem: ItemEstoque = {
+          lojaId: supermercadoAtual,
+          codigo: item.codigo,
+          codigo_barras: item.codigo_barras || item.codigo,
+          nome: item.nome,
+          quantidade: item.quantidadeEntrada,
+          preco_custo: item.precoCusto,
+          precoVenda: item.precoVenda,
+          validade: new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString().slice(0, 10), // +6 meses padrão
+          lote: `NF-${dadosNF.numeroNF || 'ENTRADA'}`,
+          categoria: 'Geral',
+          tipoCadastro: 'padrao',
+        };
+        estoqueAtualizado.push(novoItem);
+        try {
+          await salvarItemEstoqueFirestore(novoItem, supermercadoAtual);
+        } catch (e) {}
+      }
+    }
+
+    setEstoque(estoqueAtualizado);
+    safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(estoqueAtualizado));
+
+    // Salva histórico de notas fiscais importadas
+    try {
+      const chaveHist = `historico_nfe_${supermercadoAtual}`;
+      const salvo = localStorage.getItem(chaveHist);
+      const hist = salvo ? JSON.parse(salvo) : [];
+      hist.unshift({
+        ...dadosNF,
+        timestamp: Date.now(),
+        quantidadeItens: itensEntrada.length,
+      });
+      safeLocalStorageSet(chaveHist, JSON.stringify(hist.slice(0, 50)));
+    } catch (e) {}
+
+    const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
+    const nomeOperador = opAtivo ? opAtivo.nome : 'Administrador do Supermercado';
+
+    registrarLogAuditoria(
+      'Entrada de Nota Fiscal (XML)',
+      `NF: #${dadosNF.numeroNF} | Fornecedor: ${dadosNF.fornecedorNome} | Total Itens: ${itensEntrada.length} | Operador: ${nomeOperador}`
+    );
+    notificarSincronizacao();
+  };
+
   // Handlers para Gestão de Clientes Devedores (Fiado)
   const handleSalvarClienteDevedor = (cliente: ClienteDevedor) => {
     let novosClientes = [...clientesDevedores];
@@ -6206,6 +6317,31 @@ export default function App() {
                 >
                   <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>🍢</span>
                   <span className="texto-btn-header">+ Balcão</span>
+                </button>
+
+                <button
+                  className="btn"
+                  style={{
+                    background: '#7c3aed',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    padding: '7px 10px',
+                    whiteSpace: 'nowrap',
+                    gap: '4px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 4px rgba(124, 58, 237, 0.25)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setModalEntradaNotaVisivel(true)}
+                  title="Dar Entrada de Estoque por Nota Fiscal Eletrônica (XML / NF-e)"
+                >
+                  <span style={{ fontSize: '0.95rem' }}>📥</span>
+                  <span className="texto-btn-header">Entrada Nota (XML)</span>
                 </button>
               </>
             )}
@@ -9990,33 +10126,138 @@ export default function App() {
                   />
                 </div>
 
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Preço de Venda (R$)</label>
-                  <input
-                    type="number"
-                    id="cad-preco"
-                    className="input-modal"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0.01"
-                    value={cadPreco}
-                    onChange={(e) => setCadPreco(e.target.value)}
-                    required
-                  />
-                </div>
+                {/* BLOCO DE CUSTO, MARGEM DE LUCRO (%) E PREÇO DE VENDA */}
+                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', margin: '8px 0' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div className="grupo-input" style={{ margin: 0 }}>
+                      <label className="rotulo-campo">Preço de Custo (R$)</label>
+                      <input
+                        type="number"
+                        id="cad-custo"
+                        className="input-modal"
+                        placeholder="0.00"
+                        step="0.01"
+                        min="0"
+                        value={cadCusto}
+                        onChange={(e) => {
+                          const novoC = e.target.value;
+                          setCadCusto(novoC);
+                          if (cadMargemLucro) {
+                            const p = calcularPrecoPorMargem(novoC, cadMargemLucro);
+                            if (p) setCadPreco(p);
+                          } else if (cadPreco) {
+                            setCadMargemLucro(calcularMargemPorPreco(novoC, cadPreco));
+                          }
+                        }}
+                      />
+                    </div>
 
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Preço de Custo (Opcional - R$)</label>
-                  <input
-                    type="number"
-                    id="cad-custo"
-                    className="input-modal"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
-                    value={cadCusto}
-                    onChange={(e) => setCadCusto(e.target.value)}
-                  />
+                    <div className="grupo-input" style={{ margin: 0 }}>
+                      <label className="rotulo-campo">Margem de Lucro (%)</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type="number"
+                          id="cad-margem"
+                          className="input-modal"
+                          placeholder="Ex: 40"
+                          step="0.1"
+                          value={cadMargemLucro}
+                          onChange={(e) => {
+                            const novaM = e.target.value;
+                            setCadMargemLucro(novaM);
+                            if (cadCusto) {
+                              const p = calcularPrecoPorMargem(cadCusto, novaM);
+                              if (p) setCadPreco(p);
+                            }
+                          }}
+                          style={{ paddingRight: '28px' }}
+                        />
+                        <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 700, fontSize: '0.85rem' }}>%</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ATALHOS RÁPIDOS DE MARGEM */}
+                  <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Atalhos:</span>
+                    {['20', '30', '40', '50', '70', '100'].map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setCadMargemLucro(m);
+                          if (cadCusto) {
+                            const p = calcularPrecoPorMargem(cadCusto, m);
+                            if (p) setCadPreco(p);
+                          }
+                        }}
+                        style={{
+                          background: cadMargemLucro === m ? '#0284c7' : '#ffffff',
+                          color: cadMargemLucro === m ? '#ffffff' : '#0369a1',
+                          border: '1px solid #bae6fd',
+                          borderRadius: '12px',
+                          padding: '2px 8px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        +{m}%
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* PREÇO DE VENDA FINAL */}
+                  <div className="grupo-input" style={{ marginTop: '10px', marginBottom: 0 }}>
+                    <label className="rotulo-campo" style={{ color: '#0f172a', fontWeight: 700 }}>
+                      Preço de Venda Final (R$) *
+                    </label>
+                    <input
+                      type="number"
+                      id="cad-preco"
+                      className="input-modal"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0.01"
+                      value={cadPreco}
+                      onChange={(e) => {
+                        const novoP = e.target.value;
+                        setCadPreco(novoP);
+                        if (cadCusto) {
+                          setCadMargemLucro(calcularMargemPorPreco(cadCusto, novoP));
+                        }
+                      }}
+                      style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0284c7', border: '2px solid #0284c7' }}
+                      required
+                    />
+                  </div>
+
+                  {/* INDICADOR VISUAL DE LUCRO / PREJUÍZO EM REAIS */}
+                  {parseFloat(cadCusto) > 0 && parseFloat(cadPreco) > 0 && (
+                    <div
+                      style={{
+                        background: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#f0fdf4' : '#fef2f2',
+                        border: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '1px solid #bbf7d0' : '1px solid #fecaca',
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        color: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#166534' : '#991b1b',
+                        fontWeight: 600,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginTop: '8px',
+                      }}
+                    >
+                      <span>
+                        {parseFloat(cadPreco) >= parseFloat(cadCusto) ? '💰 Lucro Bruto Estimado:' : '⚠️ Prejuízo na Venda:'}
+                      </span>
+                      <span>
+                        <b>R$ {Math.abs(parseFloat(cadPreco) - parseFloat(cadCusto)).toFixed(2)}</b> / un (
+                        {cadMargemLucro || calcularMargemPorPreco(cadCusto, cadPreco)}%)
+                      </span>
+                    </div>
+                  )}
                 </div>
               </>
             ) : (
@@ -10232,32 +10473,138 @@ export default function App() {
                         required
                       />
                     </div>
-                    <div className="grupo-input">
-                      <label className="rotulo-campo">Preço de Custo (R$)</label>
-                      <input
-                        type="number"
-                        id="cad-custo"
-                        className="input-modal"
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        value={cadCusto}
-                        onChange={(e) => setCadCusto(e.target.value)}
-                      />
-                    </div>
-                    <div className="grupo-input">
-                      <label className="rotulo-campo">Preço de Venda (R$)</label>
-                      <input
-                        type="number"
-                        id="cad-preco"
-                        className="input-modal"
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0.01"
-                        value={cadPreco}
-                        onChange={(e) => setCadPreco(e.target.value)}
-                        required
-                      />
+                    {/* BLOCO DE CUSTO, MARGEM DE LUCRO (%) E PREÇO DE VENDA */}
+                    <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', margin: '8px 0' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div className="grupo-input" style={{ margin: 0 }}>
+                          <label className="rotulo-campo">Preço de Custo (R$)</label>
+                          <input
+                            type="number"
+                            id="cad-custo"
+                            className="input-modal"
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            value={cadCusto}
+                            onChange={(e) => {
+                              const novoC = e.target.value;
+                              setCadCusto(novoC);
+                              if (cadMargemLucro) {
+                                const p = calcularPrecoPorMargem(novoC, cadMargemLucro);
+                                if (p) setCadPreco(p);
+                              } else if (cadPreco) {
+                                setCadMargemLucro(calcularMargemPorPreco(novoC, cadPreco));
+                              }
+                            }}
+                          />
+                        </div>
+
+                        <div className="grupo-input" style={{ margin: 0 }}>
+                          <label className="rotulo-campo">Margem de Lucro (%)</label>
+                          <div style={{ position: 'relative' }}>
+                            <input
+                              type="number"
+                              id="cad-margem"
+                              className="input-modal"
+                              placeholder="Ex: 40"
+                              step="0.1"
+                              value={cadMargemLucro}
+                              onChange={(e) => {
+                                const novaM = e.target.value;
+                                setCadMargemLucro(novaM);
+                                if (cadCusto) {
+                                  const p = calcularPrecoPorMargem(cadCusto, novaM);
+                                  if (p) setCadPreco(p);
+                                }
+                              }}
+                              style={{ paddingRight: '28px' }}
+                            />
+                            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 700, fontSize: '0.85rem' }}>%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ATALHOS RÁPIDOS DE MARGEM */}
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Atalhos:</span>
+                        {['20', '30', '40', '50', '70', '100'].map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => {
+                              setCadMargemLucro(m);
+                              if (cadCusto) {
+                                const p = calcularPrecoPorMargem(cadCusto, m);
+                                if (p) setCadPreco(p);
+                              }
+                            }}
+                            style={{
+                              background: cadMargemLucro === m ? '#0284c7' : '#ffffff',
+                              color: cadMargemLucro === m ? '#ffffff' : '#0369a1',
+                              border: '1px solid #bae6fd',
+                              borderRadius: '12px',
+                              padding: '2px 8px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            +{m}%
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* PREÇO DE VENDA FINAL */}
+                      <div className="grupo-input" style={{ marginTop: '10px', marginBottom: 0 }}>
+                        <label className="rotulo-campo" style={{ color: '#0f172a', fontWeight: 700 }}>
+                          Preço de Venda Final (R$) *
+                        </label>
+                        <input
+                          type="number"
+                          id="cad-preco"
+                          className="input-modal"
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0.01"
+                          value={cadPreco}
+                          onChange={(e) => {
+                            const novoP = e.target.value;
+                            setCadPreco(novoP);
+                            if (cadCusto) {
+                              setCadMargemLucro(calcularMargemPorPreco(cadCusto, novoP));
+                            }
+                          }}
+                          style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0284c7', border: '2px solid #0284c7' }}
+                          required
+                        />
+                      </div>
+
+                      {/* INDICADOR VISUAL DE LUCRO / PREJUÍZO EM REAIS */}
+                      {parseFloat(cadCusto) > 0 && parseFloat(cadPreco) > 0 && (
+                        <div
+                          style={{
+                            background: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#f0fdf4' : '#fef2f2',
+                            border: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '1px solid #bbf7d0' : '1px solid #fecaca',
+                            padding: '6px 10px',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            color: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#166534' : '#991b1b',
+                            fontWeight: 600,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginTop: '8px',
+                          }}
+                        >
+                          <span>
+                            {parseFloat(cadPreco) >= parseFloat(cadCusto) ? '💰 Lucro Bruto Estimado:' : '⚠️ Prejuízo na Venda:'}
+                          </span>
+                          <span>
+                            <b>R$ {Math.abs(parseFloat(cadPreco) - parseFloat(cadCusto)).toFixed(2)}</b> / un (
+                            {cadMargemLucro || calcularMargemPorPreco(cadCusto, cadPreco)}%)
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
@@ -10990,6 +11337,15 @@ export default function App() {
         onSalvarCliente={handleSalvarClienteDevedor}
         onExcluirCliente={handleExcluirClienteDevedor}
         onRegistrarPagamento={handleRegistrarPagamentoFiado}
+      />
+
+      {/* MODAL DE ENTRADA DE NOTA FISCAL (XML / NF-E) */}
+      <EntradaNotaFiscalModal
+        visivel={modalEntradaNotaVisivel}
+        onFechar={() => setModalEntradaNotaVisivel(false)}
+        lojaAtual={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
+        estoque={estoque}
+        onConfirmarEntradaEstoque={handleConfirmarEntradaNotaFiscal}
       />
 
       {/* MODAL DO TERMO DE CONCORDÂNCIA E SIGILO DO USUÁRIO (APARECE APENAS 1 VEZ NO PRIMEIRO LOGIN DO DISPOSITIVO) */}
