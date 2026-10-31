@@ -211,12 +211,42 @@ export function parseTextoNotaFiscal(textoCompleto: string): NotaFiscalExtraida 
   };
 }
 
+if (typeof window !== 'undefined') {
+  try {
+    if (pdfjsLib.GlobalWorkerOptions) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+    }
+  } catch (e) {}
+}
+
 export async function extrairTextoDePDFArrayBuffer(arrayBuffer: ArrayBuffer): Promise<string> {
   const data = new Uint8Array(arrayBuffer);
-  const loadingTask = pdfjsLib.getDocument({ data });
-  const doc = await loadingTask.promise;
-  let fullText = '';
 
+  // Garante que o workerSrc do PDF.js esteja configurado
+  if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+    }
+  }
+
+  let doc;
+  try {
+    const loadingTask = pdfjsLib.getDocument({
+      data,
+      cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+      cMapPacked: true,
+    });
+    doc = await loadingTask.promise;
+  } catch (err: any) {
+    // Fallback: caso haja restrição de carregamento de worker local pelo navegador
+    if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    const loadingTaskFallback = pdfjsLib.getDocument({ data });
+    doc = await loadingTaskFallback.promise;
+  }
+
+  let fullText = '';
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
     const content = await page.getTextContent();
