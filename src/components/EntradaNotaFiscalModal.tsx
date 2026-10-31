@@ -10,6 +10,12 @@ import {
   alternarLanternaCamera,
 } from '../lib/barcodeScanner';
 import { tocarBeepCaixa } from '../lib/soundUtils';
+import {
+  decodificarChaveNotaFiscal,
+  extrairTextoDePDFArrayBuffer,
+  parseTextoNotaFiscal,
+  MAPA_UF_BRASIL,
+} from '../lib/pdfInvoiceParser';
 
 export interface ItemNotaProcessado {
   id: string;
@@ -69,40 +75,8 @@ interface EntradaNotaFiscalModalProps {
   ) => void;
 }
 
-const MAPA_UF_BRASIL: Record<string, string> = {
-  '11': 'RO', '12': 'AC', '13': 'AM', '14': 'RR', '15': 'PA', '16': 'AP', '17': 'TO',
-  '21': 'MA', '22': 'PI', '23': 'CE', '24': 'RN', '25': 'PB', '26': 'PE', '27': 'AL', '28': 'SE', '29': 'BA',
-  '31': 'MG', '32': 'ES', '33': 'RJ', '35': 'SP',
-  '41': 'PR', '42': 'SC', '43': 'RS',
-  '50': 'MS', '51': 'MT', '52': 'GO', '53': 'DF',
-};
-
 export function decodificarChaveAcessoNFe(chaveLimpa: string) {
-  const chave = chaveLimpa.replace(/\D/g, '');
-  if (chave.length !== 44) return null;
-  const cUF = chave.substring(0, 2);
-  const uf = MAPA_UF_BRASIL[cUF] || 'BR';
-  const aamm = chave.substring(2, 6);
-  const ano = `20${aamm.substring(0, 2)}`;
-  const mes = aamm.substring(2, 4);
-  const cnpjRaw = chave.substring(6, 20);
-  const cnpjFormatado = `${cnpjRaw.slice(0, 2)}.${cnpjRaw.slice(2, 5)}.${cnpjRaw.slice(5, 8)}/${cnpjRaw.slice(8, 12)}-${cnpjRaw.slice(12, 14)}`;
-  const modelo = chave.substring(20, 22);
-  const serie = parseInt(chave.substring(22, 25), 10).toString();
-  const nNF = parseInt(chave.substring(25, 34), 10).toString();
-
-  return {
-    chave,
-    uf,
-    ano,
-    mes,
-    dataEstimada: `${ano}-${mes}-01`,
-    cnpjRaw,
-    cnpjFormatado,
-    modelo: modelo === '55' ? 'NF-e (Modelo 55)' : modelo === '65' ? 'NFC-e (Modelo 65)' : `Modelo ${modelo}`,
-    serie,
-    numeroNF: nNF,
-  };
+  return decodificarChaveNotaFiscal(chaveLimpa);
 }
 
 export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
@@ -141,9 +115,9 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
   const [buscaProdAvulso, setBuscaProdAvulso] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Formatação visual da chave a cada 4 dígitos
+  // Formatação visual da chave a cada 4 dígitos (até 50 dígitos)
   const formatarChaveVisual = (str: string) => {
-    const limpo = str.replace(/\D/g, '').slice(0, 44);
+    const limpo = str.replace(/\D/g, '').slice(0, 50);
     return limpo.replace(/(\d{4})/g, '$1 ').trim();
   };
 
@@ -370,25 +344,50 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
     }
   };
 
-  // Processar chave de acesso de 44 dígitos digitada ou bipada
+  // Processar chave de acesso de 44 (NF-e) ou 50 dígitos (NFS-e Nacional)
   const processarChaveAcesso = async (chaveRaw: string) => {
     const chaveLimpa = chaveRaw.replace(/\D/g, '');
-    if (chaveLimpa.length !== 44) {
-      setErroMsg('A Chave de Acesso da NF-e deve conter exatamente 44 números.');
+    if (chaveLimpa.length !== 44 && chaveLimpa.length !== 50) {
+      setErroMsg('A Chave de Acesso deve conter 44 dígitos (NF-e de produtos) ou 50 dígitos (NFS-e Nacional de serviços).');
       return;
     }
 
-    const info = decodificarChaveAcessoNFe(chaveLimpa);
+    const info = decodificarChaveNotaFiscal(chaveLimpa);
     if (!info) {
-      setErroMsg('Chave de Acesso inválida.');
+      setErroMsg('Chave de Acesso com formato inválido.');
       return;
     }
 
     setCarregando(true);
     setErroMsg(null);
-    setStatusConsultaChave(`Chave decodificada: NF nº ${info.numeroNF} • Série ${info.serie} • CNPJ ${info.cnpjFormatado}. Consultando XML...`);
 
-    // 1. Tenta buscar o XML completo na API pública
+    // Se for NFS-e Nacional de Serviços (50 dígitos)
+    if (info.tipoDocumento === 'nfse') {
+      setStatusConsultaChave(`Chave NFS-e Nacional decodificada: NF nº ${info.numeroNF} • CNPJ ${info.cnpjFormatado} (${info.uf}). Carregando nota...`);
+      setCarregando(false);
+      setStatusConsultaChave(null);
+
+      const notaInicial: DadosNotaFiscal = {
+        numeroNF: info.numeroNF,
+        serie: info.serie,
+        dataEmissao: info.dataEstimada,
+        chaveAcesso: info.chave,
+        fornecedorNome: `Prestador / Fornecedor CNPJ ${info.cnpjFormatado}`,
+        fornecedorCNPJ: info.cnpjFormatado,
+        fornecedorUF: info.uf,
+        valorTotalNF: 0,
+        valorProdutos: 0,
+        origem: 'chave_acesso',
+        itens: [],
+      };
+
+      setDadosNota(notaInicial);
+      setEtapa('revisao');
+      return;
+    }
+
+    // Se for NF-e de Produtos (44 dígitos), tenta buscar XML online
+    setStatusConsultaChave(`Chave NF-e decodificada: NF nº ${info.numeroNF} • Série ${info.serie} • CNPJ ${info.cnpjFormatado} (${info.uf}). Consultando XML...`);
     try {
       const resp = await fetch(`https://ws.meudanfe.com.br/api/v1/get/nfe/xml/${info.chave}`, {
         method: 'GET',
@@ -407,8 +406,6 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
       // Falha na API pública de consulta online direta
     }
 
-    // 2. Se a SEFAZ exigir certificado digital A1 na nuvem, montamos a nota com os dados oficiais extraídos da chave
-    // e abrimos a conferência rápida para o lojista adicionar/bipar os produtos recebidos nesta nota
     setCarregando(false);
     setStatusConsultaChave(null);
 
@@ -430,16 +427,92 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
     setEtapa('revisao');
   };
 
-  // Upload via arquivo .xml
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Upload via arquivo .xml ou .pdf (DANFE / NFS-e)
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.xml')) {
-      setErroMsg('Por favor, selecione um arquivo no formato XML da NF-e (.xml).');
+    const nomeMin = file.name.toLowerCase();
+    if (!nomeMin.endsWith('.xml') && !nomeMin.endsWith('.pdf')) {
+      setErroMsg('Por favor, selecione um arquivo no formato XML (.xml) ou PDF (.pdf) da Nota Fiscal.');
       return;
     }
 
+    setCarregando(true);
+    setErroMsg(null);
+
+    // Se for arquivo PDF da nota (DANFE ou DANFSe)
+    if (nomeMin.endsWith('.pdf')) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const textoPDF = await extrairTextoDePDFArrayBuffer(arrayBuffer);
+        const notaExtraida = parseTextoNotaFiscal(textoPDF);
+
+        if (!notaExtraida.numeroNF && !notaExtraida.chaveAcesso) {
+          throw new Error('Não foi possível identificar os dados desta nota fiscal no arquivo PDF.');
+        }
+
+        const itensProcessados: ItemNotaProcessado[] = notaExtraida.itens.map((it, idx) => {
+          const produtoExistente = estoque.find((e) => {
+            const codE = String(e.codigo || '').trim();
+            const codB = String(e.codigo_barras || '').trim();
+            if (it.cEAN && (codE === it.cEAN || codB === it.cEAN)) return true;
+            if (it.cProd && codE === it.cProd) return true;
+            return false;
+          });
+
+          const margem = produtoExistente && produtoExistente.preco_custo && produtoExistente.preco_venda && produtoExistente.preco_custo > 0
+            ? Number((((produtoExistente.preco_venda - produtoExistente.preco_custo) / produtoExistente.preco_custo) * 100).toFixed(1))
+            : margemPadraoGlobal;
+
+          const precoVendaSugerido = Number((it.vUnCom * (1 + margem / 100)).toFixed(2));
+
+          return {
+            id: `item_pdf_${idx}_${Date.now()}`,
+            nItem: idx + 1,
+            cProd: it.cProd || `ITEM_${idx + 1}`,
+            cEAN: it.cEAN || '',
+            xProd: it.xProd,
+            ncm: it.ncm || '',
+            uCom: it.uCom || 'UN',
+            qCom: it.qCom || 1,
+            vUnCom: it.vUnCom || 0,
+            vProd: it.vProd || 0,
+            produtoExistente,
+            selecionado: true,
+            quantidadeEntrada: it.qCom || 1,
+            precoCustoFinal: it.vUnCom || 0,
+            margemLucroPorcentagem: margem,
+            precoVendaSugerido,
+          };
+        });
+
+        tocarBeepCaixa();
+
+        setDadosNota({
+          numeroNF: notaExtraida.numeroNF,
+          serie: notaExtraida.serie,
+          dataEmissao: notaExtraida.dataEmissao,
+          chaveAcesso: notaExtraida.chaveAcesso,
+          fornecedorNome: notaExtraida.fornecedorNome,
+          fornecedorCNPJ: notaExtraida.fornecedorCNPJ,
+          fornecedorUF: notaExtraida.fornecedorUF,
+          valorTotalNF: notaExtraida.valorTotalNF,
+          valorProdutos: notaExtraida.valorTotalNF,
+          origem: 'manual',
+          itens: itensProcessados,
+        });
+
+        setEtapa('revisao');
+      } catch (err: any) {
+        setErroMsg(err?.message || 'Falha ao processar o arquivo PDF da nota fiscal.');
+      } finally {
+        setCarregando(false);
+      }
+      return;
+    }
+
+    // Se for arquivo XML
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result as string;
@@ -658,7 +731,7 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
                 }}
               >
                 <span>🔑</span>
-                <span>Digitar Chave (44)</span>
+                <span>Digitar Chave (44/50)</span>
               </button>
 
               <button
@@ -680,7 +753,7 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
                 }}
               >
                 <span>📁</span>
-                <span>Arquivo .XML</span>
+                <span>Arquivo XML / PDF</span>
               </button>
 
               <button
@@ -725,7 +798,7 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <label style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}>
-                      Chave de Acesso da NF-e (44 números):
+                      Chave de Acesso (44 números NF-e ou 50 números NFS-e):
                     </label>
                     <button
                       type="button"
@@ -776,10 +849,10 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
                   <input
                     type="text"
                     inputMode="numeric"
-                    placeholder="0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000"
+                    placeholder="0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 00"
                     value={formatarChaveVisual(chaveDigitada)}
                     onChange={(e) => {
-                      const num = e.target.value.replace(/\D/g, '').slice(0, 44);
+                      const num = e.target.value.replace(/\D/g, '').slice(0, 50);
                       setChaveDigitada(num);
                     }}
                     onKeyDown={(e) => {
@@ -800,39 +873,48 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
                     }}
                   />
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
-                    <span>Digite os 44 números que ficam abaixo do código de barras da nota</span>
-                    <span><b>{chaveDigitada.replace(/\D/g, '').length}</b> / 44 dígitos</span>
+                    <span>Aceita NF-e de produtos (44 números) ou NFS-e Nacional (50 números)</span>
+                    <span>
+                      <b>{chaveDigitada.replace(/\D/g, '').length}</b> / {chaveDigitada.replace(/\D/g, '').length > 44 ? 50 : 44} dígitos
+                      {(chaveDigitada.replace(/\D/g, '').length === 44 || chaveDigitada.replace(/\D/g, '').length === 50) ? ' ✓' : ''}
+                    </span>
                   </div>
                 </div>
 
                 {/* BOTÃO PARA CONSULTAR E PUXAR AS INFORMAÇÕES */}
-                <button
-                  type="button"
-                  disabled={carregando || chaveDigitada.replace(/\D/g, '').length !== 44}
-                  onClick={() => processarChaveAcesso(chaveDigitada)}
-                  style={{
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    background: chaveDigitada.replace(/\D/g, '').length === 44 ? '#0284c7' : '#94a3b8',
-                    color: '#ffffff',
-                    fontWeight: 800,
-                    fontSize: '0.95rem',
-                    cursor: chaveDigitada.replace(/\D/g, '').length === 44 ? 'pointer' : 'not-allowed',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                  }}
-                >
-                  <span>🔍</span>
-                  <span>Consultar e Puxar Dados da Nota</span>
-                </button>
+                {(() => {
+                  const len = chaveDigitada.replace(/\D/g, '').length;
+                  const chaveValida = len === 44 || len === 50;
+                  return (
+                    <button
+                      type="button"
+                      disabled={carregando || !chaveValida}
+                      onClick={() => processarChaveAcesso(chaveDigitada)}
+                      style={{
+                        padding: '12px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: chaveValida ? '#0284c7' : '#94a3b8',
+                        color: '#ffffff',
+                        fontWeight: 800,
+                        fontSize: '0.95rem',
+                        cursor: chaveValida ? 'pointer' : 'not-allowed',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      }}
+                    >
+                      <span>🔍</span>
+                      <span>Consultar e Puxar Dados da Nota</span>
+                    </button>
+                  );
+                })()}
               </div>
             )}
 
-            {/* ABA 2: ARQUIVO XML (.xml) */}
+            {/* ABA 2: ARQUIVO XML / PDF */}
             {abaAtiva === 'arquivo' && (
               <div
                 onClick={() => fileInputRef.current?.click()}
@@ -845,17 +927,17 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
                   cursor: 'pointer',
                 }}
               >
-                <div style={{ fontSize: '2.6rem', marginBottom: '8px' }}>📄</div>
-                <h4 style={{ margin: '0 0 4px 0', color: '#0369a1', fontSize: '1rem' }}>
-                  Clique aqui para selecionar o arquivo XML da NF-e
+                <div style={{ fontSize: '2.6rem', marginBottom: '8px' }}>📑</div>
+                <h4 style={{ margin: '0 0 4px 0', color: '#0369a1', fontSize: '1.02rem', fontWeight: 800 }}>
+                  Clique aqui para selecionar o arquivo XML ou PDF da Nota Fiscal
                 </h4>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.82rem' }}>
-                  Arquivo <b>.xml</b> enviado pelo fornecedor (Ambev, Coca-Cola, atacadistas...)
+                  Suporta arquivos <b>.xml</b> e <b>.pdf</b> (DANFE de produtos ou NFS-e de serviços)
                 </p>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".xml,text/xml"
+                  accept=".xml, .pdf, application/pdf, text/xml"
                   style={{ display: 'none' }}
                   onChange={handleFileChange}
                 />
@@ -907,8 +989,8 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
               <div style={{ fontWeight: 700, color: '#0f172a', marginBottom: '4px' }}>
                 💡 Como funciona a entrada automática:
               </div>
-              <div>• <b>Chave de 44 dígitos:</b> Extrai número da nota, data e fornecedor imediatamente.</div>
-              <div>• <b>Arquivo XML:</b> Carrega todos os produtos, quantidades e custos com 1 clique.</div>
+              <div>• <b>Chave (44 ou 50 dígitos):</b> Extrai número da nota, data e CNPJ do fornecedor na hora.</div>
+              <div>• <b>Arquivo XML ou PDF:</b> Lê a nota fiscal digital ou documento DANFE / NFS-e com 1 clique.</div>
               <div>• <b>Atualização de Estoque:</b> Soma as unidades e ajusta seus preços de venda com margem de lucro.</div>
             </div>
           </div>
