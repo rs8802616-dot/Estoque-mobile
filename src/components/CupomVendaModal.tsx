@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Venda, Supermercado } from '../types';
+import { imprimirCupomTermico } from '../utils/impressaoTermica';
 
 interface CupomVendaModalProps {
   visivel: boolean;
@@ -19,94 +20,11 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
   if (!visivel || !venda) return null;
 
   const handleImprimir = () => {
-    // Injeta estilo CSS específico de impressão térmica no documento para garantir
-    // que a impressora de bobina (Epson, Elgin, Bematech, POS-80, POS-58) imprima
-    // em folha única contínua SEM gerar 2ª página em branco e SEM margens de folha A4.
-    let estilo = document.getElementById('estilo-impressao-termica-dinamico');
-    if (!estilo) {
-      estilo = document.createElement('style');
-      estilo.id = 'estilo-impressao-termica-dinamico';
-      document.head.appendChild(estilo);
-    }
-
-    const larguraPage = larguraBobina === '58mm' ? '58mm' : '80mm';
-    const larguraUtil = larguraBobina === '58mm' ? '52mm' : '74mm';
-    const tamanhoFonte = larguraBobina === '58mm' ? '9.5px' : '11px';
-
-    estilo.innerHTML = `
-      @media print {
-        @page {
-          size: ${larguraPage} auto !important;
-          margin: 0mm !important;
-        }
-        html, body {
-          width: ${larguraPage} !important;
-          max-width: ${larguraPage} !important;
-          min-width: 0 !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          background: #ffffff !important;
-          color: #000000 !important;
-          height: auto !important;
-          min-height: 0 !important;
-          overflow: visible !important;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-        body * {
-          visibility: hidden !important;
-        }
-        #area-impressao-termica,
-        #area-impressao-termica * {
-          visibility: visible !important;
-        }
-        #area-impressao-termica {
-          position: absolute !important;
-          left: 0 !important;
-          top: 0 !important;
-          width: ${larguraUtil} !important;
-          max-width: ${larguraUtil} !important;
-          margin: 0 auto !important;
-          padding: 2mm 1mm 4mm 1mm !important;
-          box-sizing: border-box !important;
-          font-family: 'Courier New', Courier, monospace !important;
-          font-size: ${tamanhoFonte} !important;
-          line-height: 1.25 !important;
-          color: #000000 !important;
-          background: #ffffff !important;
-          page-break-inside: avoid !important;
-          page-break-after: avoid !important;
-          page-break-before: avoid !important;
-          break-inside: avoid !important;
-        }
-        .cupom-divisor {
-          border-bottom: 1px dashed #000000 !important;
-          height: 1px !important;
-          margin: 4px 0 !important;
-          line-height: 1px !important;
-          overflow: hidden !important;
-          color: transparent !important;
-        }
-        .modal-overlay, .modal-container {
-          position: static !important;
-          background: transparent !important;
-          box-shadow: none !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          border: none !important;
-          width: auto !important;
-          height: auto !important;
-          overflow: visible !important;
-        }
-        .no-print, button, .btn-fechar-modal, .seletor-bobina-termica {
-          display: none !important;
-        }
-      }
-    `;
-
-    setTimeout(() => {
-      window.print();
-    }, 60);
+    imprimirCupomTermico(
+      'area-impressao-termica',
+      larguraBobina,
+      `Cupom_Venda_${venda.id.slice(-8).toUpperCase()}`
+    );
   };
 
   const getFormaPagamentoTexto = (forma: string) => {

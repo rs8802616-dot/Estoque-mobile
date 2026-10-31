@@ -15,17 +15,11 @@ export function limparArmazenamentoLocalCorrompido(): void {
       const k = localStorage.key(i);
       if (!k) continue;
 
-      // 1. Remove qualquer chave de cliente ou mutação interna pendente do Firestore no localStorage
-      if (k.startsWith('firestore_') || k.startsWith('firestore')) {
-        chavesParaRemover.push(k);
-      }
-
-      // 2. Remove logs de auditoria gigantescos ou caches temporários antigos do localStorage
+      // Remove apenas caches temporários antigos ou logs residuais que possam exceder a cota de 5MB do localStorage
       if (
         k.startsWith('logs_auditoria_') ||
         k.startsWith('estoque_sync_cache') ||
-        k.startsWith('temp_') ||
-        k === 'migracao_auto_banco_antigo_concluida_v1'
+        k.startsWith('temp_')
       ) {
         chavesParaRemover.push(k);
       }

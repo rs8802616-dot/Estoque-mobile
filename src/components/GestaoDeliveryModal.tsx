@@ -10,6 +10,7 @@ import { tocarAlertaNovoPedidoDelivery } from '../lib/soundUtils';
 import { formatCurrency } from '../utils/formatters';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import { mascaraTelefone } from '../lib/mascaras';
+import { imprimirCupomTermico } from '../utils/impressaoTermica';
 import {
   X,
   Bike,
@@ -904,7 +905,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
             style={{ zIndex: 10000000 }}
           >
-            <div className="bg-white text-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl font-mono text-xs space-y-3 border border-slate-200">
+            <div
+              id="comanda-impressao-termica"
+              className="bg-white text-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl font-mono text-xs space-y-3 border border-slate-200"
+            >
               <div className="text-center border-b border-dashed border-slate-300 pb-3">
                 <h3 className="font-black text-sm uppercase tracking-wide">
                   {lojaAtual?.nome || 'COMANDA DE ENTREGA'}
@@ -963,7 +967,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 )}
               </div>
 
-              <div className="flex gap-2 pt-3 border-t border-slate-200">
+              <div className="flex gap-2 pt-3 border-t border-slate-200 no-print">
                 <button
                   type="button"
                   onClick={() => setComandaImpressao(null)}
@@ -974,7 +978,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    window.print();
+                    imprimirCupomTermico(
+                      'comanda-impressao-termica',
+                      '80mm',
+                      `Comanda_Pedido_${comandaImpressao.numeroPedido}`
+                    );
                   }}
                   className="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer"
                 >

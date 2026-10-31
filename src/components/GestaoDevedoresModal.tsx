@@ -18,6 +18,7 @@ import {
   ProdutoCatalogo,
 } from '../types';
 import { mascaraTelefone, mascaraCpfCnpj } from '../lib/mascaras';
+import { imprimirCupomTermico } from '../utils/impressaoTermica';
 
 interface GestaoDevedoresModalProps {
   visivel: boolean;
@@ -2209,52 +2210,11 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
               <button
                 style={{ flex: 1, padding: '10px', background: '#0284c7', color: '#ffffff', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}
                 onClick={() => {
-                  let estilo = document.getElementById('estilo-impressao-termica-dinamico');
-                  if (!estilo) {
-                    estilo = document.createElement('style');
-                    estilo.id = 'estilo-impressao-termica-dinamico';
-                    document.head.appendChild(estilo);
-                  }
-                  estilo.innerHTML = `
-                    @media print {
-                      @page {
-                        size: 80mm auto !important;
-                        margin: 0mm !important;
-                      }
-                      html, body {
-                        width: 80mm !important;
-                        max-width: 80mm !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        background: #fff !important;
-                        height: auto !important;
-                        min-height: 0 !important;
-                      }
-                      body * {
-                        visibility: hidden !important;
-                      }
-                      #area-impressao-termica, #area-impressao-termica * {
-                        visibility: visible !important;
-                      }
-                      #area-impressao-termica {
-                        position: absolute !important;
-                        left: 0 !important;
-                        top: 0 !important;
-                        width: 74mm !important;
-                        max-width: 74mm !important;
-                        margin: 0 auto !important;
-                        padding: 2mm 1mm 4mm 1mm !important;
-                        font-family: 'Courier New', Courier, monospace !important;
-                        font-size: 11px !important;
-                        line-height: 1.25 !important;
-                        page-break-inside: avoid !important;
-                        break-inside: avoid !important;
-                      }
-                    }
-                  `;
-                  setTimeout(() => {
-                    window.print();
-                  }, 50);
+                  imprimirCupomTermico(
+                    'area-impressao-termica',
+                    '80mm',
+                    `Comprovante_Fiado_${reciboVisualizar.cliente.nome.replace(/\s+/g, '_')}`
+                  );
                 }}
               >
                 🖨️ Imprimir Térmica

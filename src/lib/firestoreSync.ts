@@ -567,14 +567,17 @@ export async function propagarAtualizacaoCatalogoGlobalParaTodasLojasFirestore(p
 }
 
 // Save or Update Produto no Catálogo Global
-export async function salvarProdutoCatalogoFirestore(prod: ProdutoCatalogo) {
+export async function salvarProdutoCatalogoFirestore(prod: ProdutoCatalogo, propagarParaLojas: boolean = false) {
   try {
     const safeCod = sanitizarIdDoc(prod.codigo || 'semcod');
     const docGlobalRef = doc(db, 'catalogo_global', safeCod);
     await setDoc(docGlobalRef, limparUndefined(prod), { merge: true });
 
-    // Propagação instantânea para todos os supermercados e adegas no Firestore
-    await propagarAtualizacaoCatalogoGlobalParaTodasLojasFirestore(prod);
+    // Proteção de Cota: Propagação só ocorre se solicitada explicitamente (ex: edição manual de cadastro)
+    // NUNCA em importações ou sincronizações em massa, pois cada chamada executa 2 consultas getDocs no Firestore
+    if (propagarParaLojas) {
+      await propagarAtualizacaoCatalogoGlobalParaTodasLojasFirestore(prod);
+    }
   } catch (err: any) {
     if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
       console.warn('Aviso: Permissão de escrita pendente no Firestore para catálogo de produtos.');
@@ -937,10 +940,10 @@ export async function salvarLogAuditoriaFirestore(log: {
   }
 }
 
-// Real-time listener for Audit Logs
+// Real-time listener for Audit Logs (limitado a 100 mais recentes para economizar leituras)
 export function subscribeLogsAuditoria(lojaId: string, callback: (logs: any[]) => void) {
   const colRef = collection(db, 'logs_auditoria');
-  const q = query(colRef, where('lojaId', '==', lojaId));
+  const q = query(colRef, where('lojaId', '==', lojaId), limit(100));
   return onSnapshot(
     q,
     (snapshot) => {
