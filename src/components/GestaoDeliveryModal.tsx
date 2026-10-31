@@ -9,6 +9,7 @@ import {
 import { tocarAlertaNovoPedidoDelivery } from '../lib/soundUtils';
 import { formatCurrency } from '../utils/formatters';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
+import { mascaraTelefone } from '../lib/mascaras';
 import {
   X,
   Bike,
@@ -1206,9 +1207,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   <label className="text-slate-600 block mb-1 font-semibold">WhatsApp da Loja para Suporte:</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={formConfig.telefoneContatoLoja || ''}
-                    onChange={(e) => setFormConfig((prev) => ({ ...prev, telefoneContatoLoja: e.target.value }))}
-                    placeholder="(11) 99999-9999"
+                    onChange={(e) => setFormConfig((prev) => ({ ...prev, telefoneContatoLoja: mascaraTelefone(e.target.value) }))}
+                    placeholder="(00) 90000-0000"
+                    maxLength={15}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>

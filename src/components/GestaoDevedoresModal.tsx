@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ClienteDevedor, CompraFiado, PagamentoFiado } from '../types';
+import { mascaraTelefone, mascaraCpfCnpj } from '../lib/mascaras';
 
 interface GestaoDevedoresModalProps {
   visivel: boolean;
@@ -1014,9 +1015,11 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                   <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155' }}>Telefone / WhatsApp</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     placeholder="(00) 90000-0000"
                     value={formTelefone}
-                    onChange={(e) => setFormTelefone(e.target.value)}
+                    onChange={(e) => setFormTelefone(mascaraTelefone(e.target.value))}
+                    maxLength={15}
                     style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem', marginTop: '4px' }}
                   />
                 </div>
@@ -1025,9 +1028,11 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                   <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#334155' }}>CPF / CNPJ (Opcional)</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     placeholder="000.000.000-00"
                     value={formCpf}
-                    onChange={(e) => setFormCpf(e.target.value)}
+                    onChange={(e) => setFormCpf(mascaraCpfCnpj(e.target.value))}
+                    maxLength={18}
                     style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem', marginTop: '4px' }}
                   />
                 </div>

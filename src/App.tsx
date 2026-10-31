@@ -88,6 +88,7 @@ import { TermoConcordanciaModal } from './components/TermoConcordanciaModal';
 import { AlterarCredenciaisDonoModal } from './components/AlterarCredenciaisDonoModal';
 import { ManualUsuarioModal } from './components/ManualUsuarioModal';
 import { ModalPesquisaCatalogo, ProdutoPesquisaItem } from './components/ModalPesquisaCatalogo';
+import { mascaraCnpj, mascaraCpf, mascaraTelefone } from './lib/mascaras';
 import {
   consultarProdutoBomJawaKitPorCodigo,
   consultarSI5GlobalCascata,
@@ -8581,11 +8582,13 @@ export default function App() {
                 <label className="rotulo-campo">CNPJ</label>
                 <input
                   type="text"
+                  inputMode="numeric"
                   id="reg-loja-cnpj"
                   className="input-modal"
                   placeholder="00.000.000/0001-00"
                   value={regLojaCnpj}
-                  onChange={(e) => setRegLojaCnpj(e.target.value)}
+                  onChange={(e) => setRegLojaCnpj(mascaraCnpj(e.target.value))}
+                  maxLength={18}
                   disabled={!!lojaEditandoId}
                   required
                 />
@@ -9508,9 +9511,17 @@ export default function App() {
                 <input
                   type="text"
                   className="input-modal"
-                  placeholder="Ex: caixa01 ou 123.456.789-00"
+                  placeholder="Ex: 000.000.000-00 ou caixa01"
                   value={regOpCpf}
-                  onChange={(e) => setRegOpCpf(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    // Se o usuário estiver digitando CPF numérico, formata com máscara
+                    if (/^[\d.\-]+$/.test(val)) {
+                      setRegOpCpf(mascaraCpf(val));
+                    } else {
+                      setRegOpCpf(val);
+                    }
+                  }}
                   required
                 />
               </div>

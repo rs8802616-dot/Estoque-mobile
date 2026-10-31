@@ -8,6 +8,7 @@ import {
   TaxaBairro,
 } from '../types';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
+import { mascaraTelefone } from '../lib/mascaras';
 import {
   X,
   Search,
@@ -1077,9 +1078,11 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                     <label className="text-stone-600 block mb-1 font-bold">WhatsApp para Contato:</label>
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={telefoneCliente}
-                      onChange={(e) => setTelefoneCliente(e.target.value)}
-                      placeholder="(11) 98765-4321"
+                      onChange={(e) => setTelefoneCliente(mascaraTelefone(e.target.value))}
+                      placeholder="(00) 90000-0000"
+                      maxLength={15}
                       className="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-stone-900 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
