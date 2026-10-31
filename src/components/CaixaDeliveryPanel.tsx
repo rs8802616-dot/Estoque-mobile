@@ -260,7 +260,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   }, []);
 
   return (
-    <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3 flex-1 flex flex-col text-stone-900 w-full min-w-0 lg:h-[calc(100vh-110px)] lg:max-h-[calc(100vh-110px)] lg:overflow-hidden">
+    <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3 flex-1 flex flex-col text-stone-900 w-full min-w-0 lg:h-full lg:max-h-full lg:overflow-hidden overscroll-contain">
       {/* 1. Header do Painel de Delivery (Fixo no Topo do Painel) */}
       <div className="flex items-center justify-between gap-2 pb-1 border-b border-[#a7f3d0]/60 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -404,7 +404,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       </div>
 
       {/* 4. Lista de Cards de Pedidos (Rola independentemente mantendo o topo do painel fixo) */}
-      <div className="space-y-3 max-h-[68vh] lg:max-h-none overflow-y-auto pr-1 flex-1 min-h-0">
+      <div className="space-y-3 max-h-[68vh] lg:max-h-none overflow-y-auto overscroll-contain pr-1 flex-1 min-h-0">
         {filteredOrders.length === 0 ? (
           <div className="py-12 text-center text-[#065f46]/70 text-xs space-y-2 bg-white/70 rounded-2xl border border-dashed border-[#a7f3d0]">
             <Bike className="w-10 h-10 mx-auto text-[#047857]/50" />

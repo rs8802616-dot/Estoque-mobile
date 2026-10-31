@@ -2139,5 +2139,70 @@
     }
 }
 
+/* No computador (Desktop >= 1024px): Painel dividido com rolagem 100% independente entre Produtos e Delivery */
+@media (min-width: 1024px) {
+    html:has(.layout-caixa-delivery-grid),
+    body:has(.layout-caixa-delivery-grid) {
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+        padding-bottom: 0 !important;
+    }
+
+    #root:has(.layout-caixa-delivery-grid) {
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+
+    main.espaco-topo {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-bottom: 10px;
+    }
+
+    .painel-alertas {
+        flex-shrink: 0;
+    }
+
+    .layout-caixa-delivery-grid {
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+        align-items: stretch !important;
+        overflow: hidden;
+    }
+
+    .coluna-produtos-principal {
+        height: 100%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .coluna-produtos-principal .grid-produtos {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-right: 6px;
+        padding-bottom: 24px;
+        align-content: start;
+    }
+
+    .coluna-delivery-fixa-lateral {
+        height: 100%;
+        min-height: 0;
+        display: flex !important;
+        flex-direction: column;
+        overflow: hidden;
+        overscroll-behavior: contain;
+    }
+}
+
 
 

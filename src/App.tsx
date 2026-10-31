@@ -7663,9 +7663,10 @@ export default function App() {
                 alignItems: 'start',
               }}
             >
-              <div style={{ minWidth: 0 }}>
+              <div className="coluna-produtos-principal" style={{ minWidth: 0 }}>
                 {/* Quick Filter Pill Buttons */}
                 <div
+                  className="barra-filtros-produtos-fixa"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -7673,6 +7674,7 @@ export default function App() {
                     padding: '0 16px 10px 16px',
                     overflowX: 'auto',
                     WebkitOverflowScrolling: 'touch',
+                    flexShrink: 0,
                   }}
                 >
               <button
@@ -7900,13 +7902,7 @@ export default function App() {
               {/* COLUNA FIXA DE PEDIDOS DO DELIVERY (ESTILO ATENDEJÁ CAIXAVIEW) - SOMENTE DESKTOP */}
               {colunaDeliveryFixaVisivel && (
                 <div
-                  className="coluna-delivery-fixa-lateral hidden lg:block"
-                  style={{
-                    position: 'sticky',
-                    top: '100px',
-                    zIndex: 40,
-                    alignSelf: 'start',
-                  }}
+                  className="coluna-delivery-fixa-lateral hidden lg:flex"
                 >
                   <CaixaDeliveryPanel
                     pedidos={pedidosDelivery}
