@@ -87,6 +87,7 @@ import { TelaLogin } from './components/TelaLogin';
 import { TermoConcordanciaModal } from './components/TermoConcordanciaModal';
 import { AlterarCredenciaisDonoModal } from './components/AlterarCredenciaisDonoModal';
 import { ManualUsuarioModal } from './components/ManualUsuarioModal';
+import { ModalPesquisaCatalogo, ProdutoPesquisaItem } from './components/ModalPesquisaCatalogo';
 import {
   consultarProdutoBomJawaKitPorCodigo,
   consultarSI5GlobalCascata,
@@ -579,6 +580,7 @@ export default function App() {
   const [modalCadastroVisivel, setModalCadastroVisivel] = useState<boolean>(() => {
     return telaSalvaInicial === 'modal_cadastro_estoque' || telaSalvaInicial === 'modal_cadastro_master';
   });
+  const [modalPesquisaCatalogoVisivel, setModalPesquisaCatalogoVisivel] = useState<boolean>(false);
   const [modalVendaVisivel, setModalVendaVisivel] = useState<boolean>(false);
   const [modalNotificacoesVisivel, setModalNotificacoesVisivel] = useState<boolean>(() => {
     return telaSalvaInicial.startsWith('modal_notificacoes_');
@@ -3664,6 +3666,30 @@ export default function App() {
         `⚠️ Código de barras lido (${codParaConsultar}), mas o produto não foi localizado na base de dados.\n\nVocê também pode usar o botão "Buscar por Nome ou Categoria na API" abaixo ou digitar manualmente.`
       );
     }
+  };
+
+  // Ao selecionar um produto na tela de Pesquisar Produto
+  const handleSelecionarProdutoPesquisa = (prod: ProdutoPesquisaItem) => {
+    if (!prod) return;
+    setCadCod(prod.codigo || '');
+    setCadNome(prod.nome || '');
+    if (prod.marca) setCadMarca(prod.marca);
+    if (prod.categoria) setCadCategoria(prod.categoria.trim());
+    if (prod.foto) setFotoTemp(prod.foto);
+
+    // Fecha o modal de pesquisa
+    setModalPesquisaCatalogoVisivel(false);
+
+    // Foca automaticamente no campo de quantidade ou preço para o lojista concluir rápido
+    setTimeout(() => {
+      const elQtd = document.getElementById('cad-qtd');
+      const elPreco = document.getElementById('cad-preco');
+      if (elQtd) {
+        elQtd.focus();
+      } else if (elPreco) {
+        elPreco.focus();
+      }
+    }, 200);
   };
 
   // Obter nome do produto de forma centralizada, priorizando atualizações do Catálogo Master
@@ -9877,7 +9903,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* BOTÃO AZUL OFICIAL DE BUSCA EXTERNA */}
+                {/* BOTÃO AZUL OFICIAL DE PESQUISA DE PRODUTO */}
                 <button
                   type="button"
                   style={{
@@ -9888,7 +9914,7 @@ export default function App() {
                     borderRadius: '8px',
                     border: 'none',
                     fontWeight: 700,
-                    fontSize: '0.84rem',
+                    fontSize: '0.88rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -9896,14 +9922,12 @@ export default function App() {
                     gap: '6px',
                     marginBottom: '14px',
                     boxShadow: '0 2px 4px rgba(2, 132, 199, 0.25)',
+                    transition: 'all 0.15s ease',
                   }}
-                  onClick={() => consultarEANGemini()}
-                  disabled={consultandoEAN || !cadCod.trim()}
-                  title="Consultar na API SI5 Global com 4 chaves em cascata (400 consultas/dia)"
+                  onClick={() => setModalPesquisaCatalogoVisivel(true)}
+                  title="Pesquisar produto pelo nome no catálogo oficial e APIs (ex: Picanha, Heineken, Nescau...) para preencher código, foto e dados"
                 >
-                  {consultandoEAN
-                    ? '⏳ Consultando API Oficial (400/Dia)...'
-                    : '🌐 Buscar Código na API Oficial (Nome, Foto, Marca & NCM)'}
+                  🔍 Pesquisar Produto
                 </button>
                 <div className="grupo-input">
                   <label className="rotulo-campo">Nome Detalhado do Produto</label>
@@ -10714,6 +10738,15 @@ export default function App() {
         onVerCupom={(venda) => setVendaCupomVer(venda)}
         catalogoGlobal={catalogoGlobal}
         estoque={estoque}
+      />
+
+      {/* MODAL DE PESQUISAR PRODUTO NO CATÁLOGO OFICIAL & API (NOME, FOTO, MARCA & CÓDIGO) */}
+      <ModalPesquisaCatalogo
+        visivel={modalPesquisaCatalogoVisivel}
+        onFechar={() => setModalPesquisaCatalogoVisivel(false)}
+        catalogoGlobal={catalogoGlobal}
+        termoInicial={cadNome || cadCod || ''}
+        onSelecionarProduto={handleSelecionarProdutoPesquisa}
       />
 
       <GraficosVendasModal
