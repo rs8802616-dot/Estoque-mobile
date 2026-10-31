@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { PedidoDelivery, StatusPedidoDelivery, Supermercado } from '../types';
 import { formatCurrency } from '../utils/formatters';
+import { tocarSomEntregaFinalizadaMotoboy } from '../lib/soundUtils';
 
 interface MotoboyDeliveryViewProps {
   pedido: PedidoDelivery;
@@ -124,6 +125,7 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
     setEntregueTimestamp(agora);
     setTempoRestanteSegundos(EXPIRACAO_MINUTOS * 60);
     setModalPinAberto(false);
+    tocarSomEntregaFinalizadaMotoboy();
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(`motoboy_entregue_ts_${pedido.numeroPedido}`, String(agora));

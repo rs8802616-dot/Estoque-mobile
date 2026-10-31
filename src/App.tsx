@@ -136,6 +136,7 @@ import {
   tocarSomSucessoVenda,
   tocarSomAlerta,
   tocarAlertaNovoPedidoDelivery,
+  tocarSomEntregaFinalizadaMotoboy,
 } from './lib/soundUtils';
 import { exportarEstoqueCSV } from './lib/exportUtils';
 import { processarCodigoBarraBalanca, localizarMelhorLoteEstoque } from './lib/balancaUtils';
@@ -5864,6 +5865,9 @@ export default function App() {
       salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
     }
     notificarSincronizacao();
+    if (novoStatus === 'entregue') {
+      tocarSomEntregaFinalizadaMotoboy();
+    }
   };
 
   const handleConfirmarEntregaPin = (pedidoId: string, pinDigitado: string): boolean => {
@@ -5908,7 +5912,7 @@ export default function App() {
       salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
     }
     notificarSincronizacao();
-    tocarSomSucessoVenda();
+    tocarSomEntregaFinalizadaMotoboy();
     return true;
   };
 
