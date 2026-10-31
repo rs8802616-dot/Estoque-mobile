@@ -188,6 +188,8 @@ import {
   migrarDiretamenteDoBancoAntigoParaNovo,
   salvarLogAuditoriaFirestore,
   subscribeLogsAuditoria,
+  salvarPedidoDeliveryFirestore,
+  subscribePedidosDelivery,
   sanitizarItemEstoque,
   obterQuantidadeTotalCatalogoFirestore,
 } from './lib/firestoreSync';
@@ -1116,6 +1118,9 @@ export default function App() {
     return vendasIniciais;
   });
 
+  // Controla IDs de pedidos pendentes já conhecidos para tocar o alarme sonoro automaticamente quando chegar pedido novo
+  const pedidosPendentesConhecidosRef = useRef<Set<string>>(new Set());
+
   // Firebase Firestore Real-time Cloud Database Sync
   useEffect(() => {
     // Subscribe to Supermercados em tempo real (reflete adições e exclusões instantaneamente)
@@ -1123,6 +1128,22 @@ export default function App() {
       if (lojas && lojas.length > 0) {
         setListaSupermercados(lojas);
         safeLocalStorageSet('lista_supermercados_app', JSON.stringify(lojas));
+
+        if (isModoCliente && publicLojaSlugAtivo) {
+          const slugLimpo = publicLojaSlugAtivo.trim().toLowerCase();
+          const lojaCliente =
+            lojas.find(
+              (l) =>
+                l.id.toLowerCase() === slugLimpo ||
+                (l.slug && l.slug.toLowerCase() === slugLimpo)
+            ) || lojas[0];
+          if (lojaCliente) {
+            setSupermercadoAtual(lojaCliente.id);
+            setNomeSupermercadoAtivo(lojaCliente.nome);
+          }
+          return;
+        }
+
         const atualSalvo = localStorage.getItem('supermercadoAtualId');
         if (!atualSalvo || !lojas.some((l) => l.id === atualSalvo)) {
           setSupermercadoAtual(lojas[0].id);
@@ -1143,6 +1164,20 @@ export default function App() {
             const parsed = JSON.parse(salvo);
             if (Array.isArray(parsed) && parsed.length > 0) {
               setListaSupermercados(parsed);
+              if (isModoCliente && publicLojaSlugAtivo) {
+                const slugLimpo = publicLojaSlugAtivo.trim().toLowerCase();
+                const lojaCliente =
+                  parsed.find(
+                    (l: any) =>
+                      String(l.id || '').toLowerCase() === slugLimpo ||
+                      (l.slug && String(l.slug).toLowerCase() === slugLimpo)
+                  ) || parsed[0];
+                if (lojaCliente) {
+                  setSupermercadoAtual(lojaCliente.id);
+                  setNomeSupermercadoAtivo(lojaCliente.nome);
+                }
+                return;
+              }
               const atualSalvo = localStorage.getItem('supermercadoAtualId');
               if (atualSalvo && parsed.some((l: any) => l.id === atualSalvo)) {
                 setSupermercadoAtual(atualSalvo);
@@ -1292,6 +1327,51 @@ export default function App() {
       } catch (e) {}
     }
 
+    const pedSalvoImediato = localStorage.getItem(`pedidos_delivery_${supermercadoAtual}`);
+    if (pedSalvoImediato) {
+      try {
+        const parsedPed = JSON.parse(pedSalvoImediato);
+        if (Array.isArray(parsedPed)) {
+          parsedPed.forEach((p: PedidoDelivery) => {
+            if (p && p.id && p.status === 'pendente') {
+              pedidosPendentesConhecidosRef.current.add(p.id);
+            }
+          });
+          setPedidosDelivery(parsedPed);
+        }
+      } catch (e) {}
+    }
+
+    const cfgSalvoImediato = localStorage.getItem(`config_delivery_${supermercadoAtual}`);
+    if (cfgSalvoImediato) {
+      try {
+        setConfigDelivery(JSON.parse(cfgSalvoImediato));
+      } catch (e) {}
+    }
+
+    // Subscribe em tempo real aos Pedidos de Delivery (atualiza instantaneamente sem precisar dar F5)
+    let cargaInicialPedidosConcluida = false;
+    const unsubPedidosDelivery = subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
+      if (Array.isArray(listaPedidos)) {
+        let chegouNovoPedidoPendente = false;
+        listaPedidos.forEach((p) => {
+          if (p && p.id && p.status === 'pendente') {
+            if (!pedidosPendentesConhecidosRef.current.has(p.id)) {
+              pedidosPendentesConhecidosRef.current.add(p.id);
+              if (cargaInicialPedidosConcluida) {
+                chegouNovoPedidoPendente = true;
+              }
+            }
+          }
+        });
+        cargaInicialPedidosConcluida = true;
+        setPedidosDelivery(listaPedidos);
+        if (chegouNovoPedidoPendente && !isModoCliente) {
+          tocarAlertaNovoPedidoDelivery();
+        }
+      }
+    });
+
     // Subscribe to Estoque for active store (com proteção para modo offline e auto-reconciliação de nomes)
     const unsubEstoque = subscribeEstoque(supermercadoAtual, (itens) => {
       setCarregandoEstoqueInicial(false);
@@ -1357,10 +1437,11 @@ export default function App() {
     });
 
     // Se a tela estiver sendo acessada como Cardápio do Cliente (Delivery / WhatsApp),
-    // NÃO carrega vendas, operadores, devedores nem auditoria. O cliente só precisa do estoque da loja!
+    // NÃO carrega vendas, operadores, devedores nem auditoria. O cliente só precisa do estoque e pedidos de delivery da loja!
     if (isModoCliente) {
       return () => {
         unsubEstoque();
+        unsubPedidosDelivery();
       };
     }
 
@@ -1411,6 +1492,7 @@ export default function App() {
 
     return () => {
       unsubEstoque();
+      unsubPedidosDelivery();
       unsubVendas();
       unsubOperadores();
       unsubDevedores();
@@ -1438,7 +1520,14 @@ export default function App() {
     }
 
     const handleStorage = (e: StorageEvent) => {
-      if (e.key?.startsWith('estoque_') || e.key === 'catalogoGlobalFirebase' || e.key === 'supermercadoAtualId') {
+      if (
+        e.key?.startsWith('estoque_') ||
+        e.key?.startsWith('pedidos_delivery_') ||
+        e.key?.startsWith('config_delivery_') ||
+        e.key?.startsWith('motoboy_') ||
+        e.key === 'catalogoGlobalFirebase' ||
+        e.key === 'supermercadoAtualId'
+      ) {
         recarregarDadosLocais();
       }
     };
@@ -1943,10 +2032,14 @@ export default function App() {
   };
 
   const recarregarDadosLocais = () => {
-    const storeId = localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
-    const storeName = localStorage.getItem('supermercadoNome') || 'Supermercado Matriz';
-    setSupermercadoAtual(storeId);
-    setNomeSupermercadoAtivo(storeName);
+    const storeId = isModoCliente && publicLojaSlugAtivo
+      ? (supermercadoAtual || 'loja_matriz_01')
+      : (localStorage.getItem('supermercadoAtualId') || supermercadoAtual || 'loja_matriz_01');
+    const storeName = localStorage.getItem('supermercadoNome') || nomeSupermercadoAtivo || 'Supermercado Matriz';
+    if (!isModoCliente || !publicLojaSlugAtivo) {
+      setSupermercadoAtual(storeId);
+      setNomeSupermercadoAtivo(storeName);
+    }
 
     const estSalvo = localStorage.getItem(`estoque_${storeId}`);
     if (estSalvo) {
@@ -1964,6 +2057,33 @@ export default function App() {
     if (vendSalvo) {
       try {
         setVendas(JSON.parse(vendSalvo));
+      } catch (e) {}
+    }
+
+    const pedSalvo = localStorage.getItem(`pedidos_delivery_${storeId}`);
+    if (pedSalvo) {
+      try {
+        const parsed: PedidoDelivery[] = JSON.parse(pedSalvo);
+        if (Array.isArray(parsed)) {
+          let temNovoPedidoPendente = false;
+          parsed.forEach((p) => {
+            if (p.status === 'pendente' && !pedidosPendentesConhecidosRef.current.has(p.id)) {
+              pedidosPendentesConhecidosRef.current.add(p.id);
+              temNovoPedidoPendente = true;
+            }
+          });
+          if (temNovoPedidoPendente && !isModoCliente) {
+            tocarAlertaNovoPedidoDelivery();
+          }
+          setPedidosDelivery(parsed);
+        }
+      } catch (e) {}
+    }
+
+    const cfgSalva = localStorage.getItem(`config_delivery_${storeId}`);
+    if (cfgSalva) {
+      try {
+        setConfigDelivery(JSON.parse(cfgSalva));
       } catch (e) {}
     }
 
@@ -5460,6 +5580,7 @@ export default function App() {
     setConfigDelivery(novaConfig);
     const storeId = supermercadoAtual || 'loja_matriz_01';
     safeLocalStorageSet(`config_delivery_${storeId}`, JSON.stringify(novaConfig));
+    notificarSincronizacao();
   };
 
   const handleAtualizarStatusPedidoDelivery = (
@@ -5606,14 +5727,17 @@ export default function App() {
       } catch {}
     }
 
+    let pedidoAtualizadoParaSync: PedidoDelivery | null = null;
     const novosPedidos = pedidosDelivery.map((p) => {
       if (p.id === pedidoId) {
-        const atualizado = {
+        const atualizado: PedidoDelivery = {
           ...p,
+          lojaId: p.lojaId || storeId,
           status: novoStatus,
           motivoCancelamento: motivo || p.motivoCancelamento,
           ...(novoStatus === 'entregue' ? { entregueEmTimestamp: agoraTs } : {}),
         };
+        pedidoAtualizadoParaSync = atualizado;
         try {
           localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(atualizado));
         } catch {}
@@ -5624,6 +5748,10 @@ export default function App() {
 
     setPedidosDelivery(novosPedidos);
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novosPedidos));
+    if (pedidoAtualizadoParaSync) {
+      salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
+    }
+    notificarSincronizacao();
   };
 
   const handleConfirmarEntregaPin = (pedidoId: string, pinDigitado: string): boolean => {
@@ -5642,15 +5770,18 @@ export default function App() {
       localStorage.setItem(`motoboy_entregue_ts_${pedidoAlvo.numeroPedido}`, String(agoraTs));
     } catch {}
 
+    let pedidoAtualizadoParaSync: PedidoDelivery | null = null;
     const novosPedidos = pedidosDelivery.map((p) => {
       if (p.id === pedidoId) {
-        const atualizado = {
+        const atualizado: PedidoDelivery = {
           ...p,
+          lojaId: p.lojaId || storeId,
           status: 'entregue' as StatusPedidoDelivery,
           dataFinalizacao: agora.toISOString().slice(0, 10),
           horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
           entregueEmTimestamp: agoraTs,
         };
+        pedidoAtualizadoParaSync = atualizado;
         try {
           localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(atualizado));
         } catch {}
@@ -5661,15 +5792,41 @@ export default function App() {
 
     setPedidosDelivery(novosPedidos);
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novosPedidos));
+    if (pedidoAtualizadoParaSync) {
+      salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
+    }
+    notificarSincronizacao();
     tocarSomSucessoVenda();
     return true;
   };
 
   const handleCriarPedidoCliente = (novoPedido: PedidoDelivery) => {
-    const storeId = supermercadoAtual || 'loja_matriz_01';
-    const novos = [novoPedido, ...pedidosDelivery];
+    const storeId = novoPedido.lojaId || supermercadoAtual || 'loja_matriz_01';
+    const pedidoFinal: PedidoDelivery = {
+      ...novoPedido,
+      lojaId: storeId,
+    };
+
+    // Mescla com a lista mais recente do localStorage para não perder pedidos simultâneos
+    let basePedidos = pedidosDelivery;
+    try {
+      const salvosNoStorage = localStorage.getItem(`pedidos_delivery_${storeId}`);
+      if (salvosNoStorage) {
+        const parsed = JSON.parse(salvosNoStorage);
+        if (Array.isArray(parsed)) {
+          basePedidos = parsed;
+        }
+      }
+    } catch {}
+
+    const semDuplicado = basePedidos.filter((p) => p.id !== pedidoFinal.id);
+    const novos = [pedidoFinal, ...semDuplicado];
+
+    pedidosPendentesConhecidosRef.current.add(pedidoFinal.id);
     setPedidosDelivery(novos);
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novos));
+    salvarPedidoDeliveryFirestore(pedidoFinal);
+    notificarSincronizacao();
     tocarAlertaNovoPedidoDelivery();
   };
 

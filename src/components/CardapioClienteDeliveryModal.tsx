@@ -84,6 +84,20 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   // Pedido ativo em acompanhamento
   const [pedidoAtivoRastreio, setPedidoAtivoRastreio] = useState<PedidoDelivery | null>(null);
 
+  // Sincroniza o pedido em acompanhamento em tempo real quando o status muda na loja/motoboy
+  useEffect(() => {
+    if (!pedidoAtivoRastreio) return;
+    const atualizado = pedidosExistentes.find((p) => p.id === pedidoAtivoRastreio.id);
+    if (
+      atualizado &&
+      (atualizado.status !== pedidoAtivoRastreio.status ||
+        atualizado.motivoCancelamento !== pedidoAtivoRastreio.motivoCancelamento ||
+        atualizado.entregueEmTimestamp !== pedidoAtivoRastreio.entregueEmTimestamp)
+    ) {
+      setPedidoAtivoRastreio(atualizado);
+    }
+  }, [pedidosExistentes, pedidoAtivoRastreio]);
+
   // Busca e categoria
   const [busca, setBusca] = useState('');
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>('todos');

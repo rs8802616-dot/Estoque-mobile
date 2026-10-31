@@ -44,7 +44,20 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
   const [totalItens, setTotalItens] = useState(0);
   const [jaPesquisou, setJaPesquisou] = useState(false);
   const [erroMensagem, setErroMensagem] = useState<string | null>(null);
+  const [isDesktop, setIsDesktop] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : false
+  );
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Executa busca direta e exclusivamente na API Oficial https://global.si5.com.br
   const executarBuscaAPI = async (termoParaBuscar: string, pagina: number = 1, anexar: boolean = false) => {
@@ -145,10 +158,11 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
       <div
         style={{
           width: '100%',
-          maxWidth: '660px',
+          maxWidth: isDesktop ? '1120px' : '660px',
+          height: isDesktop ? '88vh' : undefined,
           maxHeight: '92vh',
           backgroundColor: '#FAF7F2',
-          borderRadius: '16px',
+          borderRadius: isDesktop ? '20px' : '16px',
           border: '2px solid #292524',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.35)',
           display: 'flex',
@@ -160,7 +174,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         {/* CABEÇALHO */}
         <div
           style={{
-            padding: '16px 20px',
+            padding: isDesktop ? '20px 28px' : '16px 20px',
             backgroundColor: '#FFFFFF',
             borderBottom: '2px solid #E4E3E0',
             display: 'flex',
@@ -169,18 +183,18 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
             gap: '12px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: isDesktop ? '14px' : '10px' }}>
             <div
               style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '10px',
+                width: isDesktop ? '52px' : '42px',
+                height: isDesktop ? '52px' : '42px',
+                borderRadius: isDesktop ? '12px' : '10px',
                 backgroundColor: '#EFF6FF',
                 border: '1.5px solid #3B82F6',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.35rem',
+                fontSize: isDesktop ? '1.65rem' : '1.35rem',
               }}
             >
               🌐
@@ -190,7 +204,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                 <h3
                   style={{
                     margin: 0,
-                    fontSize: '1.05rem',
+                    fontSize: isDesktop ? '1.28rem' : '1.05rem',
                     fontWeight: 800,
                     color: '#1C1917',
                     lineHeight: 1.2,
@@ -200,19 +214,19 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                 </h3>
                 <span
                   style={{
-                    fontSize: '0.68rem',
+                    fontSize: isDesktop ? '0.78rem' : '0.68rem',
                     fontWeight: 700,
                     backgroundColor: '#ECFDF5',
                     color: '#047857',
                     border: '1px solid #A7F3D0',
-                    padding: '2px 6px',
+                    padding: isDesktop ? '3px 10px' : '2px 6px',
                     borderRadius: '12px',
                   }}
                 >
                   SI5 Global
                 </span>
               </div>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B' }}>
+              <p style={{ margin: isDesktop ? '3px 0 0 0' : 0, fontSize: isDesktop ? '0.88rem' : '0.78rem', color: '#64748B' }}>
                 Busca oficial em tempo real (Nome, Foto, Marca e Código de Barras EAN)
               </p>
             </div>
@@ -221,13 +235,13 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
             type="button"
             onClick={onFechar}
             style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '8px',
+              width: isDesktop ? '40px' : '34px',
+              height: isDesktop ? '40px' : '34px',
+              borderRadius: isDesktop ? '10px' : '8px',
               border: '1px solid #CBD5E1',
               backgroundColor: '#F8FAFC',
               color: '#475569',
-              fontSize: '1rem',
+              fontSize: isDesktop ? '1.15rem' : '1rem',
               fontWeight: 'bold',
               cursor: 'pointer',
               display: 'flex',
@@ -241,21 +255,21 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         </div>
 
         {/* CAMPO DE BUSCA DIRETO NA API */}
-        <div style={{ padding: '14px 20px 10px 20px', backgroundColor: '#FFFFFF' }}>
-          <form onSubmit={handleSubmeterBusca} style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ padding: isDesktop ? '18px 28px 14px 28px' : '14px 20px 10px 20px', backgroundColor: '#FFFFFF' }}>
+          <form onSubmit={handleSubmeterBusca} style={{ display: 'flex', gap: isDesktop ? '12px' : '8px' }}>
             <div
               style={{
                 flex: 1,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: isDesktop ? '10px' : '8px',
                 backgroundColor: '#F8FAFC',
                 border: '2px solid #292524',
-                borderRadius: '10px',
-                padding: '6px 12px',
+                borderRadius: isDesktop ? '12px' : '10px',
+                padding: isDesktop ? '10px 16px' : '6px 12px',
               }}
             >
-              <span style={{ fontSize: '1.1rem', color: '#64748B' }}>🔍</span>
+              <span style={{ fontSize: isDesktop ? '1.25rem' : '1.1rem', color: '#64748B' }}>🔍</span>
               <input
                 ref={inputRef}
                 type="text"
@@ -267,7 +281,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                   border: 'none',
                   outline: 'none',
                   background: 'transparent',
-                  fontSize: '0.92rem',
+                  fontSize: isDesktop ? '1.05rem' : '0.92rem',
                   fontWeight: 600,
                   color: '#0F172A',
                   padding: '4px 0',
@@ -281,12 +295,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                     background: '#E2E8F0',
                     border: 'none',
                     borderRadius: '50%',
-                    width: '22px',
-                    height: '22px',
+                    width: isDesktop ? '26px' : '22px',
+                    height: isDesktop ? '26px' : '22px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.72rem',
+                    fontSize: isDesktop ? '0.8rem' : '0.72rem',
                     color: '#475569',
                     cursor: 'pointer',
                   }}
@@ -301,13 +315,13 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
               type="submit"
               disabled={carregando || termo.trim().length < 3}
               style={{
-                padding: '0 18px',
-                borderRadius: '10px',
+                padding: isDesktop ? '0 24px' : '0 18px',
+                borderRadius: isDesktop ? '12px' : '10px',
                 backgroundColor: '#0284C7',
                 color: '#FFFFFF',
                 border: 'none',
                 fontWeight: 700,
-                fontSize: '0.88rem',
+                fontSize: isDesktop ? '0.98rem' : '0.88rem',
                 cursor: carregando || termo.trim().length < 3 ? 'not-allowed' : 'pointer',
                 opacity: carregando || termo.trim().length < 3 ? 0.6 : 1,
                 display: 'flex',
@@ -325,15 +339,15 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
           <div
             style={{
               display: 'flex',
-              gap: '6px',
+              gap: isDesktop ? '8px' : '6px',
               overflowX: 'auto',
-              paddingTop: '10px',
+              paddingTop: isDesktop ? '12px' : '10px',
               paddingBottom: '2px',
               scrollbarWidth: 'none',
               alignItems: 'center',
             }}
           >
-            <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: isDesktop ? '0.82rem' : '0.72rem', color: '#64748B', fontWeight: 700, whiteSpace: 'nowrap' }}>
               Exemplos:
             </span>
             {SUGESTOES_RAPIDAS.map((sug) => (
@@ -342,9 +356,9 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                 type="button"
                 onClick={() => handleSelecionarSugestao(sug)}
                 style={{
-                  padding: '3px 8px',
+                  padding: isDesktop ? '5px 12px' : '3px 8px',
                   borderRadius: '14px',
-                  fontSize: '0.74rem',
+                  fontSize: isDesktop ? '0.82rem' : '0.74rem',
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
                   cursor: 'pointer',
@@ -362,13 +376,13 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         {/* BARRA DE STATUS DA CONSULTA */}
         <div
           style={{
-            padding: '7px 20px',
+            padding: isDesktop ? '10px 28px' : '7px 20px',
             backgroundColor: '#F1F5F9',
             borderBottom: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontSize: '0.76rem',
+            fontSize: isDesktop ? '0.86rem' : '0.76rem',
             color: '#475569',
           }}
         >
@@ -395,10 +409,10 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '12px 16px',
+            padding: isDesktop ? '18px 28px' : '12px 16px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px',
+            gap: isDesktop ? '12px' : '8px',
           }}
         >
           {carregando && produtosAPI.length === 0 ? (
@@ -450,12 +464,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
-                    padding: '10px 14px',
+                    gap: isDesktop ? '18px' : '12px',
+                    padding: isDesktop ? '16px 22px' : '10px 14px',
                     backgroundColor: '#FFFFFF',
-                    borderRadius: '12px',
+                    borderRadius: isDesktop ? '16px' : '12px',
                     border: '1.5px solid #E2E8F0',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    boxShadow: isDesktop ? '0 2px 6px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.05)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                   }}
@@ -471,9 +485,9 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                   {/* FOTO RETORNADA PELA API */}
                   <div
                     style={{
-                      width: '54px',
-                      height: '54px',
-                      borderRadius: '8px',
+                      width: isDesktop ? '86px' : '54px',
+                      height: isDesktop ? '86px' : '54px',
+                      borderRadius: isDesktop ? '12px' : '8px',
                       backgroundColor: '#F8FAFC',
                       border: '1px solid #CBD5E1',
                       display: 'flex',
@@ -481,6 +495,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                       justifyContent: 'center',
                       overflow: 'hidden',
                       flexShrink: 0,
+                      padding: isDesktop ? '6px' : 0,
                     }}
                   >
                     {prod.fotoUrl ? (
@@ -494,7 +509,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                         }}
                       />
                     ) : (
-                      <span style={{ fontSize: '1.5rem' }}>📦</span>
+                      <span style={{ fontSize: isDesktop ? '2.2rem' : '1.5rem' }}>📦</span>
                     )}
                   </div>
 
@@ -502,30 +517,31 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
-                        fontSize: '0.88rem',
+                        fontSize: isDesktop ? '1.12rem' : '0.88rem',
                         fontWeight: 700,
                         color: '#0F172A',
-                        whiteSpace: 'nowrap',
+                        whiteSpace: isDesktop ? 'normal' : 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        marginBottom: '4px',
+                        marginBottom: isDesktop ? '8px' : '4px',
+                        lineHeight: isDesktop ? 1.35 : undefined,
                       }}
                       title={prod.nomeProduto}
                     >
                       {prod.nomeProduto}
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: isDesktop ? '8px' : '6px', flexWrap: 'wrap' }}>
                       {/* CÓDIGO DE BARRAS OFICIAL EAN */}
                       <span
                         style={{
                           fontFamily: 'monospace',
-                          fontSize: '0.76rem',
+                          fontSize: isDesktop ? '0.88rem' : '0.76rem',
                           fontWeight: 700,
                           backgroundColor: '#FEF3C7',
                           color: '#92400E',
-                          padding: '1px 7px',
-                          borderRadius: '4px',
+                          padding: isDesktop ? '4px 10px' : '1px 7px',
+                          borderRadius: isDesktop ? '6px' : '4px',
                           border: '1px solid #FDE68A',
                         }}
                       >
@@ -536,12 +552,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                       {prod.marca && (
                         <span
                           style={{
-                            fontSize: '0.72rem',
+                            fontSize: isDesktop ? '0.84rem' : '0.72rem',
                             fontWeight: 600,
                             backgroundColor: '#EFF6FF',
                             color: '#1E40AF',
-                            padding: '1px 6px',
-                            borderRadius: '4px',
+                            padding: isDesktop ? '4px 10px' : '1px 6px',
+                            borderRadius: isDesktop ? '6px' : '4px',
                           }}
                         >
                           {prod.marca}
@@ -551,12 +567,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                       {/* FONTE OFICIAL */}
                       <span
                         style={{
-                          fontSize: '0.70rem',
+                          fontSize: isDesktop ? '0.82rem' : '0.70rem',
                           fontWeight: 600,
                           backgroundColor: '#F1F5F9',
                           color: '#047857',
-                          padding: '1px 6px',
-                          borderRadius: '4px',
+                          padding: isDesktop ? '4px 10px' : '1px 6px',
+                          borderRadius: isDesktop ? '6px' : '4px',
                         }}
                       >
                         ✓ SI5 Global
@@ -568,19 +584,19 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                   <button
                     type="button"
                     style={{
-                      padding: '8px 14px',
-                      borderRadius: '8px',
+                      padding: isDesktop ? '12px 24px' : '8px 14px',
+                      borderRadius: isDesktop ? '10px' : '8px',
                       backgroundColor: '#0284C7',
                       color: '#FFFFFF',
                       border: 'none',
                       fontWeight: 700,
-                      fontSize: '0.80rem',
+                      fontSize: isDesktop ? '0.96rem' : '0.80rem',
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px',
+                      gap: isDesktop ? '6px' : '4px',
                     }}
                     title="Usar este produto no cadastro"
                   >
@@ -592,19 +608,19 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
 
               {/* BOTÃO CARREGAR MAIS PRODUTOS DA API */}
               {paginaAtual < totalPaginas && (
-                <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                <div style={{ textAlign: 'center', padding: isDesktop ? '14px 0' : '10px 0' }}>
                   <button
                     type="button"
                     onClick={handleCarregarMais}
                     disabled={carregando}
                     style={{
-                      padding: '9px 18px',
-                      borderRadius: '8px',
+                      padding: isDesktop ? '12px 24px' : '9px 18px',
+                      borderRadius: isDesktop ? '10px' : '8px',
                       backgroundColor: '#FFFFFF',
                       color: '#0369A1',
                       border: '2px solid #0284C7',
                       fontWeight: 700,
-                      fontSize: '0.82rem',
+                      fontSize: isDesktop ? '0.92rem' : '0.82rem',
                       cursor: carregando ? 'wait' : 'pointer',
                       boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
                     }}
@@ -620,13 +636,13 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         {/* RODAPÉ */}
         <div
           style={{
-            padding: '10px 16px',
+            padding: isDesktop ? '14px 28px' : '10px 16px',
             backgroundColor: '#FFFFFF',
             borderTop: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontSize: '0.75rem',
+            fontSize: isDesktop ? '0.85rem' : '0.75rem',
             color: '#64748B',
           }}
         >
@@ -635,11 +651,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
             type="button"
             onClick={onFechar}
             style={{
-              padding: '6px 14px',
-              borderRadius: '6px',
+              padding: isDesktop ? '8px 18px' : '6px 14px',
+              borderRadius: isDesktop ? '8px' : '6px',
               border: '1px solid #CBD5E1',
               backgroundColor: '#F8FAFC',
               fontWeight: 600,
+              fontSize: isDesktop ? '0.88rem' : undefined,
               cursor: 'pointer',
               color: '#334155',
             }}

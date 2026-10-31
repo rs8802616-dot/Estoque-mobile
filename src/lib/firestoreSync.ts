@@ -28,6 +28,7 @@ import {
   Venda,
   OperadorCaixa,
   ClienteDevedor,
+  PedidoDelivery,
 } from '../types';
 
 // Real-time listener for Supermercados (reflete deleções e adições instantaneamente)
@@ -954,6 +955,164 @@ export function subscribeLogsAuditoria(lojaId: string, callback: (logs: any[]) =
       // Silent fallback
     }
   );
+}
+
+// Buffer em memória e listeners para Pedidos de Delivery (sincronização instantânea entre cliente, caixa e motoboy)
+const pedidosRecemSalvosMemoria = new Map<string, { pedido: PedidoDelivery; lojaId: string; timestamp: number }>();
+const pedidosListenersPorLoja = new Map<string, Set<(pedidos: PedidoDelivery[]) => void>>();
+
+function notificarListenersPedidosDeliveryImediato(lojaId: string) {
+  const listeners = pedidosListenersPorLoja.get(lojaId);
+  if (!listeners || listeners.size === 0) return;
+
+  try {
+    const salvo = localStorage.getItem(`pedidos_delivery_${lojaId}`);
+    if (!salvo) return;
+    const parsed = JSON.parse(salvo);
+    if (!Array.isArray(parsed)) return;
+    const ordenados = [...parsed].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    listeners.forEach((cb) => {
+      try {
+        cb(ordenados);
+      } catch (e) {}
+    });
+  } catch (e) {}
+}
+
+export async function salvarPedidoDeliveryFirestore(pedido: PedidoDelivery) {
+  try {
+    const lojaId = String(pedido.lojaId || 'loja_matriz_01').trim();
+    const pedidoLimpo: PedidoDelivery = {
+      ...pedido,
+      lojaId,
+    };
+
+    pedidosRecemSalvosMemoria.set(pedidoLimpo.id, {
+      pedido: pedidoLimpo,
+      lojaId,
+      timestamp: Date.now(),
+    });
+
+    // Atualiza localStorage da loja e do motoboy imediatamente
+    try {
+      const salvo = localStorage.getItem(`pedidos_delivery_${lojaId}`);
+      const listaAtual: PedidoDelivery[] = salvo ? JSON.parse(salvo) : [];
+      if (Array.isArray(listaAtual)) {
+        const idx = listaAtual.findIndex((p) => p && p.id === pedidoLimpo.id);
+        if (idx !== -1) {
+          listaAtual[idx] = pedidoLimpo;
+        } else {
+          listaAtual.unshift(pedidoLimpo);
+        }
+        listaAtual.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        safeLocalStorageSet(`pedidos_delivery_${lojaId}`, JSON.stringify(listaAtual));
+      }
+      if (pedidoLimpo.numeroPedido) {
+        safeLocalStorageSet(`motoboy_pedido_${pedidoLimpo.numeroPedido}`, JSON.stringify(pedidoLimpo));
+      }
+      notificarListenersPedidosDeliveryImediato(lojaId);
+    } catch (e) {}
+
+    const docId = sanitizarIdDoc(pedidoLimpo.id);
+    const docRef = doc(db, 'pedidos_delivery', docId);
+    await setDoc(docRef, limparUndefined(pedidoLimpo), { merge: true });
+  } catch (err) {
+    console.warn('Aviso ao salvar pedido de delivery no Firestore (mantido localmente):', err);
+  }
+}
+
+export function subscribePedidosDelivery(lojaId: string, callback: (pedidos: PedidoDelivery[]) => void) {
+  if (!lojaId) return () => {};
+
+  if (!pedidosListenersPorLoja.has(lojaId)) {
+    pedidosListenersPorLoja.set(lojaId, new Set());
+  }
+  pedidosListenersPorLoja.get(lojaId)!.add(callback);
+
+  const colRef = collection(db, 'pedidos_delivery');
+  const q = query(colRef, where('lojaId', '==', lojaId), limit(200));
+
+  const unsubSnapshot = onSnapshot(
+    q,
+    (snapshot) => {
+      const agora = Date.now();
+      const listaRemota: PedidoDelivery[] = [];
+      snapshot.forEach((docSnap) => {
+        const p = { id: docSnap.id, ...docSnap.data() } as PedidoDelivery;
+        if (p && p.id && p.itens) {
+          listaRemota.push(p);
+        }
+      });
+
+      let listaLocal: PedidoDelivery[] = [];
+      try {
+        const salvo = localStorage.getItem(`pedidos_delivery_${lojaId}`);
+        if (salvo) {
+          const parsed = JSON.parse(salvo);
+          if (Array.isArray(parsed)) listaLocal = parsed;
+        }
+      } catch (e) {}
+
+      const mapaPedidos = new Map<string, PedidoDelivery>();
+
+      // 1. Mantém pedidos locais (ex: criados offline ou seed inicial)
+      listaLocal.forEach((p) => {
+        if (p && p.id) {
+          mapaPedidos.set(p.id, p);
+        }
+      });
+
+      // 2. Sobrescreve com dados em tempo real da nuvem (Firestore)
+      listaRemota.forEach((remoto) => {
+        const recemSalvo = pedidosRecemSalvosMemoria.get(remoto.id);
+        const base = recemSalvo && agora - recemSalvo.timestamp < 10000 ? recemSalvo.pedido : remoto;
+        mapaPedidos.set(remoto.id, base);
+        if (base.numeroPedido) {
+          try {
+            safeLocalStorageSet(`motoboy_pedido_${base.numeroPedido}`, JSON.stringify(base));
+          } catch (e) {}
+        }
+      });
+
+      // 3. Garante que qualquer pedido recém-criado em memória ainda em trânsito esteja na lista
+      pedidosRecemSalvosMemoria.forEach((reg) => {
+        if (reg.lojaId === lojaId && agora - reg.timestamp < 30000 && !mapaPedidos.has(reg.pedido.id)) {
+          mapaPedidos.set(reg.pedido.id, reg.pedido);
+        }
+      });
+
+      const listaFinal = Array.from(mapaPedidos.values()).sort(
+        (a, b) => (b.timestamp || 0) - (a.timestamp || 0)
+      );
+
+      if (listaFinal.length > 0) {
+        try {
+          safeLocalStorageSet(`pedidos_delivery_${lojaId}`, JSON.stringify(listaFinal));
+        } catch (e) {}
+      }
+
+      callback(listaFinal);
+    },
+    (_err) => {
+      try {
+        const salvo = localStorage.getItem(`pedidos_delivery_${lojaId}`);
+        if (salvo) {
+          const parsed = JSON.parse(salvo);
+          if (Array.isArray(parsed)) {
+            callback(parsed.sort((a: PedidoDelivery, b: PedidoDelivery) => (b.timestamp || 0) - (a.timestamp || 0)));
+          }
+        }
+      } catch (e) {}
+    }
+  );
+
+  return () => {
+    const set = pedidosListenersPorLoja.get(lojaId);
+    if (set) {
+      set.delete(callback);
+    }
+    unsubSnapshot();
+  };
 }
 
 // Seed Initial Data into Firestore if collections are empty
