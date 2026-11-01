@@ -2321,6 +2321,18 @@ export default function App() {
       setRegLojaPermissoes((prev) => ({ ...prev, delivery: novoStatusDelivery }));
     }
 
+    // Sincroniza imediatamente no ConfigDelivery do Firestore para bloquear/liberar o Link do Cliente em tempo real
+    try {
+      const cfgSalva = localStorage.getItem(`config_delivery_${idLoja}`);
+      const cfgBase = cfgSalva ? JSON.parse(cfgSalva) : configDelivery;
+      const novaCfg = { ...cfgBase, extensaoContratada: novoStatusDelivery };
+      if (idLoja === supermercadoAtual) {
+        setConfigDelivery(novaCfg);
+      }
+      safeLocalStorageSet(`config_delivery_${idLoja}`, JSON.stringify(novaCfg));
+      salvarConfigDeliveryFirestore(idLoja, novaCfg);
+    } catch (e) {}
+
     setMsgRegLoja(
       <span style={{ color: novoStatusDelivery ? '#059669' : '#d97706', fontWeight: 700 }}>
         {novoStatusDelivery
@@ -2380,6 +2392,17 @@ export default function App() {
     localStorage.setItem('lista_supermercados_app', JSON.stringify(novaLista));
     localStorage.setItem(`config_supermercado_${idLoja}`, JSON.stringify(dadosLoja));
     salvarSupermercadoFirestore(dadosLoja);
+
+    // Sincroniza status da Extensão Delivery no ConfigDelivery para refletir no Link do Cliente imediatamente
+    try {
+      const deliveryAtivoPlano = regLojaPermissoes.delivery !== false;
+      const cfgSalva = localStorage.getItem(`config_delivery_${idLoja}`);
+      const cfgBase = cfgSalva ? JSON.parse(cfgSalva) : configDelivery;
+      const novaCfg = { ...cfgBase, extensaoContratada: deliveryAtivoPlano };
+      setConfigDelivery(novaCfg);
+      safeLocalStorageSet(`config_delivery_${idLoja}`, JSON.stringify(novaCfg));
+      salvarConfigDeliveryFirestore(idLoja, novaCfg);
+    } catch (e) {}
 
     setSupermercadoAtual(idLoja);
     setNomeSupermercadoAtivo(nome);
@@ -2991,9 +3014,12 @@ export default function App() {
 
   // Helper 1: Verifica se a loja possui o módulo habilitado pela Dona do App
   const temPermissaoLoja = (modulo: keyof PermissoesLoja): boolean => {
-    if (perfilAtivo === 'dona_app') return true;
     if (!lojaAtualObj || lojaAtualObj.status === 'bloqueado') return false;
     const perms = lojaAtualObj.permissoesLoja || PERMISSOES_LOJA_PADRAO;
+    if (modulo === 'delivery') {
+      return perms.delivery !== false && configDelivery?.extensaoContratada !== false;
+    }
+    if (perfilAtivo === 'dona_app') return true;
     return perms[modulo] !== false;
   };
 
@@ -3002,7 +3028,16 @@ export default function App() {
     acao: keyof PermissoesOperador,
     moduloLoja?: keyof PermissoesLoja
   ): boolean => {
-    // Dona do aplicativo tem acesso irrestrito
+    // Se for a extensão paga de Delivery e ela estiver desativada para esta loja, oculta para todos (inclusive no teste da Dona)
+    if (moduloLoja === 'delivery' || acao === 'gerenciar_delivery') {
+      if (!lojaAtualObj || lojaAtualObj.status === 'bloqueado') return false;
+      const permsLoja = lojaAtualObj.permissoesLoja || PERMISSOES_LOJA_PADRAO;
+      if (permsLoja.delivery === false || configDelivery?.extensaoContratada === false) {
+        return false;
+      }
+    }
+
+    // Dona do aplicativo tem acesso irrestrito aos módulos ativos
     if (perfilAtivo === 'dona_app') return true;
 
     // Se o supermercado foi bloqueado pela Dona do App, ninguém na loja acessa

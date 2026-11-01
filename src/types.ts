@@ -432,7 +432,8 @@ export const PERMISSOES_ADMIN_PADRAO: PermissoesOperador = {
 // ==========================================
 
 export interface ConfiguracaoDelivery {
-  ativo: boolean; // Loja aberta para delivery
+  ativo: boolean;
+  extensaoContratada?: boolean; // Controlado pela Dona do App (Extensão Paga do PDV) // Loja aberta para delivery
   raioMaximoKm: number; // Raio em km atendido (ex: 7)
   taxaEntregaFixa: number; // Taxa padrão em R$ (ex: 6.90)
   taxaPorKm?: number; // Opcional adicional por km

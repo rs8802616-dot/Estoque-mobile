@@ -639,6 +639,46 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
 
   if (!visivel) return null;
 
+  // Bloqueio imediato do Link do Cliente caso a loja esteja bloqueada ou NÃO tenha a Extensão de Delivery contratada
+  const extensaoDeliveryDesativada =
+    loja?.status === 'bloqueado' ||
+    loja?.permissoesLoja?.delivery === false ||
+    configDelivery?.extensaoContratada === false;
+
+  if (extensaoDeliveryDesativada) {
+    return (
+      <div
+        className="fixed inset-0 flex items-center justify-center bg-slate-900/95 p-4"
+        style={{ zIndex: 10000000 }}
+      >
+        <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-7 text-center shadow-2xl space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center text-3xl mx-auto shadow-xs">
+            🔒
+          </div>
+          <h2 className="text-xl font-black text-slate-900">
+            Cardápio Digital Indisponível
+          </h2>
+          <p className="text-sm text-slate-600 leading-relaxed">
+            O módulo de <b>Cardápio Online & Delivery</b> não está habilitado para{' '}
+            <b className="text-slate-900">{loja?.marca || loja?.nome || 'este estabelecimento'}</b> no momento.
+          </p>
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500">
+            Caso você seja o proprietário da loja, ative a <b>Extensão de Delivery</b> junto à administração do sistema PDV para liberar o link de pedidos.
+          </div>
+          {!modoTelaCheia && (
+            <button
+              type="button"
+              onClick={onFechar}
+              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm transition cursor-pointer"
+            >
+              Voltar ao Sistema
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={
