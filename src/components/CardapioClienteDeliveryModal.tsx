@@ -428,6 +428,25 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     });
   }, [estoqueAgrupado, busca, categoriaSelecionada]);
 
+  // Paginação da Vitrine do Cliente
+  const [paginaCliente, setPaginaCliente] = useState<number>(1);
+  const [itensPorPaginaCliente, setItensPorPaginaCliente] = useState<number>(24);
+
+  // Reseta para a página 1 ao pesquisar ou trocar de categoria
+  useEffect(() => {
+    setPaginaCliente(1);
+  }, [busca, categoriaSelecionada]);
+
+  const totalItensCliente = produtosDisponiveis.length;
+  const totalPaginasCliente = Math.max(1, Math.ceil(totalItensCliente / (itensPorPaginaCliente || 24)));
+  const paginaClienteClamped = Math.min(Math.max(1, paginaCliente), totalPaginasCliente);
+
+  const produtosExibicao = useMemo(() => {
+    if (itensPorPaginaCliente === 0) return produtosDisponiveis;
+    const inicio = (paginaClienteClamped - 1) * itensPorPaginaCliente;
+    return produtosDisponiveis.slice(inicio, inicio + itensPorPaginaCliente);
+  }, [produtosDisponiveis, paginaClienteClamped, itensPorPaginaCliente]);
+
   // Adicionar ao carrinho respeitando o estoque disponível somado dos lotes
   const adicionarAoCarrinho = (item: ItemEstoque) => {
     const isIlimitado = Boolean(item.estoqueIlimitado || item.tipoCadastro === 'interno');
@@ -861,6 +880,39 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                 ))}
               </div>
 
+              {/* BARRA SUPERIOR DE RESUMO DA PÁGINA DO CLIENTE */}
+              {totalItensCliente > 0 && (
+                <div className="flex items-center justify-between px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-600 gap-2 flex-wrap mb-1">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <span className="text-stone-900">
+                      Exibindo {Math.min((paginaClienteClamped - 1) * (itensPorPaginaCliente || totalItensCliente) + 1, totalItensCliente)}–{Math.min(paginaClienteClamped * (itensPorPaginaCliente || totalItensCliente), totalItensCliente)}
+                    </span>
+                    <span>de</span>
+                    <span className="text-emerald-700">{totalItensCliente} itens</span>
+                    {totalPaginasCliente > 1 && (
+                      <span className="text-stone-400 font-normal">• Pág. {paginaClienteClamped} de {totalPaginasCliente}</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] text-stone-500">Por pág:</span>
+                    <select
+                      value={itensPorPaginaCliente}
+                      onChange={(e) => {
+                        setItensPorPaginaCliente(Number(e.target.value));
+                        setPaginaCliente(1);
+                      }}
+                      className="bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-xs font-bold text-stone-800 cursor-pointer"
+                    >
+                      <option value={12}>12</option>
+                      <option value={24}>24</option>
+                      <option value={48}>48</option>
+                      <option value={0}>Todos</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
               {/* GRID DE PRODUTOS IDÊNTICO AO FORMATO DO PDV (.grid-produtos / .card-produto) */}
               <div className="grid-produtos">
                 {carregando && produtosDisponiveis.length === 0 ? (
@@ -894,12 +946,12 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                       Sincronizando produtos e fotos em tempo real
                     </div>
                   </div>
-                ) : produtosDisponiveis.length === 0 ? (
+                ) : produtosExibicao.length === 0 ? (
                   <div className="vazio">
                     Nenhum produto encontrado nesta categoria. Tente buscar por outro termo ou selecione Todos.
                   </div>
                 ) : (
-                  produtosDisponiveis.map((prod, pIdx) => {
+                  produtosExibicao.map((prod, pIdx) => {
                     const qtdNoCarrinho = carrinho[prod.codigo]?.qtd || 0;
                     const isInternoCard = prod.tipoCadastro === 'interno' || prod.estoqueIlimitado;
                     const esgotado = !isInternoCard && (prod.quantidade || 0) <= 0;
@@ -1069,6 +1121,95 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                   })
                 )}
               </div>
+
+              {/* CONTROLES DE NAVEGAÇÃO DE PÁGINAS DO CLIENTE */}
+              {totalPaginasCliente > 1 && (
+                <div className="flex items-center justify-center gap-1.5 py-3 px-2 bg-white border border-stone-200 rounded-2xl shadow-2xs my-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaginaCliente(1);
+                    }}
+                    disabled={paginaClienteClamped === 1}
+                    className="px-2.5 py-1.5 rounded-xl border border-stone-200 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed bg-stone-50 hover:bg-stone-100 text-stone-700"
+                  >
+                    «
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaginaCliente((prev) => Math.max(1, prev - 1));
+                    }}
+                    disabled={paginaClienteClamped === 1}
+                    className="px-3 py-1.5 rounded-xl border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold disabled:opacity-40 disabled:bg-stone-100 disabled:border-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed"
+                  >
+                    ‹ Anterior
+                  </button>
+
+                  {/* Números das páginas */}
+                  {Array.from({ length: totalPaginasCliente }, (_, idx) => idx + 1)
+                    .filter((pag) => {
+                      if (totalPaginasCliente <= 5) return true;
+                      if (pag === 1 || pag === totalPaginasCliente) return true;
+                      if (Math.abs(pag - paginaClienteClamped) <= 1) return true;
+                      return false;
+                    })
+                    .reduce((acc, pag, idx, arr) => {
+                      if (idx > 0 && typeof pag === 'number' && typeof arr[idx - 1] === 'number') {
+                        if (pag - arr[idx - 1] > 1) {
+                          acc.push('...');
+                        }
+                      }
+                      acc.push(pag);
+                      return acc;
+                    }, [])
+                    .map((item, i) =>
+                      typeof item === 'string' ? (
+                        <span key={`cli_dots_${i}`} className="px-1 text-xs text-stone-400">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={`cli_pag_${item}`}
+                          type="button"
+                          onClick={() => {
+                            setPaginaCliente(item);
+                          }}
+                          className={`min-w-[32px] h-[32px] rounded-xl text-xs font-black transition cursor-pointer ${
+                            item === paginaClienteClamped
+                              ? 'bg-emerald-600 text-white shadow-xs'
+                              : 'bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100'
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaginaCliente((prev) => Math.min(totalPaginasCliente, prev + 1));
+                    }}
+                    disabled={paginaClienteClamped === totalPaginasCliente}
+                    className="px-3 py-1.5 rounded-xl border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold disabled:opacity-40 disabled:bg-stone-100 disabled:border-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed"
+                  >
+                    Próxima ›
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPaginaCliente(totalPaginasCliente);
+                    }}
+                    disabled={paginaClienteClamped === totalPaginasCliente}
+                    className="px-2.5 py-1.5 rounded-xl border border-stone-200 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed bg-stone-50 hover:bg-stone-100 text-stone-700"
+                  >
+                    »
+                  </button>
+                </div>
+              )}
 
               {/* BARRA FLUTUANTE DE FINALIZAÇÃO NO RODAPÉ */}
               {totalItensQtd > 0 && (
