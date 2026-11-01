@@ -428,24 +428,41 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     });
   }, [estoqueAgrupado, busca, categoriaSelecionada]);
 
-  // Paginação da Vitrine do Cliente
-  const [paginaCliente, setPaginaCliente] = useState<number>(1);
-  const [itensPorPaginaCliente, setItensPorPaginaCliente] = useState<number>(24);
+  // Carregamento progressivo sob demanda na rolagem (Lazy Load na vitrine do cliente)
+  const [limiteVisivelCliente, setLimiteVisivelCliente] = useState<number>(24);
+  const sentinelaScrollClienteRef = useRef<HTMLDivElement | null>(null);
 
-  // Reseta para a página 1 ao pesquisar ou trocar de categoria
+  // Reseta para 24 itens ao pesquisar ou trocar de categoria
   useEffect(() => {
-    setPaginaCliente(1);
+    setLimiteVisivelCliente(24);
   }, [busca, categoriaSelecionada]);
 
+  // Observer para carregar mais itens conforme o cliente rola para baixo
+  useEffect(() => {
+    const sentinela = sentinelaScrollClienteRef.current;
+    if (!sentinela) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setLimiteVisivelCliente((prev) => {
+            if (prev < produtosDisponiveis.length) {
+              return Math.min(prev + 24, produtosDisponiveis.length);
+            }
+            return prev;
+          });
+        }
+      },
+      { rootMargin: '350px' }
+    );
+    observer.observe(sentinela);
+    return () => observer.disconnect();
+  }, [produtosDisponiveis.length]);
+
   const totalItensCliente = produtosDisponiveis.length;
-  const totalPaginasCliente = Math.max(1, Math.ceil(totalItensCliente / (itensPorPaginaCliente || 24)));
-  const paginaClienteClamped = Math.min(Math.max(1, paginaCliente), totalPaginasCliente);
 
   const produtosExibicao = useMemo(() => {
-    if (itensPorPaginaCliente === 0) return produtosDisponiveis;
-    const inicio = (paginaClienteClamped - 1) * itensPorPaginaCliente;
-    return produtosDisponiveis.slice(inicio, inicio + itensPorPaginaCliente);
-  }, [produtosDisponiveis, paginaClienteClamped, itensPorPaginaCliente]);
+    return produtosDisponiveis.slice(0, limiteVisivelCliente);
+  }, [produtosDisponiveis, limiteVisivelCliente]);
 
   // Adicionar ao carrinho respeitando o estoque disponível somado dos lotes
   const adicionarAoCarrinho = (item: ItemEstoque) => {
@@ -880,36 +897,29 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                 ))}
               </div>
 
-              {/* BARRA SUPERIOR DE RESUMO DA PÁGINA DO CLIENTE */}
+              {/* BARRA SUPERIOR DE RESUMO DA VITRINE DO CLIENTE */}
               {totalItensCliente > 0 && (
                 <div className="flex items-center justify-between px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-600 gap-2 flex-wrap mb-1">
                   <div className="flex items-center gap-1.5 font-bold">
                     <span className="text-stone-900">
-                      Exibindo {Math.min((paginaClienteClamped - 1) * (itensPorPaginaCliente || totalItensCliente) + 1, totalItensCliente)}–{Math.min(paginaClienteClamped * (itensPorPaginaCliente || totalItensCliente), totalItensCliente)}
+                      Exibindo {Math.min(limiteVisivelCliente, totalItensCliente)}
                     </span>
                     <span>de</span>
                     <span className="text-emerald-700">{totalItensCliente} itens</span>
-                    {totalPaginasCliente > 1 && (
-                      <span className="text-stone-400 font-normal">• Pág. {paginaClienteClamped} de {totalPaginasCliente}</span>
-                    )}
+                    <span className="text-stone-400 font-normal text-[11px]">• Carregamento sob demanda na rolagem</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-stone-500">Por pág:</span>
-                    <select
-                      value={itensPorPaginaCliente}
-                      onChange={(e) => {
-                        setItensPorPaginaCliente(Number(e.target.value));
-                        setPaginaCliente(1);
+                  {limiteVisivelCliente > 24 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
-                      className="bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-xs font-bold text-stone-800 cursor-pointer"
+                      className="text-[11px] text-emerald-700 font-bold hover:underline cursor-pointer"
                     >
-                      <option value={12}>12</option>
-                      <option value={24}>24</option>
-                      <option value={48}>48</option>
-                      <option value={0}>Todos</option>
-                    </select>
-                  </div>
+                      ↑ Voltar ao início
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -1120,96 +1130,25 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                     );
                   })
                 )}
+
+                {/* Sentinela de carregamento sob demanda na rolagem do cliente */}
+                {limiteVisivelCliente < totalItensCliente && (
+                  <div
+                    ref={sentinelaScrollClienteRef}
+                    className="col-span-full py-4 flex items-center justify-center gap-2 text-xs font-bold text-stone-500"
+                  >
+                    <span className="w-4 h-4 border-2 border-stone-300 border-t-emerald-600 rounded-full animate-spin inline-block" />
+                    Carregando mais produtos... ({Math.min(limiteVisivelCliente, totalItensCliente)} de {totalItensCliente})
+                  </div>
+                )}
+                {limiteVisivelCliente >= totalItensCliente && totalItensCliente > 24 && (
+                  <div className="col-span-full py-3 text-center text-xs font-semibold text-stone-400">
+                    ✓ Todos os {totalItensCliente} produtos foram carregados
+                  </div>
+                )}
               </div>
 
-              {/* CONTROLES DE NAVEGAÇÃO DE PÁGINAS DO CLIENTE */}
-              {totalPaginasCliente > 1 && (
-                <div className="flex items-center justify-center gap-1.5 py-3 px-2 bg-white border border-stone-200 rounded-2xl shadow-2xs my-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPaginaCliente(1);
-                    }}
-                    disabled={paginaClienteClamped === 1}
-                    className="px-2.5 py-1.5 rounded-xl border border-stone-200 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed bg-stone-50 hover:bg-stone-100 text-stone-700"
-                  >
-                    «
-                  </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPaginaCliente((prev) => Math.max(1, prev - 1));
-                    }}
-                    disabled={paginaClienteClamped === 1}
-                    className="px-3 py-1.5 rounded-xl border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold disabled:opacity-40 disabled:bg-stone-100 disabled:border-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed"
-                  >
-                    ‹ Anterior
-                  </button>
-
-                  {/* Números das páginas */}
-                  {Array.from({ length: totalPaginasCliente }, (_, idx) => idx + 1)
-                    .filter((pag) => {
-                      if (totalPaginasCliente <= 5) return true;
-                      if (pag === 1 || pag === totalPaginasCliente) return true;
-                      if (Math.abs(pag - paginaClienteClamped) <= 1) return true;
-                      return false;
-                    })
-                    .reduce((acc, pag, idx, arr) => {
-                      if (idx > 0 && typeof pag === 'number' && typeof arr[idx - 1] === 'number') {
-                        if (pag - arr[idx - 1] > 1) {
-                          acc.push('...');
-                        }
-                      }
-                      acc.push(pag);
-                      return acc;
-                    }, [])
-                    .map((item, i) =>
-                      typeof item === 'string' ? (
-                        <span key={`cli_dots_${i}`} className="px-1 text-xs text-stone-400">
-                          ...
-                        </span>
-                      ) : (
-                        <button
-                          key={`cli_pag_${item}`}
-                          type="button"
-                          onClick={() => {
-                            setPaginaCliente(item);
-                          }}
-                          className={`min-w-[32px] h-[32px] rounded-xl text-xs font-black transition cursor-pointer ${
-                            item === paginaClienteClamped
-                              ? 'bg-emerald-600 text-white shadow-xs'
-                              : 'bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100'
-                          }`}
-                        >
-                          {item}
-                        </button>
-                      )
-                    )}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPaginaCliente((prev) => Math.min(totalPaginasCliente, prev + 1));
-                    }}
-                    disabled={paginaClienteClamped === totalPaginasCliente}
-                    className="px-3 py-1.5 rounded-xl border border-emerald-600 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold disabled:opacity-40 disabled:bg-stone-100 disabled:border-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed"
-                  >
-                    Próxima ›
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPaginaCliente(totalPaginasCliente);
-                    }}
-                    disabled={paginaClienteClamped === totalPaginasCliente}
-                    className="px-2.5 py-1.5 rounded-xl border border-stone-200 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed bg-stone-50 hover:bg-stone-100 text-stone-700"
-                  >
-                    »
-                  </button>
-                </div>
-              )}
 
               {/* BARRA FLUTUANTE DE FINALIZAÇÃO NO RODAPÉ */}
               {totalItensQtd > 0 && (

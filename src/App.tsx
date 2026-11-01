@@ -671,16 +671,9 @@ export default function App() {
   const [paginaMasterBd, setPaginaMasterBd] = useState<number>(1);
   const [limiteRelatorioCatalogo, setLimiteRelatorioCatalogo] = useState<number>(50);
 
-  // Paginação da Grade de Produtos do PDV Principal
-  const [paginaPdv, setPaginaPdv] = useState<number>(1);
-  const [itensPorPaginaPdv, setItensPorPaginaPdv] = useState<number>(() => {
-    try {
-      const salvo = localStorage.getItem('itens_por_pagina_pdv');
-      return salvo ? parseInt(salvo, 10) || 24 : 24;
-    } catch {
-      return 24;
-    }
-  });
+  // Carregamento progressivo sob demanda na rolagem (Lazy Load / Infinite Scroll) do PDV
+  const [limiteVisivelPdv, setLimiteVisivelPdv] = useState<number>(24);
+  const sentinelaScrollPdvRef = useRef<HTMLDivElement | null>(null);
 
   const [regLojaNome, setRegLojaNome] = useState<string>('');
   const [regLojaCnpj, setRegLojaCnpj] = useState<string>('');
@@ -1759,10 +1752,31 @@ export default function App() {
     setLimiteRelatorioCatalogo(50);
   }, [buscaRelatorio]);
 
-  // Reseta para a página 1 do PDV ao pesquisar, filtrar ou alternar de supermercado
+  // Reseta limite de exibição do PDV ao pesquisar, filtrar ou alternar de supermercado
   useEffect(() => {
-    setPaginaPdv(1);
-  }, [busca, filtroTipoProduto, supermercadoAtual]);
+    setLimiteVisivelPdv(24);
+  }, [busca, filtroTipoProduto, supermercadoAtual, aba]);
+
+  // Observer de rolagem infinita do PDV (carrega mais itens automaticamente conforme o usuário rola)
+  useEffect(() => {
+    const sentinela = sentinelaScrollPdvRef.current;
+    if (!sentinela) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setLimiteVisivelPdv((prev) => {
+            if (prev < listaAgrupada.length) {
+              return Math.min(prev + 24, listaAgrupada.length);
+            }
+            return prev;
+          });
+        }
+      },
+      { rootMargin: '350px' }
+    );
+    observer.observe(sentinela);
+    return () => observer.disconnect();
+  }, [listaAgrupada.length]);
 
   // Sync Cash Shift Session on Store or Operator Change
   useEffect(() => {
@@ -6268,17 +6282,9 @@ export default function App() {
     return nomeA.localeCompare(nomeB, 'pt-BR', { sensitivity: 'base', numeric: true });
   });
 
-  // Paginação inteligente dos produtos da grade do PDV
+  // Carregamento progressivo (sob demanda na rolagem) dos produtos da grade do PDV
   const totalItensPdv = listaAgrupada.length;
-  const totalPaginasPdv = Math.max(1, Math.ceil(totalItensPdv / (itensPorPaginaPdv || 24)));
-  const paginaAtualPdvClamped = Math.min(Math.max(1, paginaPdv), totalPaginasPdv);
-
-  const itensPdvPaginados = (itensPorPaginaPdv === 0 || itensPorPaginaPdv >= 9999)
-    ? listaAgrupada
-    : listaAgrupada.slice(
-        (paginaAtualPdvClamped - 1) * itensPorPaginaPdv,
-        paginaAtualPdvClamped * itensPorPaginaPdv
-      );
+  const itensPdvPaginados = listaAgrupada.slice(0, limiteVisivelPdv);
 
   // Helper check if item is expired for Venda Modal styling
   const isProdAtualVencido = prodAtual
@@ -7988,7 +7994,7 @@ export default function App() {
               </button>
             </div>
 
-            {/* BARRA SUPERIOR DE RESUMO DA PÁGINA DO PDV */}
+            {/* BARRA SUPERIOR DE RESUMO DA ROLAGEM DO PDV */}
             {totalItensPdv > 0 && (
               <div
                 style={{
@@ -8008,46 +8014,32 @@ export default function App() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ fontWeight: 700, color: '#0f172a' }}>
-                    Exibindo {Math.min((paginaAtualPdvClamped - 1) * (itensPorPaginaPdv || totalItensPdv) + 1, totalItensPdv)}–{Math.min(paginaAtualPdvClamped * (itensPorPaginaPdv || totalItensPdv), totalItensPdv)}
+                    Exibindo {Math.min(limiteVisivelPdv, totalItensPdv)}
                   </span>
                   <span>de</span>
-                  <span style={{ fontWeight: 700, color: '#0f172a' }}>{totalItensPdv} produtos</span>
-                  {totalPaginasPdv > 1 && (
-                    <span style={{ color: '#94a3b8' }}>• Página {paginaAtualPdvClamped} de {totalPaginasPdv}</span>
-                  )}
+                  <span style={{ fontWeight: 700, color: '#0284c7' }}>{totalItensPdv} produtos</span>
+                  <span style={{ color: '#94a3b8', fontSize: '0.76rem' }}>• Carregamento sob demanda na rolagem</span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <label htmlFor="selectItensPorPaginaPdv" style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                    Por página:
-                  </label>
-                  <select
-                    id="selectItensPorPaginaPdv"
-                    value={itensPorPaginaPdv}
-                    onChange={(e) => {
-                      const v = Number(e.target.value);
-                      setItensPorPaginaPdv(v);
-                      localStorage.setItem('itens_por_pagina_pdv', String(v));
-                      setPaginaPdv(1);
+                {limiteVisivelPdv > 24 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     style={{
-                      padding: '3px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid #cbd5e1',
-                      background: '#f8fafc',
-                      fontSize: '0.78rem',
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#0284c7',
+                      fontSize: '0.76rem',
                       fontWeight: 700,
-                      color: '#0f172a',
                       cursor: 'pointer',
+                      padding: '2px 6px',
                     }}
                   >
-                    <option value={12}>12 produtos</option>
-                    <option value={24}>24 produtos</option>
-                    <option value={48}>48 produtos</option>
-                    <option value={96}>96 produtos</option>
-                    <option value={0}>Todos (Sem limite)</option>
-                  </select>
-                </div>
+                    ↑ Voltar ao início
+                  </button>
+                )}
               </div>
             )}
 
@@ -8208,160 +8200,54 @@ export default function App() {
                   );
                 })
               )}
+
+              {/* Sentinela de carregamento progressivo sob demanda na rolagem */}
+              {limiteVisivelPdv < totalItensPdv && (
+                <div
+                  ref={sentinelaScrollPdvRef}
+                  style={{
+                    gridColumn: '1 / -1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '20px 10px',
+                    color: '#64748b',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      border: '2px solid #cbd5e1',
+                      borderTopColor: '#0284c7',
+                      borderRadius: '50%',
+                      display: 'inline-block',
+                      animation: 'spin 0.8s linear infinite',
+                    }}
+                  />
+                  Carregando mais produtos... ({Math.min(limiteVisivelPdv, totalItensPdv)} de {totalItensPdv})
+                </div>
+              )}
+              {limiteVisivelPdv >= totalItensPdv && totalItensPdv > 24 && (
+                <div
+                  style={{
+                    gridColumn: '1 / -1',
+                    textAlign: 'center',
+                    padding: '16px 10px',
+                    color: '#94a3b8',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  ✓ Todos os {totalItensPdv} produtos foram carregados
+                </div>
+              )}
             </div>
 
-            {/* CONTROLES DE NAVEGAÇÃO DE PÁGINAS DO PDV */}
-            {totalPaginasPdv > 1 && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  padding: '16px',
-                  margin: '12px 16px 24px 16px',
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '14px',
-                  flexWrap: 'wrap',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaginaPdv(1);
-                    document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  disabled={paginaAtualPdvClamped === 1}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    background: paginaAtualPdvClamped === 1 ? '#f1f5f9' : '#ffffff',
-                    color: paginaAtualPdvClamped === 1 ? '#94a3b8' : '#334155',
-                    fontSize: '0.80rem',
-                    fontWeight: 700,
-                    cursor: paginaAtualPdvClamped === 1 ? 'not-allowed' : 'pointer',
-                  }}
-                  title="Primeira Página"
-                >
-                  « Primeira
-                </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaginaPdv((prev) => Math.max(1, prev - 1));
-                    document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  disabled={paginaAtualPdvClamped === 1}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    background: paginaAtualPdvClamped === 1 ? '#f1f5f9' : '#0284c7',
-                    color: paginaAtualPdvClamped === 1 ? '#94a3b8' : '#ffffff',
-                    fontSize: '0.80rem',
-                    fontWeight: 700,
-                    cursor: paginaAtualPdvClamped === 1 ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  ‹ Anterior
-                </button>
-
-                {/* Números das páginas com reticências inteligentes */}
-                {Array.from({ length: totalPaginasPdv }, (_, idx) => idx + 1)
-                  .filter((pag) => {
-                    if (totalPaginasPdv <= 7) return true;
-                    if (pag === 1 || pag === totalPaginasPdv) return true;
-                    if (Math.abs(pag - paginaAtualPdvClamped) <= 1) return true;
-                    return false;
-                  })
-                  .reduce((acc, pag, idx, arr) => {
-                    if (idx > 0 && typeof pag === 'number' && typeof arr[idx - 1] === 'number') {
-                      if (pag - arr[idx - 1] > 1) {
-                        acc.push('...');
-                      }
-                    }
-                    acc.push(pag);
-                    return acc;
-                  }, [])
-                  .map((item, i) =>
-                    typeof item === 'string' ? (
-                      <span key={`dots_${i}`} style={{ padding: '0 4px', color: '#94a3b8', fontSize: '0.85rem' }}>
-                        ...
-                      </span>
-                    ) : (
-                      <button
-                        key={`pag_${item}`}
-                        type="button"
-                        onClick={() => {
-                          setPaginaPdv(item);
-                          document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        style={{
-                          minWidth: '34px',
-                          height: '34px',
-                          padding: '0 6px',
-                          borderRadius: '8px',
-                          border: item === paginaAtualPdvClamped ? '2px solid #0f172a' : '1px solid #cbd5e1',
-                          background: item === paginaAtualPdvClamped ? '#0f172a' : '#ffffff',
-                          color: item === paginaAtualPdvClamped ? '#ffffff' : '#334155',
-                          fontSize: '0.82rem',
-                          fontWeight: item === paginaAtualPdvClamped ? 800 : 600,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {item}
-                      </button>
-                    )
-                  )}
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaginaPdv((prev) => Math.min(totalPaginasPdv, prev + 1));
-                    document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  disabled={paginaAtualPdvClamped === totalPaginasPdv}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    background: paginaAtualPdvClamped === totalPaginasPdv ? '#f1f5f9' : '#0284c7',
-                    color: paginaAtualPdvClamped === totalPaginasPdv ? '#94a3b8' : '#ffffff',
-                    fontSize: '0.80rem',
-                    fontWeight: 700,
-                    cursor: paginaAtualPdvClamped === totalPaginasPdv ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  Próxima ›
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaginaPdv(totalPaginasPdv);
-                    document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  disabled={paginaAtualPdvClamped === totalPaginasPdv}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid #cbd5e1',
-                    background: paginaAtualPdvClamped === totalPaginasPdv ? '#f1f5f9' : '#ffffff',
-                    color: paginaAtualPdvClamped === totalPaginasPdv ? '#94a3b8' : '#334155',
-                    fontSize: '0.80rem',
-                    fontWeight: 700,
-                    cursor: paginaAtualPdvClamped === totalPaginasPdv ? 'not-allowed' : 'pointer',
-                  }}
-                  title="Última Página"
-                >
-                  Última »
-                </button>
-              </div>
-            )}
               </div>
 
               {/* COLUNA FIXA DE PEDIDOS DO DELIVERY (ESTILO ATENDEJÁ CAIXAVIEW) - SOMENTE DESKTOP */}
