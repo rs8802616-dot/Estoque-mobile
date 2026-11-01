@@ -1755,7 +1755,7 @@ export default function App() {
   // Reseta limite de exibição do PDV ao pesquisar, filtrar ou alternar de supermercado
   useEffect(() => {
     setLimiteVisivelPdv(24);
-  }, [busca, filtroTipoProduto, supermercadoAtual, aba]);
+  }, [busca, filtroTipoProduto, supermercadoAtual]);
 
   // Observer de rolagem infinita do PDV (carrega mais itens automaticamente conforme o usuário rola)
   useEffect(() => {
@@ -1764,19 +1764,14 @@ export default function App() {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setLimiteVisivelPdv((prev) => {
-            if (prev < listaAgrupada.length) {
-              return Math.min(prev + 24, listaAgrupada.length);
-            }
-            return prev;
-          });
+          setLimiteVisivelPdv((prev) => prev + 24);
         }
       },
       { rootMargin: '350px' }
     );
     observer.observe(sentinela);
     return () => observer.disconnect();
-  }, [listaAgrupada.length]);
+  }, [estoque.length, busca, filtroTipoProduto, supermercadoAtual, limiteVisivelPdv]);
 
   // Sync Cash Shift Session on Store or Operator Change
   useEffect(() => {
