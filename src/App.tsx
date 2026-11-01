@@ -8999,7 +8999,7 @@ export default function App() {
               }}
             >
               <span style={{ fontSize: '0.78rem', color: '#6b21a8', fontWeight: 700 }}>
-                🔐 Credencial Master: <b style={{ color: '#4c1d95' }}>{credenciaisDono.usuario}</b>
+                🔐 Segurança Master: <b style={{ color: '#4c1d95' }}>Dona do Aplicativo</b>
               </span>
               <button
                 type="button"
