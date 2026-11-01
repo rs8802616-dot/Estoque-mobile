@@ -36,6 +36,9 @@ const DEFAULT_CONFIG_DELIVERY: ConfiguracaoDelivery = {
   horarioAbertura: '08:00',
   horarioFechamento: '23:59',
   mensagemBoasVindas: 'Peça direto pelo nosso catálogo online e receba rapidinho em casa!',
+  repeticoesAlerta: 3,
+  imprimirAutomatico: false,
+  larguraImpressao: '80mm',
 };
 
 export const CustomerDeliveryView: React.FC<CustomerDeliveryViewProps> = ({

@@ -136,8 +136,10 @@ import {
   tocarSomSucessoVenda,
   tocarSomAlerta,
   tocarAlertaNovoPedidoDelivery,
+  pararAlertaNovoPedidoDelivery,
   tocarSomEntregaFinalizadaMotoboy,
 } from './lib/soundUtils';
+import { imprimirComandaPedidoDelivery } from './utils/impressaoTermica';
 import { exportarEstoqueCSV } from './lib/exportUtils';
 import { processarCodigoBarraBalanca, localizarMelhorLoteEstoque } from './lib/balancaUtils';
 import {
@@ -915,6 +917,9 @@ export default function App() {
       valorMinimoPedido: 20.00,
       chavePix: 'loja.delivery@pix.com.br',
       telefoneContatoLoja: '(11) 98765-4321',
+      repeticoesAlerta: 3,
+      imprimirAutomatico: false,
+      larguraImpressao: '80mm',
     };
   });
 
@@ -1386,21 +1391,39 @@ export default function App() {
     let cargaInicialPedidosConcluida = false;
     const unsubPedidosDelivery = subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
       if (Array.isArray(listaPedidos)) {
-        let chegouNovoPedidoPendente = false;
+        const novosPedidosPendentesChegados: PedidoDelivery[] = [];
         listaPedidos.forEach((p) => {
           if (p && p.id && p.status === 'pendente') {
             if (!pedidosPendentesConhecidosRef.current.has(p.id)) {
               pedidosPendentesConhecidosRef.current.add(p.id);
               if (cargaInicialPedidosConcluida) {
-                chegouNovoPedidoPendente = true;
+                novosPedidosPendentesChegados.push(p);
               }
             }
           }
         });
         cargaInicialPedidosConcluida = true;
         setPedidosDelivery(listaPedidos);
-        if (chegouNovoPedidoPendente && !isModoCliente) {
-          tocarAlertaNovoPedidoDelivery();
+
+        if (novosPedidosPendentesChegados.length > 0 && !isModoCliente) {
+          // Toca o sino com a quantidade de repetições configurada pelo lojista
+          tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
+
+          // Se a impressão automática estiver ligada nas configurações de delivery, imprime a comanda na hora
+          if (configDelivery.imprimirAutomatico) {
+            const lojaAtualObj = listaSupermercados.find((l) => l.id === supermercadoAtual) || null;
+            novosPedidosPendentesChegados.forEach((pedRecente) => {
+              try {
+                imprimirComandaPedidoDelivery(
+                  pedRecente,
+                  lojaAtualObj,
+                  configDelivery.larguraImpressao || '80mm'
+                );
+              } catch (err) {
+                console.warn('Erro ao disparar impressão automática de comanda:', err);
+              }
+            });
+          }
         }
       }
     });
@@ -2108,7 +2131,7 @@ export default function App() {
             }
           });
           if (temNovoPedidoPendente && !isModoCliente) {
-            tocarAlertaNovoPedidoDelivery();
+            tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
           }
           setPedidosDelivery(parsed);
         }
@@ -5718,6 +5741,9 @@ export default function App() {
     novoStatus: StatusPedidoDelivery,
     motivo?: string
   ) => {
+    // Interrompe imediatamente o toque do sino assim que o pedido for aceito ou movimentado
+    pararAlertaNovoPedidoDelivery();
+
     const storeId = supermercadoAtual || 'loja_matriz_01';
     const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
     if (!pedidoAlvo) return;
@@ -5960,7 +5986,15 @@ export default function App() {
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novos));
     salvarPedidoDeliveryFirestore(pedidoFinal);
     notificarSincronizacao();
-    tocarAlertaNovoPedidoDelivery();
+    tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
+    if (configDelivery.imprimirAutomatico) {
+      const lojaAtualObj = listaSupermercados.find((l) => l.id === storeId) || null;
+      try {
+        imprimirComandaPedidoDelivery(pedidoFinal, lojaAtualObj, configDelivery.larguraImpressao || '80mm');
+      } catch (e) {
+        console.warn('Erro ao disparar impressão automática de comanda:', e);
+      }
+    }
   };
 
   const handleSimularPedidoTeste = () => {

@@ -285,48 +285,118 @@ function tocarWavSintetizado(tipo: 'delivery' | 'motoboy') {
   }
 }
 
+// Estado e controle de repetição do alerta de novo pedido
+let alertaPedidoEmExecucao = false;
+let timeoutRepeticaoAlerta: any = null;
+const ouvintesStatusAlerta = new Set<(tocando: boolean) => void>();
+
+export function registrarOuvinteStatusAlerta(cb: (tocando: boolean) => void): () => void {
+  ouvintesStatusAlerta.add(cb);
+  cb(alertaPedidoEmExecucao);
+  return () => {
+    ouvintesStatusAlerta.delete(cb);
+  };
+}
+
+function notificarStatusAlerta(tocando: boolean) {
+  ouvintesStatusAlerta.forEach((cb) => {
+    try {
+      cb(tocando);
+    } catch (e) {}
+  });
+}
+
 /**
- * Toca o toque de NOVO PEDIDO DE DELIVERY chegando na loja (Sino de mão Bell 1 do Freesound)
- * Toca o arquivo de áudio real do sino (Bell1.aif / som_novo_pedido.mp3) + voz "Delivery! Delivery! Novo pedido!"
+ * Para IMEDIATAMENTE o toque do sino quando o lojista aceitar o pedido ou silenciar o alerta
  */
-export function tocarAlertaNovoPedidoDelivery() {
+export function pararAlertaNovoPedidoDelivery() {
+  alertaPedidoEmExecucao = false;
+  if (timeoutRepeticaoAlerta) {
+    clearTimeout(timeoutRepeticaoAlerta);
+    timeoutRepeticaoAlerta = null;
+  }
+  const audio = obterAudioSino();
+  if (audio) {
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+    } catch (e) {}
+  }
+  notificarStatusAlerta(false);
+}
+
+export function isAlertaNovoPedidoTocando(): boolean {
+  return alertaPedidoEmExecucao;
+}
+
+/**
+ * Toca EXCLUSIVAMENTE o toque de sino de mão escolhido (Bell 1 do Freesound)
+ * Sem vozes nem bipes antigos.
+ * Permite configurar o número de repetições (ex: 1, 2, 3, 5 ou 99 para contínuo até aceitar).
+ * Para instantaneamente se o lojista aceitar o pedido ou chamar pararAlertaNovoPedidoDelivery().
+ */
+export function tocarAlertaNovoPedidoDelivery(repeticoes: number = 3) {
   desbloquearAudio();
 
-  let audioArquivoIniciado = false;
+  // Se já estiver tocando, cancela o ciclo anterior para reiniciar limpo
+  pararAlertaNovoPedidoDelivery();
 
-  // 1. Toca o arquivo de som real do Sino de Mão (Bell1.aif / Freesound lth_stp)
-  try {
-    const audioSino = obterAudioSino();
-    if (audioSino) {
-      audioSino.currentTime = 0;
-      audioSino.volume = 1.0;
-      const playPromise = audioSino.play();
+  const maxRepeticoes = Number(repeticoes) > 0 ? Number(repeticoes) : 3;
+  alertaPedidoEmExecucao = true;
+  notificarStatusAlerta(true);
+
+  let cicloAtual = 0;
+
+  const tocarCiclo = () => {
+    if (!alertaPedidoEmExecucao) return;
+
+    cicloAtual++;
+    const audio = obterAudioSino();
+    if (!audio) {
+      alertaPedidoEmExecucao = false;
+      notificarStatusAlerta(false);
+      return;
+    }
+
+    try {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.volume = 1.0;
+
+      const aoTerminar = () => {
+        audio.removeEventListener('ended', aoTerminar);
+        if (!alertaPedidoEmExecucao) return;
+
+        // Se ainda não atingiu a quantidade máxima de repetições (99 = contínuo)
+        if (maxRepeticoes >= 99 || cicloAtual < maxRepeticoes) {
+          timeoutRepeticaoAlerta = setTimeout(() => {
+            if (alertaPedidoEmExecucao) {
+              tocarCiclo();
+            }
+          }, 800);
+        } else {
+          alertaPedidoEmExecucao = false;
+          notificarStatusAlerta(false);
+        }
+      };
+
+      audio.addEventListener('ended', aoTerminar);
+
+      const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            audioArquivoIniciado = true;
-          })
-          .catch((err) => {
-            console.warn('HTML5 Audio play bloqueado ou pendente de interação, ativando sintetizador:', err);
-            tocarWavSintetizado('delivery');
-          });
+        playPromise.catch((err) => {
+          console.warn('HTML5 Audio reprodução pendente de clique do usuário:', err);
+          aoTerminar();
+        });
       }
+    } catch (err) {
+      console.warn('Erro ao tocar audio do sino:', err);
+      alertaPedidoEmExecucao = false;
+      notificarStatusAlerta(false);
     }
-  } catch (err) {
-    console.warn('Erro ao disparar arquivo mp3 do sino:', err);
-  }
+  };
 
-  // 2. Se o arquivo não puder ser executado (ex: navegador bloqueando ou offline sem cache), usa sintetizador
-  setTimeout(() => {
-    if (!audioArquivoIniciado) {
-      tocarWavSintetizado('delivery');
-    }
-  }, 400);
-
-  // 3. Alerta falado "Delivery! Delivery! Novo pedido!" em conjunto com o sino
-  setTimeout(() => {
-    falarTextoComVoz('Delivery! Delivery! Novo pedido!', 2, 2200);
-  }, 1200);
+  tocarCiclo();
 }
 
 /**

@@ -6,7 +6,12 @@ import {
   ItemEstoque,
   Supermercado,
 } from '../types';
-import { tocarAlertaNovoPedidoDelivery, tocarSomEntregaFinalizadaMotoboy } from '../lib/soundUtils';
+import {
+  tocarAlertaNovoPedidoDelivery,
+  pararAlertaNovoPedidoDelivery,
+  registrarOuvinteStatusAlerta,
+  tocarSomEntregaFinalizadaMotoboy,
+} from '../lib/soundUtils';
 import { formatCurrency } from '../utils/formatters';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import { mascaraTelefone } from '../lib/mascaras';
@@ -99,19 +104,19 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   // Formulário de configurações da loja
   const [formConfig, setFormConfig] = useState<ConfiguracaoDelivery>(configDelivery);
 
-  // Efeito sonoro: alerta sempre que houver novos pedidos pendentes
+  // Monitora se o toque do sino está tocando no momento (permite silenciar com 1 clique)
+  const [alertaSinoTocando, setAlertaSinoTocando] = useState(false);
   useEffect(() => {
-    if (!visivel) return;
+    const unsub = registrarOuvinteStatusAlerta(setAlertaSinoTocando);
+    return unsub;
+  }, []);
 
-    const temNovos = pedidos.some((p) => p.status === 'pendente');
-    if (temNovos) {
-      tocarAlertaNovoPedidoDelivery();
-      const interval = setInterval(() => {
-        tocarAlertaNovoPedidoDelivery();
-      }, 15000);
-      return () => clearInterval(interval);
+  // Para o toque ao fechar o modal
+  useEffect(() => {
+    if (!visivel) {
+      pararAlertaNovoPedidoDelivery();
     }
-  }, [visivel, pedidos]);
+  }, [visivel]);
 
   useEffect(() => {
     setFormConfig(configDelivery);
@@ -459,7 +464,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             {isNovo && (
               <button
                 type="button"
-                onClick={() => onAtualizarStatusPedido(order.id, 'em_separacao')}
+                onClick={() => {
+                  pararAlertaNovoPedidoDelivery();
+                  onAtualizarStatusPedido(order.id, 'em_separacao');
+                }}
                 className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
                 title="Confirmar pedido e iniciar separação"
               >
@@ -578,15 +586,28 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               <span className="hidden sm:inline">Ver Cardápio</span>
             </button>
 
-            {/* Botões de Testar Sons de Delivery */}
-            <button
-              onClick={() => tocarAlertaNovoPedidoDelivery()}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition border border-amber-300 shadow-2xs cursor-pointer"
-              title="Testar som do Sino de Novo Pedido (Bell 1 + Voz)"
-            >
-              <span>🔔</span>
-              <span className="inline text-[11px] sm:text-xs">Ouvir Sino</span>
-            </button>
+            {/* Botões de Alerta / Silenciar Toque */}
+            {alertaSinoTocando ? (
+              <button
+                type="button"
+                onClick={() => pararAlertaNovoPedidoDelivery()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md animate-bounce transition cursor-pointer"
+                title="Silenciar toque do sino imediatamente"
+              >
+                <span>🔕</span>
+                <span className="inline">Silenciar</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition border border-amber-300 shadow-2xs cursor-pointer"
+                title="Testar som do Sino de Novo Pedido (Bell 1)"
+              >
+                <span>🔔</span>
+                <span className="inline text-[11px] sm:text-xs">Ouvir Sino</span>
+              </button>
+            )}
 
             <button
               onClick={() => tocarSomEntregaFinalizadaMotoboy()}
@@ -1150,22 +1171,126 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   );
                 })()}
 
-                {/* Toque Sonoro do Novo Pedido */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50/80 border border-amber-200 gap-2">
-                  <div className="min-w-0 flex-1">
-                    <span className="font-bold text-xs text-amber-950 block">Toque de Sino de Novo Pedido:</span>
-                    <span className="text-amber-800 text-[11px] block mt-0.5">
-                      Toque clássico de sino de mão (Bell 1) + aviso de voz "Delivery!"
-                    </span>
+                {/* Toque Sonoro do Novo Pedido & Repetições */}
+                <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <span className="font-bold text-xs text-amber-950 flex items-center gap-1.5">
+                        <span className="text-base">🔔</span>
+                        <span>Toque de Sino de Novo Pedido:</span>
+                      </span>
+                      <span className="text-amber-800 text-[11px] block mt-0.5">
+                        Sino de mão clássico exclusivo (Bell 1)
+                      </span>
+                    </div>
+                    {alertaSinoTocando ? (
+                      <button
+                        type="button"
+                        onClick={() => pararAlertaNovoPedidoDelivery()}
+                        className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0 animate-pulse"
+                      >
+                        <span>🔕</span>
+                        <span>Parar Toque</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)}
+                        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
+                      >
+                        <span>🔔</span>
+                        <span>Testar Toque</span>
+                      </button>
+                    )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => tocarAlertaNovoPedidoDelivery()}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
-                  >
-                    <span>🔔</span>
-                    <span>Testar Toque</span>
-                  </button>
+
+                  {/* Quantidade de Repetições do Toque */}
+                  <div className="flex items-center justify-between pt-1 border-t border-amber-200/70 gap-2">
+                    <label className="text-slate-800 font-bold text-xs">
+                      Repetir toque quantas vezes:
+                    </label>
+                    <select
+                      value={formConfig.repeticoesAlerta ?? 3}
+                      onChange={(e) =>
+                        setFormConfig((prev) => ({
+                          ...prev,
+                          repeticoesAlerta: Number(e.target.value),
+                        }))
+                      }
+                      className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-slate-900 font-bold text-xs focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
+                    >
+                      <option value={1}>1 vez (15s)</option>
+                      <option value={2}>2 vezes (~30s)</option>
+                      <option value={3}>3 vezes (Recomendado)</option>
+                      <option value={5}>5 vezes</option>
+                      <option value={10}>10 vezes</option>
+                      <option value={99}>Contínuo (até aceitar o pedido)</option>
+                    </select>
+                  </div>
+                  <p className="text-[10px] text-amber-900/80 leading-tight">
+                    💡 Assim que você clicar em "Confirmar/Aceitar" no pedido, o sino para de tocar imediatamente.
+                  </p>
+                </div>
+
+                {/* Impressão Automática de Cupom / Comanda */}
+                <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <span className="font-bold text-xs text-sky-950 flex items-center gap-1.5">
+                        <Printer className="w-4 h-4 text-sky-700" />
+                        <span>Impressão Automática de Cupom:</span>
+                      </span>
+                      <span className="text-sky-800 text-[11px] block mt-0.5">
+                        Imprime o cupom de venda/comanda assim que o cliente fizer o pedido
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormConfig((prev) => ({
+                          ...prev,
+                          imprimirAutomatico: !prev.imprimirAutomatico,
+                        }))
+                      }
+                      className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1 ${
+                        formConfig.imprimirAutomatico
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                          : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                      }`}
+                    >
+                      <span>{formConfig.imprimirAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                    </button>
+                  </div>
+
+                  {formConfig.imprimirAutomatico && (
+                    <div className="flex items-center justify-between pt-1 border-t border-sky-200/70 text-xs">
+                      <span className="text-slate-800 font-bold">Largura da Bobina Térmica:</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))}
+                          className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
+                            (formConfig.larguraImpressao || '80mm') === '80mm'
+                              ? 'bg-sky-900 text-white shadow-2xs'
+                              : 'bg-white border border-slate-300 text-slate-700'
+                          }`}
+                        >
+                          80mm (Padrão)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))}
+                          className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
+                            formConfig.larguraImpressao === '58mm'
+                              ? 'bg-sky-900 text-white shadow-2xs'
+                              : 'bg-white border border-slate-300 text-slate-700'
+                          }`}
+                        >
+                          58mm (Estreita)
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
