@@ -7989,55 +7989,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* BARRA SUPERIOR DE RESUMO DA ROLAGEM DO PDV */}
-            {totalItensPdv > 0 && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 16px',
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '12px',
-                  margin: '0 16px 12px 16px',
-                  fontSize: '0.82rem',
-                  color: '#475569',
-                  flexWrap: 'wrap',
-                  gap: '8px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontWeight: 700, color: '#0f172a' }}>
-                    Exibindo {Math.min(limiteVisivelPdv, totalItensPdv)}
-                  </span>
-                  <span>de</span>
-                  <span style={{ fontWeight: 700, color: '#0284c7' }}>{totalItensPdv} produtos</span>
-                  <span style={{ color: '#94a3b8', fontSize: '0.76rem' }}>• Carregamento sob demanda na rolagem</span>
-                </div>
-
-                {limiteVisivelPdv > 24 && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      document.getElementById('grid-produtos')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      color: '#0284c7',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      padding: '2px 6px',
-                    }}
-                  >
-                    ↑ Voltar ao início
-                  </button>
-                )}
-              </div>
-            )}
-
             <div className="grid-produtos" id="grid-produtos">
               {itensPdvPaginados.length === 0 ? (
                 <div className="vazio">

@@ -897,32 +897,6 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                 ))}
               </div>
 
-              {/* BARRA SUPERIOR DE RESUMO DA VITRINE DO CLIENTE */}
-              {totalItensCliente > 0 && (
-                <div className="flex items-center justify-between px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs text-stone-600 gap-2 flex-wrap mb-1">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <span className="text-stone-900">
-                      Exibindo {Math.min(limiteVisivelCliente, totalItensCliente)}
-                    </span>
-                    <span>de</span>
-                    <span className="text-emerald-700">{totalItensCliente} itens</span>
-                    <span className="text-stone-400 font-normal text-[11px]">• Carregamento sob demanda na rolagem</span>
-                  </div>
-
-                  {limiteVisivelCliente > 24 && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      className="text-[11px] text-emerald-700 font-bold hover:underline cursor-pointer"
-                    >
-                      ↑ Voltar ao início
-                    </button>
-                  )}
-                </div>
-              )}
-
               {/* GRID DE PRODUTOS IDÊNTICO AO FORMATO DO PDV (.grid-produtos / .card-produto) */}
               <div className="grid-produtos">
                 {carregando && produtosDisponiveis.length === 0 ? (
