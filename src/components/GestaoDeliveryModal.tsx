@@ -581,20 +581,20 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             {/* Botões de Testar Sons de Delivery */}
             <button
               onClick={() => tocarAlertaNovoPedidoDelivery()}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs transition border border-emerald-300 shadow-2xs cursor-pointer"
-              title="Testar som de Novo Pedido (Campainha + Voz Delivery)"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition border border-amber-300 shadow-2xs cursor-pointer"
+              title="Testar som do Sino de Novo Pedido (Bell 1 + Voz)"
             >
               <span>🔔</span>
-              <span className="hidden md:inline">Testar Toque Delivery</span>
+              <span className="inline text-[11px] sm:text-xs">Ouvir Sino</span>
             </button>
 
             <button
               onClick={() => tocarSomEntregaFinalizadaMotoboy()}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs transition border border-sky-300 shadow-2xs cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs transition border border-sky-300 shadow-2xs cursor-pointer"
               title="Testar som de Entrega Concluída pelo Motoboy"
             >
               <span>🛵</span>
-              <span className="hidden md:inline">Testar Toque Motoboy</span>
+              <span className="hidden sm:inline text-[11px] sm:text-xs">Toque Motoboy</span>
             </button>
 
             {/* Simulação de Pedido Teste */}
@@ -1149,6 +1149,24 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     </div>
                   );
                 })()}
+
+                {/* Toque Sonoro do Novo Pedido */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50/80 border border-amber-200 gap-2">
+                  <div className="min-w-0 flex-1">
+                    <span className="font-bold text-xs text-amber-950 block">Toque de Sino de Novo Pedido:</span>
+                    <span className="text-amber-800 text-[11px] block mt-0.5">
+                      Toque clássico de sino de mão (Bell 1) + aviso de voz "Delivery!"
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => tocarAlertaNovoPedidoDelivery()}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
+                  >
+                    <span>🔔</span>
+                    <span>Testar Toque</span>
+                  </button>
+                </div>
 
                 {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
                 <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-2">

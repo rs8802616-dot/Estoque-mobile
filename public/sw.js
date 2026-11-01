@@ -1,13 +1,14 @@
 // Service Worker para Estoque Mobile Multi-Supermercado
 // Permite funcionamento 100% offline mesmo ao recarregar a página (F5 ou abrir app sem conexão)
 
-const CACHE_NAME = 'estoque-mobile-pwa-v83';
+const CACHE_NAME = 'estoque-mobile-pwa-v84';
 
 const ASSETS_PARA_CACHE_INICIAL = [
   '/',
   '/index.html',
   '/manifest.json',
   '/pdf.worker.min.js',
+  '/som_novo_pedido.mp3',
   'https://cdn-icons-png.flaticon.com/512/3081/3081559.png',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
 ];
