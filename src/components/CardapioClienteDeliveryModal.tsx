@@ -113,29 +113,54 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
 
   // Bairro Selecionado (ID ou Nome)
   const [bairroSelecionadoId, setBairroSelecionadoId] = useState<string>(() => {
-    return localStorage.getItem('delivery_bairro_selecionado') || (listaBairros[0]?.id || 'b1');
+    return localStorage.getItem('delivery_bairro_selecionado') || '';
   });
 
-  // Endereço de entrega do cliente
+  // Endereço de entrega do cliente com persistência garantida
   const [endereco, setEndereco] = useState(() => {
     try {
       const salvo = localStorage.getItem('delivery_cliente_endereco');
-      return salvo ? JSON.parse(salvo) : {
-        logradouro: '',
-        numero: '',
-        complemento: '',
-        bairro: '',
-        cidade: loja?.cidade || 'São Paulo',
-        referencia: '',
-      };
+      if (salvo) {
+        const parsed = JSON.parse(salvo);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            logradouro: parsed.logradouro || '',
+            numero: parsed.numero || '',
+            complemento: parsed.complemento || '',
+            bairro: parsed.bairro || '',
+            cidade: parsed.cidade || loja?.cidade || 'São Paulo',
+            referencia: parsed.referencia || '',
+          };
+        }
+      }
+    } catch {}
+    return {
+      logradouro: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      cidade: loja?.cidade || 'São Paulo',
+      referencia: '',
+    };
+  });
+
+  // Dados do cliente (auto-preenchidos do histórico/localStorage)
+  const [nomeCliente, setNomeCliente] = useState(() => {
+    try {
+      return localStorage.getItem('delivery_cliente_nome') || '';
     } catch {
-      return { logradouro: '', numero: '', complemento: '', bairro: '', cidade: loja?.cidade || 'São Paulo', referencia: '' };
+      return '';
     }
   });
 
-  // Dados do cliente
-  const [nomeCliente, setNomeCliente] = useState(() => localStorage.getItem('delivery_cliente_nome') || '');
-  const [telefoneCliente, setTelefoneCliente] = useState(() => localStorage.getItem('delivery_cliente_telefone') || '');
+  const [telefoneCliente, setTelefoneCliente] = useState(() => {
+    try {
+      return localStorage.getItem('delivery_cliente_telefone') || '';
+    } catch {
+      return '';
+    }
+  });
+
   const [observacaoGeral, setObservacaoGeral] = useState('');
 
   // Carrinho do cliente
@@ -149,19 +174,140 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   // Calcula a taxa de entrega baseada no bairro selecionado e tipo de pedido
   const taxaEntregaCalculada = useMemo(() => {
     if (tipoPedido === 'retirada') return 0;
-    const bairroEncontrado = listaBairros.find((b) => b.id === bairroSelecionadoId || (b.nome || b.bairro || '').toLowerCase() === (endereco.bairro || '').toLowerCase());
+    const bairroEncontrado = listaBairros.find(
+      (b) =>
+        b.id === bairroSelecionadoId ||
+        (b.nome || b.bairro || '').toLowerCase() === (endereco.bairro || '').toLowerCase()
+    );
     if (bairroEncontrado) return Number(bairroEncontrado.taxa ?? bairroEncontrado.valor) || 0;
     return Number(configDelivery?.taxaEntregaFixa ?? loja?.taxa_entrega ?? 6.00) || 0;
   }, [tipoPedido, listaBairros, bairroSelecionadoId, endereco.bairro, configDelivery, loja]);
 
-  // Atualizar bairro selecionado no endereço
+  // Se o endereço já tiver bairro salvo, sincroniza o dropdown com o ID correto sem sobrescrever o bairro
   useEffect(() => {
-    const bairroObj = listaBairros.find((b) => b.id === bairroSelecionadoId);
+    if (endereco.bairro && listaBairros.length > 0) {
+      const match = listaBairros.find(
+        (b) =>
+          (b.nome || b.bairro || '').trim().toLowerCase() ===
+          (endereco.bairro || '').trim().toLowerCase()
+      );
+      if (match && match.id && match.id !== bairroSelecionadoId) {
+        setBairroSelecionadoId(match.id);
+      }
+    } else if (!bairroSelecionadoId && listaBairros.length > 0) {
+      setBairroSelecionadoId(listaBairros[0].id || 'b1');
+    }
+  }, [endereco.bairro, listaBairros]);
+
+  // Altera o bairro selecionado e atualiza o endereço com segurança
+  const handleAlterarBairro = (novoId: string) => {
+    setBairroSelecionadoId(novoId);
+    try {
+      localStorage.setItem('delivery_bairro_selecionado', novoId);
+    } catch {}
+    const bairroObj = listaBairros.find((b) => b.id === novoId);
     const nomeBairro = bairroObj?.nome || bairroObj?.bairro || '';
     if (nomeBairro && !nomeBairro.includes('Outro')) {
-      setEndereco((prev: any) => ({ ...prev, bairro: nomeBairro }));
+      setEndereco((prev: any) => {
+        const atualizado = { ...prev, bairro: nomeBairro };
+        try {
+          localStorage.setItem('delivery_cliente_endereco', JSON.stringify(atualizado));
+        } catch {}
+        return atualizado;
+      });
     }
-  }, [bairroSelecionadoId, listaBairros]);
+  };
+
+  // AUTO-SALVAMENTO EM TEMPO REAL: Qualquer letra digitada pelo cliente é salva imediatamente no aparelho
+  useEffect(() => {
+    if (nomeCliente && nomeCliente.trim()) {
+      try {
+        localStorage.setItem('delivery_cliente_nome', nomeCliente);
+      } catch {}
+    }
+  }, [nomeCliente]);
+
+  useEffect(() => {
+    if (telefoneCliente && telefoneCliente.trim()) {
+      try {
+        localStorage.setItem('delivery_cliente_telefone', telefoneCliente);
+      } catch {}
+    }
+  }, [telefoneCliente]);
+
+  useEffect(() => {
+    if (
+      endereco &&
+      (endereco.logradouro || endereco.numero || endereco.bairro || endereco.complemento || endereco.referencia)
+    ) {
+      try {
+        localStorage.setItem('delivery_cliente_endereco', JSON.stringify(endereco));
+      } catch {}
+    }
+  }, [endereco]);
+
+  useEffect(() => {
+    if (bairroSelecionadoId) {
+      try {
+        localStorage.setItem('delivery_bairro_selecionado', bairroSelecionadoId);
+      } catch {}
+    }
+  }, [bairroSelecionadoId]);
+
+  // Restaura dados do cliente a partir do histórico de pedidos anteriores se os campos estiverem vazios
+  useEffect(() => {
+    try {
+      const ultimoPedidoId = localStorage.getItem('delivery_ultimo_pedido_id');
+      const ultimoTelefone = localStorage.getItem('delivery_cliente_telefone');
+
+      if (pedidosExistentes && pedidosExistentes.length > 0) {
+        const pedidoAnterior = pedidosExistentes.find(
+          (p) =>
+            (ultimoPedidoId && p.id === ultimoPedidoId) ||
+            (ultimoTelefone && p.cliente?.telefone === ultimoTelefone)
+        ) || pedidosExistentes[0];
+
+        if (pedidoAnterior && pedidoAnterior.cliente) {
+          if (!nomeCliente && pedidoAnterior.cliente.nome) {
+            setNomeCliente(pedidoAnterior.cliente.nome);
+            try {
+              localStorage.setItem('delivery_cliente_nome', pedidoAnterior.cliente.nome);
+            } catch {}
+          }
+          if (!telefoneCliente && pedidoAnterior.cliente.telefone) {
+            setTelefoneCliente(pedidoAnterior.cliente.telefone);
+            try {
+              localStorage.setItem('delivery_cliente_telefone', pedidoAnterior.cliente.telefone);
+            } catch {}
+          }
+          if (
+            (!endereco.logradouro || !endereco.numero) &&
+            pedidoAnterior.enderecoEntrega &&
+            pedidoAnterior.tipo_pedido !== 'retirada' &&
+            pedidoAnterior.enderecoEntrega.logradouro !== 'Retirada no Balcão da Loja'
+          ) {
+            const endAnt = pedidoAnterior.enderecoEntrega;
+            setEndereco((prev: any) => {
+              const atualizado = {
+                logradouro: prev.logradouro || endAnt.logradouro || '',
+                numero: prev.numero || endAnt.numero || '',
+                complemento: prev.complemento || endAnt.complemento || '',
+                bairro: prev.bairro || endAnt.bairro || '',
+                cidade: prev.cidade || endAnt.cidade || loja?.cidade || 'São Paulo',
+                referencia: prev.referencia || endAnt.referencia || '',
+              };
+              try {
+                localStorage.setItem('delivery_cliente_endereco', JSON.stringify(atualizado));
+              } catch {}
+              return atualizado;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Erro ao restaurar histórico de pedido anterior:', e);
+    }
+  }, [pedidosExistentes]);
 
   // Agrupa produtos por código de barras e nome normalizado (nunca duplica por lote diferente) e oculta esgotados
   const estoqueAgrupado = useMemo(() => {
@@ -403,6 +549,9 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     };
 
     onCriarPedido(novoPedido);
+    try {
+      localStorage.setItem('delivery_ultimo_pedido_id', novoPedido.id);
+    } catch {}
     setPedidoAtivoRastreio(novoPedido);
     setCarrinho({});
     setEtapa('rastreio');
@@ -1137,7 +1286,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                         <label className="text-stone-600 block mb-1 font-bold">Bairro (Taxa R$ {taxaEntregaCalculada.toFixed(2)}):</label>
                         <select
                           value={bairroSelecionadoId}
-                          onChange={(e) => setBairroSelecionadoId(e.target.value)}
+                          onChange={(e) => handleAlterarBairro(e.target.value)}
                           className="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-stone-900 font-bold focus:outline-none focus:border-emerald-500"
                         >
                           {listaBairros.map((b) => (
