@@ -5986,13 +5986,18 @@ export default function App() {
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novos));
     salvarPedidoDeliveryFirestore(pedidoFinal);
     notificarSincronizacao();
-    tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
-    if (configDelivery.imprimirAutomatico) {
-      const lojaAtualObj = listaSupermercados.find((l) => l.id === storeId) || null;
-      try {
-        imprimirComandaPedidoDelivery(pedidoFinal, lojaAtualObj, configDelivery.larguraImpressao || '80mm');
-      } catch (e) {
-        console.warn('Erro ao disparar impressão automática de comanda:', e);
+
+    // O toque de novo pedido e a impressão automática são EXCLUSIVOS da tela do LOJISTA/CAIXA.
+    // NUNCA devem tocar som nem abrir tela de impressão no celular/catálogo do cliente!
+    if (!isModoCliente) {
+      tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
+      if (configDelivery.imprimirAutomatico) {
+        const lojaAtualObj = listaSupermercados.find((l) => l.id === storeId) || null;
+        try {
+          imprimirComandaPedidoDelivery(pedidoFinal, lojaAtualObj, configDelivery.larguraImpressao || '80mm');
+        } catch (e) {
+          console.warn('Erro ao disparar impressão automática de comanda:', e);
+        }
       }
     }
   };

@@ -185,6 +185,8 @@ export function tocarSomAlerta() {
  */
 export function falarTextoComVoz(texto: string, repeteVezes = 1, intervaloMs = 2000) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  // Bloqueio rigoroso: nunca falar a palavra "delivery"
+  if (!texto || texto.toLowerCase().includes('delivery')) return;
 
   try {
     const synth = window.speechSynthesis;
@@ -322,6 +324,11 @@ export function pararAlertaNovoPedidoDelivery() {
       audio.currentTime = 0;
     } catch (e) {}
   }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
+  }
   notificarStatusAlerta(false);
 }
 
@@ -337,6 +344,13 @@ export function isAlertaNovoPedidoTocando(): boolean {
  */
 export function tocarAlertaNovoPedidoDelivery(repeticoes: number = 3) {
   desbloquearAudio();
+
+  // Cancela qualquer fala ou áudio residual
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
+  }
 
   // Se já estiver tocando, cancela o ciclo anterior para reiniciar limpo
   pararAlertaNovoPedidoDelivery();
