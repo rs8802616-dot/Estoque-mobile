@@ -918,6 +918,7 @@ export default function App() {
       chavePix: 'loja.delivery@pix.com.br',
       telefoneContatoLoja: '(11) 98765-4321',
       repeticoesAlerta: 3,
+      aceitarAutomatico: false,
       imprimirAutomatico: false,
       larguraImpressao: '80mm',
     };
@@ -1151,6 +1152,14 @@ export default function App() {
 
   // Controla IDs de pedidos pendentes já conhecidos para tocar o alarme sonoro automaticamente quando chegar pedido novo
   const pedidosPendentesConhecidosRef = useRef<Set<string>>(new Set());
+  const configDeliveryRef = useRef<ConfiguracaoDelivery>(configDelivery);
+  const handleAtualizarStatusPedidoDeliveryRef = useRef<
+    (pedidoId: string, novoStatus: StatusPedidoDelivery, motivo?: string) => void
+  >(() => {});
+
+  useEffect(() => {
+    configDeliveryRef.current = configDelivery;
+  }, [configDelivery]);
 
   // Firebase Firestore Real-time Cloud Database Sync
   useEffect(() => {
@@ -1406,18 +1415,31 @@ export default function App() {
         setPedidosDelivery(listaPedidos);
 
         if (novosPedidosPendentesChegados.length > 0 && !isModoCliente) {
-          // Toca o sino com a quantidade de repetições configurada pelo lojista
-          tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
+          const cfg = configDeliveryRef.current;
 
-          // Se a impressão automática estiver ligada nas configurações de delivery, imprime a comanda na hora
-          if (configDelivery.imprimirAutomatico) {
+          // Toca o sino com a quantidade de repetições configurada pelo lojista
+          tocarAlertaNovoPedidoDelivery(cfg?.repeticoesAlerta ?? 3);
+
+          // 1. Se o aceite automático estiver ativado, move o pedido para 'em_separacao' e abate o estoque
+          if (cfg?.aceitarAutomatico) {
+            novosPedidosPendentesChegados.forEach((pedRecente) => {
+              try {
+                handleAtualizarStatusPedidoDeliveryRef.current(pedRecente.id, 'em_separacao');
+              } catch (err) {
+                console.warn('Erro ao aceitar pedido automaticamente:', err);
+              }
+            });
+          }
+
+          // 2. Se a impressão automática estiver ligada nas configurações de delivery, imprime a comanda na hora
+          if (cfg?.imprimirAutomatico) {
             const lojaAtualObj = listaSupermercados.find((l) => l.id === supermercadoAtual) || null;
             novosPedidosPendentesChegados.forEach((pedRecente) => {
               try {
                 imprimirComandaPedidoDelivery(
                   pedRecente,
                   lojaAtualObj,
-                  configDelivery.larguraImpressao || '80mm'
+                  cfg?.larguraImpressao || '80mm'
                 );
               } catch (err) {
                 console.warn('Erro ao disparar impressão automática de comanda:', err);
@@ -5912,6 +5934,7 @@ export default function App() {
       tocarSomEntregaFinalizadaMotoboy();
     }
   };
+  handleAtualizarStatusPedidoDeliveryRef.current = handleAtualizarStatusPedidoDelivery;
 
   const handleConfirmarEntregaPin = (pedidoId: string, pinDigitado: string): boolean => {
     const storeId = supermercadoAtual || 'loja_matriz_01';
@@ -5987,10 +6010,13 @@ export default function App() {
     salvarPedidoDeliveryFirestore(pedidoFinal);
     notificarSincronizacao();
 
-    // O toque de novo pedido e a impressão automática são EXCLUSIVOS da tela do LOJISTA/CAIXA.
+    // O toque de novo pedido, aceite automático e impressão são EXCLUSIVOS da tela do LOJISTA/CAIXA.
     // NUNCA devem tocar som nem abrir tela de impressão no celular/catálogo do cliente!
     if (!isModoCliente) {
       tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
+      if (configDelivery.aceitarAutomatico) {
+        handleAtualizarStatusPedidoDelivery(pedidoFinal.id, 'em_separacao');
+      }
       if (configDelivery.imprimirAutomatico) {
         const lojaAtualObj = listaSupermercados.find((l) => l.id === storeId) || null;
         try {

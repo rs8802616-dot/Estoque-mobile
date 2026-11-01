@@ -450,6 +450,7 @@ export interface ConfiguracaoDelivery {
   chavePix?: string; // Chave PIX da loja para pagamento
   telefoneContatoLoja?: string;
   repeticoesAlerta?: number; // Quantidade de repetições do toque do sino (1 a 10, ou 99 para contínuo)
+  aceitarAutomatico?: boolean; // Aceita o pedido automaticamente movendo para 'em_separacao' e abatendo estoque
   imprimirAutomatico?: boolean; // Imprime cupom/comanda automaticamente na impressora térmica ao chegar novo pedido
   larguraImpressao?: '80mm' | '58mm';
   enderecoLoja?: {

@@ -1232,16 +1232,27 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   </p>
                 </div>
 
-                {/* Impressão Automática de Cupom / Comanda */}
-                <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <span className="font-bold text-xs text-sky-950 flex items-center gap-1.5">
-                        <Printer className="w-4 h-4 text-sky-700" />
-                        <span>Impressão Automática de Cupom:</span>
+                {/* Automações ao Receber Novo Pedido: Aceite Automático & Impressão Automática */}
+                <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 space-y-3">
+                  <div className="flex items-center justify-between pb-1 border-b border-sky-200/60">
+                    <span className="font-black text-xs text-sky-950 flex items-center gap-1.5 uppercase tracking-wide">
+                      <span>⚡</span>
+                      <span>Automações de Novos Pedidos</span>
+                    </span>
+                    <span className="text-[10px] bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-full">
+                      Escolha as Opções
+                    </span>
+                  </div>
+
+                  {/* Caixilha 1: Aceitar Pedido Automaticamente */}
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-sky-200/80 gap-2 shadow-2xs">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-bold text-xs text-slate-900 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>1. Aceitar Pedidos Automaticamente:</span>
                       </span>
-                      <span className="text-sky-800 text-[11px] block mt-0.5">
-                        Imprime o cupom de venda/comanda assim que o cliente fizer o pedido
+                      <span className="text-slate-500 text-[11px] block mt-0.5 leading-tight">
+                        Move o pedido direto para "Em Separação" e já baixa os produtos do estoque
                       </span>
                     </div>
                     <button
@@ -1249,48 +1260,79 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                       onClick={() =>
                         setFormConfig((prev) => ({
                           ...prev,
-                          imprimirAutomatico: !prev.imprimirAutomatico,
+                          aceitarAutomatico: !prev.aceitarAutomatico,
                         }))
                       }
-                      className={`px-3 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1 ${
-                        formConfig.imprimirAutomatico
+                      className={`px-3 py-1.5 rounded-xl font-black text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1 ${
+                        formConfig.aceitarAutomatico
                           ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                           : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
                       }`}
                     >
-                      <span>{formConfig.imprimirAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                      <span>{formConfig.aceitarAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
                     </button>
                   </div>
 
-                  {formConfig.imprimirAutomatico && (
-                    <div className="flex items-center justify-between pt-1 border-t border-sky-200/70 text-xs">
-                      <span className="text-slate-800 font-bold">Largura da Bobina Térmica:</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))}
-                          className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
-                            (formConfig.larguraImpressao || '80mm') === '80mm'
-                              ? 'bg-sky-900 text-white shadow-2xs'
-                              : 'bg-white border border-slate-300 text-slate-700'
-                          }`}
-                        >
-                          80mm (Padrão)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))}
-                          className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
-                            formConfig.larguraImpressao === '58mm'
-                              ? 'bg-sky-900 text-white shadow-2xs'
-                              : 'bg-white border border-slate-300 text-slate-700'
-                          }`}
-                        >
-                          58mm (Estreita)
-                        </button>
+                  {/* Caixilha 2: Impressão Automática de Cupom / Comanda */}
+                  <div className="p-2.5 rounded-xl bg-white border border-sky-200/80 space-y-2 shadow-2xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-xs text-slate-900 flex items-center gap-1">
+                          <Printer className="w-3.5 h-3.5 text-sky-600" />
+                          <span>2. Impressão Automática de Cupom:</span>
+                        </span>
+                        <span className="text-slate-500 text-[11px] block mt-0.5 leading-tight">
+                          Abre a comanda térmica para impressão na hora que o cliente pedir
+                        </span>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormConfig((prev) => ({
+                            ...prev,
+                            imprimirAutomatico: !prev.imprimirAutomatico,
+                          }))
+                        }
+                        className={`px-3 py-1.5 rounded-xl font-black text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1 ${
+                          formConfig.imprimirAutomatico
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                            : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                        }`}
+                      >
+                        <span>{formConfig.imprimirAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                      </button>
                     </div>
-                  )}
+
+                    {formConfig.imprimirAutomatico && (
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                        <span className="text-slate-800 font-bold">Largura da Bobina Térmica:</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))}
+                            className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
+                              (formConfig.larguraImpressao || '80mm') === '80mm'
+                                ? 'bg-sky-900 text-white shadow-2xs'
+                                : 'bg-white border border-slate-300 text-slate-700'
+                            }`}
+                          >
+                            80mm (Padrão)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))}
+                            className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
+                              formConfig.larguraImpressao === '58mm'
+                                ? 'bg-sky-900 text-white shadow-2xs'
+                                : 'bg-white border border-slate-300 text-slate-700'
+                            }`}
+                          >
+                            58mm (Estreita)
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}

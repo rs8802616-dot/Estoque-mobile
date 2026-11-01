@@ -37,6 +37,7 @@ const DEFAULT_CONFIG_DELIVERY: ConfiguracaoDelivery = {
   horarioFechamento: '23:59',
   mensagemBoasVindas: 'Peça direto pelo nosso catálogo online e receba rapidinho em casa!',
   repeticoesAlerta: 3,
+  aceitarAutomatico: false,
   imprimirAutomatico: false,
   larguraImpressao: '80mm',
 };
