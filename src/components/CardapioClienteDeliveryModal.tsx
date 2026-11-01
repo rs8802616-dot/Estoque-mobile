@@ -662,9 +662,6 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
             O módulo de <b>Cardápio Online & Delivery</b> não está habilitado para{' '}
             <b className="text-slate-900">{loja?.marca || loja?.nome || 'este estabelecimento'}</b> no momento.
           </p>
-          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500">
-            Caso você seja o proprietário da loja, ative a <b>Extensão de Delivery</b> junto à administração do sistema PDV para liberar o link de pedidos.
-          </div>
           {!modoTelaCheia && (
             <button
               type="button"

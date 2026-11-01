@@ -5,6 +5,7 @@ import {
   StatusPedidoDelivery,
   ItemEstoque,
   Supermercado,
+  obterLinksExclusivosLoja,
 } from '../types';
 import {
   tocarAlertaNovoPedidoDelivery,
@@ -80,6 +81,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   const [pedidosFilterStatus, setPedidosFilterStatus] = useState<string>('todos');
   const [pedidosSearch, setPedidosSearch] = useState<string>('');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiouTokenEquipe, setCopiouTokenEquipe] = useState<string | null>(null);
   const [modalConfigAberta, setModalConfigAberta] = useState(false);
 
   // Impressão de comanda
@@ -185,21 +187,20 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     return true;
   }).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-  // Copiar link do cardápio digital
+  // Copiar link do cardápio digital (?loja=slug)
   const handleCopiarLinkCardapio = () => {
-    const slug = lojaAtual?.slug || lojaAtual?.id || 'loja_matriz_01';
-    let url = `${window.location.origin}/?loja=${slug}`;
-    if (lojaAtual?.marca) url += `&marca=${encodeURIComponent(lojaAtual.marca)}`;
-    if (lojaAtual?.nome) url += `&nome=${encodeURIComponent(lojaAtual.nome)}`;
-    navigator.clipboard.writeText(url);
+    const links = lojaAtual
+      ? obterLinksExclusivosLoja(lojaAtual)
+      : { cardapio: `${window.location.origin}/?loja=loja-centro` };
+    navigator.clipboard.writeText(links.cardapio);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  // Obter ou gerar token único de 16 caracteres para o link exclusivo do motoboy
+  // Obter ou gerar token único mto_... para o link exclusivo do motoboy
   const obterOuGerarTokenMotoboy = (pedido: PedidoDelivery): string => {
     if (pedido.motoboyToken) return pedido.motoboyToken;
-    const token = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    const token = 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
     pedido.motoboyToken = token;
     if (typeof window !== 'undefined') {
       try {
@@ -1460,6 +1461,104 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>
+
+                {/* LINKS EXCLUSIVOS DA EQUIPE E CARDÁPIO DIGITAL (COM TOKENS SECRETOS DA LOJA) */}
+                {lojaAtual && (() => {
+                  const linksLoja = obterLinksExclusivosLoja(lojaAtual);
+                  const itensLinks = [
+                    {
+                      id: 'cardapio',
+                      label: '🛵 Cardápio Digital (Clientes - Público)',
+                      url: linksLoja.cardapio,
+                      cor: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+                      btnCor: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+                    },
+                    {
+                      id: 'admin',
+                      label: '👔 Painel Gerente / Admin (token_admin)',
+                      url: linksLoja.admin,
+                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
+                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
+                    },
+                    {
+                      id: 'garcom',
+                      label: '🍽️ Painel do Garçom no Salão (token_garcom)',
+                      url: linksLoja.garcom,
+                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
+                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
+                    },
+                    {
+                      id: 'cozinha',
+                      label: '👨‍🍳 Tela de Preparo KDS da Cozinha (token_cozinha)',
+                      url: linksLoja.cozinha,
+                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
+                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
+                    },
+                    {
+                      id: 'caixa',
+                      label: '🛒 Operação do Caixa e Fechamento (token_caixa)',
+                      url: linksLoja.caixa,
+                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
+                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
+                    },
+                  ];
+
+                  return (
+                    <div className="p-3.5 rounded-2xl bg-slate-900/5 border border-slate-200 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
+                          <KeyRound className="w-4 h-4 text-purple-600" />
+                          <span>Links Exclusivos da Equipe & Cardápio</span>
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">
+                          Tokens Protegidos
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-600 leading-tight">
+                        Copie com 1 clique o link correspondente para cada função da sua loja:
+                      </p>
+                      <div className="space-y-2">
+                        {itensLinks.map((item) => (
+                          <div
+                            key={item.id}
+                            className={`p-2.5 rounded-xl border ${item.cor} flex flex-col gap-1.5`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-bold text-[11px]">{item.label}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(item.url);
+                                  setCopiouTokenEquipe(item.id);
+                                  setTimeout(() => setCopiouTokenEquipe(null), 2200);
+                                }}
+                                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer shrink-0 ${item.btnCor}`}
+                              >
+                                {copiouTokenEquipe === item.id ? (
+                                  <>
+                                    <Check className="w-3 h-3" />
+                                    <span>Copiado!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3 h-3" />
+                                    <span>Copiar Link</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                            <input
+                              type="text"
+                              readOnly
+                              value={item.url}
+                              className="w-full bg-white/90 border border-slate-200/80 rounded-lg px-2 py-1 text-[10px] font-mono text-slate-600 select-all focus:outline-none"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
@@ -1541,7 +1640,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   </li>
                   <li className="flex items-start gap-1.5 text-emerald-700 font-semibold pt-0.5">
                     <span>🛡️</span>
-                    <span>Expira 3 minutos após confirmada a entrega (proteção LGPD)</span>
+                    <span>Expira 5 minutos após confirmada a entrega (proteção LGPD)</span>
                   </li>
                 </ul>
               </div>

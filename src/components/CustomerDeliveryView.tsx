@@ -4,8 +4,10 @@ import {
   Supermercado,
   PedidoDelivery,
   ConfiguracaoDelivery,
+  normalizarSlugLoja,
 } from '../types';
 import { CardapioClienteDeliveryModal } from './CardapioClienteDeliveryModal';
+import { UnrecognizedLinkView } from './UnrecognizedLinkView';
 
 export interface CustomerDeliveryViewProps {
   lojaSlug: string;
@@ -56,47 +58,44 @@ export const CustomerDeliveryView: React.FC<CustomerDeliveryViewProps> = ({
 }) => {
   const lojaAtiva = useMemo(() => {
     const slugLimpo = (lojaSlug || '').trim().toLowerCase();
-    const encontrada =
-      lojas.find(
-        (l) =>
-          l.id.toLowerCase() === slugLimpo ||
-          (l.slug && l.slug.toLowerCase() === slugLimpo)
-      ) ||
-      lojas[0] ||
-      null;
+    if (!slugLimpo) return null;
+
+    const encontrada = lojas.find(
+      (l) =>
+        l.id.toLowerCase() === slugLimpo ||
+        (l.slug && l.slug.toLowerCase() === slugLimpo) ||
+        normalizarSlugLoja(l.nome) === slugLimpo
+    );
 
     if (encontrada) return encontrada;
 
-    // Fallback com parâmetros da URL caso a lista de lojas ainda esteja carregando
-    const params = new URLSearchParams(window.location.search);
-    const nomeUrl = params.get('nome') || 'Catálogo Online & Delivery';
-    const marcaUrl = params.get('marca') || '';
+    // Se a lista de lojas ainda não carregou, aguarda com fallback temporário
+    if (lojas.length === 0 && carregando) {
+      const params = new URLSearchParams(window.location.search);
+      const nomeUrl = params.get('nome') || 'Catálogo Online & Delivery';
+      const marcaUrl = params.get('marca') || '';
 
-    return {
-      id: lojaSlug || 'loja_matriz_01',
-      slug: lojaSlug || 'loja_matriz_01',
-      nome: nomeUrl,
-      marca: marcaUrl,
-      status: 'ativo',
-    } as Supermercado;
-  }, [lojaSlug, lojas]);
+      return {
+        id: lojaSlug,
+        slug: lojaSlug,
+        nome: nomeUrl,
+        marca: marcaUrl,
+        status: 'ativo',
+      } as Supermercado;
+    }
+
+    return null;
+  }, [lojaSlug, lojas, carregando]);
+
+  if (!lojaAtiva) {
+    return <UnrecognizedLinkView />;
+  }
 
   return (
     <CardapioClienteDeliveryModal
       visivel={true}
       modoTelaCheia={true}
-      onFechar={() => {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('loja');
-        url.searchParams.delete('loja_id');
-        url.searchParams.delete('delivery');
-        window.history.replaceState({}, '', url.pathname + url.search);
-        if (onTrocarParaFuncionario) {
-          onTrocarParaFuncionario();
-        } else {
-          window.location.href = '/';
-        }
-      }}
+      onFechar={() => {}}
       estoque={estoque}
       loja={lojaAtiva}
       configDelivery={configDelivery || DEFAULT_CONFIG_DELIVERY}
@@ -107,18 +106,6 @@ export const CustomerDeliveryView: React.FC<CustomerDeliveryViewProps> = ({
       obterFotoProduto={obterFotoProduto}
       obterNomeProduto={obterNomeProduto}
       carregando={carregando}
-      onTrocarParaFuncionario={() => {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('loja');
-        url.searchParams.delete('loja_id');
-        url.searchParams.delete('delivery');
-        window.history.replaceState({}, '', url.pathname + url.search);
-        if (onTrocarParaFuncionario) {
-          onTrocarParaFuncionario();
-        } else {
-          window.location.href = '/';
-        }
-      }}
     />
   );
 };

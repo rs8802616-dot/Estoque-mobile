@@ -140,6 +140,10 @@ export interface Supermercado {
   taxa_entrega?: number;
   tempo_estimado_entrega?: string;
   taxas_bairro?: TaxaBairro[];
+  token_admin?: string;        // Token secreto exclusivo do Gerente/Admin da loja
+  token_garcom?: string;       // Token secreto exclusivo do Garçom no salão
+  token_cozinha?: string;      // Token secreto exclusivo da Cozinha (KDS)
+  token_caixa?: string;        // Token secreto exclusivo da Operação do Caixa e Fechamento
 }
 
 export interface SessaoUsuario {
@@ -526,3 +530,92 @@ export interface PedidoDelivery {
   chegouAoEndereco?: boolean;
   entregueEmTimestamp?: number;
 }
+
+// ============================================================================
+// CONSTANTES E HELPERS DE LINKS EXCLUSIVOS & TOKENS DE SEGURANÇA
+// ============================================================================
+
+export const MASTER_PORTAL_TOKEN = 'master_9k2m8x7p';
+
+export function normalizarSlugLoja(nomeOuId: string): string {
+  const limpo = (nomeOuId || 'loja-centro')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return limpo || 'loja-centro';
+}
+
+function hashCurtoDeterministico(seed: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return Math.abs(h >>> 0).toString(36).slice(0, 4).padEnd(4, '9');
+}
+
+export function garantirTokensLoja(loja: Supermercado, forcarNovoRandom = false): Supermercado {
+  const slugBase = loja.slug ? normalizarSlugLoja(loja.slug) : normalizarSlugLoja(loja.nome || loja.id);
+  const partes = slugBase.split('-').filter((p) => p && p !== 'loja' && p !== 'supermercado');
+  const identificadorCurto = (partes[0] || slugBase.split('-')[0] || 'centro').slice(0, 10);
+
+  const gerarSufixo = (tipo: string) =>
+    forcarNovoRandom
+      ? Math.random().toString(36).substring(2, 6).padEnd(4, 'x')
+      : hashCurtoDeterministico(`${loja.id}_${tipo}_tok_2026`);
+
+  return {
+    ...loja,
+    slug: loja.slug || slugBase,
+    token_admin:
+      !forcarNovoRandom && loja.token_admin
+        ? loja.token_admin
+        : `adm_${identificadorCurto}_${gerarSufixo('adm')}`,
+    token_garcom:
+      !forcarNovoRandom && loja.token_garcom
+        ? loja.token_garcom
+        : `gar_${identificadorCurto}_${gerarSufixo('gar')}`,
+    token_cozinha:
+      !forcarNovoRandom && loja.token_cozinha
+        ? loja.token_cozinha
+        : `coz_${identificadorCurto}_${gerarSufixo('coz')}`,
+    token_caixa:
+      !forcarNovoRandom && loja.token_caixa
+        ? loja.token_caixa
+        : `cx_${identificadorCurto}_${gerarSufixo('cx')}`,
+  };
+}
+
+export function obterLinksExclusivosLoja(lojaInput: Supermercado, originOverride?: string) {
+  const loja = garantirTokensLoja(lojaInput);
+  const origin =
+    originOverride ||
+    (typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : 'https://seusite.com/');
+  const base = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+  const slug = encodeURIComponent(loja.slug || loja.id);
+
+  return {
+    cardapio: `${base}/?loja=${slug}`,
+    admin: `${base}/?loja=${slug}&painel=admin&token=${encodeURIComponent(loja.token_admin!)}`,
+    garcom: `${base}/?loja=${slug}&painel=garcom&token=${encodeURIComponent(loja.token_garcom!)}`,
+    cozinha: `${base}/?loja=${slug}&painel=cozinha&token=${encodeURIComponent(loja.token_cozinha!)}`,
+    caixa: `${base}/?loja=${slug}&painel=caixa&token=${encodeURIComponent(loja.token_caixa!)}`,
+    tokens: {
+      token_admin: loja.token_admin!,
+      token_garcom: loja.token_garcom!,
+      token_cozinha: loja.token_cozinha!,
+      token_caixa: loja.token_caixa!,
+    },
+  };
+}
+
+export function obterLinkPortalMaster(originOverride?: string): string {
+  const origin =
+    originOverride ||
+    (typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : 'https://seusite.com/');
+  const base = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+  return `${base}/?portal=master&token=${MASTER_PORTAL_TOKEN}`;
+}
+

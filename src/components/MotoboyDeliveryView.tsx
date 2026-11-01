@@ -44,8 +44,8 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
   const [erroPin, setErroPin] = useState('');
   const [entregaSucesso, setEntregaSucesso] = useState(pedido.status === 'entregue');
 
-  // Regra LGPD: O link do motoboy é desativado após 3 minutos da confirmação da entrega
-  const EXPIRACAO_MINUTOS = 3;
+  // Regra LGPD: O link do motoboy é desativado após 5 minutos da confirmação da entrega
+  const EXPIRACAO_MINUTOS = 5;
   const EXPIRACAO_MS = EXPIRACAO_MINUTOS * 60 * 1000;
 
   const [entregueTimestamp, setEntregueTimestamp] = useState<number | null>(() => {
@@ -196,7 +196,7 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
               <span>Privacidade & LGPD</span>
             </div>
             <p className="text-[11px] leading-relaxed text-amber-800/90">
-              Por segurança e proteção da privacidade do cliente, este link foi <strong>desativado automaticamente 3 minutos</strong> após a confirmação da entrega.
+              Por segurança e proteção da privacidade do cliente, este link foi <strong>desativado automaticamente 5 minutos</strong> após a confirmação da entrega.
             </p>
             <p className="text-[10px] text-amber-700 pt-0.5 font-medium">
               Os dados de contato, endereço e itens do cliente não estão mais acessíveis.

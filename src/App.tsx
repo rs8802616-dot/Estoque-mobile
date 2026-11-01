@@ -67,7 +67,13 @@ import {
   ConfiguracaoDelivery,
   PedidoDelivery,
   StatusPedidoDelivery,
+  MASTER_PORTAL_TOKEN,
+  garantirTokensLoja,
+  obterLinksExclusivosLoja,
+  obterLinkPortalMaster,
+  normalizarSlugLoja,
 } from './types';
+import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { CarrinhoVendaModal } from './components/CarrinhoVendaModal';
 import { RelatorioVendasModal } from './components/RelatorioVendasModal';
 import { GraficosVendasModal } from './components/GraficosVendasModal';
@@ -367,16 +373,25 @@ export const PRODUTOS_PADRAO_ADEGA: ItemEstoque[] = [
 ];
 
 export default function App() {
-  // Detecta se a URL é exclusiva do Cardápio do Cliente (Delivery / Totem)
+  // Detecta parâmetros de roteamento seguro e links exclusivos na URL
   const urlParamsAtivo = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const portalParamAtivo = urlParamsAtivo?.get('portal');
+  const painelParamAtivo = urlParamsAtivo?.get('painel');
+  const tokenParamAtivo = urlParamsAtivo?.get('token');
   const publicLojaSlugAtivo =
     urlParamsAtivo?.get('loja') ||
     urlParamsAtivo?.get('loja_id') ||
     (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
-  const painelParamAtivo = urlParamsAtivo?.get('painel');
-  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo);
 
-  // Detecta se a URL é a rota exclusiva do Entregador/Motoboy (?motoboy=1&pedido=209&token=...)
+  // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel e sem portal)
+  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo);
+
+  // D. Link Secreto do Dono (?portal=master&token=master_9k2m8x7p)
+  const isPortalMasterRoute = Boolean(
+    portalParamAtivo === 'master' && tokenParamAtivo === MASTER_PORTAL_TOKEN
+  );
+
+  // C. Link Exclusivo do Entregador/Motoboy (?motoboy=1&pedido=1042&token=mto_...)
   const isMotoboyRoute = Boolean(
     urlParamsAtivo?.get('motoboy') === '1' ||
     urlParamsAtivo?.get('motoboy') === 'true'
@@ -632,16 +647,18 @@ export default function App() {
     if (salvo !== null && salvo !== undefined) {
       try {
         const parsed = JSON.parse(salvo);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((l: Supermercado) => garantirTokensLoja(l));
+        }
       } catch (e) {}
     }
     return [
-      {
+      garantirTokensLoja({
         id: 'loja_matriz_01',
         nome: 'Adega & Delivery Matriz Express',
         cnpj: '12.345.678/0001-90',
         senha: '123',
-        slug: 'loja_matriz_01',
+        slug: 'loja-centro',
         marca: 'Adega Express',
         logo_url: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=200&q=80',
         taxa_entrega: 6.90,
@@ -655,13 +672,14 @@ export default function App() {
           { id: 'b6', nome: 'Pinheiros', taxa: 8.00 },
           { id: 'b7', nome: 'Outro Bairro (Taxa Padrão)', taxa: 8.00 },
         ],
-        ativo: true,
-      },
+        status: 'ativo',
+      }),
     ];
   });
   const [lojaEditandoId, setLojaEditandoId] = useState<string | null>(null);
   const [buscaLoja, setBuscaLoja] = useState<string>('');
   const [senhasVisiveisLista, setSenhasVisiveisLista] = useState<Record<string, boolean>>({});
+  const [linkCopiadoFeedback, setLinkCopiadoFeedback] = useState<string | null>(null);
 
   const [abaDonaApp, setAbaDonaApp] = useState<'supermercados' | 'banco_dados'>(() => {
     return telaSalvaInicial === 'modal_banco_dados_master' ? 'banco_dados' : 'supermercados';
@@ -1168,7 +1186,8 @@ export default function App() {
   // Firebase Firestore Real-time Cloud Database Sync
   useEffect(() => {
     // Subscribe to Supermercados em tempo real (reflete adições e exclusões instantaneamente)
-    const unsubLojas = subscribeSupermercados((lojas) => {
+    const unsubLojas = subscribeSupermercados((lojasRaw) => {
+      const lojas = Array.isArray(lojasRaw) ? lojasRaw.map((l) => garantirTokensLoja(l)) : [];
       if (lojas && lojas.length > 0) {
         setListaSupermercados(lojas);
         safeLocalStorageSet('lista_supermercados_app', JSON.stringify(lojas));
@@ -2358,32 +2377,42 @@ export default function App() {
     const limSupNum = Math.max(0, Number(regLojaLimiteSupervisores) || 0);
 
     const lojaExistente = listaSupermercados.find((l) => l.id === idLoja);
+    const slugCalculado = lojaExistente?.slug || normalizarSlugLoja(nome);
 
-    const dadosLoja: Supermercado = {
-      id: idLoja,
-      nome,
-      cnpj,
-      senha,
-      permissoesLoja: regLojaPermissoes,
-      limiteCaixas: limCaixasNum,
-      limiteSupervisores: limSupNum,
-      status: lojaExistente?.status || 'ativo',
-      motivoBloqueio: lojaExistente?.motivoBloqueio || '',
-      dataCadastro: lojaExistente?.dataCadastro || new Date().toLocaleDateString('pt-BR'),
-    };
+    const dadosLoja: Supermercado = garantirTokensLoja(
+      {
+        id: idLoja,
+        nome,
+        slug: slugCalculado,
+        cnpj,
+        senha,
+        permissoesLoja: regLojaPermissoes,
+        limiteCaixas: limCaixasNum,
+        limiteSupervisores: limSupNum,
+        status: lojaExistente?.status || 'ativo',
+        motivoBloqueio: lojaExistente?.motivoBloqueio || '',
+        dataCadastro: lojaExistente?.dataCadastro || new Date().toLocaleDateString('pt-BR'),
+        token_admin: lojaExistente?.token_admin,
+        token_garcom: lojaExistente?.token_garcom,
+        token_cozinha: lojaExistente?.token_cozinha,
+        token_caixa: lojaExistente?.token_caixa,
+      },
+      !lojaExistente // Gera 4 novos tokens randômicos secretos na criação da loja
+    );
 
     let novaLista = [...listaSupermercados];
     const index = novaLista.findIndex((l) => l.id === idLoja);
     if (index !== -1) {
-      novaLista[index] = { 
-        ...novaLista[index], 
-        nome, 
-        cnpj, 
-        senha, 
+      novaLista[index] = garantirTokensLoja({
+        ...novaLista[index],
+        nome,
+        slug: novaLista[index].slug || slugCalculado,
+        cnpj,
+        senha,
         permissoesLoja: regLojaPermissoes,
         limiteCaixas: limCaixasNum,
         limiteSupervisores: limSupNum,
-      };
+      });
     } else {
       novaLista.push(dadosLoja);
     }
@@ -2486,6 +2515,48 @@ export default function App() {
       );
       setTimeout(() => setMsgRegLoja(''), 4000);
     }
+  };
+
+  const copiarLinkComFeedback = (chave: string, url: string) => {
+    navigator.clipboard.writeText(url);
+    setLinkCopiadoFeedback(chave);
+    setTimeout(() => setLinkCopiadoFeedback(null), 2200);
+  };
+
+  const regenerarTokensExclusivosLoja = (idLoja: string) => {
+    const loja = listaSupermercados.find((l) => l.id === idLoja);
+    if (!loja) return;
+    if (
+      !confirm(
+        `Deseja gerar 4 NOVOS tokens secretos (Admin, Garçom, Cozinha, Caixa) para a loja "${loja.nome}"?\n\nOs links antigos da equipe desta loja deixarão de funcionar imediatamente.`
+      )
+    ) {
+      return;
+    }
+
+    const lojaComNovosTokens = garantirTokensLoja(loja, true);
+    const novaLista = listaSupermercados.map((l) => (l.id === idLoja ? lojaComNovosTokens : l));
+    setListaSupermercados(novaLista);
+    localStorage.setItem('lista_supermercados_app', JSON.stringify(novaLista));
+    localStorage.setItem(`config_supermercado_${idLoja}`, JSON.stringify(lojaComNovosTokens));
+    salvarSupermercadoFirestore(lojaComNovosTokens);
+    setMsgRegLoja(
+      <span style={{ color: '#059669', fontWeight: 700 }}>
+        🔐 Novos tokens exclusivos gerados com sucesso para "{loja.nome}"!
+      </span>
+    );
+    setTimeout(() => setMsgRegLoja(''), 4000);
+  };
+
+  const revogarBloqueiosTentativasLogin = () => {
+    localStorage.removeItem('bloqueio_login_timestamp');
+    localStorage.removeItem('tentativas_falhas_login');
+    setMsgRegLoja(
+      <span style={{ color: '#059669', fontWeight: 700 }}>
+        🔓 Bloqueio temporário por tentativas falhas (Lockout) revogado com sucesso pelo SuperAdmin!
+      </span>
+    );
+    setTimeout(() => setMsgRegLoja(''), 4000);
   };
 
   const prepararEdicaoLoja = (loja: Supermercado) => {
@@ -6379,15 +6450,22 @@ export default function App() {
     ? new Date(prodAtual.validade + 'T00:00:00').getTime() <= hoje.getTime()
     : false;
 
-  // 0. SE FOR A ROTA DO ENTREGADOR / MOTOBOY (?motoboy=1&pedido=209&token=...)
+  // ============================================================================
+  // FLUXOGRAMA DE ROTEAMENTO SEGURO & VALIDAÇÃO DUPLA DE TOKENS NA URL
+  // ============================================================================
+
+  // C. ROTA DO ENTREGADOR / MOTOBOY (?motoboy=1&pedido=1042&token=mto_...)
   if (isMotoboyRoute) {
+    if (!motoboyPedidoParam || !motoboyTokenParam) {
+      return <UnrecognizedLinkView />;
+    }
+
     let pedidoMotoboy = pedidosDelivery.find(
       (p) =>
-        (motoboyPedidoParam && String(p.numeroPedido) === String(motoboyPedidoParam)) ||
-        (motoboyTokenParam && p.motoboyToken === motoboyTokenParam)
+        String(p.numeroPedido) === String(motoboyPedidoParam) ||
+        p.motoboyToken === motoboyTokenParam
     );
 
-    // Se não encontrou no estado em memória (ex: motoboy abrindo em outro aparelho), tenta recuperar do localStorage
     if (!pedidoMotoboy && typeof window !== 'undefined') {
       try {
         const salvo = localStorage.getItem(`motoboy_pedido_${motoboyPedidoParam}`);
@@ -6395,28 +6473,30 @@ export default function App() {
       } catch {}
     }
 
-    if (!pedidoMotoboy && pedidosDelivery.length > 0) {
-      pedidoMotoboy = pedidosDelivery[0];
+    if (!pedidoMotoboy) {
+      return <UnrecognizedLinkView />;
     }
 
-    if (pedidoMotoboy) {
-      const lojaMotoboy =
-        listaSupermercados.find((l) => l.id === pedidoMotoboy!.lojaId) ||
-        listaSupermercados[0] ||
-        null;
-
-      return (
-        <MotoboyDeliveryView
-          pedido={pedidoMotoboy}
-          loja={lojaMotoboy}
-          onAtualizarStatus={handleAtualizarStatusPedidoDelivery}
-          onConfirmarEntregaPin={handleConfirmarEntregaPin}
-        />
-      );
+    if (pedidoMotoboy.motoboyToken && pedidoMotoboy.motoboyToken !== motoboyTokenParam) {
+      return <UnrecognizedLinkView />;
     }
+
+    const lojaMotoboy =
+      listaSupermercados.find((l) => l.id === pedidoMotoboy!.lojaId) ||
+      listaSupermercados[0] ||
+      null;
+
+    return (
+      <MotoboyDeliveryView
+        pedido={pedidoMotoboy}
+        loja={lojaMotoboy}
+        onAtualizarStatus={handleAtualizarStatusPedidoDelivery}
+        onConfirmarEntregaPin={handleConfirmarEntregaPin}
+      />
+    );
   }
 
-  // 1. SE O PARÂMETRO ?loja= OU ?delivery= ESTIVER PRESENTE NA URL SEM ?painel=, RENDERIZA EXCLUSIVAMENTE O CUSTOMER DELIVERY VIEW EM TELA CHEIA (IDENTICO AO ATENDEJÁ)
+  // A. CARDÁPIO DIGITAL PÚBLICO DOS CLIENTES (Apenas ?loja=slug, sem painel e sem portal)
   if (isModoCliente && publicLojaSlugAtivo) {
     return (
       <CustomerDeliveryView
@@ -6428,10 +6508,50 @@ export default function App() {
         pedidos={pedidosDelivery}
         obterFotoProduto={obterFotoProduto}
         obterNomeProduto={obterNomeProduto}
-        onTrocarParaFuncionario={() => setTelaLoginVisivel(true)}
         carregando={carregandoEstoqueInicial}
       />
     );
+  }
+
+  // RESOLUÇÃO E VALIDAÇÃO DE TOKENS PARA PAINÉIS DA EQUIPE (?loja=slug&painel=...&token=...) E PORTAL MASTER (?portal=master&token=...)
+  const lojaAlvoUrlValidada: Supermercado | null = (() => {
+    if (!publicLojaSlugAtivo || !painelParamAtivo || !tokenParamAtivo) return null;
+    const slugLimpo = publicLojaSlugAtivo.trim().toLowerCase();
+    const encontrada = listaSupermercados.find(
+      (l) =>
+        l.id.toLowerCase() === slugLimpo ||
+        (l.slug && l.slug.toLowerCase() === slugLimpo) ||
+        normalizarSlugLoja(l.nome) === slugLimpo ||
+        (slugLimpo === 'loja-centro' && l.id === 'loja_matriz_01')
+    );
+    if (!encontrada) return null;
+
+    const comTokens = garantirTokensLoja(encontrada);
+    const painelLower = painelParamAtivo.trim().toLowerCase();
+    const tokenEsperado =
+      painelLower === 'admin'
+        ? comTokens.token_admin
+        : painelLower === 'garcom'
+        ? comTokens.token_garcom
+        : painelLower === 'cozinha'
+        ? comTokens.token_cozinha
+        : painelLower === 'caixa'
+        ? comTokens.token_caixa
+        : null;
+
+    // 1. Validação Dupla de Token: compara tokenParam === targetLoja.token_painel (100% igual)
+    if (!tokenEsperado || tokenParamAtivo !== tokenEsperado) {
+      return null;
+    }
+
+    return comTokens;
+  })();
+
+  const isRotaEquipeLojaValida = Boolean(lojaAlvoUrlValidada);
+
+  // E. BLOQUEIO DE URL PURA OU TOKEN INCORRETO (Exibe tela cega UnrecognizedLinkView.tsx — Zero Information Leak)
+  if (!isPortalMasterRoute && !isRotaEquipeLojaValida) {
+    return <UnrecognizedLinkView />;
   }
 
   return (
@@ -7445,10 +7565,11 @@ export default function App() {
                       : undefined
                   }
                   onClick={() => {
+                    const linksLoja = lojaAtualObj
+                      ? obterLinksExclusivosLoja(lojaAtualObj, window.location.origin)
+                      : null;
                     const slug = lojaAtualObj?.slug || lojaAtualObj?.id || supermercadoAtual || 'loja_matriz_01';
-                    let url = `${window.location.origin}/?loja=${slug}`;
-                    if (lojaAtualObj?.marca) url += `&marca=${encodeURIComponent(lojaAtualObj.marca)}`;
-                    if (lojaAtualObj?.nome) url += `&nome=${encodeURIComponent(lojaAtualObj.nome)}`;
+                    const url = linksLoja?.cardapio || `${window.location.origin}/?loja=${normalizarSlugLoja(slug)}`;
                     navigator.clipboard.writeText(url);
                     setLinkCardapioCopiadoMenu(true);
                     setTimeout(() => setLinkCardapioCopiadoMenu(false), 2500);
@@ -9026,7 +9147,8 @@ export default function App() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
+                flexWrap: 'wrap',
                 background: '#faf5ff',
                 border: '1px solid #e9d5ff',
                 padding: '6px 12px',
@@ -9036,6 +9158,42 @@ export default function App() {
               <span style={{ fontSize: '0.78rem', color: '#6b21a8', fontWeight: 700 }}>
                 🔐 Segurança Master: <b style={{ color: '#4c1d95' }}>Dona do Aplicativo</b>
               </span>
+              <button
+                type="button"
+                onClick={() => copiarLinkComFeedback('portal_master', obterLinkPortalMaster())}
+                style={{
+                  background: linkCopiadoFeedback === 'portal_master' ? '#059669' : '#b45309',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+                title={`Copiar seu Link Secreto Master: ${obterLinkPortalMaster()}`}
+              >
+                {linkCopiadoFeedback === 'portal_master'
+                  ? '✓ Link Master Copiado!'
+                  : '👑 Copiar Link Secreto Master'}
+              </button>
+              <button
+                type="button"
+                onClick={revogarBloqueiosTentativasLogin}
+                style={{
+                  background: '#0284c7',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+                title="Revogar bloqueio temporário por 5 tentativas falhas (Lockout)"
+              >
+                🔓 Revogar Lockout
+              </button>
               <button
                 type="button"
                 onClick={() => setModalCredenciaisDonoVisivel(true)}
@@ -9719,6 +9877,80 @@ export default function App() {
                                 👔 Supervisores: {loja.limiteSupervisores !== undefined ? (loja.limiteSupervisores === 0 ? '♾️ Ilimitado' : `${loja.limiteSupervisores}`) : '2'}
                               </span>
                             </div>
+
+                            {/* BARRA DE LINKS EXCLUSIVOS & TOKENS SECRETOS DA LOJA (1-CLIQUE) */}
+                            {(() => {
+                              const linksExclusivos = obterLinksExclusivosLoja(loja);
+                              return (
+                                <div
+                                  style={{
+                                    marginTop: '10px',
+                                    padding: '10px 12px',
+                                    background: '#f8fafc',
+                                    border: '1px solid #cbd5e1',
+                                    borderRadius: '12px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '6px',
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
+                                    <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#0f172a' }}>
+                                      🔗 Links Exclusivos da Equipe & Cardápio (Slug: <code style={{ color: '#0284c7' }}>{loja.slug || loja.id}</code>)
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => regenerarTokensExclusivosLoja(loja.id)}
+                                      style={{
+                                        background: '#ffffff',
+                                        color: '#475569',
+                                        border: '1px solid #cbd5e1',
+                                        padding: '2px 8px',
+                                        borderRadius: '6px',
+                                        fontSize: '0.68rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                      title="Gerar 4 novos tokens randômicos secretos para esta loja"
+                                    >
+                                      🔄 Regenerar Tokens
+                                    </button>
+                                  </div>
+                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                    {[
+                                      { key: `${loja.id}_cardapio`, label: '🛵 Cardápio Cliente', url: linksExclusivos.cardapio, bg: '#ecfdf5', color: '#047857', border: '#6ee7b7' },
+                                      { key: `${loja.id}_admin`, label: '👔 Link Admin', url: linksExclusivos.admin, bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
+                                      { key: `${loja.id}_caixa`, label: '🛒 Link Caixa', url: linksExclusivos.caixa, bg: '#f0f9ff', color: '#0369a1', border: '#7dd3fc' },
+                                      { key: `${loja.id}_garcom`, label: '🍽️ Link Garçom', url: linksExclusivos.garcom, bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
+                                      { key: `${loja.id}_cozinha`, label: '👨‍🍳 Link Cozinha', url: linksExclusivos.cozinha, bg: '#fce7f3', color: '#9d174d', border: '#f9a8d4' },
+                                    ].map((btn) => {
+                                      const copiado = linkCopiadoFeedback === btn.key;
+                                      return (
+                                        <button
+                                          key={btn.key}
+                                          type="button"
+                                          onClick={() => copiarLinkComFeedback(btn.key, btn.url)}
+                                          style={{
+                                            background: copiado ? '#059669' : btn.bg,
+                                            color: copiado ? '#ffffff' : btn.color,
+                                            border: `1px solid ${copiado ? '#059669' : btn.border}`,
+                                            padding: '4px 9px',
+                                            borderRadius: '8px',
+                                            fontSize: '0.72rem',
+                                            fontWeight: 800,
+                                            cursor: 'pointer',
+                                            transition: 'all 0.15s ease',
+                                          }}
+                                          title={btn.url}
+                                        >
+                                          {copiado ? '✓ Copiado!' : btn.label}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            })()}
                           </div>
 
                           <div
@@ -10322,6 +10554,86 @@ export default function App() {
         </div>
 
         <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px' }}>
+          {/* LINKS EXCLUSIVOS DA EQUIPE (ADMIN, CAIXA, GARÇOM, COZINHA, CARDÁPIO) */}
+          {lojaAtualObj && (() => {
+            const linksEquipeModal = obterLinksExclusivosLoja(lojaAtualObj, window.location.origin);
+            return (
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)',
+                  borderRadius: '18px',
+                  padding: '16px 20px',
+                  border: '1px solid #bfdbfe',
+                  marginBottom: '20px',
+                  boxShadow: '0 4px 14px rgba(37, 99, 235, 0.06)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
+                  <div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1e3a8a' }}>
+                      🔗 Links Exclusivos da Equipe & Gerência ({lojaAtualObj.nome})
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '2px' }}>
+                      Envie para cada colaborador apenas o link exclusivo da sua função (com token de segurança embutido).
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '8px' }}>
+                  {[
+                    { key: 'op_admin', label: '👑 Link Gerente / Admin', url: linksEquipeModal.admin, cor: '#1d4ed8', bg: '#eff6ff', border: '#bfdbfe' },
+                    { key: 'op_caixa', label: '💻 Link Caixa / PDV', url: linksEquipeModal.caixa, cor: '#0369a1', bg: '#f0f9ff', border: '#bae6fd' },
+                    { key: 'op_garcom', label: '🍽️ Link Garçom (Salão)', url: linksEquipeModal.garcom, cor: '#6d28d9', bg: '#f5f3ff', border: '#ddd6fe' },
+                    { key: 'op_cozinha', label: '👨‍🍳 Link Cozinha (KDS)', url: linksEquipeModal.cozinha, cor: '#b45309', bg: '#fffbeb', border: '#fde68a' },
+                    ...(lojaAtualObj.permissoesModulos?.moduloDelivery !== false
+                      ? [{ key: 'op_cardapio', label: '🛵 Cardápio Digital (Clientes)', url: linksEquipeModal.cardapio, cor: '#047857', bg: '#ecfdf5', border: '#a7f3d0' }]
+                      : []),
+                  ].map((item) => {
+                    const copiado = linkExclusivoCopiadoId === item.key;
+                    return (
+                      <div
+                        key={item.key}
+                        style={{
+                          background: '#ffffff',
+                          border: `1px solid ${item.border}`,
+                          borderRadius: '10px',
+                          padding: '8px 10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 800, color: item.cor }}>{item.label}</div>
+                          <div style={{ fontSize: '0.64rem', color: '#64748b', fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {item.url}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => copiarLinkExclusivoRapido(item.key, item.url)}
+                          style={{
+                            background: copiado ? '#10b981' : item.bg,
+                            color: copiado ? '#ffffff' : item.cor,
+                            border: `1px solid ${copiado ? '#10b981' : item.border}`,
+                            borderRadius: '8px',
+                            padding: '5px 10px',
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {copiado ? '✓ Copiado!' : '📋 Copiar'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* FORMULÁRIO DE CADASTRO / EDIÇÃO DE OPERADOR */}
           <div
             style={{
@@ -12243,12 +12555,85 @@ export default function App() {
         nomeOperador={opAtualLogado?.nome}
       />
 
+      {/* 6. INTERCEPTAÇÃO DE LOJA SUSPENSA (CONGELA IMEDIATAMENTE SESSÕES ATIVAS DA EQUIPE DA LOJA) */}
+      {!telaLoginVisivel && perfilAtivo !== 'dona_app' && isLojaBloqueadaPeloDono && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(9, 13, 22, 0.96)',
+            zIndex: 999998,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              maxWidth: '440px',
+              width: '100%',
+              borderRadius: '24px',
+              padding: '28px 24px',
+              textAlign: 'center',
+              borderTop: '6px solid #dc2626',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+            }}
+          >
+            <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🛑</div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#991b1b', margin: '0 0 8px 0' }}>
+              Acesso Suspenso Temporariamente
+            </h2>
+            <p style={{ fontSize: '0.88rem', color: '#334155', lineHeight: 1.5, marginBottom: '14px' }}>
+              O estabelecimento <b>{nomeSupermercadoAtivo}</b> encontra-se com o acesso suspenso pela administração da plataforma.
+            </p>
+            {lojaAtualObj?.motivoBloqueio && (
+              <div
+                style={{
+                  background: '#fef2f2',
+                  border: '1px solid #fecaca',
+                  color: '#b91c1c',
+                  padding: '10px 12px',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  marginBottom: '18px',
+                }}
+              >
+                Motivo: {lojaAtualObj.motivoBloqueio}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                background: '#0f172a',
+                color: '#ffffff',
+                border: 'none',
+                padding: '12px',
+                borderRadius: '12px',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+              }}
+            >
+              Encerrar Sessão
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* TELA DE LOGIN & CONTROLE DE ACESSO */}
       <TelaLogin
         visivel={telaLoginVisivel}
         listaSupermercados={listaSupermercados}
         onLoginSucesso={handleLoginSucesso}
         onAbrirCardapioCliente={() => setModalCardapioClienteVisivel(true)}
+        modoPortal={isPortalMasterRoute ? 'master' : 'loja'}
+        lojaAlvo={lojaAlvoUrlValidada}
+        painelAlvo={painelParamAtivo}
       />
     </>
   );

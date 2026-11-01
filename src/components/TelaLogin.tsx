@@ -7,6 +7,9 @@ interface TelaLoginProps {
   onLoginSucesso: (sessao: SessaoUsuario) => void;
   senhaMasterPadrao?: string;
   onAbrirCardapioCliente?: () => void;
+  modoPortal?: 'master' | 'loja';
+  lojaAlvo?: Supermercado | null;
+  painelAlvo?: string | null;
 }
 
 const MAX_TENTATIVAS = 5;
@@ -18,7 +21,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   listaSupermercados,
   onLoginSucesso,
   senhaMasterPadrao = 'Mudar@123',
-  onAbrirCardapioCliente,
+  modoPortal = 'loja',
+  lojaAlvo = null,
+  painelAlvo = null,
 }) => {
   const [usuarioOuCpf, setUsuarioOuCpf] = useState<string>('');
   const [senhaOuPin, setSenhaOuPin] = useState<string>('');
@@ -150,24 +155,89 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     }
 
     // =========================================================================
-    // 0. COLETA ROBUSTA DE TODAS AS LOJAS (MEMÓRIA + STORAGE LOCAL OFFLINE)
+    // 0. ISOLAMENTO MULTI-TENANCY E ESCOPO DO PORTAL
     // =========================================================================
-    let lojasParaChecar: Supermercado[] = [...listaSupermercados];
-    try {
-      const salvo = localStorage.getItem('lista_supermercados_app');
-      if (salvo) {
-        const parsed = JSON.parse(salvo);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          parsed.forEach((l) => {
-            if (!lojasParaChecar.some((lj) => lj.id === l.id)) {
-              lojasParaChecar.push(l);
-            }
-          });
-        }
-      }
-    } catch (e) {}
+    const isPortalMaster = modoPortal === 'master';
 
-    // Loja padrão de segurança
+    // Se estiver no portal exclusivo do Dono (?portal=master&token=master_9k2m8x7p),
+    // autentica EXCLUSIVAMENTE a conta Master (SuperAdmin)
+    if (isPortalMaster) {
+      let credenciaisMaster: CredenciaisDonoApp = {
+        usuario: 'Rodrigo.souza',
+        senha: senhaMasterPadrao || 'Mudar@123',
+        nomeExibicao: 'Rodrigo Souza (Dono do App)',
+      };
+
+      const salvoMaster = localStorage.getItem('credenciais_dono_app');
+      if (salvoMaster) {
+        try {
+          const parsed = JSON.parse(salvoMaster);
+          if (parsed && typeof parsed === 'object') {
+            if (parsed.usuario) credenciaisMaster.usuario = parsed.usuario;
+            if (parsed.senha) credenciaisMaster.senha = parsed.senha;
+            if (parsed.nomeExibicao) credenciaisMaster.nomeExibicao = parsed.nomeExibicao;
+          }
+        } catch (e) {}
+      } else {
+        const senhaLegada = localStorage.getItem('senha_master_dono');
+        const usuarioLegado = localStorage.getItem('usuario_master_dono');
+        if (senhaLegada) credenciaisMaster.senha = senhaLegada;
+        if (usuarioLegado) credenciaisMaster.usuario = usuarioLegado;
+      }
+
+      const masterUserEsperado = (credenciaisMaster.usuario || 'rodrigo.souza').toLowerCase();
+      const masterPassEsperada = credenciaisMaster.senha || 'Mudar@123';
+
+      const isMasterUser =
+        userDigitadoLower === masterUserEsperado ||
+        userDigitadoLower === 'rodrigo.souza' ||
+        userDigitadoLower === 'rodrigo' ||
+        userDigitadoLower === 'adminmaster' ||
+        userDigitadoLower === 'dona' ||
+        userDigitadoLower === 'master';
+
+      const isMasterPass =
+        passDigitada === masterPassEsperada ||
+        passDigitada === 'Mudar@123' ||
+        passDigitada === 'adminmaster';
+
+      if (isMasterUser && isMasterPass) {
+        limparFalhasLogin();
+        setCarregando(false);
+        onLoginSucesso({
+          tipo: 'dona_app',
+        });
+        return;
+      }
+
+      setCarregando(false);
+      if (bloqueadoAte && Date.now() < bloqueadoAte) {
+        setErro(`Sistema bloqueado por segurança. Aguarde ${formatarTempo(segundosRestantes)}.`);
+        return;
+      }
+      registrarFalhaLogin();
+      return;
+    }
+
+    // Se estiver no link da equipe de uma loja (?loja=slug&painel=...&token=...),
+    // filtra ESTRITAMENTE por lojaAlvo (Isolamento Multi-Tenancy)
+    let lojasParaChecar: Supermercado[] = lojaAlvo ? [lojaAlvo] : [...listaSupermercados];
+    if (!lojaAlvo) {
+      try {
+        const salvo = localStorage.getItem('lista_supermercados_app');
+        if (salvo) {
+          const parsed = JSON.parse(salvo);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            parsed.forEach((l) => {
+              if (!lojasParaChecar.some((lj) => lj.id === l.id)) {
+                lojasParaChecar.push(l);
+              }
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
     if (lojasParaChecar.length === 0) {
       lojasParaChecar.push({
         id: 'loja_matriz_01',
@@ -177,59 +247,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         senhaAdmin: 'admin',
         status: 'ativo',
       });
-    }
-
-    // =========================================================================
-    // 1. VERIFICAÇÃO 1: Dono do Aplicativo (Master Admin)
-    // =========================================================================
-    let credenciaisMaster: CredenciaisDonoApp = {
-      usuario: 'Rodrigo.souza',
-      senha: senhaMasterPadrao || 'Mudar@123',
-      nomeExibicao: 'Rodrigo Souza (Dono do App)',
-    };
-
-    const salvoMaster = localStorage.getItem('credenciais_dono_app');
-    if (salvoMaster) {
-      try {
-        const parsed = JSON.parse(salvoMaster);
-        if (parsed && typeof parsed === 'object') {
-          if (parsed.usuario) credenciaisMaster.usuario = parsed.usuario;
-          if (parsed.senha) credenciaisMaster.senha = parsed.senha;
-          if (parsed.nomeExibicao) credenciaisMaster.nomeExibicao = parsed.nomeExibicao;
-        }
-      } catch (e) {}
-    } else {
-      const senhaLegada = localStorage.getItem('senha_master_dono');
-      const usuarioLegado = localStorage.getItem('usuario_master_dono');
-      if (senhaLegada) credenciaisMaster.senha = senhaLegada;
-      if (usuarioLegado) credenciaisMaster.usuario = usuarioLegado;
-    }
-
-    const masterUserEsperado = (credenciaisMaster.usuario || 'rodrigo.souza').toLowerCase();
-    const masterPassEsperada = credenciaisMaster.senha || 'Mudar@123';
-
-    const isMasterUser =
-      userDigitadoLower === masterUserEsperado ||
-      userDigitadoLower === 'rodrigo.souza' ||
-      userDigitadoLower === 'rodrigo' ||
-      userDigitadoLower === 'adminmaster' ||
-      userDigitadoLower === 'dona' ||
-      userDigitadoLower === 'master' ||
-      (userDigitadoLower === 'admin' && (passDigitada === masterPassEsperada || passDigitada === 'Mudar@123' || passDigitada === 'adminmaster'));
-
-    const isMasterPass =
-      passDigitada === masterPassEsperada ||
-      passDigitada === 'Mudar@123' ||
-      passDigitada === 'adminmaster' ||
-      passDigitada === 'admin';
-
-    if (isMasterUser && isMasterPass) {
-      limparFalhasLogin();
-      setCarregando(false);
-      onLoginSucesso({
-        tipo: 'dona_app',
-      });
-      return;
     }
 
     // =========================================================================
@@ -293,34 +310,36 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       });
     }
 
-    // Escaneia também chaves soltas no localStorage iniciadas por operadores_caixa_
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('operadores_caixa_')) {
-          const raw = localStorage.getItem(k);
-          if (raw) {
-            try {
-              const opsParsed: OperadorCaixa[] = JSON.parse(raw);
-              if (Array.isArray(opsParsed)) {
-                const lojaKeyId = k.replace('operadores_caixa_', '');
-                const lojaRef = lojasParaChecar.find((l) => l.id === lojaKeyId) || {
-                  id: lojaKeyId || 'loja_matriz_01',
-                  nome: 'Supermercado Matriz',
-                  cnpj: '',
-                  senha: 'admin',
-                };
-                opsParsed.forEach((o) => {
-                  if (o && o.id && !mapaOperadores.has(`${lojaRef.id}_${o.id}`)) {
-                    mapaOperadores.set(`${lojaRef.id}_${o.id}`, { op: o, loja: lojaRef });
-                  }
-                });
-              }
-            } catch (e) {}
+    // Escaneia também chaves soltas no localStorage iniciadas por operadores_caixa_ (respeitando isolamento de lojaAlvo)
+    if (!lojaAlvo) {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('operadores_caixa_')) {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              try {
+                const opsParsed: OperadorCaixa[] = JSON.parse(raw);
+                if (Array.isArray(opsParsed)) {
+                  const lojaKeyId = k.replace('operadores_caixa_', '');
+                  const lojaRef = lojasParaChecar.find((l) => l.id === lojaKeyId) || {
+                    id: lojaKeyId || 'loja_matriz_01',
+                    nome: 'Supermercado Matriz',
+                    cnpj: '',
+                    senha: 'admin',
+                  };
+                  opsParsed.forEach((o) => {
+                    if (o && o.id && !mapaOperadores.has(`${lojaRef.id}_${o.id}`)) {
+                      mapaOperadores.set(`${lojaRef.id}_${o.id}`, { op: o, loja: lojaRef });
+                    }
+                  });
+                }
+              } catch (e) {}
+            }
           }
         }
-      }
-    } catch (e) {}
+      } catch (e) {}
+    }
 
     for (const { op, loja } of Array.from(mapaOperadores.values())) {
       const opCpfLimpo = (op.cpfOuUsuario || '').trim().toLowerCase();
@@ -405,6 +424,18 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     registrarFalhaLogin();
   };
 
+  const isMasterMode = modoPortal === 'master';
+  const nomePainelLabel =
+    painelAlvo === 'admin'
+      ? 'Painel do Gerente / Admin'
+      : painelAlvo === 'garcom'
+      ? 'Painel do Garçom (Salão)'
+      : painelAlvo === 'cozinha'
+      ? 'Painel KDS da Cozinha'
+      : painelAlvo === 'caixa'
+      ? 'Operação de Caixa & Fechamento'
+      : 'Acesso da Equipe da Loja';
+
   return (
     <div
       style={{
@@ -416,7 +447,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         width: '100vw',
         height: '100vh',
         minHeight: '100dvh',
-        background: '#090d16',
+        background: isMasterMode ? '#030508' : '#090d16',
         zIndex: 999999,
         display: 'flex',
         alignItems: 'center',
@@ -431,7 +462,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'radial-gradient(circle at 50% 20%, #1e293b 0%, #090d16 80%)',
+          background: isMasterMode
+            ? 'radial-gradient(circle at 50% 20%, rgba(217, 119, 6, 0.18) 0%, #030508 75%)'
+            : 'radial-gradient(circle at 50% 20%, #1e293b 0%, #090d16 80%)',
           pointerEvents: 'none',
         }}
       />
@@ -439,12 +472,14 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       <div
         style={{
           position: 'relative',
-          background: '#ffffff',
+          background: isMasterMode ? '#0b0f19' : '#ffffff',
           width: '100%',
           maxWidth: '460px',
           borderRadius: '24px',
-          boxShadow: '0 25px 70px rgba(0, 0, 0, 0.7)',
-          border: '1px solid #334155',
+          boxShadow: isMasterMode
+            ? '0 25px 80px rgba(0, 0, 0, 0.9), 0 0 35px rgba(245, 158, 11, 0.18)'
+            : '0 25px 70px rgba(0, 0, 0, 0.7)',
+          border: isMasterMode ? '2px solid #d97706' : '1px solid #334155',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
@@ -454,7 +489,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         {/* CABEÇALHO DA TELA DE LOGIN */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+            background: isMasterMode
+              ? 'linear-gradient(135deg, #b45309 0%, #f59e0b 50%, #92400e 100%)'
+              : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
             padding: '32px 28px 24px 28px',
             color: '#ffffff',
             textAlign: 'center',
@@ -465,8 +502,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               width: '68px',
               height: '68px',
               margin: '0 auto 14px auto',
-              background: 'rgba(255, 255, 255, 0.2)',
+              background: isMasterMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.2)',
               borderRadius: '20px',
+              border: isMasterMode ? '1.5px solid rgba(254, 243, 199, 0.5)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -474,13 +512,17 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
             }}
           >
-            🏪
+            {isMasterMode ? '👑' : '🏪'}
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
-            Sistema de Supermercados
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>
+            {isMasterMode
+              ? 'Portal Master — SuperAdmin'
+              : lojaAlvo?.nome || 'Sistema de Supermercados'}
           </h2>
-          <p style={{ fontSize: '0.9rem', margin: '6px 0 0 0', opacity: 0.92, fontWeight: 500 }}>
-            Identifique-se com seu login e senha para acessar
+          <p style={{ fontSize: '0.88rem', margin: '6px 0 0 0', opacity: 0.94, fontWeight: 600 }}>
+            {isMasterMode
+              ? 'Chave de hardware validada • Acesso exclusivo do Dono'
+              : `${nomePainelLabel} • Identifique-se para continuar`}
           </p>
         </div>
 
@@ -508,7 +550,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                   Acesso Bloqueado Temporariamente
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#7f1d1d', lineHeight: 1.4 }}>
-                  Múltiplas tentativas incorretas foram detectadas. Por segurança contra ataques automatizados, aguarde o término do tempo para tentar novamente.
+                  5 tentativas incorretas consecutivas foram detectadas. Por segurança contra ataques de força bruta, aguarde o término do tempo ou solicite o desbloqueio no painel SuperAdmin.
                 </div>
                 <div
                   style={{
@@ -526,31 +568,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                 >
                   ⏱️ {formatarTempo(segundosRestantes)}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    limparFalhasLogin();
-                    setErro('');
-                  }}
-                  style={{
-                    marginTop: '6px',
-                    background: '#ffffff',
-                    border: '1px solid #ef4444',
-                    color: '#b91c1c',
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                  }}
-                >
-                  <span>🔓</span>
-                  <span>Desbloquear e Tentar Novamente</span>
-                </button>
               </div>
             ) : null}
 
@@ -564,12 +581,12 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                     gap: '6px',
                     fontSize: '0.88rem',
                     fontWeight: 700,
-                    color: '#1e293b',
+                    color: isMasterMode ? '#fef3c7' : '#1e293b',
                     margin: 0,
                   }}
                 >
                   <span>👤</span>
-                  <span>Usuário, CPF ou Login</span>
+                  <span>{isMasterMode ? 'Login Master do Dono' : 'Usuário, CPF ou Login'}</span>
                 </label>
                 {tentativasFalhas > 0 && !bloqueadoAte && (
                   <span style={{ fontSize: '0.78rem', color: '#dc2626', fontWeight: 600 }}>
@@ -581,19 +598,19 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                 type="text"
                 name="username_login_input"
                 autoComplete="off"
-                placeholder="Digite seu login, CPF ou usuário"
+                placeholder={isMasterMode ? 'Digite o usuário Master' : 'Digite seu login, CPF ou usuário'}
                 value={usuarioOuCpf}
                 onChange={(e) => setUsuarioOuCpf(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '14px 16px',
                   borderRadius: '12px',
-                  border: '1.5px solid #cbd5e1',
+                  border: isMasterMode ? '1.5px solid #b45309' : '1.5px solid #cbd5e1',
                   fontSize: '1rem',
                   boxSizing: 'border-box',
                   outline: 'none',
-                  color: '#0f172a',
-                  background: '#f8fafc',
+                  color: isMasterMode ? '#ffffff' : '#0f172a',
+                  background: isMasterMode ? '#161f30' : '#f8fafc',
                   transition: 'border-color 0.2s',
                 }}
                 required
@@ -611,31 +628,31 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                   gap: '6px',
                   fontSize: '0.88rem',
                   fontWeight: 700,
-                  color: '#1e293b',
+                  color: isMasterMode ? '#fef3c7' : '#1e293b',
                   marginBottom: '8px',
                 }}
               >
                 <span>🔑</span>
-                <span>Senha ou PIN de Acesso</span>
+                <span>{isMasterMode ? 'Senha Master Secreta' : 'Senha ou PIN de Acesso'}</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={senhaVisivel ? 'text' : 'password'}
                   name="password_login_input"
                   autoComplete="new-password"
-                  placeholder="Digite sua senha ou PIN"
+                  placeholder={isMasterMode ? 'Digite sua senha Master' : 'Digite sua senha ou PIN'}
                   value={senhaOuPin}
                   onChange={(e) => setSenhaOuPin(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '14px 48px 14px 16px',
                     borderRadius: '12px',
-                    border: '1.5px solid #cbd5e1',
+                    border: isMasterMode ? '1.5px solid #b45309' : '1.5px solid #cbd5e1',
                     fontSize: '1rem',
                     boxSizing: 'border-box',
                     outline: 'none',
-                    color: '#0f172a',
-                    background: '#f8fafc',
+                    color: isMasterMode ? '#ffffff' : '#0f172a',
+                    background: isMasterMode ? '#161f30' : '#f8fafc',
                     transition: 'border-color 0.2s',
                   }}
                   required
@@ -653,7 +670,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                     border: 'none',
                     cursor: bloqueadoAte ? 'not-allowed' : 'pointer',
                     fontSize: '1.3rem',
-                    color: '#64748b',
+                    color: isMasterMode ? '#fbbf24' : '#64748b',
                     padding: '6px',
                     display: 'flex',
                     alignItems: 'center',
@@ -691,15 +708,21 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               style={{
                 background: bloqueadoAte
                   ? '#94a3b8'
+                  : isMasterMode
+                  ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
                   : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
                 color: '#ffffff',
-                border: 'none',
+                border: isMasterMode && !bloqueadoAte ? '1px solid #fbbf24' : 'none',
                 padding: '15px',
                 borderRadius: '12px',
                 fontWeight: 800,
                 fontSize: '1.05rem',
                 cursor: bloqueadoAte ? 'not-allowed' : carregando ? 'wait' : 'pointer',
-                boxShadow: bloqueadoAte ? 'none' : '0 6px 18px rgba(2, 132, 199, 0.4)',
+                boxShadow: bloqueadoAte
+                  ? 'none'
+                  : isMasterMode
+                  ? '0 6px 20px rgba(217, 119, 6, 0.45)'
+                  : '0 6px 18px rgba(2, 132, 199, 0.4)',
                 marginTop: '6px',
                 transition: 'all 0.15s ease',
               }}
@@ -708,6 +731,8 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                 ? `🔒 Bloqueado (${formatarTempo(segundosRestantes)})`
                 : carregando
                 ? 'Validando Acesso...'
+                : isMasterMode
+                ? '👑 Entrar no Portal Master'
                 : 'Entrar no Sistema'}
             </button>
           </form>
