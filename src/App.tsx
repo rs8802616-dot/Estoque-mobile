@@ -1396,9 +1396,12 @@ export default function App() {
       }
     });
 
-    // Subscribe em tempo real aos Pedidos de Delivery (atualiza instantaneamente sem precisar dar F5)
+    // Subscribe em tempo real aos Pedidos de Delivery (Apenas para Painel do Lojista/Caixa)
+    // O cliente no catálogo online NUNCA baixa a lista com centenas de pedidos da loja (Zero leituras desnecessárias!)
     let cargaInicialPedidosConcluida = false;
-    const unsubPedidosDelivery = subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
+    const unsubPedidosDelivery = isModoCliente
+      ? () => {}
+      : subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
       if (Array.isArray(listaPedidos)) {
         const novosPedidosPendentesChegados: PedidoDelivery[] = [];
         listaPedidos.forEach((p) => {
@@ -1561,13 +1564,8 @@ export default function App() {
       }
     });
 
-    // Subscribe to Logs de Auditoria for active store
-    const unsubLogs = subscribeLogsAuditoria(supermercadoAtual, (logsRemotos) => {
-      if (logsRemotos && logsRemotos.length > 0) {
-        setLogsAuditoria(logsRemotos);
-        safeLocalStorageSet(`logs_auditoria_${supermercadoAtual}`, JSON.stringify(logsRemotos));
-      }
-    });
+    // Logs de auditoria são append-only. Não mantém listener aberto continuamente para economizar 100 leituras/abertura
+    const unsubLogs = () => {};
 
     return () => {
       unsubEstoque();

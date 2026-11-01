@@ -9,6 +9,7 @@ import {
 } from '../types';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import { mascaraTelefone } from '../lib/mascaras';
+import { subscribePedidoIndividual } from '../lib/firestoreSync';
 import {
   X,
   Search,
@@ -85,19 +86,22 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   // Pedido ativo em acompanhamento
   const [pedidoAtivoRastreio, setPedidoAtivoRastreio] = useState<PedidoDelivery | null>(null);
 
-  // Sincroniza o pedido em acompanhamento em tempo real quando o status muda na loja/motoboy
+  // Sincroniza o pedido em acompanhamento em tempo real diretamente do Firestore (1 única leitura de documento!)
+  // Garante que o cliente veja o motoboy saindo para entrega e a conclusão do pedido sem baixar pedidos da loja inteira
   useEffect(() => {
-    if (!pedidoAtivoRastreio) return;
-    const atualizado = pedidosExistentes.find((p) => p.id === pedidoAtivoRastreio.id);
-    if (
-      atualizado &&
-      (atualizado.status !== pedidoAtivoRastreio.status ||
-        atualizado.motivoCancelamento !== pedidoAtivoRastreio.motivoCancelamento ||
-        atualizado.entregueEmTimestamp !== pedidoAtivoRastreio.entregueEmTimestamp)
-    ) {
-      setPedidoAtivoRastreio(atualizado);
-    }
-  }, [pedidosExistentes, pedidoAtivoRastreio]);
+    if (!pedidoAtivoRastreio?.id) return;
+    const unsub = subscribePedidoIndividual(pedidoAtivoRastreio.id, (atualizado) => {
+      if (
+        atualizado &&
+        (atualizado.status !== pedidoAtivoRastreio.status ||
+          atualizado.motivoCancelamento !== pedidoAtivoRastreio.motivoCancelamento ||
+          atualizado.entregueEmTimestamp !== pedidoAtivoRastreio.entregueEmTimestamp)
+      ) {
+        setPedidoAtivoRastreio(atualizado);
+      }
+    });
+    return () => unsub();
+  }, [pedidoAtivoRastreio?.id]);
 
   // Busca e categoria
   const [busca, setBusca] = useState('');

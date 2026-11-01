@@ -290,10 +290,10 @@ export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => voi
   return () => {};
 }
 
-// Real-time listener for Vendas (limitado a 300 vendas mais recentes para economizar leituras do Firestore)
+// Real-time listener for Vendas (limitado a 50 vendas mais recentes para economizar drasticamente leituras do Firestore)
 export function subscribeVendas(lojaId: string, callback: (vendas: Venda[]) => void) {
   const colRef = collection(db, 'vendas');
-  const q = query(colRef, where('lojaId', '==', lojaId), limit(300));
+  const q = query(colRef, where('lojaId', '==', lojaId), limit(50));
   return onSnapshot(
     q,
     (snapshot) => {
@@ -1034,7 +1034,8 @@ export function subscribePedidosDelivery(lojaId: string, callback: (pedidos: Ped
   pedidosListenersPorLoja.get(lojaId)!.add(callback);
 
   const colRef = collection(db, 'pedidos_delivery');
-  const q = query(colRef, where('lojaId', '==', lojaId), limit(200));
+  // Limita aos 30 pedidos mais recentes/ativos da loja para economizar cota no painel do lojista
+  const q = query(colRef, where('lojaId', '==', lojaId), limit(30));
 
   const unsubSnapshot = onSnapshot(
     q,
@@ -1117,6 +1118,30 @@ export function subscribePedidosDelivery(lojaId: string, callback: (pedidos: Ped
     }
     unsubSnapshot();
   };
+}
+
+/**
+ * Escuta em tempo real APENAS um único pedido específico (Ultra-econômico: gasta exatamente 1 leitura).
+ * Usado pelo cardápio do cliente durante a tela de rastreio para acompanhar o status (preparo, motoboy, entrega)
+ * sem precisar baixar ou monitorar os pedidos de todos os outros clientes da loja!
+ */
+export function subscribePedidoIndividual(pedidoId: string, callback: (pedido: PedidoDelivery) => void) {
+  if (!pedidoId) return () => {};
+  const docId = sanitizarIdDoc(pedidoId);
+  const docRef = doc(db, 'pedidos_delivery', docId);
+
+  return onSnapshot(
+    docRef,
+    (docSnap) => {
+      if (docSnap.exists()) {
+        const p = { id: docSnap.id, ...docSnap.data() } as PedidoDelivery;
+        callback(p);
+      }
+    },
+    (err) => {
+      console.warn('Aviso no monitoramento de pedido individual:', err);
+    }
+  );
 }
 
 // Seed Initial Data into Firestore if collections are empty
