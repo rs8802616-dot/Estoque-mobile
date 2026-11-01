@@ -522,10 +522,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 flex flex-col bg-white p-0 overflow-hidden"
       style={{ zIndex: 9999999 }}
     >
-      <div className="bg-white border-0 sm:border border-slate-200 rounded-none sm:rounded-3xl w-full max-w-7xl h-full sm:h-auto sm:max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
+      <div className="bg-white border-0 rounded-none w-screen h-screen flex flex-col overflow-hidden text-slate-800">
         
         {/* CABEÇALHO DO PAINEL DE DELIVERY EM MODO CLARO */}
         <div className="p-3 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
@@ -784,7 +784,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           )}
 
           {/* PAINEL PRINCIPAL DE DELIVERY (VERDE/MINT CONFORME FOTO) */}
-          <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-4 sm:p-5 flex flex-col space-y-4 min-w-0 shadow-2xs">
+          <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-4 sm:p-5 flex flex-col space-y-4 min-w-0 min-h-full shadow-2xs">
             {/* Header da Seção de Delivery */}
             <div className="flex items-center justify-between pb-3 border-b border-[#a7f3d0]/60">
               <div className="flex items-center gap-3">
@@ -827,7 +827,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filteredOrders.map((order) => renderCard(order))}
               </div>
             )}
