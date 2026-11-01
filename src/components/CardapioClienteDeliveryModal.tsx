@@ -487,16 +487,34 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                 <h1 className="font-black text-sm sm:text-base text-stone-900 truncate leading-tight">
                   {loja?.marca || loja?.nome || 'Cardápio Digital'}
                 </h1>
-                <span className="hidden sm:inline-flex text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 items-center gap-1 shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Aberto
+                <span
+                  className={`hidden sm:inline-flex text-[10px] font-black uppercase px-2 py-0.5 rounded-full border items-center gap-1 shrink-0 ${
+                    statusLoja.aberta
+                      ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                      : 'bg-rose-100 text-rose-800 border-rose-200'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      statusLoja.aberta ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
+                    }`}
+                  />
+                  {statusLoja.aberta ? 'Aberto' : 'Fechado'}
                 </span>
               </div>
 
               <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0.5 text-[11px] text-stone-500 leading-tight mt-0.5">
-                <span className="inline-flex sm:hidden items-center gap-1 text-[10px] font-extrabold text-emerald-700 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Aberto
+                <span
+                  className={`inline-flex sm:hidden items-center gap-1 text-[10px] font-extrabold whitespace-nowrap ${
+                    statusLoja.aberta ? 'text-emerald-700' : 'text-rose-700'
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      statusLoja.aberta ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
+                    }`}
+                  />
+                  {statusLoja.aberta ? 'Aberto' : 'Fechado'}
                 </span>
                 <span className="sm:hidden text-stone-300">•</span>
                 <span className="inline-flex items-center gap-1 whitespace-nowrap">

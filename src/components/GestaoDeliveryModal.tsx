@@ -1099,23 +1099,56 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
               <div className="space-y-3 text-xs">
                 {/* Ligar / Desligar Loja */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <div>
-                    <span className="font-bold text-sm text-slate-900 block">Status da Loja no Delivery:</span>
-                    <span className="text-slate-500">Permite que clientes façam pedidos online</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFormConfig((prev) => ({ ...prev, ativo: !prev.ativo }))}
-                    className={`px-4 py-2 rounded-xl font-bold text-xs transition cursor-pointer ${
-                      formConfig.ativo
-                        ? 'bg-emerald-600 text-white shadow-xs'
-                        : 'bg-rose-600 text-white shadow-xs'
-                    }`}
-                  >
-                    {formConfig.ativo ? '🟢 ABERTA' : '🔴 FECHADA'}
-                  </button>
-                </div>
+                {(() => {
+                  const statusForm = verificarStatusFuncionamentoDelivery(formConfig);
+                  const estaAberta = statusForm.aberta;
+                  return (
+                    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 gap-3">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-sm text-slate-900 block">Status da Loja no Delivery:</span>
+                        <span className="text-slate-500 text-xs block leading-tight mt-0.5">
+                          {estaAberta
+                            ? 'Permite que clientes façam pedidos online (Loja Aberta)'
+                            : !formConfig.ativo
+                            ? 'Pausada manualmente pelo botão (Loja Fechada)'
+                            : `Fechada automaticamente (fora do horário das ${statusForm.horarioFormatado})`}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormConfig((prev) => {
+                            if (!estaAberta) {
+                              const agora = new Date();
+                              const hhmm = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                              const foraDoHorario = prev.ativo !== false && prev.horarioFechamento && prev.horarioFechamento <= hhmm;
+                              return {
+                                ...prev,
+                                ativo: true,
+                                ...(foraDoHorario ? { horarioFechamento: '23:59' } : {}),
+                              };
+                            } else {
+                              return { ...prev, ativo: false };
+                            }
+                          });
+                        }}
+                        className={`px-4 py-2 rounded-xl font-bold text-xs transition cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs ${
+                          estaAberta
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                            : 'bg-rose-600 hover:bg-rose-700 text-white'
+                        }`}
+                        title={estaAberta ? 'Clique para fechar a loja manualmente' : 'Clique para abrir a loja agora'}
+                      >
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            estaAberta ? 'bg-white animate-pulse' : 'bg-white'
+                          }`}
+                        />
+                        <span>{estaAberta ? 'ABERTA' : 'FECHADA'}</span>
+                      </button>
+                    </div>
+                  );
+                })()}
 
                 {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
                 <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-2">
