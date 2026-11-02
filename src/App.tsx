@@ -720,6 +720,12 @@ export default function App() {
         return false;
       }
     }
+    // Se o Dono ou a Equipe acessar via link com parâmetros na URL, sempre exige autenticação / formulário de login visível
+    const portalParam = urlParams.get('portal');
+    if (portalParam === 'master' || painelParam) {
+      return true;
+    }
+
     const isAutenticado = localStorage.getItem('usuario_autenticado') === 'true';
     const perfilSalvo = localStorage.getItem('perfilAtivoTipo');
     return !isAutenticado || !perfilSalvo;
@@ -2977,6 +2983,10 @@ export default function App() {
 
     setPerfilAtivo(sessao.tipo);
     localStorage.setItem('perfilAtivoTipo', sessao.tipo);
+
+    if (sessao.tipo === 'dona_app') {
+      setModalSupermercadoVisivel(true);
+    }
 
     if (sessao.lojaId) {
       setSupermercadoAtual(sessao.lojaId);
