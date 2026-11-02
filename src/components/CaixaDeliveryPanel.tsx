@@ -721,6 +721,71 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       </div>
 
       {/* Modal de Cancelamento / Recusa de Pedido */}
+      {/* Modal de Escolha ao Clicar no Telefone: Ligar ou WhatsApp */}
+      {clienteContatoModal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+          style={{ zIndex: 10000002 }}
+        >
+          <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-stone-200 animate-fadeIn">
+            <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="font-black text-sm text-stone-900 leading-tight">
+                    Falar com o Cliente
+                  </h4>
+                  <span className="text-[11px] text-stone-500">
+                    Pedido #{clienteContatoModal.numeroPedido} • {clienteContatoModal.nome}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setClienteContatoModal(null)}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="text-center py-2 bg-stone-50 rounded-2xl border border-stone-100">
+              <span className="text-base font-black font-mono text-stone-800">
+                {clienteContatoModal.telefone}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 pt-1">
+              <a
+                href={`tel:${clienteContatoModal.telefone.replace(/\D/g, '')}`}
+                onClick={() => setClienteContatoModal(null)}
+                className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
+              >
+                <Phone className="w-5 h-5" />
+                <span>📞 Ligar Agora</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const fone = clienteContatoModal.telefone.replace(/\D/g, '');
+                  const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
+                  const msg = `Olá, ${clienteContatoModal.nome}! Somos da loja ${loja?.nome || ''}. Estamos com seu pedido #${clienteContatoModal.numeroPedido}.`;
+                  window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
+                  setClienteContatoModal(null);
+                }}
+                className="py-3 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>💬 WhatsApp</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {pedidoParaCancelar && (
         <div
           className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3"
