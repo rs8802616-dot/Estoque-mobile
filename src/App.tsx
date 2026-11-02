@@ -10595,11 +10595,11 @@ export default function App() {
                     { key: 'op_caixa', label: '💻 Link Caixa / PDV', url: linksEquipeModal.caixa, cor: '#0369a1', bg: '#f0f9ff', border: '#bae6fd' },
                     { key: 'op_garcom', label: '🍽️ Link Garçom (Salão)', url: linksEquipeModal.garcom, cor: '#6d28d9', bg: '#f5f3ff', border: '#ddd6fe' },
                     { key: 'op_cozinha', label: '👨‍🍳 Link Cozinha (KDS)', url: linksEquipeModal.cozinha, cor: '#b45309', bg: '#fffbeb', border: '#fde68a' },
-                    ...(lojaAtualObj.permissoesModulos?.moduloDelivery !== false
+                    ...(lojaAtualObj.permissoes?.delivery !== false
                       ? [{ key: 'op_cardapio', label: '🛵 Cardápio Digital (Clientes)', url: linksEquipeModal.cardapio, cor: '#047857', bg: '#ecfdf5', border: '#a7f3d0' }]
                       : []),
                   ].map((item) => {
-                    const copiado = linkExclusivoCopiadoId === item.key;
+                    const copiado = linkCopiadoFeedback === item.key;
                     return (
                       <div
                         key={item.key}
@@ -10622,7 +10622,7 @@ export default function App() {
                         </div>
                         <button
                           type="button"
-                          onClick={() => copiarLinkExclusivoRapido(item.key, item.url)}
+                          onClick={() => copiarLinkComFeedback(item.key, item.url)}
                           style={{
                             background: copiado ? '#10b981' : item.bg,
                             color: copiado ? '#ffffff' : item.cor,
