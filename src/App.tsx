@@ -5405,9 +5405,146 @@ export default function App() {
 
     handleSalvarClienteDevedor(clienteAtualizado);
 
+    // Se o pagamento foi em dinheiro físico e há caixa aberto, registra a entrada na gaveta
+    if (sessaoCaixaAtiva && sessaoCaixaAtiva.status === 'aberto' && formaPagamento === 'dinheiro') {
+      const novaMov: MovimentacaoCaixa = {
+        id: `mov_fiado_${Date.now()}`,
+        lojaId: supermercadoAtual,
+        sessaoId: sessaoCaixaAtiva.id,
+        tipo: 'suprimento',
+        valor: valorPagamento,
+        descricao: `Recebimento Fiado: ${cliente.nome} (Dinheiro)`,
+        operadorId: operadorAtivoId || 'admin',
+        operadorNome: nomeOperador,
+        dataHora: new Date().toISOString(),
+      };
+      const novasMovs = [...movimentacoesCaixa, novaMov];
+      setMovimentacoesCaixa(novasMovs);
+      safeLocalStorageSet(`movimentacoes_caixa_${supermercadoAtual}`, JSON.stringify(novasMovs));
+    }
+
     registrarLogAuditoria(
       'Pagamento Fiado Recebido',
       `Cliente: ${cliente.nome} | Valor Recebido: R$ ${valorPagamento.toFixed(2)} (${formaPagamento.toUpperCase()}) | Novo Saldo Devedor: R$ ${novoSaldo.toFixed(2)} | Recebido por: ${nomeOperador}`
+    );
+  };
+
+  const handleLancarCompraFiado = (clienteId: string, novaCompra: CompraFiado) => {
+    const cliente = clientesDevedores.find((c) => c.id === clienteId);
+    if (!cliente) return;
+
+    const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
+    const nomeOperador = opAtivo ? opAtivo.nome : 'Administrador do Supermercado';
+
+    // 1. Atualizar e abater itens do estoque
+    let novoEstoque = [...estoque];
+    const itensVendaParaRegistrar: VendaItem[] = [];
+
+    if (novaCompra.itens && novaCompra.itens.length > 0) {
+      for (const item of novaCompra.itens) {
+        const idx = novoEstoque.findIndex(
+          (e) => e.codigo === item.codigo || (e.codigo_barras && e.codigo_barras === item.codigo)
+        );
+
+        const precoUnit = item.preco_unitario || 0;
+        const subtotal = item.subtotal || precoUnit * (item.quantidade || 1);
+
+        if (idx !== -1) {
+          const itemEstoque = novoEstoque[idx];
+          itensVendaParaRegistrar.push({
+            codigo: itemEstoque.codigo,
+            nome: itemEstoque.nome || item.nome,
+            quantidade: item.quantidade,
+            preco_unitario: precoUnit,
+            preco_custo: itemEstoque.preco_custo,
+            subtotal: subtotal,
+            lote: itemEstoque.lote,
+            validade: itemEstoque.validade,
+            foto: itemEstoque.foto,
+          });
+
+          if (!itemEstoque.estoqueIlimitado && itemEstoque.tipoCadastro !== 'interno') {
+            const novaQtd = Number(itemEstoque.quantidade) - Number(item.quantidade);
+            if (novaQtd <= 0) {
+              const itemRemovido = novoEstoque[idx];
+              novoEstoque.splice(idx, 1);
+              excluirItemEstoqueFirestore(itemRemovido.codigo, itemRemovido.validade, itemRemovido.lote, supermercadoAtual).catch(
+                (err) => console.warn('Aviso ao excluir item no Firestore:', err)
+              );
+            } else {
+              novoEstoque[idx] = { ...itemEstoque, quantidade: novaQtd };
+              salvarItemEstoqueFirestore(novoEstoque[idx], supermercadoAtual).catch((err) =>
+                console.warn('Aviso ao atualizar estoque no Firestore:', err)
+              );
+            }
+          }
+        } else {
+          itensVendaParaRegistrar.push({
+            codigo: item.codigo || 'MANUAL',
+            nome: item.nome,
+            quantidade: item.quantidade,
+            preco_unitario: precoUnit,
+            subtotal: subtotal,
+          });
+        }
+      }
+
+      setEstoque(novoEstoque);
+      safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(novoEstoque));
+    }
+
+    // 2. Registrar Venda com forma fiado
+    const novaVenda: Venda = {
+      id: novaCompra.vendaId || `ven_fiado_${Date.now()}`,
+      lojaId: supermercadoAtual,
+      data: novaCompra.data || new Date().toISOString().slice(0, 10),
+      hora: novaCompra.hora || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: novaCompra.timestamp || Date.now(),
+      operadorId: operadorAtivoId || 'admin',
+      operadorNome: nomeOperador,
+      itens:
+        itensVendaParaRegistrar.length > 0
+          ? itensVendaParaRegistrar
+          : [
+              {
+                codigo: 'MANUAL',
+                nome: 'Compra Fiado Caderneta',
+                quantidade: 1,
+                preco_unitario: novaCompra.valorTotal,
+                subtotal: novaCompra.valorTotal,
+              },
+            ],
+      valorTotal: novaCompra.valorTotal,
+      formaPagamento: 'fiado',
+      status: 'concluida',
+      clienteFiadoId: cliente.id,
+      clienteFiadoNome: cliente.nome,
+    };
+
+    const novasVendas = [novaVenda, ...vendas];
+    setVendas(novasVendas);
+    safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(novasVendas));
+    if (navigator.onLine) {
+      salvarVendaFirestore(novaVenda).catch((e) => console.warn('Erro ao salvar venda fiado:', e));
+    } else {
+      adicionarVendaFilaOffline(novaVenda);
+    }
+
+    // 3. Atualizar cliente com a nova compra e novo saldo
+    const novoSaldo = Number(((cliente.saldoDevedorTotal || 0) + novaCompra.valorTotal).toFixed(2));
+    const comprasAtualizadas = [novaCompra, ...(cliente.compras || [])];
+
+    const clienteAtualizado: ClienteDevedor = {
+      ...cliente,
+      saldoDevedorTotal: novoSaldo,
+      compras: comprasAtualizadas,
+    };
+
+    handleSalvarClienteDevedor(clienteAtualizado);
+
+    registrarLogAuditoria(
+      'Compra Fiado Caderneta',
+      `Cliente: ${cliente.nome} | Valor: R$ ${novaCompra.valorTotal.toFixed(2)} | Itens: ${novaCompra.itens?.length || 0} | Operador: ${nomeOperador}`
     );
   };
 
@@ -12757,6 +12894,7 @@ export default function App() {
         onSalvarCliente={handleSalvarClienteDevedor}
         onExcluirCliente={handleExcluirClienteDevedor}
         onRegistrarPagamento={handleRegistrarPagamentoFiado}
+        onLancarCompraFiado={handleLancarCompraFiado}
       />
 
       {/* MODAL DE ENTRADA DE NOTA FISCAL (XML / NF-E) */}

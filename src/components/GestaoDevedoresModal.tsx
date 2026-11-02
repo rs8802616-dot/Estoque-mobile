@@ -37,6 +37,10 @@ interface GestaoDevedoresModalProps {
     formaPagamento: 'dinheiro' | 'pix' | 'cartao_debito' | 'cartao_credito',
     observacao?: string
   ) => void;
+  onLancarCompraFiado?: (
+    clienteId: string,
+    novaCompra: CompraFiado
+  ) => void;
 }
 
 export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
@@ -51,6 +55,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
   onSalvarCliente,
   onExcluirCliente,
   onRegistrarPagamento,
+  onLancarCompraFiado,
 }) => {
   const listaClientes = clientes || [];
 
@@ -58,6 +63,16 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
   const [busca, setBusca] = useState('');
   const [filtroStatus, setFiltroStatus] = useState<'todos' | 'pendentes' | 'quitados'>('pendentes');
   const [clienteSelecionado, setClienteSelecionado] = useState<ClienteDevedor | null>(null);
+
+  // Mantém cliente selecionado em sincronia automática com a lista atualizada
+  useEffect(() => {
+    if (clienteSelecionado) {
+      const atual = clientes.find((c) => c.id === clienteSelecionado.id);
+      if (atual) {
+        setClienteSelecionado(atual);
+      }
+    }
+  }, [clientes]);
 
   // Modal de cadastro/edição de cliente
   const [modalNovoCliente, setModalNovoCliente] = useState(false);
@@ -214,13 +229,13 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
       return;
     }
 
-    onRegistrarPagamento(clienteSelecionado.id, valor, formaPagamento, obsPagamento);
+    const novoSaldo = Math.max(0, Number(((clienteSelecionado.saldoDevedorTotal || 0) - valor).toFixed(2)));
+    setClienteSelecionado({
+      ...clienteSelecionado,
+      saldoDevedorTotal: novoSaldo,
+    });
 
-    // Atualizar visualização do cliente selecionado localmente
-    const clienteAtualizado = clientes.find((c) => c.id === clienteSelecionado.id);
-    if (clienteAtualizado) {
-      setClienteSelecionado(clienteAtualizado);
-    }
+    onRegistrarPagamento(clienteSelecionado.id, valor, formaPagamento, obsPagamento);
 
     setModalPagamento(false);
     setValorAbatimento('');
@@ -559,7 +574,11 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
       compras: comprasAtualizadas,
     };
 
-    onSalvarCliente(clienteAtualizado);
+    if (onLancarCompraFiado) {
+      onLancarCompraFiado(clienteSelecionado.id, novaCompra);
+    } else {
+      onSalvarCliente(clienteAtualizado);
+    }
     setClienteSelecionado(clienteAtualizado);
 
     pararCamera();
