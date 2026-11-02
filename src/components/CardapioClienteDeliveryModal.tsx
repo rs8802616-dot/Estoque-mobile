@@ -313,11 +313,52 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     }
   }, [pedidosExistentes]);
 
-  // Agrupa produtos por código de barras e nome normalizado (nunca duplica por lote diferente) e oculta esgotados
+  // Agrupa produtos por código de barras e nome normalizado (nunca duplica por lote diferente),
+  // desconta quantidades já reservadas em pedidos pendentes e oculta esgotados
   const estoqueAgrupado = useMemo(() => {
     const mapaPorCodigo = new Map<string, ItemEstoque>();
     const mapaNomeParaChave = new Map<string, string>();
     const hojeIso = new Date().toISOString().slice(0, 10);
+
+    // Soma quantidades já reservadas em pedidos pendentes (aguardando aceite do caixa) para impedir venda dupla da última unidade
+    const reservadoPendentePorCodigo = new Map<string, number>();
+    const reservadoPendentePorNome = new Map<string, number>();
+
+    const listaPedidosParaReserva: PedidoDelivery[] = (() => {
+      const mapaPed = new Map<string, PedidoDelivery>();
+      (pedidosExistentes || []).forEach((p) => {
+        if (p && p.id) mapaPed.set(p.id, p);
+      });
+      if (typeof window !== 'undefined' && loja?.id) {
+        try {
+          const salvos = localStorage.getItem(`pedidos_delivery_${loja.id}`);
+          if (salvos) {
+            const parsed = JSON.parse(salvos);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((p: PedidoDelivery) => {
+                if (p && p.id && !mapaPed.has(p.id)) mapaPed.set(p.id, p);
+              });
+            }
+          }
+        } catch {}
+      }
+      return Array.from(mapaPed.values());
+    })();
+
+    listaPedidosParaReserva.forEach((ped) => {
+      if (!ped || ped.status !== 'pendente') return;
+      (ped.itens || []).forEach((it) => {
+        const qtdPed = Math.max(0, Number(it.quantidade) || 0);
+        if (qtdPed <= 0) return;
+        const cod = String(it.codigo || '').trim();
+        const nome = String(it.nome || '').trim().toLowerCase();
+        if (cod) {
+          reservadoPendentePorCodigo.set(cod, (reservadoPendentePorCodigo.get(cod) || 0) + qtdPed);
+        } else if (nome) {
+          reservadoPendentePorNome.set(nome, (reservadoPendentePorNome.get(nome) || 0) + qtdPed);
+        }
+      });
+    });
 
     estoque.forEach((p) => {
       if (!p) return;
@@ -369,8 +410,20 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
       }
     });
 
-    // Filtra produtos esgotados (saldo <= 0) para que NUNCA apareçam para o cliente no cardápio
+    // Subtrai reservas de pedidos pendentes e filtra produtos esgotados (saldo <= 0)
     return Array.from(mapaPorCodigo.values())
+      .map((item) => {
+        const isIlimitado = Boolean(item.estoqueIlimitado || item.tipoCadastro === 'interno');
+        if (isIlimitado) return item;
+        const cod = String(item.codigo || '').trim();
+        const nome = String(item.nome || '').trim().toLowerCase();
+        const reservado = (cod ? reservadoPendentePorCodigo.get(cod) : 0) || (nome ? reservadoPendentePorNome.get(nome) : 0) || 0;
+        const saldoLiquido = Math.max(0, (Number(item.quantidade) || 0) - reservado);
+        return {
+          ...item,
+          quantidade: saldoLiquido,
+        };
+      })
       .filter((item) => {
         const isIlimitado = Boolean(item.estoqueIlimitado || item.tipoCadastro === 'interno');
         return isIlimitado || (Number(item.quantidade) || 0) > 0;
@@ -378,7 +431,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
       .sort((a, b) =>
         (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base', numeric: true })
       );
-  }, [estoque, obterFotoProduto, obterNomeProduto]);
+  }, [estoque, pedidosExistentes, loja?.id, obterFotoProduto, obterNomeProduto]);
 
   // Categorias únicas baseadas no estoque real
   const categoriasDisponiveis = useMemo(() => {
@@ -534,6 +587,40 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     if (subtotalCarrinho < (configDelivery.valorMinimoPedido || 0)) {
       alert(`O pedido mínimo desta loja é de R$ ${configDelivery.valorMinimoPedido.toFixed(2)}.`);
       return;
+    }
+
+    // Validação estrita de estoque em tempo real no momento exato do envio (impede compra dupla da última unidade)
+    for (const c of itensCarrinho) {
+      const isIlimitado = Boolean(c.item.estoqueIlimitado || c.item.tipoCadastro === 'interno');
+      if (isIlimitado) continue;
+
+      const codItem = String(c.item.codigo || '').trim();
+      const nomeItem = String(c.item.nome || '').trim().toLowerCase();
+      const prodAtualizado = estoqueAgrupado.find(
+        (p) =>
+          (codItem && String(p.codigo || '').trim() === codItem) ||
+          (nomeItem && String(p.nome || '').trim().toLowerCase() === nomeItem)
+      );
+      const saldoDisponivelAgora = prodAtualizado ? Math.max(0, Number(prodAtualizado.quantidade) || 0) : 0;
+
+      if (c.qtd > saldoDisponivelAgora) {
+        alert(
+          saldoDisponivelAgora <= 0
+            ? `⚠️ Ops! O produto "${c.item.nome}" acabou de esgotar (ou sua última unidade já foi reservada em outro pedido simultâneo).\n\nEle foi removido da sua sacola automaticamente.`
+            : `⚠️ Estoque atualizado! Restam apenas ${saldoDisponivelAgora} un. disponíveis do produto "${c.item.nome}".\n\nAjustamos a quantidade na sua sacola.`
+        );
+        setCarrinho((prev) => {
+          const copia = { ...prev };
+          if (saldoDisponivelAgora <= 0) {
+            delete copia[c.item.codigo];
+          } else if (copia[c.item.codigo]) {
+            copia[c.item.codigo] = { ...copia[c.item.codigo], qtd: saldoDisponivelAgora };
+          }
+          return copia;
+        });
+        setEtapa('carrinho');
+        return;
+      }
     }
 
     localStorage.setItem('delivery_cliente_nome', nomeCliente);

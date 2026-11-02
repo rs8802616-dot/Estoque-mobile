@@ -733,8 +733,18 @@ export default function App() {
         return false;
       }
 
-      // Se o Dono ou a Equipe acessar via link com parâmetros na URL, sempre exige autenticação / formulário de login visível
       const portalParam = urlParams.get('portal');
+      const isAutenticadoUrl = localStorage.getItem('usuario_autenticado') === 'true';
+      const perfilSalvoUrl = localStorage.getItem('perfilAtivoTipo');
+
+      // Se já estiver autenticado, preserva a sessão ao atualizar a tela (F5)
+      if (isAutenticadoUrl && perfilSalvoUrl) {
+        if (portalParam === 'master') {
+          return perfilSalvoUrl !== 'dona_app';
+        }
+        return false;
+      }
+
       if (portalParam === 'master' || painelParam) {
         return true;
       }
@@ -1447,9 +1457,7 @@ export default function App() {
     // Subscribe em tempo real aos Pedidos de Delivery (Apenas para Painel do Lojista/Caixa)
     // O cliente no catálogo online NUNCA baixa a lista com centenas de pedidos da loja (Zero leituras desnecessárias!)
     let cargaInicialPedidosConcluida = false;
-    const unsubPedidosDelivery = isModoCliente
-      ? () => {}
-      : subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
+    const unsubPedidosDelivery = subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
       if (Array.isArray(listaPedidos)) {
         const novosPedidosPendentesChegados: PedidoDelivery[] = [];
         listaPedidos.forEach((p) => {
@@ -1847,7 +1855,7 @@ export default function App() {
 
   // Monitoramento de Sessão Única por Aparelho (Desconecta automaticamente se a conta for aberta em outro dispositivo)
   useEffect(() => {
-    if (!perfilAtivo) return;
+    if (!perfilAtivo || telaLoginVisivel) return;
 
     let token = sessaoTokenAtivo || localStorage.getItem('sessao_ativa_token');
     if (!token) {
@@ -1886,7 +1894,7 @@ export default function App() {
     return () => {
       unsub();
     };
-  }, [perfilAtivo, supermercadoAtual, operadorAtivoId, sessaoTokenAtivo]);
+  }, [perfilAtivo, telaLoginVisivel, supermercadoAtual, operadorAtivoId, sessaoTokenAtivo]);
 
   // Auditoria Handler
   const registrarLogAuditoria = (acao: string, detalhes: string) => {
@@ -6091,8 +6099,41 @@ export default function App() {
     const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
     if (!pedidoAlvo) return;
 
-    // Se o pedido está sendo aceito (passando de pendente para em_separacao), baixa o estoque da loja em ordem FEFO (vencimento mais próximo primeiro)
+    // Se o pedido está sendo aceito (passando de pendente para em_separacao), valida se há estoque suficiente ANTES de aceitar e baixa em ordem FEFO
     if (pedidoAlvo.status === 'pendente' && novoStatus === 'em_separacao') {
+      const itensSemEstoque: string[] = [];
+      (pedidoAlvo.itens || []).forEach((it) => {
+        const codAlvo = String(it.codigo || '').trim();
+        const nomeAlvo = String(it.nome || '').trim().toLowerCase();
+        const qtdPedida = Math.max(0, Number(it.quantidade) || 0);
+        if (qtdPedida <= 0) return;
+
+        const lotesDoItem = estoque.filter(
+          (e) =>
+            (codAlvo && String(e.codigo || '').trim() === codAlvo) ||
+            (!codAlvo && nomeAlvo && String(e.nome || '').trim().toLowerCase() === nomeAlvo)
+        );
+        const isIlimitado = lotesDoItem.some((e) => e.estoqueIlimitado || e.tipoCadastro === 'interno');
+        if (isIlimitado) return;
+
+        const saldoDisponivel = lotesDoItem.reduce(
+          (acc, e) => acc + Math.max(0, Number(e.quantidade) || 0),
+          0
+        );
+        if (saldoDisponivel < qtdPedida) {
+          itensSemEstoque.push(`• ${it.nome}: pedido solicita ${qtdPedida} un, mas há apenas ${saldoDisponivel} un em estoque.`);
+        }
+      });
+
+      if (itensSemEstoque.length > 0) {
+        alert(
+          `🚫 BLOQUEADO: Não é possível aceitar o Pedido #${pedidoAlvo.numeroPedido} por falta de estoque!\n\n` +
+          itensSemEstoque.join('\n') +
+          `\n\nCancele este pedido ou faça a reposição no estoque antes de aceitar.`
+        );
+        return;
+      }
+
       let novoEstoque = [...estoque];
 
       pedidoAlvo.itens.forEach((it) => {
@@ -6204,9 +6245,25 @@ export default function App() {
         const idx = novoEstoque.findIndex(
           (e) => e.codigo === it.codigo && (!it.lote || e.lote === it.lote)
         );
-        if (idx !== -1 && !novoEstoque[idx].estoqueIlimitado) {
-          novoEstoque[idx] = { ...novoEstoque[idx], quantidade: novoEstoque[idx].quantidade + it.quantidade };
-          salvarItemEstoqueFirestore(novoEstoque[idx], storeId);
+        if (idx !== -1) {
+          if (!novoEstoque[idx].estoqueIlimitado) {
+            novoEstoque[idx] = { ...novoEstoque[idx], quantidade: (Number(novoEstoque[idx].quantidade) || 0) + (Number(it.quantidade) || 0) };
+            salvarItemEstoqueFirestore(novoEstoque[idx], storeId);
+          }
+        } else {
+          const loteRestaurado: ItemEstoque = {
+            codigo: it.codigo,
+            nome: it.nome,
+            quantidade: Number(it.quantidade) || 1,
+            lote: it.lote || 'L-DEV',
+            validade: it.validade || '2027-12-31',
+            preco_custo: Number(it.preco_custo) || 0,
+            preco_venda: Number(it.preco_unitario) || 0,
+            foto: it.foto,
+            tipoCadastro: 'padrao',
+          };
+          novoEstoque.push(loteRestaurado);
+          salvarItemEstoqueFirestore(loteRestaurado, storeId);
         }
       });
       setEstoque(novoEstoque);

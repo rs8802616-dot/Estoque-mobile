@@ -407,6 +407,39 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
         )}
 
+        {/* ALERTA DE FALTA DE ESTOQUE PARA PEDIDOS PENDENTES */}
+        {isNovo && (() => {
+          const itensSemSaldo = (order.itens || []).filter((it) => {
+            const codAlvo = String(it.codigo || '').trim();
+            const nomeAlvo = String(it.nome || '').trim().toLowerCase();
+            const lotesCorrespondentes = (estoque || []).filter(
+              (e) =>
+                (codAlvo && String(e.codigo || '').trim() === codAlvo) ||
+                (!codAlvo && nomeAlvo && String(e.nome || '').trim().toLowerCase() === nomeAlvo)
+            );
+            const temIlimitado = lotesCorrespondentes.some((e) => e.estoqueIlimitado || e.tipoCadastro === 'interno');
+            if (temIlimitado) return false;
+            const saldoTotal = lotesCorrespondentes.reduce((acc, e) => acc + Math.max(0, Number(e.quantidade) || 0), 0);
+            return saldoTotal < (Number(it.quantidade) || 1);
+          });
+
+          if (itensSemSaldo.length === 0) return null;
+
+          return (
+            <div className="p-2.5 rounded-xl bg-red-50 border border-red-300 text-red-800 text-[11px] font-bold space-y-0.5">
+              <div className="flex items-center gap-1 text-red-700 font-black">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <span>Estoque insuficiente para aceitar:</span>
+              </div>
+              {itensSemSaldo.map((it, idx) => (
+                <div key={idx} className="text-[10px] text-red-700 pl-4">
+                  • {it.nome} (Pedido: {it.quantidade} un)
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
         {/* LISTA DE ITENS DO PEDIDO */}
         <div className="space-y-1 text-xs">
           {order.itens.map((it, idx) => (
