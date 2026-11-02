@@ -119,6 +119,18 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-02 - Versão 109 - Busca Dinâmica de Itens do Estoque no Botão "Item Balcão"]
+- **Pesquisa Dinâmica de Produtos do Estoque no Modal "➕ Item Balcão" (`GestaoDevedoresModal.tsx`):**
+  - **Problema Solucionado:** Ao clicar no botão `➕ Item Balcão` na tela de nova compra fiado, abria-se apenas um formulário em branco exigindo digitação manual de nome, quantidade e preço, sem permitir localizar os produtos já cadastrados no estoque da loja.
+  - **Novo Modal Interativo de Seleção do Estoque:**
+    - Campo de busca instantânea com auto-foco: `🔍 Digite para pesquisar produtos no estoque...`.
+    - Lista visual e dinâmica com os produtos do estoque da loja exibindo foto/ícone, nome, marca, quantidade física disponível (`Estoque: X un`) e preço de venda (`R$ XX,XX`).
+    - Botão de seleção rápida `[+ Selecionar]` que preenche automaticamente o código, nome e preço de venda do produto.
+    - Suporte a quantidades inteiras e fracionadas (pesáveis, ex: 0.350 kg).
+    - Prévia de cálculo do subtotal em tempo real (`Total deste Item: R$ XX,XX`).
+    - Ao confirmar a inclusão, o item entra na compra com seu código original de estoque, garantindo **baixa automática no estoque físico** da loja ao salvar a compra na caderneta.
+    - Mantida total flexibilidade para lançar itens artesanais ou avulsos sem cadastro prévio no estoque caso necessário.
+
 ### [2026-11-02 - Versão 108 - Auditoria Completa, Isolamento de Links e Correção de Extensões]
 - **Auditoria Completa do Sistema & Correção de Vazamento de Sessão de Links de Loja:**
   - **Problema Solucionado:** Ao copiar o link oficial da loja (`/?loja=slug&painel=admin&token=...`) e abrir em outra aba do mesmo navegador, a aba herdava a sessão ativa do Dono (`perfilAtivoTipo = 'dona_app'`) gravada no `localStorage`, exibindo o painel e os controles do Dono dentro da loja.

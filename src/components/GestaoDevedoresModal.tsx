@@ -114,11 +114,30 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     quantidade: number;
   } | null>(null);
 
-  // Modal para adicionar item avulso manual (sem código ou produto pesável/balcão)
+  // Modal para adicionar item do estoque ou balcão/pesável
   const [modalItemManual, setModalItemManual] = useState(false);
   const [manualNome, setManualNome] = useState('');
   const [manualQtd, setManualQtd] = useState('1');
   const [manualPreco, setManualPreco] = useState('');
+  const [buscaEstoqueModal, setBuscaEstoqueModal] = useState('');
+  const [itemManualSelecionadoEstoque, setItemManualSelecionadoEstoque] = useState<ItemEstoque | null>(null);
+
+  // Filtro de produtos do estoque para o modal de Item Balcão
+  const produtosEstoqueModal = useMemo(() => {
+    const lista = estoque || [];
+    if (!buscaEstoqueModal.trim()) {
+      return lista.slice(0, 10);
+    }
+    const termo = buscaEstoqueModal.toLowerCase().trim();
+    return lista.filter((e) => {
+      return (
+        e.nome.toLowerCase().includes(termo) ||
+        e.codigo.toLowerCase().includes(termo) ||
+        (e.codigo_barras && e.codigo_barras.toLowerCase().includes(termo)) ||
+        (e.marca && e.marca.toLowerCase().includes(termo))
+      );
+    }).slice(0, 20);
+  }, [buscaEstoqueModal, estoque]);
 
   // Refs de Câmera e Barcode Scanner
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -484,7 +503,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     }
   }, [itensNovaCompra]);
 
-  // Adicionar item avulso manual (para produtos pesáveis, balcão de frios ou sem código de barras)
+  // Adicionar item do estoque / balcão à lista de compras
   const handleAdicionarItemManual = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualNome.trim()) return;
@@ -492,8 +511,12 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     const preco = parseFloat(manualPreco.replace(',', '.')) || 0;
     const sub = Number((qtd * preco).toFixed(2));
 
+    const codigoFinal = itemManualSelecionadoEstoque
+      ? itemManualSelecionadoEstoque.codigo
+      : `AVULSO_${Date.now()}`;
+
     const novoItem: CompraFiadoItem = {
-      codigo: `AVULSO_${Date.now()}`,
+      codigo: codigoFinal,
       nome: manualNome.trim(),
       quantidade: qtd,
       preco_unitario: preco,
@@ -501,11 +524,34 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     };
 
     tocarBeepCaixa();
-    setItensNovaCompra((prev) => [...prev, novoItem]);
+    setItensNovaCompra((prev) => {
+      const idx = prev.findIndex((i) => i.codigo === novoItem.codigo && i.nome === novoItem.nome);
+      if (idx !== -1) {
+        const atual = prev[idx];
+        const novaQtd = Number(atual.quantidade) + Number(novoItem.quantidade);
+        const novo = [...prev];
+        novo[idx] = {
+          ...atual,
+          quantidade: novaQtd,
+          subtotal: Number((novaQtd * atual.preco_unitario).toFixed(2)),
+        };
+        return novo;
+      }
+      return [...prev, novoItem];
+    });
+
     setManualNome('');
     setManualQtd('1');
     setManualPreco('');
+    setItemManualSelecionadoEstoque(null);
+    setBuscaEstoqueModal('');
     setModalItemManual(false);
+  };
+
+  const selecionarProdutoEstoqueDireto = (prod: ItemEstoque) => {
+    setItemManualSelecionadoEstoque(prod);
+    setManualNome(prod.nome);
+    setManualPreco(Number(prod.preco_venda || 0).toFixed(2));
   };
 
   // Abrir Modal de Nova Compra resetando estados
@@ -1986,26 +2032,243 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
         </div>
       )}
 
-      {/* MINI-MODAL PARA ADICIONAR ITEM AVULSO / MANUAL */}
+      {/* MODAL DE BUSCA NO ESTOQUE & ITEM BALCÃO / PESÁVEL */}
       {modalItemManual && (
         <div className="modal-overlay" style={{ zIndex: 10005 }}>
-          <div className="modal-container" style={{ maxWidth: '360px', padding: '18px' }}>
-            <h4 style={{ margin: '0 0 12px 0', fontSize: '0.96rem', color: '#0f172a' }}>
-              ➕ Adicionar Item Balcão / Pesável
-            </h4>
+          <div
+            className="modal-container"
+            style={{
+              maxWidth: '520px',
+              width: '95%',
+              padding: '20px',
+              maxHeight: '92vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.25)',
+              borderRadius: '16px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}>
+                <span style={{ fontSize: '1.25rem' }}>📦</span>
+                <span>Buscar no Estoque / Item Balcão</span>
+              </h4>
+              <button
+                type="button"
+                onClick={() => {
+                  setModalItemManual(false);
+                  setItemManualSelecionadoEstoque(null);
+                  setBuscaEstoqueModal('');
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '1.25rem',
+                  cursor: 'pointer',
+                  color: '#64748b',
+                  padding: '4px',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* BARRA DE PESQUISA DO ESTOQUE */}
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '5px' }}>
+                🔍 Digite para pesquisar produtos no estoque:
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Nome do produto, marca ou código de barras..."
+                  value={buscaEstoqueModal}
+                  onChange={(e) => setBuscaEstoqueModal(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    border: '2px solid #0284c7',
+                    fontSize: '0.92rem',
+                    outline: 'none',
+                    boxShadow: '0 0 0 3px rgba(2, 132, 199, 0.15)',
+                    background: '#ffffff',
+                  }}
+                />
+                {buscaEstoqueModal && (
+                  <button
+                    type="button"
+                    onClick={() => setBuscaEstoqueModal('')}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: '#e2e8f0',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '20px',
+                      height: '20px',
+                      fontSize: '0.7rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#475569',
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* LISTA DE PRODUTOS DO ESTOQUE */}
+            <div
+              style={{
+                flex: '1 1 auto',
+                maxHeight: '200px',
+                overflowY: 'auto',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                padding: '6px',
+                background: '#f8fafc',
+                marginBottom: '14px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+              }}
+            >
+              {produtosEstoqueModal.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', fontSize: '0.84rem', color: '#64748b' }}>
+                  Nenhum produto encontrado com "{buscaEstoqueModal}".<br />
+                  <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+                    Você pode preencher o formulário abaixo para lançar como item avulso!
+                  </span>
+                </div>
+              ) : (
+                produtosEstoqueModal.map((prod) => {
+                  const isSelecionado = itemManualSelecionadoEstoque?.codigo === prod.codigo;
+                  return (
+                    <div
+                      key={prod.codigo + (prod.lote || '')}
+                      onClick={() => selecionarProdutoEstoqueDireto(prod)}
+                      style={{
+                        padding: '8px 12px',
+                        background: isSelecionado ? '#eff6ff' : '#ffffff',
+                        border: isSelecionado ? '2px solid #2563eb' : '1px solid #e2e8f0',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        transition: 'all 0.15s ease',
+                        boxShadow: isSelecionado ? '0 2px 8px rgba(37, 99, 235, 0.15)' : 'none',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                        {prod.foto ? (
+                          <img
+                            src={prod.foto}
+                            alt={prod.nome}
+                            style={{ width: '36px', height: '36px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              width: '36px',
+                              height: '36px',
+                              borderRadius: '6px',
+                              background: '#f1f5f9',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '1.1rem',
+                              flexShrink: 0,
+                            }}
+                          >
+                            📦
+                          </div>
+                        )}
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, fontSize: '0.86rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {prod.nome}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {prod.marca ? `${prod.marca} • ` : ''}Estoque: <b style={{ color: '#0f172a' }}>{prod.quantidade} un</b>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                        <span style={{ fontWeight: 800, fontSize: '0.92rem', color: '#047857' }}>
+                          R$ {Number(prod.preco_venda || 0).toFixed(2)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selecionarProdutoEstoqueDireto(prod);
+                          }}
+                          style={{
+                            background: isSelecionado ? '#2563eb' : '#059669',
+                            color: '#ffffff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '4px 10px',
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          {isSelecionado ? '✓ Escolhido' : '+ Selecionar'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* FORMULÁRIO DE CONFIRMAÇÃO DO ITEM */}
             <form onSubmit={handleAdicionarItemManual} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155' }}>Nome do Produto / Item *</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155' }}>
+                  {itemManualSelecionadoEstoque ? '✅ Produto do Estoque Selecionado:' : 'Nome do Item (ou Avulso / Balcão):'}
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: 1kg Queijo Minas, Gelo, Espetinho..."
+                  placeholder="Ex: 1kg Queijo Minas, Gelo, Whisky..."
                   value={manualNome}
-                  onChange={(e) => setManualNome(e.target.value)}
-                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '3px' }}
+                  onChange={(e) => {
+                    setManualNome(e.target.value);
+                    if (itemManualSelecionadoEstoque && e.target.value !== itemManualSelecionadoEstoque.nome) {
+                      setItemManualSelecionadoEstoque(null);
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: itemManualSelecionadoEstoque ? '1.5px solid #2563eb' : '1px solid #cbd5e1',
+                    fontSize: '0.86rem',
+                    marginTop: '3px',
+                    background: itemManualSelecionadoEstoque ? '#eff6ff' : '#ffffff',
+                    fontWeight: itemManualSelecionadoEstoque ? 700 : 500,
+                  }}
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '8px' }}>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155' }}>Quantidade *</label>
                   <input
@@ -2016,7 +2279,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                     placeholder="1"
                     value={manualQtd}
                     onChange={(e) => setManualQtd(e.target.value)}
-                    style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '3px' }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.88rem', marginTop: '3px' }}
                   />
                 </div>
                 <div>
@@ -2025,26 +2288,72 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
                     type="number"
                     step="0.01"
                     required
+                    min="0.01"
                     placeholder="0,00"
                     value={manualPreco}
                     onChange={(e) => setManualPreco(e.target.value)}
-                    style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', marginTop: '3px' }}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.88rem', marginTop: '3px' }}
                   />
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+
+              {/* SUBTOTAL PREVIEW */}
+              <div
+                style={{
+                  background: '#f1f5f9',
+                  borderRadius: '8px',
+                  padding: '9px 14px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '0.84rem',
+                  border: '1px solid #e2e8f0',
+                }}
+              >
+                <span style={{ color: '#475569', fontWeight: 600 }}>Total deste Item:</span>
+                <span style={{ fontWeight: 800, color: '#047857', fontSize: '1rem' }}>
+                  R$ {((parseFloat(manualQtd.replace(',', '.')) || 0) * (parseFloat(manualPreco.replace(',', '.')) || 0)).toFixed(2)}
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                 <button
                   type="button"
-                  onClick={() => setModalItemManual(false)}
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f1f5f9', color: '#475569', fontWeight: 600 }}
+                  onClick={() => {
+                    setModalItemManual(false);
+                    setItemManualSelecionadoEstoque(null);
+                    setBuscaEstoqueModal('');
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '11px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: '#ffffff',
+                    color: '#475569',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                  }}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  style={{ flex: 1, padding: '8px', borderRadius: '6px', border: 'none', background: '#0284c7', color: '#ffffff', fontWeight: 700 }}
+                  style={{
+                    flex: 1.4,
+                    padding: '11px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 10px rgba(2, 132, 199, 0.25)',
+                    fontSize: '0.85rem',
+                  }}
                 >
-                  Adicionar
+                  ✓ Adicionar à Compra
                 </button>
               </div>
             </form>
