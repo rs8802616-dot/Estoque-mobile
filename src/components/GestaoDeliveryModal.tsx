@@ -1462,7 +1462,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   />
                 </div>
 
-                {/* LINKS EXCLUSIVOS DA EQUIPE E CARDÁPIO DIGITAL (COM TOKENS SECRETOS DA LOJA) */}
+                {/* LINKS EXCLUSIVOS DA LOJA E CARDÁPIO DIGITAL */}
                 {lojaAtual && (() => {
                   const linksLoja = obterLinksExclusivosLoja(lojaAtual);
                   const itensLinks = [
@@ -1475,29 +1475,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     },
                     {
                       id: 'admin',
-                      label: '👔 Painel Gerente / Admin (token_admin)',
+                      label: '🔑 Link Oficial da Loja (Admin & Funcionários)',
                       url: linksLoja.admin,
-                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
-                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
-                    },
-                    {
-                      id: 'garcom',
-                      label: '🍽️ Painel do Garçom no Salão (token_garcom)',
-                      url: linksLoja.garcom,
-                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
-                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
-                    },
-                    {
-                      id: 'cozinha',
-                      label: '👨‍🍳 Tela de Preparo KDS da Cozinha (token_cozinha)',
-                      url: linksLoja.cozinha,
-                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
-                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
-                    },
-                    {
-                      id: 'caixa',
-                      label: '🛒 Operação do Caixa e Fechamento (token_caixa)',
-                      url: linksLoja.caixa,
                       cor: 'bg-slate-50 border-slate-200 text-slate-800',
                       btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
                     },
@@ -1508,14 +1487,14 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                       <div className="flex items-center justify-between">
                         <span className="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
                           <KeyRound className="w-4 h-4 text-purple-600" />
-                          <span>Links Exclusivos da Equipe & Cardápio</span>
+                          <span>Links da Loja & Cardápio</span>
                         </span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">
-                          Tokens Protegidos
+                          Token Protegido
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-600 leading-tight">
-                        Copie com 1 clique o link correspondente para cada função da sua loja:
+                        O Admin e todos os funcionários cadastrados entram pelo mesmo Link Oficial da Loja:
                       </p>
                       <div className="space-y-2">
                         {itensLinks.map((item) => (

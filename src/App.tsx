@@ -383,8 +383,8 @@ export default function App() {
     urlParamsAtivo?.get('loja_id') ||
     (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
 
-  // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel e sem portal)
-  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo);
+  // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel, sem portal e sem token)
+  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo && !tokenParamAtivo);
 
   // D. Link Secreto do Dono (?portal=master&token=master_9k2m8x7p)
   const isPortalMasterRoute = Boolean(
@@ -2535,7 +2535,7 @@ export default function App() {
     if (!loja) return;
     if (
       !confirm(
-        `Deseja gerar 4 NOVOS tokens secretos (Admin, Garçom, Cozinha, Caixa) para a loja "${loja.nome}"?\n\nOs links antigos da equipe desta loja deixarão de funcionar imediatamente.`
+        `Deseja gerar um NOVO token secreto para o Link Oficial da loja "${loja.nome}"?\n\nO link antigo da loja deixará de funcionar imediatamente.`
       )
     ) {
       return;
@@ -6524,9 +6524,9 @@ export default function App() {
     );
   }
 
-  // RESOLUÇÃO E VALIDAÇÃO DE TOKENS PARA PAINÉIS DA EQUIPE (?loja=slug&painel=...&token=...) E PORTAL MASTER (?portal=master&token=...)
+  // RESOLUÇÃO E VALIDAÇÃO DO TOKEN DO LINK ÚNICO DA LOJA (?loja=slug&painel=admin&token=...) E PORTAL MASTER (?portal=master&token=...)
   const lojaAlvoUrlValidada: Supermercado | null = (() => {
-    if (!publicLojaSlugAtivo || !painelParamAtivo || !tokenParamAtivo) return null;
+    if (!publicLojaSlugAtivo || !tokenParamAtivo) return null;
     const slugLimpo = publicLojaSlugAtivo.trim().toLowerCase();
     const encontrada = listaSupermercados.find(
       (l) =>
@@ -6538,20 +6538,13 @@ export default function App() {
     if (!encontrada) return null;
 
     const comTokens = garantirTokensLoja(encontrada);
-    const painelLower = painelParamAtivo.trim().toLowerCase();
-    const tokenEsperado =
-      painelLower === 'admin'
-        ? comTokens.token_admin
-        : painelLower === 'garcom'
-        ? comTokens.token_garcom
-        : painelLower === 'cozinha'
-        ? comTokens.token_cozinha
-        : painelLower === 'caixa'
-        ? comTokens.token_caixa
-        : null;
+    const tokenValidoDaLoja =
+      tokenParamAtivo === comTokens.token_admin ||
+      tokenParamAtivo === comTokens.token_caixa ||
+      tokenParamAtivo === comTokens.token_garcom ||
+      tokenParamAtivo === comTokens.token_cozinha;
 
-    // 1. Validação Dupla de Token: compara tokenParam === targetLoja.token_painel (100% igual)
-    if (!tokenEsperado || tokenParamAtivo !== tokenEsperado) {
+    if (!tokenValidoDaLoja) {
       return null;
     }
 
@@ -9907,7 +9900,7 @@ export default function App() {
                                 >
                                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
                                     <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#0f172a' }}>
-                                      🔗 Links Exclusivos da Equipe & Cardápio (Slug: <code style={{ color: '#0284c7' }}>{loja.slug || loja.id}</code>)
+                                      🔗 Link Oficial de Acesso da Loja (Slug: <code style={{ color: '#0284c7' }}>{loja.slug || loja.id}</code>)
                                     </span>
                                     <button
                                       type="button"
@@ -9922,18 +9915,17 @@ export default function App() {
                                         fontWeight: 700,
                                         cursor: 'pointer',
                                       }}
-                                      title="Gerar 4 novos tokens randômicos secretos para esta loja"
+                                      title="Gerar um novo token secreto para o link desta loja"
                                     >
-                                      🔄 Regenerar Tokens
+                                      🔄 Regenerar Token da Loja
                                     </button>
                                   </div>
                                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                     {[
-                                      { key: `${loja.id}_cardapio`, label: '🛵 Cardápio Cliente', url: linksExclusivos.cardapio, bg: '#ecfdf5', color: '#047857', border: '#6ee7b7' },
-                                      { key: `${loja.id}_admin`, label: '👔 Link Admin', url: linksExclusivos.admin, bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
-                                      { key: `${loja.id}_caixa`, label: '🛒 Link Caixa', url: linksExclusivos.caixa, bg: '#f0f9ff', color: '#0369a1', border: '#7dd3fc' },
-                                      { key: `${loja.id}_garcom`, label: '🍽️ Link Garçom', url: linksExclusivos.garcom, bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
-                                      { key: `${loja.id}_cozinha`, label: '👨‍🍳 Link Cozinha', url: linksExclusivos.cozinha, bg: '#fce7f3', color: '#9d174d', border: '#f9a8d4' },
+                                      { key: `${loja.id}_admin`, label: '🔑 Copiar Link da Loja (Admin & Equipe)', url: linksExclusivos.admin, bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
+                                      ...(loja.permissoesLoja?.delivery !== false
+                                        ? [{ key: `${loja.id}_cardapio`, label: '🛵 Cardápio Cliente', url: linksExclusivos.cardapio, bg: '#ecfdf5', color: '#047857', border: '#6ee7b7' }]
+                                        : []),
                                     ].map((btn) => {
                                       const copiado = linkCopiadoFeedback === btn.key;
                                       return (
@@ -10565,9 +10557,10 @@ export default function App() {
         </div>
 
         <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px' }}>
-          {/* LINKS EXCLUSIVOS DA EQUIPE (ADMIN, CAIXA, GARÇOM, COZINHA, CARDÁPIO) */}
+          {/* LINK ÚNICO OFICIAL DA LOJA (ADMIN & FUNCIONÁRIOS CADASTRADOS) */}
           {lojaAtualObj && (() => {
             const linksEquipeModal = obterLinksExclusivosLoja(lojaAtualObj, window.location.origin);
+            const copiado = linkCopiadoFeedback === 'op_admin_unico';
             return (
               <div
                 style={{
@@ -10577,70 +10570,56 @@ export default function App() {
                   border: '1px solid #bfdbfe',
                   marginBottom: '20px',
                   boxShadow: '0 4px 14px rgba(37, 99, 235, 0.06)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '14px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
-                  <div>
-                    <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#1e3a8a' }}>
-                      🔗 Links Exclusivos da Equipe & Gerência ({lojaAtualObj.nome})
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '2px' }}>
-                      Envie para cada colaborador apenas o link exclusivo da sua função (com token de segurança embutido).
-                    </div>
+                <div style={{ flex: '1 1 320px', minWidth: 0 }}>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1e3a8a' }}>
+                    🔑 Link Oficial de Acesso da Loja ({lojaAtualObj.nome})
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: '#475569', marginTop: '3px' }}>
+                    Todos os operadores e funcionários cadastrados abaixo entram usando este mesmo link da loja (informando o CPF/Login e Senha/PIN individuais).
+                  </div>
+                  <div
+                    style={{
+                      marginTop: '8px',
+                      background: '#ffffff',
+                      border: '1px solid #bfdbfe',
+                      borderRadius: '8px',
+                      padding: '6px 10px',
+                      fontSize: '0.72rem',
+                      color: '#1e293b',
+                      fontFamily: 'monospace',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {linksEquipeModal.admin}
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '8px' }}>
-                  {[
-                    { key: 'op_admin', label: '👑 Link Gerente / Admin', url: linksEquipeModal.admin, cor: '#1d4ed8', bg: '#eff6ff', border: '#bfdbfe' },
-                    { key: 'op_caixa', label: '💻 Link Caixa / PDV', url: linksEquipeModal.caixa, cor: '#0369a1', bg: '#f0f9ff', border: '#bae6fd' },
-                    { key: 'op_garcom', label: '🍽️ Link Garçom (Salão)', url: linksEquipeModal.garcom, cor: '#6d28d9', bg: '#f5f3ff', border: '#ddd6fe' },
-                    { key: 'op_cozinha', label: '👨‍🍳 Link Cozinha (KDS)', url: linksEquipeModal.cozinha, cor: '#b45309', bg: '#fffbeb', border: '#fde68a' },
-                    ...(lojaAtualObj.permissoes?.delivery !== false
-                      ? [{ key: 'op_cardapio', label: '🛵 Cardápio Digital (Clientes)', url: linksEquipeModal.cardapio, cor: '#047857', bg: '#ecfdf5', border: '#a7f3d0' }]
-                      : []),
-                  ].map((item) => {
-                    const copiado = linkCopiadoFeedback === item.key;
-                    return (
-                      <div
-                        key={item.key}
-                        style={{
-                          background: '#ffffff',
-                          border: `1px solid ${item.border}`,
-                          borderRadius: '10px',
-                          padding: '8px 10px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '8px',
-                        }}
-                      >
-                        <div style={{ minWidth: 0, flex: 1 }}>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 800, color: item.cor }}>{item.label}</div>
-                          <div style={{ fontSize: '0.64rem', color: '#64748b', fontFamily: 'monospace', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {item.url}
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => copiarLinkComFeedback(item.key, item.url)}
-                          style={{
-                            background: copiado ? '#10b981' : item.bg,
-                            color: copiado ? '#ffffff' : item.cor,
-                            border: `1px solid ${copiado ? '#10b981' : item.border}`,
-                            borderRadius: '8px',
-                            padding: '5px 10px',
-                            fontSize: '0.7rem',
-                            fontWeight: 800,
-                            cursor: 'pointer',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {copiado ? '✓ Copiado!' : '📋 Copiar'}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => copiarLinkComFeedback('op_admin_unico', linksEquipeModal.admin)}
+                  style={{
+                    background: copiado ? '#10b981' : '#1d4ed8',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '10px 18px',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 12px rgba(29, 78, 216, 0.2)',
+                  }}
+                >
+                  {copiado ? '✓ Link da Loja Copiado!' : '📋 Copiar Link da Loja'}
+                </button>
               </div>
             );
           })()}

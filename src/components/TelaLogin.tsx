@@ -425,16 +425,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   };
 
   const isMasterMode = modoPortal === 'master';
-  const nomePainelLabel =
-    painelAlvo === 'admin'
-      ? 'Painel do Gerente / Admin'
-      : painelAlvo === 'garcom'
-      ? 'Painel do Garçom (Salão)'
-      : painelAlvo === 'cozinha'
-      ? 'Painel KDS da Cozinha'
-      : painelAlvo === 'caixa'
-      ? 'Operação de Caixa & Fechamento'
-      : 'Acesso da Equipe da Loja';
+  const nomePainelLabel = 'Acesso Oficial da Loja (Admin & Equipe)';
 
   return (
     <div
