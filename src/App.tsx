@@ -74,6 +74,16 @@ import {
   normalizarSlugLoja,
 } from './types';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
+import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
+import {
+  MIN_CARACTERES_SENHA,
+  criarHashComSalt,
+  validarPoliticaSenha,
+  sanitizeUserForSession,
+  obterLogsAuditoriaLogin,
+  limparLogsAuditoriaLogin,
+  revogarLockoutLoja,
+} from './utils/security';
 import { CarrinhoVendaModal } from './components/CarrinhoVendaModal';
 import { RelatorioVendasModal } from './components/RelatorioVendasModal';
 import { GraficosVendasModal } from './components/GraficosVendasModal';
@@ -696,6 +706,9 @@ export default function App() {
   const [regLojaNome, setRegLojaNome] = useState<string>('');
   const [regLojaCnpj, setRegLojaCnpj] = useState<string>('');
   const [regLojaSenha, setRegLojaSenha] = useState<string>('');
+  const [regLojaConfirmarSenha, setRegLojaConfirmarSenha] = useState<string>('');
+  const [lojaGerenciandoSenha, setLojaGerenciandoSenha] = useState<Supermercado | null>(null);
+  const [modalAuditoriaLoginVisivel, setModalAuditoriaLoginVisivel] = useState<boolean>(false);
   const [regLojaLimiteCaixas, setRegLojaLimiteCaixas] = useState<number>(5);
   const [regLojaLimiteSupervisores, setRegLojaLimiteSupervisores] = useState<number>(2);
   const [regLojaPermissoes, setRegLojaPermissoes] = useState<PermissoesLoja>(PERMISSOES_LOJA_PADRAO);
@@ -796,6 +809,11 @@ export default function App() {
   const [regOpNome, setRegOpNome] = useState<string>('');
   const [regOpCpf, setRegOpCpf] = useState<string>('');
   const [regOpSenha, setRegOpSenha] = useState<string>('');
+  const [regOpConfirmarSenha, setRegOpConfirmarSenha] = useState<string>('');
+  const [operadorAlterandoSenha, setOperadorAlterandoSenha] = useState<OperadorCaixa | null>(null);
+  const [novaSenhaOpModal, setNovaSenhaOpModal] = useState<string>('');
+  const [confirmarSenhaOpModal, setConfirmarSenhaOpModal] = useState<string>('');
+  const [erroSenhaOpModal, setErroSenhaOpModal] = useState<string>('');
   const [regOpCargo, setRegOpCargo] = useState<'Operador de Caixa' | 'Supervisor' | 'Administrador'>('Operador de Caixa');
   const [regOpPermissoes, setRegOpPermissoes] = useState<PermissoesOperador>(PERMISSOES_CAIXA_PADRAO);
   const [msgRegOp, setMsgRegOp] = useState<React.ReactNode>('');
@@ -2268,6 +2286,7 @@ export default function App() {
     setRegLojaNome('');
     setRegLojaCnpj('');
     setRegLojaSenha('');
+    setRegLojaConfirmarSenha('');
     setRegLojaLimiteCaixas(5);
     setRegLojaLimiteSupervisores(2);
     setRegLojaPermissoes(PERMISSOES_LOJA_PADRAO);
@@ -2369,21 +2388,37 @@ export default function App() {
     setTimeout(() => setMsgRegLoja(''), 4000);
   };
 
-  const salvarNovoSupermercado = () => {
+  const salvarNovoSupermercado = async () => {
     const nome = regLojaNome.trim();
     const cnpj = regLojaCnpj.trim();
     const senha = regLojaSenha.trim();
+    const confirmarSenha = regLojaConfirmarSenha.trim();
 
-    if (!nome || !cnpj || !senha) {
-      setMsgRegLoja(<span style={{ color: 'var(--erro)' }}>Preencha todos os campos!</span>);
+    const idLoja = lojaEditandoId || 'loja_' + cnpj.replace(/\D/g, '');
+    const lojaExistente = listaSupermercados.find((l) => l.id === idLoja);
+
+    if (!nome || !cnpj) {
+      setMsgRegLoja(<span style={{ color: 'var(--erro)' }}>Preencha o Nome e o CNPJ da loja!</span>);
       return;
     }
 
-    const idLoja = lojaEditandoId || 'loja_' + cnpj.replace(/\D/g, '');
+    let senhaHashFinal = lojaExistente?.senhaHash;
+    let senhaSaltFinal = lojaExistente?.senhaSalt;
+
+    // Se for nova loja ou se digitou nova senha na edição, exige política obrigatória (mínimo 6 caracteres + confirmação dupla)
+    if (!lojaExistente || senha.length > 0 || confirmarSenha.length > 0) {
+      const validacao = validarPoliticaSenha(senha, confirmarSenha);
+      if (!validacao.valida) {
+        setMsgRegLoja(<span style={{ color: 'var(--erro)', fontWeight: 700 }}>⚠️ {validacao.erro}</span>);
+        return;
+      }
+      const gerado = await criarHashComSalt(senha);
+      senhaHashFinal = gerado.senhaHash;
+      senhaSaltFinal = gerado.senhaSalt;
+    }
+
     const limCaixasNum = Math.max(0, Number(regLojaLimiteCaixas) || 0);
     const limSupNum = Math.max(0, Number(regLojaLimiteSupervisores) || 0);
-
-    const lojaExistente = listaSupermercados.find((l) => l.id === idLoja);
     const slugCalculado = lojaExistente?.slug || normalizarSlugLoja(nome);
 
     const dadosLoja: Supermercado = garantirTokensLoja(
@@ -2392,7 +2427,11 @@ export default function App() {
         nome,
         slug: slugCalculado,
         cnpj,
-        senha,
+        senha: '', // Zero Plaintext: apenas o hash SHA-256 + Salt é armazenado
+        senhaAdmin: '',
+        senhaHash: senhaHashFinal,
+        senhaSalt: senhaSaltFinal,
+        senha_revogada: false,
         permissoesLoja: regLojaPermissoes,
         limiteCaixas: limCaixasNum,
         limiteSupervisores: limSupNum,
@@ -2404,22 +2443,13 @@ export default function App() {
         token_cozinha: lojaExistente?.token_cozinha,
         token_caixa: lojaExistente?.token_caixa,
       },
-      !lojaExistente // Gera 4 novos tokens randômicos secretos na criação da loja
+      !lojaExistente
     );
 
     let novaLista = [...listaSupermercados];
     const index = novaLista.findIndex((l) => l.id === idLoja);
     if (index !== -1) {
-      novaLista[index] = garantirTokensLoja({
-        ...novaLista[index],
-        nome,
-        slug: novaLista[index].slug || slugCalculado,
-        cnpj,
-        senha,
-        permissoesLoja: regLojaPermissoes,
-        limiteCaixas: limCaixasNum,
-        limiteSupervisores: limSupNum,
-      });
+      novaLista[index] = dadosLoja;
     } else {
       novaLista.push(dadosLoja);
     }
@@ -2465,6 +2495,7 @@ export default function App() {
     setRegLojaNome('');
     setRegLojaCnpj('');
     setRegLojaSenha('');
+    setRegLojaConfirmarSenha('');
     setRegLojaPermissoes(PERMISSOES_LOJA_PADRAO);
 
     setTimeout(() => {
@@ -2556,21 +2587,56 @@ export default function App() {
   };
 
   const revogarBloqueiosTentativasLogin = () => {
-    localStorage.removeItem('bloqueio_login_timestamp');
-    localStorage.removeItem('tentativas_falhas_login');
+    revogarLockoutLoja();
+    listaSupermercados.forEach((l) => revogarLockoutLoja(l.id));
     setMsgRegLoja(
       <span style={{ color: '#059669', fontWeight: 700 }}>
-        🔓 Bloqueio temporário por tentativas falhas (Lockout) revogado com sucesso pelo SuperAdmin!
+        🔓 Bloqueio temporário por tentativas falhas (15 min) revogado com sucesso pelo SuperAdmin!
       </span>
     );
     setTimeout(() => setMsgRegLoja(''), 4000);
+  };
+
+  const handleAtualizarLojaGerenciarSenha = (lojaAtualizada: Supermercado, resumoAcao: string) => {
+    const novaLista = listaSupermercados.map((l) => (l.id === lojaAtualizada.id ? lojaAtualizada : l));
+    setListaSupermercados(novaLista);
+    localStorage.setItem('lista_supermercados_app', JSON.stringify(novaLista));
+    localStorage.setItem(`config_supermercado_${lojaAtualizada.id}`, JSON.stringify(lojaAtualizada));
+    salvarSupermercadoFirestore(lojaAtualizada);
+    setLojaGerenciandoSenha(lojaAtualizada);
+    setMsgRegLoja(<span style={{ color: '#059669', fontWeight: 700 }}>{resumoAcao}</span>);
+    setTimeout(() => setMsgRegLoja(''), 4500);
+  };
+
+  const handleRedefinirSenhaLojaRevogada = (lojaId: string, senhaHash: string, senhaSalt: string) => {
+    const novaLista = listaSupermercados.map((l) => {
+      if (l.id === lojaId) {
+        return {
+          ...l,
+          senha: '',
+          senhaAdmin: '',
+          senhaHash,
+          senhaSalt,
+          senha_revogada: false,
+        };
+      }
+      return l;
+    });
+    setListaSupermercados(novaLista);
+    localStorage.setItem('lista_supermercados_app', JSON.stringify(novaLista));
+    const lojaAtualizada = novaLista.find((l) => l.id === lojaId);
+    if (lojaAtualizada) {
+      localStorage.setItem(`config_supermercado_${lojaId}`, JSON.stringify(lojaAtualizada));
+      salvarSupermercadoFirestore(lojaAtualizada);
+    }
   };
 
   const prepararEdicaoLoja = (loja: Supermercado) => {
     setLojaEditandoId(loja.id);
     setRegLojaNome(loja.nome || '');
     setRegLojaCnpj(loja.cnpj || '');
-    setRegLojaSenha(loja.senha || '');
+    setRegLojaSenha('');
+    setRegLojaConfirmarSenha('');
     setRegLojaLimiteCaixas(loja.limiteCaixas !== undefined && loja.limiteCaixas !== null ? loja.limiteCaixas : 5);
     setRegLojaLimiteSupervisores(loja.limiteSupervisores !== undefined && loja.limiteSupervisores !== null ? loja.limiteSupervisores : 2);
     setRegLojaPermissoes({
@@ -2863,17 +2929,34 @@ export default function App() {
     }
   };
 
-  const salvarOperador = () => {
+  const salvarOperador = async () => {
     const nome = regOpNome.trim();
     const cpf = regOpCpf.trim();
     const pin = regOpSenha.trim();
+    const confirmarPin = regOpConfirmarSenha.trim();
 
     if (!nome || !cpf) {
-      setMsgRegOp(<span style={{ color: 'var(--erro)' }}>Preencha Nome e CPF/Usuário do operador!</span>);
+      setMsgRegOp(<span style={{ color: 'var(--erro)' }}>Preencha Nome e CPF/Usuário do funcionário!</span>);
       return;
     }
 
     const idOp = opEditandoId || 'op_' + Date.now();
+    const opExistente = listaOperadores.find((o) => o.id === idOp);
+
+    let senhaHashFinal = opExistente?.senhaHash;
+    let senhaSaltFinal = opExistente?.senhaSalt;
+
+    // Se for novo funcionário ou se digitou nova senha na edição, exige política obrigatória (mínimo 6 caracteres + confirmação dupla)
+    if (!opExistente || pin.length > 0 || confirmarPin.length > 0) {
+      const validacao = validarPoliticaSenha(pin, confirmarPin);
+      if (!validacao.valida) {
+        setMsgRegOp(<span style={{ color: 'var(--erro)', fontWeight: 700 }}>⚠️ {validacao.erro}</span>);
+        return;
+      }
+      const gerado = await criarHashComSalt(pin);
+      senhaHashFinal = gerado.senhaHash;
+      senhaSaltFinal = gerado.senhaSalt;
+    }
 
     // Verificação de Limites de Cadastros configurados pela Dona do App
     const lojaAtual = listaSupermercados.find((l) => l.id === supermercadoAtual);
@@ -2906,10 +2989,12 @@ export default function App() {
       nome,
       cargo: regOpCargo,
       cpfOuUsuario: cpf,
-      pinSenha: pin || '1234',
+      pinSenha: '', // Zero Plaintext: senha nunca fica em texto puro
+      senhaHash: senhaHashFinal,
+      senhaSalt: senhaSaltFinal,
       permissoes: regOpPermissoes,
-      ativo: true,
-      dataCadastro: new Date().toLocaleDateString('pt-BR'),
+      ativo: opExistente ? opExistente.ativo : true,
+      dataCadastro: opExistente?.dataCadastro || new Date().toLocaleDateString('pt-BR'),
     };
 
     let novaLista = [...listaOperadores];
@@ -2924,24 +3009,61 @@ export default function App() {
     localStorage.setItem(`operadores_caixa_${supermercadoAtual}`, JSON.stringify(novaLista));
     salvarOperadorFirestore(novoOp);
 
-    setMsgRegOp(<span style={{ color: 'var(--sucesso)' }}>✅ Funcionário / Operador salvo com sucesso!</span>);
+    setMsgRegOp(<span style={{ color: 'var(--sucesso)', fontWeight: 700 }}>✅ Funcionário salvo com senha criptografada (SHA-256 + Salt)!</span>);
     setOpEditandoId(null);
     setRegOpNome('');
     setRegOpCpf('');
     setRegOpSenha('');
+    setRegOpConfirmarSenha('');
     setRegOpCargo('Operador de Caixa');
     setRegOpPermissoes(PERMISSOES_CAIXA_PADRAO);
 
     setTimeout(() => {
       setMsgRegOp('');
-    }, 2000);
+    }, 2500);
+  };
+
+  const salvarNovaSenhaRapidaOperador = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!operadorAlterandoSenha) return;
+    setErroSenhaOpModal('');
+
+    const validacao = validarPoliticaSenha(novaSenhaOpModal, confirmarSenhaOpModal);
+    if (!validacao.valida) {
+      setErroSenhaOpModal(validacao.erro || 'Senha inválida.');
+      return;
+    }
+
+    const { senhaHash, senhaSalt } = await criarHashComSalt(novaSenhaOpModal.trim());
+    const opAtualizado: OperadorCaixa = {
+      ...operadorAlterandoSenha,
+      pinSenha: '',
+      senhaHash,
+      senhaSalt,
+    };
+
+    const novaLista = listaOperadores.map((o) => (o.id === opAtualizado.id ? opAtualizado : o));
+    setListaOperadores(novaLista);
+    localStorage.setItem(`operadores_caixa_${supermercadoAtual}`, JSON.stringify(novaLista));
+    salvarOperadorFirestore(opAtualizado);
+
+    setOperadorAlterandoSenha(null);
+    setNovaSenhaOpModal('');
+    setConfirmarSenhaOpModal('');
+    setMsgRegOp(
+      <span style={{ color: 'var(--sucesso)', fontWeight: 700 }}>
+        🔑 Nova senha criptografada definida com sucesso para "{opAtualizado.nome}"!
+      </span>
+    );
+    setTimeout(() => setMsgRegOp(''), 3500);
   };
 
   const prepararEdicaoOperador = (op: OperadorCaixa) => {
     setOpEditandoId(op.id);
     setRegOpNome(op.nome || '');
     setRegOpCpf(op.cpfOuUsuario || '');
-    setRegOpSenha(op.pinSenha || '');
+    setRegOpSenha('');
+    setRegOpConfirmarSenha('');
     setRegOpCargo(op.cargo || 'Operador de Caixa');
     const basePadrao = op.cargo === 'Supervisor' || op.cargo === 'Administrador' ? PERMISSOES_ADMIN_PADRAO : PERMISSOES_CAIXA_PADRAO;
     setRegOpPermissoes({
@@ -2975,7 +3097,8 @@ export default function App() {
   };
 
   // Login & Session Management
-  const handleLoginSucesso = async (sessao: SessaoUsuario) => {
+  const handleLoginSucesso = async (sessaoInput: SessaoUsuario) => {
+    const sessao = sanitizeUserForSession(sessaoInput);
     const novoToken = gerarSessaoToken();
     setSessaoTokenAtivo(novoToken);
     localStorage.setItem('sessao_ativa_token', novoToken);
@@ -9068,7 +9191,7 @@ export default function App() {
               title="Alterar seu usuário e senha Master da Dona do Aplicativo"
             >
               <KeyRound size={15} />
-              <span>Alterar Senha Master</span>
+              <span>🔑 Meu Login & Senha (Dono)</span>
             </button>
 
             <button
@@ -9200,6 +9323,23 @@ export default function App() {
               </button>
               <button
                 type="button"
+                onClick={() => setModalAuditoriaLoginVisivel(true)}
+                style={{
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+                title="Abrir Central de Auditoria de Tentativas de Login"
+              >
+                🛡️ Central de Auditoria
+              </button>
+              <button
+                type="button"
                 onClick={() => setModalCredenciaisDonoVisivel(true)}
                 style={{
                   background: '#9333ea',
@@ -9212,7 +9352,7 @@ export default function App() {
                   cursor: 'pointer',
                 }}
               >
-                🔑 Trocar Senha Master
+                🔑 Meu Login & Senha (Dono)
               </button>
             </div>
           </div>
@@ -9323,7 +9463,7 @@ export default function App() {
                   </div>
                   <div className="grupo-input" style={{ marginBottom: 0 }}>
                     <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                      🔐 Senha do Administrador da Loja
+                      🔐 Nova Senha da Loja (mín. {MIN_CARACTERES_SENHA} dígitos)
                     </label>
                     <div className="linha-input">
                       <input
@@ -9331,10 +9471,11 @@ export default function App() {
                         id="reg-loja-senha"
                         className="input-modal"
                         style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                        placeholder="Senha de acesso da loja"
+                        placeholder={lojaEditandoId ? 'Deixe em branco para manter a atual' : 'Mínimo 6 caracteres'}
                         value={regLojaSenha}
                         onChange={(e) => setRegLojaSenha(e.target.value)}
-                        required
+                        minLength={MIN_CARACTERES_SENHA}
+                        required={!lojaEditandoId}
                       />
                       <button
                         type="button"
@@ -9349,6 +9490,21 @@ export default function App() {
                         </svg>
                       </button>
                     </div>
+                  </div>
+                  <div className="grupo-input" style={{ marginBottom: 0 }}>
+                    <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
+                      🔁 Confirmar Nova Senha
+                    </label>
+                    <input
+                      type={senhaVisivel ? 'text' : 'password'}
+                      className="input-modal"
+                      style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
+                      placeholder="Repita exatamente a senha"
+                      value={regLojaConfirmarSenha}
+                      onChange={(e) => setRegLojaConfirmarSenha(e.target.value)}
+                      minLength={MIN_CARACTERES_SENHA}
+                      required={!lojaEditandoId}
+                    />
                   </div>
                 </div>
 
@@ -9852,27 +10008,21 @@ export default function App() {
                                 flexWrap: 'wrap',
                               }}
                             >
-                              <span>🔑 Senha Loja:</span>
                               <span
                                 style={{
-                                  fontFamily: 'monospace',
-                                  fontWeight: 700,
-                                  background: '#f1f5f9',
+                                  background: loja.senha_revogada ? '#fef3c7' : '#f0fdf4',
+                                  color: loja.senha_revogada ? '#b45309' : '#15803d',
+                                  border: `1px solid ${loja.senha_revogada ? '#fde68a' : '#86efac'}`,
                                   padding: '2px 8px',
                                   borderRadius: '6px',
-                                  border: '1px solid #e2e8f0',
+                                  fontWeight: 800,
+                                  fontSize: '0.73rem',
                                 }}
                               >
-                                {verSenha ? loja.senha || '(sem senha)' : '••••••••'}
+                                {loja.senha_revogada
+                                  ? '⚠️ Senha Revogada (Aguardando Lojista)'
+                                  : '🔐 Criptografada (SHA-256 + Salt)'}
                               </span>
-                              <button
-                                type="button"
-                                onClick={() => toggleVisibilidadeSenhaLoja(loja.id)}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
-                                title="Mostrar / Ocultar Senha"
-                              >
-                                {verSenha ? '👁️' : '🙈'}
-                              </button>
 
                               <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.75rem' }}>
                                 🛒 Caixas: {loja.limiteCaixas !== undefined ? (loja.limiteCaixas === 0 ? '♾️ Ilimitado' : `${loja.limiteCaixas}`) : '5'}
@@ -10004,11 +10154,27 @@ export default function App() {
                               {loja.status === 'bloqueado' ? '🔓 Desbloquear' : '🚫 Bloquear'}
                             </button>
                             <button
+                              type="button"
+                              className="btn-acao-rel"
+                              style={{
+                                background: '#eff6ff',
+                                color: '#1d4ed8',
+                                border: '1px solid #93c5fd',
+                                borderRadius: '8px',
+                                padding: '7px 12px',
+                                fontWeight: 800,
+                              }}
+                              onClick={() => setLojaGerenciandoSenha(loja)}
+                              title="Revogar tempo de bloqueio, revogar senha atual ou definir nova senha"
+                            >
+                              🔑 Gerenciar Senha
+                            </button>
+                            <button
                               className="btn-acao-rel btn-editar-rel"
                               style={{ borderRadius: '8px', padding: '7px 12px', fontWeight: 700 }}
                               onClick={() => prepararEdicaoLoja(loja)}
                             >
-                              ✏️ Editar Plano / Senha
+                              ✏️ Editar Plano
                             </button>
                             <button
                               className="btn-acao-rel btn-excluir-rel"
@@ -10715,15 +10881,31 @@ export default function App() {
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
                 <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                  🔑 PIN / Senha do Caixa
+                  🔑 Nova Senha (mín. {MIN_CARACTERES_SENHA} dígitos)
                 </label>
                 <input
                   type="password"
                   className="input-modal"
                   style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                  placeholder="Ex: 1234"
+                  placeholder={opEditandoId ? 'Em branco p/ manter' : 'Mínimo 6 caracteres'}
                   value={regOpSenha}
                   onChange={(e) => setRegOpSenha(e.target.value)}
+                  minLength={MIN_CARACTERES_SENHA}
+                />
+              </div>
+
+              <div className="grupo-input" style={{ marginBottom: 0 }}>
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
+                  🔁 Confirmar Nova Senha
+                </label>
+                <input
+                  type="password"
+                  className="input-modal"
+                  style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
+                  placeholder="Repita a senha"
+                  value={regOpConfirmarSenha}
+                  onChange={(e) => setRegOpConfirmarSenha(e.target.value)}
+                  minLength={MIN_CARACTERES_SENHA}
                 />
               </div>
 
@@ -11009,6 +11191,27 @@ export default function App() {
                     </div>
 
                     <div className="acoes-relatorio acoes-operador" style={{ gap: '6px' }}>
+                      <button
+                        type="button"
+                        className="btn-acao-rel"
+                        style={{
+                          background: '#eff6ff',
+                          color: '#1d4ed8',
+                          border: '1px solid #93c5fd',
+                          borderRadius: '8px',
+                          padding: '7px 12px',
+                          fontWeight: 800,
+                        }}
+                        onClick={() => {
+                          setOperadorAlterandoSenha(op);
+                          setNovaSenhaOpModal('');
+                          setConfirmarSenhaOpModal('');
+                          setErroSenhaOpModal('');
+                        }}
+                        title="Definir uma nova senha criptografada (mínimo 6 caracteres) para este funcionário"
+                      >
+                        🔑 Alterar Senha
+                      </button>
                       <button
                         className="btn-acao-rel btn-editar-rel"
                         style={{ borderRadius: '8px', padding: '7px 12px', fontWeight: 700 }}
@@ -12615,6 +12818,260 @@ export default function App() {
         </div>
       )}
 
+      {/* MODAL DE GERENCIAMENTO DE SENHA DA LOJA (SUPERADMIN - 3 OPÇÕES) */}
+      <GerenciarSenhaLojaModal
+        loja={lojaGerenciandoSenha}
+        onFechar={() => setLojaGerenciandoSenha(null)}
+        onAtualizarLoja={handleAtualizarLojaGerenciarSenha}
+      />
+
+      {/* MODAL RÁPIDO DE ALTERAR SENHA DE FUNCIONÁRIO (GERENTE DA LOJA) */}
+      {operadorAlterandoSenha && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.82)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 1000000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              width: '100%',
+              maxWidth: '440px',
+              borderRadius: '18px',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.35)',
+              border: '1px solid #cbd5e1',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%)',
+                padding: '16px 20px',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>
+                  🔑 Alterar Senha — {operadorAlterandoSenha.nome}
+                </h3>
+                <span style={{ fontSize: '0.74rem', color: '#bfdbfe' }}>
+                  Login: {operadorAlterandoSenha.cpfOuUsuario} • Mínimo {MIN_CARACTERES_SENHA} caracteres
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOperadorAlterandoSenha(null)}
+                style={{
+                  background: 'rgba(255,255,255,0.18)',
+                  border: 'none',
+                  color: '#ffffff',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  fontWeight: 800,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={salvarNovaSenhaRapidaOperador} style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {erroSenhaOpModal && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 12px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 700 }}>
+                  ⚠️ {erroSenhaOpModal}
+                </div>
+              )}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
+                  Nova Senha (mín. {MIN_CARACTERES_SENHA} caracteres):
+                </label>
+                <input
+                  type="password"
+                  placeholder="Digite a nova senha do funcionário"
+                  value={novaSenhaOpModal}
+                  onChange={(e) => setNovaSenhaOpModal(e.target.value)}
+                  minLength={MIN_CARACTERES_SENHA}
+                  required
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
+                  Confirmar Nova Senha:
+                </label>
+                <input
+                  type="password"
+                  placeholder="Repita a nova senha"
+                  value={confirmarSenhaOpModal}
+                  onChange={(e) => setConfirmarSenhaOpModal(e.target.value)}
+                  minLength={MIN_CARACTERES_SENHA}
+                  required
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '6px' }}>
+                <button
+                  type="button"
+                  onClick={() => setOperadorAlterandoSenha(null)}
+                  style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1', padding: '9px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  style={{ background: '#1d4ed8', color: '#ffffff', border: 'none', padding: '9px 16px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer' }}
+                >
+                  💾 Salvar Nova Senha
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CENTRAL DE AUDITORIA DE TENTATIVAS DE LOGIN (EXCLUSIVO DONO) */}
+      {modalAuditoriaLoginVisivel && (() => {
+        const logsAuditoria = obterLogsAuditoriaLogin();
+        return (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.85)',
+              backdropFilter: 'blur(6px)',
+              zIndex: 1000000,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '16px',
+            }}
+          >
+            <div
+              style={{
+                background: '#ffffff',
+                width: '100%',
+                maxWidth: '680px',
+                maxHeight: '85vh',
+                borderRadius: '20px',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
+                border: '1px solid #cbd5e1',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                  padding: '16px 20px',
+                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>
+                    🛡️ Central de Auditoria de Tentativas de Login
+                  </h3>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                    Monitoramento de acessos, falhas de senha e bloqueios anti-invasão
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {logsAuditoria.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        limparLogsAuditoriaLogin();
+                        setModalAuditoriaLoginVisivel(false);
+                        setTimeout(() => setModalAuditoriaLoginVisivel(true), 50);
+                      }}
+                      style={{
+                        background: '#dc2626',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '5px 10px',
+                        borderRadius: '8px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      🗑️ Limpar Histórico
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setModalAuditoriaLoginVisivel(false)}
+                    style={{
+                      background: 'rgba(255,255,255,0.15)',
+                      border: 'none',
+                      color: '#ffffff',
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                      fontWeight: 800,
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+              <div style={{ padding: '16px 20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {logsAuditoria.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '30px', color: '#64748b', fontSize: '0.88rem' }}>
+                    Nenhuma tentativa de login registrada até o momento.
+                  </div>
+                ) : (
+                  logsAuditoria.map((log) => (
+                    <div
+                      key={log.id}
+                      style={{
+                        background: log.sucesso ? '#f0fdf4' : '#fef2f2',
+                        border: `1px solid ${log.sucesso ? '#bbf7d0' : '#fecaca'}`,
+                        borderRadius: '10px',
+                        padding: '10px 12px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: log.sucesso ? '#166534' : '#991b1b' }}>
+                          {log.sucesso ? '✅ Sucesso' : '🚨 Falha'} • Usuário: <code>{log.usuario}</code>
+                          {log.lojaNome ? ` (${log.lojaNome})` : log.portal === 'master' ? ' (Portal Master)' : ''}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#475569', marginTop: '2px' }}>
+                          {log.motivo}
+                        </div>
+                      </div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace', fontWeight: 700 }}>
+                        {log.dataHora}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* TELA DE LOGIN & CONTROLE DE ACESSO */}
       <TelaLogin
         visivel={telaLoginVisivel}
@@ -12624,6 +13081,7 @@ export default function App() {
         modoPortal={isPortalMasterRoute ? 'master' : 'loja'}
         lojaAlvo={lojaAlvoUrlValidada}
         painelAlvo={painelParamAtivo}
+        onRedefinirSenhaLojaRevogada={handleRedefinirSenhaLojaRevogada}
       />
     </>
   );
