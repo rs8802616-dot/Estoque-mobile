@@ -6314,6 +6314,62 @@ export default function App() {
   };
   handleAtualizarStatusPedidoDeliveryRef.current = handleAtualizarStatusPedidoDelivery;
 
+  const handleRemoverItemPedidoDelivery = (
+    pedidoId: string,
+    indiceItem: number,
+    motivo: string = 'Item indisponível no estoque físico'
+  ) => {
+    const storeId = supermercadoAtual || 'loja_matriz_01';
+    const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
+    if (!pedidoAlvo) return;
+
+    const itensAtuais = [...(pedidoAlvo.itens || [])];
+    if (indiceItem < 0 || indiceItem >= itensAtuais.length) return;
+
+    const itemRemovido = itensAtuais[indiceItem];
+    itensAtuais.splice(indiceItem, 1);
+
+    // Se todos os itens foram removidos, cancela o pedido
+    if (itensAtuais.length === 0) {
+      handleAtualizarStatusPedidoDelivery(
+        pedidoId,
+        'cancelado',
+        `Todos os itens estavam indisponíveis. Último removido: ${itemRemovido.nome}`
+      );
+      return;
+    }
+
+    const novoSubtotal = itensAtuais.reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0);
+    const novoValorTotal = novoSubtotal + (Number(pedidoAlvo.taxaEntrega) || 0);
+
+    let pedidoAtualizado: PedidoDelivery | null = null;
+    const novosPedidos = pedidosDelivery.map((p) => {
+      if (p.id === pedidoId) {
+        pedidoAtualizado = {
+          ...p,
+          itens: itensAtuais,
+          subtotal: novoSubtotal,
+          valorTotal: novoValorTotal,
+          observacao: p.observacao
+            ? `${p.observacao} | [Aviso Loja]: ${itemRemovido.nome} indisponível e removido em comum acordo com o cliente.`
+            : `[Aviso Loja]: ${itemRemovido.nome} indisponível e removido em comum acordo com o cliente.`,
+        };
+        try {
+          localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(pedidoAtualizado));
+        } catch {}
+        return pedidoAtualizado;
+      }
+      return p;
+    });
+
+    setPedidosDelivery(novosPedidos);
+    safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novosPedidos));
+    if (pedidoAtualizado) {
+      salvarPedidoDeliveryFirestore(pedidoAtualizado);
+    }
+    notificarSincronizacao();
+  };
+
   const handleConfirmarEntregaPin = (pedidoId: string, pinDigitado: string): boolean => {
     const storeId = supermercadoAtual || 'loja_matriz_01';
     const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);

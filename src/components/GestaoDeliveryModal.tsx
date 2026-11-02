@@ -56,6 +56,7 @@ interface GestaoDeliveryModalProps {
   configDelivery: ConfiguracaoDelivery;
   onSalvarConfig: (novaConfig: ConfiguracaoDelivery) => void;
   onAtualizarStatusPedido: (pedidoId: string, novoStatus: StatusPedidoDelivery, motivo?: string) => void;
+  onRemoverItemPedido?: (pedidoId: string, indiceItem: number, motivo?: string) => void;
   onConfirmarEntregaPin: (pedidoId: string, pinDigitado: string) => boolean;
   onAbrirCardapioCliente: () => void;
   estoque: ItemEstoque[];
@@ -70,6 +71,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   configDelivery,
   onSalvarConfig,
   onAtualizarStatusPedido,
+  onRemoverItemPedido,
   onConfirmarEntregaPin,
   onAbrirCardapioCliente,
   estoque,
@@ -360,16 +362,29 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
 
           {order.cliente.telefone && (
-            <div className="text-slate-600 font-mono flex items-center gap-1.5 text-[11px]">
-              <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+            <div className="flex items-center justify-between gap-1 text-[11px] pt-0.5">
               <a
-                href={`https://wa.me/55${order.cliente.telefone.replace(/\D/g, '')}`}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:underline text-slate-700 font-semibold"
+                href={`tel:${order.cliente.telefone.replace(/\D/g, '')}`}
+                className="text-slate-700 font-mono font-semibold flex items-center gap-1 hover:underline"
+                title="Ligar para o cliente"
               >
-                {order.cliente.telefone}
+                <Phone className="w-3 h-3 text-emerald-600 shrink-0" />
+                <span>{order.cliente.telefone}</span>
               </a>
+              <button
+                type="button"
+                onClick={() => {
+                  const fone = order.cliente.telefone.replace(/\D/g, '');
+                  const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
+                  const msg = `Olá, ${order.cliente.nome}! Somos da loja ${lojaAtual?.nome || ''}. Estamos preparando seu pedido #${order.numeroPedido}.`;
+                  window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
+                }}
+                className="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
+                title="Conversar com o cliente no WhatsApp"
+              >
+                <MessageCircle className="w-3 h-3 text-emerald-600" />
+                <span>WhatsApp</span>
+              </button>
             </div>
           )}
 
@@ -440,11 +455,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           );
         })()}
 
-        {/* LISTA DE ITENS DO PEDIDO */}
+        {/* LISTA DE ITENS DO PEDIDO COM REMOÇÃO INDIVIDUAL */}
         <div className="space-y-1 text-xs">
           {order.itens.map((it, idx) => (
-            <div key={idx} className="flex justify-between items-baseline gap-2">
-              <span className="text-slate-800 font-medium truncate">
+            <div key={idx} className="flex justify-between items-center gap-2 group">
+              <span className="text-slate-800 font-medium truncate flex-1 min-w-0">
                 <strong className="text-slate-900 mr-1">{it.quantidade}x</strong>
                 <span>{it.nome}</span>
                 {it.gelado && (
@@ -453,9 +468,25 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   </span>
                 )}
               </span>
-              <span className="font-mono font-bold text-slate-900 shrink-0">
-                {formatCurrency(it.subtotal)}
-              </span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="font-mono font-bold text-slate-900">
+                  {formatCurrency(it.subtotal)}
+                </span>
+                {isNovo && onRemoverItemPedido && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Deseja retirar o produto "${it.nome}" do Pedido #${order.numeroPedido}?\n\nO valor total do pedido será recalculado automaticamente.`)) {
+                        onRemoverItemPedido(order.id, idx);
+                      }
+                    }}
+                    className="p-1 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                    title={`Retirar ${it.nome} do pedido`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

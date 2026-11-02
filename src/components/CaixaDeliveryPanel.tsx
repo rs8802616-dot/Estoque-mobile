@@ -25,6 +25,7 @@ interface CaixaDeliveryPanelProps {
   pedidos: PedidoDelivery[];
   loja: Supermercado | null;
   onAtualizarStatus: (id: string, novoStatus: StatusPedidoDelivery, motivo?: string) => void;
+  onRemoverItemPedido?: (pedidoId: string, indiceItem: number, motivo?: string) => void;
   onConfirmarEntregaPin: (id: string, pin: string) => boolean;
   onAbrirCardapioCliente?: () => void;
   onImprimirComanda?: (pedido: PedidoDelivery) => void;
@@ -34,6 +35,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   pedidos,
   loja,
   onAtualizarStatus,
+  onRemoverItemPedido,
   onConfirmarEntregaPin,
   onAbrirCardapioCliente,
   onImprimirComanda,
@@ -527,9 +529,29 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                   </div>
 
                   {order.cliente.telefone && (
-                    <div className="text-stone-500 font-mono flex items-center gap-1.5">
-                      <Phone className="w-3 h-3 shrink-0" />
-                      <span>{order.cliente.telefone}</span>
+                    <div className="flex items-center justify-between gap-1 text-[11px] pt-0.5">
+                      <a
+                        href={`tel:${order.cliente.telefone.replace(/\D/g, '')}`}
+                        className="text-stone-600 font-mono font-semibold flex items-center gap-1 hover:underline"
+                        title="Ligar para o cliente"
+                      >
+                        <Phone className="w-3 h-3 text-emerald-600 shrink-0" />
+                        <span>{order.cliente.telefone}</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const fone = order.cliente.telefone.replace(/\D/g, '');
+                          const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
+                          const msg = `Olá, ${order.cliente.nome}! Somos da loja ${loja?.nome || ''}. Estamos preparando seu pedido #${order.numeroPedido}.`;
+                          window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
+                        }}
+                        className="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
+                        title="Conversar com o cliente no WhatsApp"
+                      >
+                        <MessageCircle className="w-3 h-3 text-emerald-600" />
+                        <span>WhatsApp</span>
+                      </button>
                     </div>
                   )}
 
@@ -570,16 +592,32 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                 {/* Divisor */}
                 <div className="border-t border-[#a7f3d0]/60 my-1.5" />
 
-                {/* Lista de Itens do Pedido */}
+                {/* Lista de Itens do Pedido com Remoção Individual */}
                 <div className="space-y-1 text-xs">
                   {order.itens.map((it, idx) => (
-                    <div key={idx} className="flex justify-between items-baseline gap-2">
-                      <span className="text-stone-800 font-medium truncate">
+                    <div key={idx} className="flex justify-between items-center gap-2 group">
+                      <span className="text-stone-800 font-medium truncate flex-1 min-w-0">
                         {it.quantidade}x {it.nome}
                       </span>
-                      <span className="font-mono font-bold text-stone-900 shrink-0">
-                        {formatCurrency(it.subtotal)}
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="font-mono font-bold text-stone-900">
+                          {formatCurrency(it.subtotal)}
+                        </span>
+                        {isNovo && onRemoverItemPedido && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(`Deseja retirar o produto "${it.nome}" do Pedido #${order.numeroPedido}?\n\nO valor total do pedido será recalculado automaticamente.`)) {
+                                onRemoverItemPedido(order.id, idx);
+                              }
+                            }}
+                            className="p-1 rounded-md text-stone-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                            title={`Retirar ${it.nome} do pedido`}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
