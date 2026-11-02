@@ -105,6 +105,13 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   const [pedidoParaCancelar, setPedidoParaCancelar] = useState<PedidoDelivery | null>(null);
   const [motivoCancelamento, setMotivoCancelamento] = useState('');
 
+  // Modal de Ação ao Clicar no Número do Cliente (Ligar ou WhatsApp)
+  const [clienteContatoModal, setClienteContatoModal] = useState<{
+    nome: string;
+    telefone: string;
+    numeroPedido: number;
+  } | null>(null);
+
   // Formulário de configurações da loja
   const [formConfig, setFormConfig] = useState<ConfiguracaoDelivery>(configDelivery);
 
@@ -362,28 +369,21 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
 
           {order.cliente.telefone && (
-            <div className="flex items-center justify-between gap-1 text-[11px] pt-0.5">
-              <a
-                href={`tel:${order.cliente.telefone.replace(/\D/g, '')}`}
-                className="text-slate-700 font-mono font-semibold flex items-center gap-1 hover:underline"
-                title="Ligar para o cliente"
-              >
-                <Phone className="w-3 h-3 text-emerald-600 shrink-0" />
-                <span>{order.cliente.telefone}</span>
-              </a>
+            <div className="text-[11px] pt-0.5">
               <button
                 type="button"
-                onClick={() => {
-                  const fone = order.cliente.telefone.replace(/\D/g, '');
-                  const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
-                  const msg = `Olá, ${order.cliente.nome}! Somos da loja ${lojaAtual?.nome || ''}. Estamos preparando seu pedido #${order.numeroPedido}.`;
-                  window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
-                }}
-                className="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
-                title="Conversar com o cliente no WhatsApp"
+                onClick={() =>
+                  setClienteContatoModal({
+                    nome: order.cliente.nome || 'Cliente',
+                    telefone: order.cliente.telefone,
+                    numeroPedido: order.numeroPedido,
+                  })
+                }
+                className="text-blue-600 hover:text-blue-700 font-mono font-bold flex items-center gap-1 cursor-pointer transition p-0.5 rounded hover:bg-blue-50"
+                title="Clique para ligar ou enviar WhatsApp para o cliente"
               >
-                <MessageCircle className="w-3 h-3 text-emerald-600" />
-                <span>WhatsApp</span>
+                <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+                <span>{order.cliente.telefone}</span>
               </button>
             </div>
           )}
@@ -1156,6 +1156,71 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
                 >
                   Validar & Concluir
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL DE CONTATO: LIGAR OU ENVIAR WHATSAPP AO CLICAR NO NÚMERO */}
+        {clienteContatoModal && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+            style={{ zIndex: 10000002 }}
+          >
+            <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-slate-200 animate-fadeIn">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-sm text-slate-900 leading-tight">
+                      Falar com o Cliente
+                    </h4>
+                    <span className="text-[11px] text-slate-500">
+                      Pedido #{clienteContatoModal.numeroPedido} • {clienteContatoModal.nome}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setClienteContatoModal(null)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="text-center py-2 bg-slate-50 rounded-2xl border border-slate-100">
+                <span className="text-base font-black font-mono text-slate-800">
+                  {clienteContatoModal.telefone}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
+                <a
+                  href={`tel:${clienteContatoModal.telefone.replace(/\D/g, '')}`}
+                  onClick={() => setClienteContatoModal(null)}
+                  className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
+                >
+                  <Phone className="w-5 h-5" />
+                  <span>📞 Ligar Agora</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fone = clienteContatoModal.telefone.replace(/\D/g, '');
+                    const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
+                    const msg = `Olá, ${clienteContatoModal.nome}! Somos da loja ${lojaAtual?.nome || ''}. Estamos com seu pedido #${clienteContatoModal.numeroPedido}.`;
+                    window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
+                    setClienteContatoModal(null);
+                  }}
+                  className="py-3 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  <span>💬 WhatsApp</span>
                 </button>
               </div>
             </div>

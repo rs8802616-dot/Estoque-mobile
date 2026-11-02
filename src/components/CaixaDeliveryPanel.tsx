@@ -57,6 +57,13 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   const [pedidoParaCancelar, setPedidoParaCancelar] = useState<PedidoDelivery | null>(null);
   const [motivoCancelamento, setMotivoCancelamento] = useState('');
 
+  // Modal de Ação ao Clicar no Número do Cliente (Ligar ou WhatsApp)
+  const [clienteContatoModal, setClienteContatoModal] = useState<{
+    nome: string;
+    telefone: string;
+    numeroPedido: number;
+  } | null>(null);
+
   // Copiar link do cardápio digital
   const handleCopyDeliveryLink = () => {
     const slug = loja?.slug || loja?.id || 'loja_matriz_01';
@@ -529,28 +536,21 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                   </div>
 
                   {order.cliente.telefone && (
-                    <div className="flex items-center justify-between gap-1 text-[11px] pt-0.5">
-                      <a
-                        href={`tel:${order.cliente.telefone.replace(/\D/g, '')}`}
-                        className="text-stone-600 font-mono font-semibold flex items-center gap-1 hover:underline"
-                        title="Ligar para o cliente"
-                      >
-                        <Phone className="w-3 h-3 text-emerald-600 shrink-0" />
-                        <span>{order.cliente.telefone}</span>
-                      </a>
+                    <div className="text-[11px] pt-0.5">
                       <button
                         type="button"
-                        onClick={() => {
-                          const fone = order.cliente.telefone.replace(/\D/g, '');
-                          const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
-                          const msg = `Olá, ${order.cliente.nome}! Somos da loja ${loja?.nome || ''}. Estamos preparando seu pedido #${order.numeroPedido}.`;
-                          window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
-                        }}
-                        className="px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold flex items-center gap-1 transition cursor-pointer"
-                        title="Conversar com o cliente no WhatsApp"
+                        onClick={() =>
+                          setClienteContatoModal({
+                            nome: order.cliente.nome || 'Cliente',
+                            telefone: order.cliente.telefone,
+                            numeroPedido: order.numeroPedido,
+                          })
+                        }
+                        className="text-blue-600 hover:text-blue-700 font-mono font-bold flex items-center gap-1 cursor-pointer transition p-0.5 rounded hover:bg-blue-50"
+                        title="Clique para ligar ou enviar WhatsApp para o cliente"
                       >
-                        <MessageCircle className="w-3 h-3 text-emerald-600" />
-                        <span>WhatsApp</span>
+                        <Phone className="w-3 h-3 text-stone-400 shrink-0" />
+                        <span>{order.cliente.telefone}</span>
                       </button>
                     </div>
                   )}
