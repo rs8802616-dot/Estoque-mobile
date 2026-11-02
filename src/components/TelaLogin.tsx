@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
 import { Supermercado, OperadorCaixa, SessaoUsuario, CredenciaisDonoApp } from '../types';
+import {
+  MIN_CARACTERES_SENHA,
+  MAX_TENTATIVAS_LOGIN,
+  MINUTOS_BLOQUEIO_LOGIN,
+  TEMPO_BLOQUEIO_LOGIN_MS,
+  criarHashComSalt,
+  verificarSenhaComHash,
+  validarPoliticaSenha,
+  registrarAuditoriaLogin,
+  obterChavesLockout,
+} from '../utils/security';
 
 interface TelaLoginProps {
   visivel: boolean;
@@ -10,11 +21,8 @@ interface TelaLoginProps {
   modoPortal?: 'master' | 'loja';
   lojaAlvo?: Supermercado | null;
   painelAlvo?: string | null;
+  onRedefinirSenhaLojaRevogada?: (lojaId: string, senhaHash: string, senhaSalt: string) => void;
 }
-
-const MAX_TENTATIVAS = 5;
-const MINUTOS_BLOQUEIO = 5;
-const TEMPO_BLOQUEIO_MS = MINUTOS_BLOQUEIO * 60 * 1000;
 
 export const TelaLogin: React.FC<TelaLoginProps> = ({
   visivel,
@@ -23,21 +31,32 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   senhaMasterPadrao = 'Mudar@123',
   modoPortal = 'loja',
   lojaAlvo = null,
-  painelAlvo = null,
+  onRedefinirSenhaLojaRevogada,
 }) => {
+  const isMasterMode = modoPortal === 'master';
+  const escopoLockout = lojaAlvo?.id || 'global';
+  const chavesLockout = obterChavesLockout(escopoLockout);
+
   const [usuarioOuCpf, setUsuarioOuCpf] = useState<string>('');
   const [senhaOuPin, setSenhaOuPin] = useState<string>('');
   const [senhaVisivel, setSenhaVisivel] = useState<boolean>(false);
   const [erro, setErro] = useState<string>('');
   const [carregando, setCarregando] = useState<boolean>(false);
 
-  // Estados de proteção contra força bruta
+  // Estados para quando a senha da loja foi revogada pelo Dono (senha_revogada: true)
+  const [novaSenhaRevogada, setNovaSenhaRevogada] = useState<string>('');
+  const [confirmarSenhaRevogada, setConfirmarSenhaRevogada] = useState<string>('');
+  const [forcarTelaRedefinicao, setForcarTelaRedefinicao] = useState<boolean>(false);
+
+  // Estados de proteção contra força bruta (Imunidade total para o Dono em isMasterMode)
   const [tentativasFalhas, setTentativasFalhas] = useState<number>(() => {
-    const salvo = localStorage.getItem('tentativas_falhas_login');
+    if (isMasterMode) return 0;
+    const salvo = localStorage.getItem(chavesLockout.tentativas) || localStorage.getItem('tentativas_falhas_login');
     return salvo ? parseInt(salvo, 10) || 0 : 0;
   });
   const [bloqueadoAte, setBloqueadoAte] = useState<number | null>(() => {
-    const salvo = localStorage.getItem('bloqueio_login_timestamp');
+    if (isMasterMode) return null;
+    const salvo = localStorage.getItem(chavesLockout.bloqueioTs) || localStorage.getItem('bloqueio_login_timestamp');
     if (salvo) {
       const ts = parseInt(salvo, 10);
       if (ts > Date.now()) return ts;
@@ -46,9 +65,12 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   });
   const [segundosRestantes, setSegundosRestantes] = useState<number>(0);
 
+  // Detecta se a loja atual está com senha_revogada: true
+  const lojaComSenhaRevogada = !isMasterMode && Boolean(lojaAlvo?.senha_revogada || forcarTelaRedefinicao);
+
   // Efeito para checar e atualizar o bloqueio ativo com cronômetro em tempo real
   React.useEffect(() => {
-    if (!bloqueadoAte) {
+    if (isMasterMode || !bloqueadoAte) {
       setSegundosRestantes(0);
       return;
     }
@@ -61,6 +83,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       if (dif <= 0) {
         setBloqueadoAte(null);
         setTentativasFalhas(0);
+        localStorage.removeItem(chavesLockout.bloqueioTs);
+        localStorage.removeItem(chavesLockout.tentativas);
+        localStorage.removeItem(chavesLockout.primeiroErroTs);
         localStorage.removeItem('bloqueio_login_timestamp');
         localStorage.removeItem('tentativas_falhas_login');
         setErro('');
@@ -70,51 +95,89 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     atualizarContador();
     const timer = setInterval(atualizarContador, 1000);
     return () => clearInterval(timer);
-  }, [bloqueadoAte]);
+  }, [bloqueadoAte, isMasterMode, chavesLockout.bloqueioTs, chavesLockout.tentativas, chavesLockout.primeiroErroTs]);
 
   // Garante que toda vez que a tela de login for exibida, os campos fiquem limpos
   React.useEffect(() => {
     if (visivel) {
       setUsuarioOuCpf('');
       setSenhaOuPin('');
+      setNovaSenhaRevogada('');
+      setConfirmarSenhaRevogada('');
       setSenhaVisivel(false);
       setCarregando(false);
+      setErro('');
 
-      // Checa se há bloqueio ativo salvo
-      const salvoBloqueio = localStorage.getItem('bloqueio_login_timestamp');
+      if (isMasterMode) {
+        setBloqueadoAte(null);
+        setTentativasFalhas(0);
+        return;
+      }
+
+      const salvoBloqueio =
+        localStorage.getItem(chavesLockout.bloqueioTs) || localStorage.getItem('bloqueio_login_timestamp');
       if (salvoBloqueio) {
         const ts = parseInt(salvoBloqueio, 10);
         if (ts > Date.now()) {
           setBloqueadoAte(ts);
         } else {
           setBloqueadoAte(null);
+          localStorage.removeItem(chavesLockout.bloqueioTs);
+          localStorage.removeItem(chavesLockout.tentativas);
           localStorage.removeItem('bloqueio_login_timestamp');
           localStorage.removeItem('tentativas_falhas_login');
         }
+      } else {
+        setBloqueadoAte(null);
       }
     }
-  }, [visivel]);
+  }, [visivel, isMasterMode, chavesLockout.bloqueioTs, chavesLockout.tentativas]);
 
   if (!visivel) return null;
 
-  const registrarFalhaLogin = () => {
-    const novasFalhas = tentativasFalhas + 1;
+  const registrarFalhaLogin = (usuarioTentado: string, motivoAuditoria: string) => {
+    registrarAuditoriaLogin({
+      usuario: usuarioTentado || '(vazio)',
+      lojaId: lojaAlvo?.id,
+      lojaNome: lojaAlvo?.nome,
+      portal: isMasterMode ? 'master' : 'loja',
+      sucesso: false,
+      motivo: motivoAuditoria,
+    });
+
+    // Imunidade do Dono: a conta mestre do Dono da Plataforma não fica travada pelo lockout
+    if (isMasterMode) {
+      setErro('Credenciais Master inválidas. Verifique seu usuário e senha secreta.');
+      return;
+    }
+
+    const agora = Date.now();
+    const primeiroErroSalvo = parseInt(localStorage.getItem(chavesLockout.primeiroErroTs) || '0', 10);
+    const dentroJanela15Min = primeiroErroSalvo > 0 && agora - primeiroErroSalvo <= TEMPO_BLOQUEIO_LOGIN_MS;
+
+    const novasFalhas = dentroJanela15Min ? tentativasFalhas + 1 : 1;
+    if (!dentroJanela15Min) {
+      localStorage.setItem(chavesLockout.primeiroErroTs, String(agora));
+    }
+
     setTentativasFalhas(novasFalhas);
+    localStorage.setItem(chavesLockout.tentativas, String(novasFalhas));
     localStorage.setItem('tentativas_falhas_login', String(novasFalhas));
 
-    if (novasFalhas >= MAX_TENTATIVAS) {
-      const timestampBloqueio = Date.now() + TEMPO_BLOQUEIO_MS;
+    if (novasFalhas >= MAX_TENTATIVAS_LOGIN) {
+      const timestampBloqueio = agora + TEMPO_BLOQUEIO_LOGIN_MS;
       setBloqueadoAte(timestampBloqueio);
+      localStorage.setItem(chavesLockout.bloqueioTs, String(timestampBloqueio));
       localStorage.setItem('bloqueio_login_timestamp', String(timestampBloqueio));
       setErro(
-        `🚨 LIMITE DE TENTATIVAS EXCEDIDO! Por motivos de segurança contra programas de força bruta, o sistema foi BLOQUEADO por ${MINUTOS_BLOQUEIO} minutos.`
+        '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'
       );
     } else {
-      const restantes = MAX_TENTATIVAS - novasFalhas;
+      const restantes = MAX_TENTATIVAS_LOGIN - novasFalhas;
       setErro(
-        `Login ou senha incorretos. Tentativa ${novasFalhas} de ${MAX_TENTATIVAS}. (${restantes} tentativa${
+        `Login ou senha incorretos. Tentativa ${novasFalhas} de ${MAX_TENTATIVAS_LOGIN} (${restantes} tentativa${
           restantes > 1 ? 's restantes' : ' restante'
-        } antes do bloqueio temporário de ${MINUTOS_BLOQUEIO} minutos).`
+        } antes do bloqueio de ${MINUTOS_BLOQUEIO_LOGIN} min).`
       );
     }
   };
@@ -122,6 +185,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   const limparFalhasLogin = () => {
     setTentativasFalhas(0);
     setBloqueadoAte(null);
+    localStorage.removeItem(chavesLockout.tentativas);
+    localStorage.removeItem(chavesLockout.primeiroErroTs);
+    localStorage.removeItem(chavesLockout.bloqueioTs);
     localStorage.removeItem('tentativas_falhas_login');
     localStorage.removeItem('bloqueio_login_timestamp');
   };
@@ -132,8 +198,63 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Salvar Nova Senha quando o Dono revogou a senha da loja (senha_revogada: true)
+  const handleSalvarNovaSenhaRevogada = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErro('');
+
+    if (!lojaAlvo) {
+      setErro('Loja não identificada para redefinição de senha.');
+      return;
+    }
+
+    const validacao = validarPoliticaSenha(novaSenhaRevogada, confirmarSenhaRevogada);
+    if (!validacao.valida) {
+      setErro(validacao.erro || 'Senha inválida.');
+      return;
+    }
+
+    setCarregando(true);
+    try {
+      const { senhaHash, senhaSalt } = await criarHashComSalt(novaSenhaRevogada.trim());
+
+      if (onRedefinirSenhaLojaRevogada) {
+        onRedefinirSenhaLojaRevogada(lojaAlvo.id, senhaHash, senhaSalt);
+      }
+
+      registrarAuditoriaLogin({
+        usuario: lojaAlvo.nome,
+        lojaId: lojaAlvo.id,
+        lojaNome: lojaAlvo.nome,
+        portal: 'loja',
+        sucesso: true,
+        motivo: 'Lojista cadastrou nova senha criptografada (SHA-256 + Salt) após revogação pelo Dono',
+      });
+
+      setForcarTelaRedefinicao(false);
+      limparFalhasLogin();
+      setCarregando(false);
+
+      onLoginSucesso({
+        tipo: 'admin_loja',
+        lojaId: lojaAlvo.id,
+        lojaNome: lojaAlvo.nome,
+      });
+    } catch (err) {
+      setCarregando(false);
+      setErro('Erro ao criptografar a nova senha. Tente novamente.');
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isMasterMode && bloqueadoAte && Date.now() < bloqueadoAte) {
+      setErro(
+        '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'
+      );
+      return;
+    }
 
     setErro('');
     setCarregando(true);
@@ -149,19 +270,16 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     }
 
     if (!passDigitada) {
-      setErro('Por favor, digite sua senha ou PIN.');
+      setErro('Por favor, digite sua senha.');
       setCarregando(false);
       return;
     }
 
     // =========================================================================
-    // 0. ISOLAMENTO MULTI-TENANCY E ESCOPO DO PORTAL
+    // 1. PORTAL EXCLUSIVO DO DONO (?portal=master&token=master_9k2m8x7p)
+    // Imunidade total contra Lockout + Criptografia SHA-256 + Salt
     // =========================================================================
-    const isPortalMaster = modoPortal === 'master';
-
-    // Se estiver no portal exclusivo do Dono (?portal=master&token=master_9k2m8x7p),
-    // autentica EXCLUSIVAMENTE a conta Master (SuperAdmin)
-    if (isPortalMaster) {
+    if (isMasterMode) {
       let credenciaisMaster: CredenciaisDonoApp = {
         usuario: 'Rodrigo.souza',
         senha: senhaMasterPadrao || 'Mudar@123',
@@ -174,7 +292,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
           const parsed = JSON.parse(salvoMaster);
           if (parsed && typeof parsed === 'object') {
             if (parsed.usuario) credenciaisMaster.usuario = parsed.usuario;
-            if (parsed.senha) credenciaisMaster.senha = parsed.senha;
+            if (parsed.senha !== undefined) credenciaisMaster.senha = parsed.senha;
+            if (parsed.senhaHash) credenciaisMaster.senhaHash = parsed.senhaHash;
+            if (parsed.senhaSalt) credenciaisMaster.senhaSalt = parsed.senhaSalt;
             if (parsed.nomeExibicao) credenciaisMaster.nomeExibicao = parsed.nomeExibicao;
           }
         } catch (e) {}
@@ -185,24 +305,26 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         if (usuarioLegado) credenciaisMaster.usuario = usuarioLegado;
       }
 
-      const masterUserEsperado = (credenciaisMaster.usuario || 'rodrigo.souza').toLowerCase();
-      const masterPassEsperada = credenciaisMaster.senha || 'Mudar@123';
-
+      const masterUserEsperado = (credenciaisMaster.usuario || 'rodrigo.souza').trim().toLowerCase();
       const isMasterUser =
         userDigitadoLower === masterUserEsperado ||
         userDigitadoLower === 'rodrigo.souza' ||
-        userDigitadoLower === 'rodrigo' ||
-        userDigitadoLower === 'adminmaster' ||
-        userDigitadoLower === 'dona' ||
-        userDigitadoLower === 'master';
+        userDigitadoLower === 'dono';
 
-      const isMasterPass =
-        passDigitada === masterPassEsperada ||
-        passDigitada === 'Mudar@123' ||
-        passDigitada === 'adminmaster';
+      const isMasterPass = await verificarSenhaComHash(
+        passDigitada,
+        credenciaisMaster.senhaHash,
+        credenciaisMaster.senhaSalt,
+        credenciaisMaster.senha || 'Mudar@123'
+      );
 
       if (isMasterUser && isMasterPass) {
-        limparFalhasLogin();
+        registrarAuditoriaLogin({
+          usuario: userDigitado,
+          portal: 'master',
+          sucesso: true,
+          motivo: 'Login autenticado com sucesso no Portal Master (Dono)',
+        });
         setCarregando(false);
         onLoginSucesso({
           tipo: 'dona_app',
@@ -211,90 +333,86 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       }
 
       setCarregando(false);
-      if (bloqueadoAte && Date.now() < bloqueadoAte) {
-        setErro(`Sistema bloqueado por segurança. Aguarde ${formatarTempo(segundosRestantes)}.`);
-        return;
-      }
-      registrarFalhaLogin();
+      registrarFalhaLogin(userDigitado, 'Tentativa falha de login no Portal Master');
       return;
     }
 
-    // Se estiver no link da equipe de uma loja (?loja=slug&painel=...&token=...),
-    // filtra ESTRITAMENTE por lojaAlvo (Isolamento Multi-Tenancy)
-    let lojasParaChecar: Supermercado[] = lojaAlvo ? [lojaAlvo] : [...listaSupermercados];
-    if (!lojaAlvo) {
-      try {
-        const salvo = localStorage.getItem('lista_supermercados_app');
-        if (salvo) {
-          const parsed = JSON.parse(salvo);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            parsed.forEach((l) => {
-              if (!lojasParaChecar.some((lj) => lj.id === l.id)) {
-                lojasParaChecar.push(l);
-              }
-            });
-          }
-        }
-      } catch (e) {}
-    }
-
-    if (lojasParaChecar.length === 0) {
-      lojasParaChecar.push({
-        id: 'loja_matriz_01',
-        nome: 'Supermercado Matriz',
-        cnpj: '00.000.000/0001-00',
-        senha: 'admin',
-        senhaAdmin: 'admin',
-        status: 'ativo',
-      });
-    }
-
     // =========================================================================
-    // 2. VERIFICAÇÃO 2: Administradores de Loja (em todas as lojas cadastradas/locais)
+    // 2. ISOLAMENTO MULTI-TENANCY DA LOJA (Sem backdoors ou senhas genéricas)
     // =========================================================================
+    const lojasParaChecar: Supermercado[] = lojaAlvo ? [lojaAlvo] : [...listaSupermercados];
+
     for (const loja of lojasParaChecar) {
       const lojaNomeLower = (loja.nome || '').trim().toLowerCase();
+      const lojaSlugLower = (loja.slug || '').trim().toLowerCase();
       const cnpjNumeros = (loja.cnpj || '').replace(/\D/g, '');
       const userNumeros = userDigitado.replace(/\D/g, '');
 
       const isStoreAdminUser =
+        userDigitadoLower === lojaNomeLower ||
+        (lojaSlugLower && userDigitadoLower === lojaSlugLower) ||
+        userDigitadoLower === loja.id.toLowerCase() ||
         userDigitadoLower === 'admin' ||
         userDigitadoLower === 'gerente' ||
-        userDigitadoLower === 'supervisor' ||
-        userDigitadoLower === 'matriz' ||
-        userDigitadoLower === lojaNomeLower ||
-        userDigitadoLower === loja.id.toLowerCase() ||
         (cnpjNumeros.length >= 8 && userNumeros === cnpjNumeros);
 
-      const storePassEsperada = loja.senha || (loja as any).senhaAdmin || 'admin';
-      const isStorePass = passDigitada === storePassEsperada || (passDigitada === 'admin' && isStoreAdminUser);
-
-      if (isStoreAdminUser && isStorePass) {
+      if (isStoreAdminUser) {
         if (loja.status === 'bloqueado') {
           setCarregando(false);
+          registrarAuditoriaLogin({
+            usuario: userDigitado,
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+            portal: 'loja',
+            sucesso: false,
+            motivo: 'Tentativa de acesso em loja bloqueada pelo Dono',
+          });
           setErro(
-            `🛑 ACESSO SUSPENSO: O supermercado "${loja.nome}" está bloqueado pela administração geral. Motivo: ${
-              loja.motivoBloqueio || 'Entre em contato com o suporte.'
+            `🛑 ACESSO SUSPENSO: O estabelecimento "${loja.nome}" está bloqueado pela administração. Motivo: ${
+              loja.motivoBloqueio || 'Entre em contato com o administrador.'
             }`
           );
           return;
         }
 
-        limparFalhasLogin();
-        setCarregando(false);
-        onLoginSucesso({
-          tipo: 'admin_loja',
-          lojaId: loja.id,
-          lojaNome: loja.nome,
-        });
-        return;
+        // Se o Dono revogou a senha atual do lojista, abre a tela de Cadastrar Nova Senha
+        if (loja.senha_revogada) {
+          setCarregando(false);
+          setForcarTelaRedefinicao(true);
+          return;
+        }
+
+        const senhaValidaLoja = await verificarSenhaComHash(
+          passDigitada,
+          loja.senhaHash,
+          loja.senhaSalt,
+          loja.senha || loja.senhaAdmin
+        );
+
+        if (senhaValidaLoja) {
+          limparFalhasLogin();
+          registrarAuditoriaLogin({
+            usuario: userDigitado,
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+            portal: 'loja',
+            sucesso: true,
+            motivo: 'Login de Gerente/Admin da Loja realizado com sucesso',
+          });
+          setCarregando(false);
+          onLoginSucesso({
+            tipo: 'admin_loja',
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+          });
+          return;
+        }
       }
     }
 
     // =========================================================================
-    // 3. VERIFICAÇÃO 3: Operadores de Caixa / Funcionários (Offline e Multi-loja)
+    // 3. FUNCIONÁRIOS / OPERADORES CADASTRADOS NA LOJA (SHA-256 + Salt, sem senhas coringa)
     // =========================================================================
-    // Coleta operadores de todas as lojas e de todas as chaves no localStorage
     const mapaOperadores = new Map<string, { op: OperadorCaixa; loja: Supermercado }>();
 
     for (const loja of lojasParaChecar) {
@@ -310,37 +428,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       });
     }
 
-    // Escaneia também chaves soltas no localStorage iniciadas por operadores_caixa_ (respeitando isolamento de lojaAlvo)
-    if (!lojaAlvo) {
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && k.startsWith('operadores_caixa_')) {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              try {
-                const opsParsed: OperadorCaixa[] = JSON.parse(raw);
-                if (Array.isArray(opsParsed)) {
-                  const lojaKeyId = k.replace('operadores_caixa_', '');
-                  const lojaRef = lojasParaChecar.find((l) => l.id === lojaKeyId) || {
-                    id: lojaKeyId || 'loja_matriz_01',
-                    nome: 'Supermercado Matriz',
-                    cnpj: '',
-                    senha: 'admin',
-                  };
-                  opsParsed.forEach((o) => {
-                    if (o && o.id && !mapaOperadores.has(`${lojaRef.id}_${o.id}`)) {
-                      mapaOperadores.set(`${lojaRef.id}_${o.id}`, { op: o, loja: lojaRef });
-                    }
-                  });
-                }
-              } catch (e) {}
-            }
-          }
-        }
-      } catch (e) {}
-    }
-
     for (const { op, loja } of Array.from(mapaOperadores.values())) {
       const opCpfLimpo = (op.cpfOuUsuario || '').trim().toLowerCase();
       const opNomeLimpo = (op.nome || '').trim().toLowerCase();
@@ -350,32 +437,38 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       const isOpMatch =
         opCpfLimpo === userDigitadoLower ||
         opNomeLimpo === userDigitadoLower ||
-        opNomeLimpo.startsWith(userDigitadoLower) ||
-        (userDigitos.length >= 3 && opCpfDigitos === userDigitos) ||
-        op.id.toLowerCase() === userDigitadoLower;
+        (userDigitos.length >= 6 && opCpfDigitos === userDigitos);
 
       if (isOpMatch) {
         if (loja.status === 'bloqueado') {
           setCarregando(false);
-          setErro(`🛑 ACESSO SUSPENSO: O supermercado "${loja.nome}" está temporariamente bloqueado.`);
+          setErro(`🛑 ACESSO SUSPENSO: O estabelecimento "${loja.nome}" está temporariamente bloqueado.`);
           return;
         }
 
         if (op.ativo === false) {
           setCarregando(false);
-          setErro(`🛑 ACESSO BLOQUEADO: O usuário "${op.nome}" está inativo no cadastro.`);
+          setErro(`🛑 ACESSO BLOQUEADO: O funcionário "${op.nome}" está inativo no cadastro da loja.`);
           return;
         }
 
-        const pinEsperado = (op.pinSenha || '').trim();
-        const isPinCorreto =
-          passDigitada === pinEsperado ||
-          (pinEsperado === '' && (passDigitada === '123' || passDigitada === '1234' || passDigitada === 'admin')) ||
-          passDigitada === '123' ||
-          passDigitada === '1234';
+        const isPinCorreto = await verificarSenhaComHash(
+          passDigitada,
+          op.senhaHash,
+          op.senhaSalt,
+          op.pinSenha
+        );
 
         if (isPinCorreto) {
           limparFalhasLogin();
+          registrarAuditoriaLogin({
+            usuario: `${op.nome} (${op.cpfOuUsuario})`,
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+            portal: 'loja',
+            sucesso: true,
+            motivo: `Login de funcionário (${op.cargo || 'Operador'}) realizado com sucesso`,
+          });
           setCarregando(false);
           onLoginSucesso({
             tipo: 'caixa',
@@ -391,40 +484,12 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     }
 
     // =========================================================================
-    // 4. VERIFICAÇÃO 4: Operadores Padrão de Teste / Inicialização
-    // =========================================================================
-    if (
-      (userDigitadoLower === 'caixa01' || userDigitado === '123' || userDigitadoLower === 'caixa' || userDigitadoLower === 'operador' || userDigitadoLower === 'op01') &&
-      (passDigitada === '123' || passDigitada === '1234' || passDigitada === 'admin')
-    ) {
-      const lojaPadrao = lojasParaChecar.length > 0 ? lojasParaChecar[0] : { id: 'loja_matriz_01', nome: 'Supermercado Matriz' };
-      limparFalhasLogin();
-      setCarregando(false);
-      onLoginSucesso({
-        tipo: 'caixa',
-        lojaId: lojaPadrao.id,
-        lojaNome: lojaPadrao.nome,
-        operadorId: 'op_padrao_01',
-        operadorNome: 'Operador de Caixa (Padrão)',
-        operadorCargo: 'Operador de Caixa',
-      });
-      return;
-    }
-
-    // =========================================================================
-    // 5. Credenciais inválidas
+    // 4. CREDENCIAIS INVÁLIDAS -> REGISTRA FALHA E LOCKOUT DE 15 MIN APÓS 5 ERROS
     // =========================================================================
     setCarregando(false);
-
-    if (bloqueadoAte && Date.now() < bloqueadoAte) {
-      setErro(`Sistema bloqueado por segurança. Aguarde ${formatarTempo(segundosRestantes)}.`);
-      return;
-    }
-
-    registrarFalhaLogin();
+    registrarFalhaLogin(userDigitado, 'Senha ou usuário inválido');
   };
 
-  const isMasterMode = modoPortal === 'master';
   const nomePainelLabel = 'Acesso Oficial da Loja (Admin & Equipe)';
 
   return (
@@ -482,6 +547,8 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
           style={{
             background: isMasterMode
               ? 'linear-gradient(135deg, #b45309 0%, #f59e0b 50%, #92400e 100%)'
+              : lojaComSenhaRevogada
+              ? 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)'
               : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
             padding: '32px 28px 24px 28px',
             color: '#ffffff',
@@ -503,140 +570,205 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
             }}
           >
-            {isMasterMode ? '👑' : '🏪'}
+            {isMasterMode ? '👑' : lojaComSenhaRevogada ? '🔑' : '🏪'}
           </div>
           <h2 style={{ fontSize: '1.45rem', fontWeight: 900, margin: 0, letterSpacing: '-0.02em' }}>
             {isMasterMode
               ? 'Portal Master — SuperAdmin'
+              : lojaComSenhaRevogada
+              ? 'Cadastrar Nova Senha'
               : lojaAlvo?.nome || 'Sistema de Supermercados'}
           </h2>
           <p style={{ fontSize: '0.88rem', margin: '6px 0 0 0', opacity: 0.94, fontWeight: 600 }}>
             {isMasterMode
               ? 'Chave de hardware validada • Acesso exclusivo do Dono'
+              : lojaComSenhaRevogada
+              ? `${lojaAlvo?.nome || 'Loja'} • Redefinição obrigatória liberada pelo Dono`
               : `${nomePainelLabel} • Identifique-se para continuar`}
           </p>
         </div>
 
-        {/* FORMULÁRIO EXCLUSIVO COM APENAS LOGIN E SENHA */}
+        {/* CORPO DO MODAL: REDEFINIÇÃO DE SENHA REVOGADA OU LOGIN PADRÃO */}
         <div style={{ padding: '28px 26px' }}>
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* BANNER DE BLOQUEIO DE FORÇA BRUTA COM CONTAGEM REGRESSIVA */}
-            {bloqueadoAte && segundosRestantes > 0 ? (
+          {lojaComSenhaRevogada ? (
+            <form onSubmit={handleSalvarNovaSenhaRevogada} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <div
                 style={{
-                  background: '#fef2f2',
-                  border: '1.5px solid #ef4444',
-                  borderRadius: '14px',
-                  padding: '16px',
-                  textAlign: 'center',
-                  color: '#991b1b',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
-              >
-                <div style={{ fontSize: '1.8rem' }}>🔒</div>
-                <div style={{ fontWeight: 800, fontSize: '1rem', color: '#b91c1c' }}>
-                  Acesso Bloqueado Temporariamente
-                </div>
-                <div style={{ fontSize: '0.85rem', color: '#7f1d1d', lineHeight: 1.4 }}>
-                  5 tentativas incorretas consecutivas foram detectadas. Por segurança contra ataques de força bruta, aguarde o término do tempo ou solicite o desbloqueio no painel SuperAdmin.
-                </div>
-                <div
-                  style={{
-                    fontSize: '1.4rem',
-                    fontWeight: 900,
-                    color: '#dc2626',
-                    fontFamily: 'monospace',
-                    background: '#ffffff',
-                    padding: '6px 16px',
-                    borderRadius: '8px',
-                    border: '1px solid #fca5a5',
-                    letterSpacing: '2px',
-                    marginTop: '4px',
-                  }}
-                >
-                  ⏱️ {formatarTempo(segundosRestantes)}
-                </div>
-              </div>
-            ) : null}
-
-            {/* CAMPO: LOGIN / USUÁRIO / CPF */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '0.88rem',
-                    fontWeight: 700,
-                    color: isMasterMode ? '#fef3c7' : '#1e293b',
-                    margin: 0,
-                  }}
-                >
-                  <span>👤</span>
-                  <span>{isMasterMode ? 'Login Master do Dono' : 'Usuário, CPF ou Login'}</span>
-                </label>
-                {tentativasFalhas > 0 && !bloqueadoAte && (
-                  <span style={{ fontSize: '0.78rem', color: '#dc2626', fontWeight: 600 }}>
-                    Tentativa {tentativasFalhas} de {MAX_TENTATIVAS}
-                  </span>
-                )}
-              </div>
-              <input
-                type="text"
-                name="username_login_input"
-                autoComplete="off"
-                placeholder={isMasterMode ? 'Digite o usuário Master' : 'Digite seu login, CPF ou usuário'}
-                value={usuarioOuCpf}
-                onChange={(e) => setUsuarioOuCpf(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '14px 16px',
+                  background: '#f5f3ff',
+                  border: '1px solid #ddd6fe',
                   borderRadius: '12px',
-                  border: isMasterMode ? '1.5px solid #b45309' : '1.5px solid #cbd5e1',
-                  fontSize: '1rem',
-                  boxSizing: 'border-box',
-                  outline: 'none',
-                  color: isMasterMode ? '#ffffff' : '#0f172a',
-                  background: isMasterMode ? '#161f30' : '#f8fafc',
-                  transition: 'border-color 0.2s',
-                }}
-                required
-                autoCapitalize="none"
-                autoFocus
-              />
-            </div>
-
-            {/* CAMPO: SENHA OU PIN */}
-            <div>
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '0.88rem',
-                  fontWeight: 700,
-                  color: isMasterMode ? '#fef3c7' : '#1e293b',
-                  marginBottom: '8px',
+                  padding: '12px 14px',
+                  fontSize: '0.82rem',
+                  color: '#4c1d95',
+                  lineHeight: 1.45,
+                  fontWeight: 600,
                 }}
               >
-                <span>🔑</span>
-                <span>{isMasterMode ? 'Senha Master Secreta' : 'Senha ou PIN de Acesso'}</span>
-              </label>
-              <div style={{ position: 'relative' }}>
+                🔐 Sua senha anterior foi revogada pela administração para recuperação de acesso. Crie abaixo sua{' '}
+                <b>Nova Senha</b> (mínimo de {MIN_CARACTERES_SENHA} caracteres, protegida com criptografia SHA-256 + Salt).
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                  🔑 Nova Senha (mínimo {MIN_CARACTERES_SENHA} caracteres)
+                </label>
                 <input
                   type={senhaVisivel ? 'text' : 'password'}
-                  name="password_login_input"
-                  autoComplete="new-password"
-                  placeholder={isMasterMode ? 'Digite sua senha Master' : 'Digite sua senha ou PIN'}
-                  value={senhaOuPin}
-                  onChange={(e) => setSenhaOuPin(e.target.value)}
+                  placeholder="Digite a nova senha da loja"
+                  value={novaSenhaRevogada}
+                  onChange={(e) => setNovaSenhaRevogada(e.target.value)}
+                  minLength={MIN_CARACTERES_SENHA}
+                  required
                   style={{
                     width: '100%',
-                    padding: '14px 48px 14px 16px',
+                    padding: '13px 15px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1',
+                    fontSize: '0.96rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', marginBottom: '6px' }}>
+                  ✅ Confirmar Nova Senha
+                </label>
+                <input
+                  type={senhaVisivel ? 'text' : 'password'}
+                  placeholder="Repita exatamente a nova senha"
+                  value={confirmarSenhaRevogada}
+                  onChange={(e) => setConfirmarSenhaRevogada(e.target.value)}
+                  minLength={MIN_CARACTERES_SENHA}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '13px 15px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #cbd5e1',
+                    fontSize: '0.96rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#475569', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={senhaVisivel}
+                  onChange={(e) => setSenhaVisivel(e.target.checked)}
+                />
+                Mostrar senhas digitadas
+              </label>
+
+              {erro && (
+                <div
+                  style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    color: '#dc2626',
+                    padding: '11px 14px',
+                    borderRadius: '10px',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  ⚠️ {erro}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={carregando}
+                style={{
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '14px',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  cursor: carregando ? 'wait' : 'pointer',
+                  boxShadow: '0 6px 18px rgba(124, 58, 237, 0.35)',
+                }}
+              >
+                {carregando ? 'Criptografando Senha...' : '💾 Salvar Nova Senha e Entrar'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* BANNER DE BLOQUEIO DE FORÇA BRUTA (5 TENTATIVAS / 15 MINUTOS) */}
+              {!isMasterMode && bloqueadoAte && segundosRestantes > 0 ? (
+                <div
+                  style={{
+                    background: '#fef2f2',
+                    border: '1.5px solid #ef4444',
+                    borderRadius: '14px',
+                    padding: '16px',
+                    textAlign: 'center',
+                    color: '#991b1b',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <div style={{ fontSize: '1.8rem' }}>🔒</div>
+                  <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#b91c1c', lineHeight: 1.45 }}>
+                    ⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '1.35rem',
+                      fontWeight: 900,
+                      color: '#dc2626',
+                      fontFamily: 'monospace',
+                      background: '#ffffff',
+                      padding: '6px 16px',
+                      borderRadius: '8px',
+                      border: '1px solid #fca5a5',
+                      letterSpacing: '2px',
+                      marginTop: '4px',
+                    }}
+                  >
+                    ⏱️ {formatarTempo(segundosRestantes)}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* CAMPO: LOGIN / USUÁRIO / CPF */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '0.88rem',
+                      fontWeight: 700,
+                      color: isMasterMode ? '#fef3c7' : '#1e293b',
+                      margin: 0,
+                    }}
+                  >
+                    <span>👤</span>
+                    <span>{isMasterMode ? 'Login Master do Dono' : 'Usuário, CPF ou Login'}</span>
+                  </label>
+                  {!isMasterMode && tentativasFalhas > 0 && !bloqueadoAte && (
+                    <span style={{ fontSize: '0.78rem', color: '#dc2626', fontWeight: 600 }}>
+                      Tentativa {tentativasFalhas} de {MAX_TENTATIVAS_LOGIN}
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  name="username_login_input"
+                  autoComplete="off"
+                  placeholder={isMasterMode ? 'Digite o usuário Master' : 'Digite seu login, CPF ou usuário'}
+                  value={usuarioOuCpf}
+                  onChange={(e) => setUsuarioOuCpf(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
                     borderRadius: '12px',
                     border: isMasterMode ? '1.5px solid #b45309' : '1.5px solid #cbd5e1',
                     fontSize: '1rem',
@@ -647,89 +779,133 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                     transition: 'border-color 0.2s',
                   }}
                   required
+                  autoCapitalize="none"
+                  autoFocus
                 />
-                <button
-                  type="button"
-                  onClick={() => setSenhaVisivel(!senhaVisivel)}
-                  disabled={!!bloqueadoAte}
+              </div>
+
+              {/* CAMPO: SENHA */}
+              <div>
+                <label
                   style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: bloqueadoAte ? 'not-allowed' : 'pointer',
-                    fontSize: '1.3rem',
-                    color: isMasterMode ? '#fbbf24' : '#64748b',
-                    padding: '6px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.88rem',
+                    fontWeight: 700,
+                    color: isMasterMode ? '#fef3c7' : '#1e293b',
+                    marginBottom: '8px',
                   }}
-                  title={senhaVisivel ? 'Ocultar senha' : 'Ver senha'}
                 >
-                  {senhaVisivel ? '🙈' : '👁️'}
-                </button>
+                  <span>🔑</span>
+                  <span>{isMasterMode ? 'Senha Master Secreta' : 'Senha de Acesso'}</span>
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={senhaVisivel ? 'text' : 'password'}
+                    name="password_login_input"
+                    autoComplete="new-password"
+                    placeholder={isMasterMode ? 'Digite sua senha Master' : 'Digite sua senha'}
+                    value={senhaOuPin}
+                    onChange={(e) => setSenhaOuPin(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '14px 48px 14px 16px',
+                      borderRadius: '12px',
+                      border: isMasterMode ? '1.5px solid #b45309' : '1.5px solid #cbd5e1',
+                      fontSize: '1rem',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                      color: isMasterMode ? '#ffffff' : '#0f172a',
+                      background: isMasterMode ? '#161f30' : '#f8fafc',
+                      transition: 'border-color 0.2s',
+                    }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSenhaVisivel(!senhaVisivel)}
+                    disabled={!isMasterMode && !!bloqueadoAte}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: !isMasterMode && bloqueadoAte ? 'not-allowed' : 'pointer',
+                      fontSize: '1.3rem',
+                      color: isMasterMode ? '#fbbf24' : '#64748b',
+                      padding: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    title={senhaVisivel ? 'Ocultar senha' : 'Ver senha'}
+                  >
+                    {senhaVisivel ? '🙈' : '👁️'}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* MENSAGEM DE ERRO (QUANDO NÃO ESTIVER BLOQUEADO) */}
-            {erro && !bloqueadoAte && (
-              <div
+              {/* MENSAGEM DE ERRO */}
+              {erro && (isMasterMode || !bloqueadoAte) && (
+                <div
+                  style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    color: '#dc2626',
+                    padding: '12px 14px',
+                    borderRadius: '10px',
+                    fontSize: '0.88rem',
+                    lineHeight: 1.45,
+                    fontWeight: 600,
+                  }}
+                >
+                  {erro.startsWith('⚠️') ? erro : `⚠️ ${erro}`}
+                </div>
+              )}
+
+              {/* BOTÃO DE ENTRADA */}
+              <button
+                type="submit"
+                disabled={carregando || (!isMasterMode && !!bloqueadoAte)}
                 style={{
-                  background: '#fef2f2',
-                  border: '1px solid #fecaca',
-                  color: '#dc2626',
-                  padding: '12px 14px',
-                  borderRadius: '10px',
-                  fontSize: '0.88rem',
-                  lineHeight: 1.45,
-                  fontWeight: 600,
+                  background:
+                    !isMasterMode && bloqueadoAte
+                      ? '#94a3b8'
+                      : isMasterMode
+                      ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
+                      : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                  color: '#ffffff',
+                  border: isMasterMode ? '1px solid #fbbf24' : 'none',
+                  padding: '15px',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '1.05rem',
+                  cursor: !isMasterMode && bloqueadoAte ? 'not-allowed' : carregando ? 'wait' : 'pointer',
+                  boxShadow:
+                    !isMasterMode && bloqueadoAte
+                      ? 'none'
+                      : isMasterMode
+                      ? '0 6px 20px rgba(217, 119, 6, 0.45)'
+                      : '0 6px 18px rgba(2, 132, 199, 0.4)',
+                  marginTop: '6px',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                ⚠️ {erro}
-              </div>
-            )}
-
-            {/* BOTÃO DE ENTRADA */}
-            <button
-              type="submit"
-              disabled={carregando || !!bloqueadoAte}
-              style={{
-                background: bloqueadoAte
-                  ? '#94a3b8'
+                {!isMasterMode && bloqueadoAte
+                  ? `🔒 Bloqueado (${formatarTempo(segundosRestantes)})`
+                  : carregando
+                  ? 'Validando Criptografia SHA-256...'
                   : isMasterMode
-                  ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
-                  : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
-                color: '#ffffff',
-                border: isMasterMode && !bloqueadoAte ? '1px solid #fbbf24' : 'none',
-                padding: '15px',
-                borderRadius: '12px',
-                fontWeight: 800,
-                fontSize: '1.05rem',
-                cursor: bloqueadoAte ? 'not-allowed' : carregando ? 'wait' : 'pointer',
-                boxShadow: bloqueadoAte
-                  ? 'none'
-                  : isMasterMode
-                  ? '0 6px 20px rgba(217, 119, 6, 0.45)'
-                  : '0 6px 18px rgba(2, 132, 199, 0.4)',
-                marginTop: '6px',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              {bloqueadoAte
-                ? `🔒 Bloqueado (${formatarTempo(segundosRestantes)})`
-                : carregando
-                ? 'Validando Acesso...'
-                : isMasterMode
-                ? '👑 Entrar no Portal Master'
-                : 'Entrar no Sistema'}
-            </button>
-          </form>
+                  ? '👑 Entrar no Portal Master'
+                  : 'Entrar no Sistema'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
   );
 };
-

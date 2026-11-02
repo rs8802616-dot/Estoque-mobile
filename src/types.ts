@@ -106,6 +106,8 @@ export interface OperadorCaixa {
   cargo: 'Operador de Caixa' | 'Supervisor' | 'Administrador';
   cpfOuUsuario: string;
   pinSenha: string;
+  senhaHash?: string;
+  senhaSalt?: string;
   permissoes: PermissoesOperador;
   ativo: boolean;
   dataCadastro?: string;
@@ -128,6 +130,9 @@ export interface Supermercado {
   cnpj: string;
   senha: string;
   senhaAdmin?: string;
+  senhaHash?: string;
+  senhaSalt?: string;
+  senha_revogada?: boolean;
   endereco?: string;
   cidade?: string;
   telefone?: string;
@@ -328,6 +333,8 @@ export interface SessaoCaixaTurno {
 export interface CredenciaisDonoApp {
   usuario: string;
   senha: string;
+  senhaHash?: string;
+  senhaSalt?: string;
   nomeExibicao?: string;
   dataAtualizacao?: string;
 }

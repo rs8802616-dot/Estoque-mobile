@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { CredenciaisDonoApp } from '../types';
 import { db } from '../lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import {
+  MIN_CARACTERES_SENHA,
+  criarHashComSalt,
+  verificarSenhaComHash,
+  validarPoliticaSenha,
+} from '../utils/security';
 
 interface AlterarCredenciaisDonoModalProps {
   visivel: boolean;
@@ -19,7 +25,9 @@ const obterCredenciaisValidas = (cred?: CredenciaisDonoApp): CredenciaisDonoApp 
 
   if (cred && typeof cred === 'object') {
     if (cred.usuario) base.usuario = cred.usuario;
-    if (cred.senha) base.senha = cred.senha;
+    if (cred.senha !== undefined) base.senha = cred.senha;
+    if (cred.senhaHash) base.senhaHash = cred.senhaHash;
+    if (cred.senhaSalt) base.senhaSalt = cred.senhaSalt;
     if (cred.nomeExibicao) base.nomeExibicao = cred.nomeExibicao;
     return base;
   }
@@ -30,7 +38,9 @@ const obterCredenciaisValidas = (cred?: CredenciaisDonoApp): CredenciaisDonoApp 
       const parsed = JSON.parse(salvo);
       if (parsed && typeof parsed === 'object') {
         if (parsed.usuario) base.usuario = parsed.usuario;
-        if (parsed.senha) base.senha = parsed.senha;
+        if (parsed.senha !== undefined) base.senha = parsed.senha;
+        if (parsed.senhaHash) base.senhaHash = parsed.senhaHash;
+        if (parsed.senhaSalt) base.senhaSalt = parsed.senhaSalt;
         if (parsed.nomeExibicao) base.nomeExibicao = parsed.nomeExibicao;
         return base;
       }
@@ -53,7 +63,6 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
 }) => {
   const creds = obterCredenciaisValidas(credenciaisAtuais);
 
-  const [senhaAtual, setSenhaAtual] = useState('');
   const [novoUsuario, setNovoUsuario] = useState(creds.usuario || 'Rodrigo.souza');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
@@ -68,7 +77,6 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
       const c = obterCredenciaisValidas(credenciaisAtuais);
       setNovoUsuario(c.usuario || 'Rodrigo.souza');
       setNomeExibicao(c.nomeExibicao || 'Rodrigo Souza (Dono do App)');
-      setSenhaAtual('');
       setNovaSenha('');
       setConfirmarNovaSenha('');
       setErro('');
@@ -84,31 +92,30 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
     setErro('');
     setSucesso(false);
 
-    const c = obterCredenciaisValidas(credenciaisAtuais);
-    const senhaMasterValida = c.senha || 'Mudar@123';
-    const senhaAtualDigitada = senhaAtual.trim();
-    if (
-      senhaAtualDigitada !== senhaMasterValida &&
-      senhaAtualDigitada !== 'Mudar@123' &&
-      senhaAtualDigitada !== 'adminmaster'
-    ) {
-      setErro('A senha master atual informada está incorreta.');
-      return;
-    }
-
     if (!novoUsuario.trim()) {
-      setErro('O novo login de usuário não pode ficar em branco.');
+      setErro('O login de usuário não pode ficar em branco.');
       return;
     }
 
-    if (novaSenha.length > 0 && novaSenha.length < 4) {
-      setErro('A nova senha deve possuir no mínimo 4 caracteres.');
-      return;
-    }
+    const c = obterCredenciaisValidas(credenciaisAtuais);
 
-    if (novaSenha && novaSenha !== confirmarNovaSenha) {
-      setErro('A confirmação da nova senha não confere com a nova senha digitada.');
-      return;
+    let senhaHashFinal = c.senhaHash;
+    let senhaSaltFinal = c.senhaSalt;
+
+    if (novaSenha.trim().length > 0 || confirmarNovaSenha.trim().length > 0) {
+      const validacao = validarPoliticaSenha(novaSenha, confirmarNovaSenha);
+      if (!validacao.valida) {
+        setErro(validacao.erro || 'Senha inválida.');
+        return;
+      }
+      const gerado = await criarHashComSalt(novaSenha.trim());
+      senhaHashFinal = gerado.senhaHash;
+      senhaSaltFinal = gerado.senhaSalt;
+    } else if (!senhaHashFinal || !senhaSaltFinal) {
+      // Criptografa a senha legada existente caso ainda estivesse em texto puro
+      const gerado = await criarHashComSalt(c.senha || 'Mudar@123');
+      senhaHashFinal = gerado.senhaHash;
+      senhaSaltFinal = gerado.senhaSalt;
     }
 
     setSalvando(true);
@@ -116,25 +123,33 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
     try {
       const novasCredenciais: CredenciaisDonoApp = {
         usuario: novoUsuario.trim(),
-        senha: novaSenha.trim() || c.senha || 'Mudar@123',
+        senha: '', // Proibição de Senhas em Texto Puro (Zero Plaintext)
+        senhaHash: senhaHashFinal,
+        senhaSalt: senhaSaltFinal,
         nomeExibicao: nomeExibicao.trim() || 'Rodrigo Souza (Dono do App)',
         dataAtualizacao: new Date().toISOString(),
       };
 
-      // Salvar localmente
+      // Salvar localmente sem texto puro
       localStorage.setItem('credenciais_dono_app', JSON.stringify(novasCredenciais));
-      localStorage.setItem('senha_master_dono', novasCredenciais.senha);
+      localStorage.removeItem('senha_master_dono');
       localStorage.setItem('usuario_master_dono', novasCredenciais.usuario);
 
-      // Sincronizar com Firestore se online
+      // Sincronizar com Firestore se online (apenas hash e salt, senha: '')
       try {
         const docRef = doc(db, 'config_sistema', 'dono_master_config');
-        await setDoc(docRef, {
-          usuario: novasCredenciais.usuario,
-          senha: novasCredenciais.senha,
-          nomeExibicao: novasCredenciais.nomeExibicao,
-          dataAtualizacao: novasCredenciais.dataAtualizacao,
-        }, { merge: true });
+        await setDoc(
+          docRef,
+          {
+            usuario: novasCredenciais.usuario,
+            senha: '',
+            senhaHash: novasCredenciais.senhaHash,
+            senhaSalt: novasCredenciais.senhaSalt,
+            nomeExibicao: novasCredenciais.nomeExibicao,
+            dataAtualizacao: novasCredenciais.dataAtualizacao,
+          },
+          { merge: true }
+        );
       } catch (fErr) {
         console.warn('Aviso: Credenciais salvas localmente, mas sync com nuvem falhou temporariamente:', fErr);
       }
@@ -211,13 +226,13 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
             ✕
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '1.6rem' }}>👑</span>
+            <span style={{ fontSize: '1.6rem' }}>🔑</span>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
-                Editar Login e Senha Master (Dono do App)
+                Meu Login & Senha (Dono)
               </h3>
               <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', opacity: 0.9 }}>
-                Personalize suas credenciais de acesso de Administrador Geral
+                Criptografia irreversível SHA-256 + Salt (Zero Plaintext)
               </p>
             </div>
           </div>
@@ -226,38 +241,15 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
         <form onSubmit={handleSalvar} style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {sucesso && (
             <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: '12px', borderRadius: '8px', fontSize: '0.88rem', fontWeight: 600, textAlign: 'center' }}>
-              ✅ Credenciais master atualizadas com sucesso!
+              ✅ Credenciais do Dono criptografadas (SHA-256 + Salt) e salvas com sucesso!
             </div>
           )}
 
           {erro && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 12px', borderRadius: '8px', fontSize: '0.84rem' }}>
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 12px', borderRadius: '8px', fontSize: '0.84rem', fontWeight: 600 }}>
               ⚠️ {erro}
             </div>
           )}
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
-              🔑 Senha Master Atual (para autorizar a alteração):
-            </label>
-            <input
-              type="password"
-              placeholder="Digite sua senha atual"
-              value={senhaAtual}
-              onChange={(e) => setSenhaAtual(e.target.value)}
-              required
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.9rem',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <hr style={{ border: 'none', borderTop: '1px dashed #e2e8f0', margin: '4px 0' }} />
 
           <div>
             <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
@@ -265,7 +257,7 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
             </label>
             <input
               type="text"
-              placeholder="Ex: Ana Silva (Proprietária)"
+              placeholder="Ex: Rodrigo Souza (Dono do App)"
               value={nomeExibicao}
               onChange={(e) => setNomeExibicao(e.target.value)}
               style={{
@@ -281,11 +273,11 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
 
           <div>
             <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
-              🛡️ Novo Login / Nome de Usuário:
+              🛡️ Usuário de Login (Dono):
             </label>
             <input
               type="text"
-              placeholder="Ex: dona, master, diretoria"
+              placeholder="Ex: Rodrigo.souza, dono"
               value={novoUsuario}
               onChange={(e) => setNovoUsuario(e.target.value)}
               required
@@ -303,13 +295,14 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
-                🔒 Nova Senha:
+                🔒 Nova Senha (mín. {MIN_CARACTERES_SENHA} dígitos):
               </label>
               <input
                 type="password"
-                placeholder="Mínimo 4 dígitos"
+                placeholder={`Mínimo ${MIN_CARACTERES_SENHA} caracteres`}
                 value={novaSenha}
                 onChange={(e) => setNovaSenha(e.target.value)}
+                minLength={MIN_CARACTERES_SENHA}
                 style={{
                   width: '100%',
                   padding: '10px 12px',
@@ -330,6 +323,7 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
                 placeholder="Repita a nova senha"
                 value={confirmarNovaSenha}
                 onChange={(e) => setConfirmarNovaSenha(e.target.value)}
+                minLength={MIN_CARACTERES_SENHA}
                 style={{
                   width: '100%',
                   padding: '10px 12px',
@@ -374,7 +368,7 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
                 boxShadow: '0 4px 10px rgba(147, 51, 234, 0.3)',
               }}
             >
-              {salvando ? 'Salvando...' : '💾 Salvar Novas Credenciais'}
+              {salvando ? 'Criptografando...' : '💾 Salvar Credenciais'}
             </button>
           </div>
         </form>
