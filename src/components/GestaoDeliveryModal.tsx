@@ -1098,455 +1098,35 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
         )}
 
-        {/* MODAL DE CONFIGURAÇÕES DE DELIVERY (MODO CLARO) */}
+        {/* MODAL DE CONFIGURAÇÕES DE DELIVERY EM TELA CHEIA (MODO CLARO) */}
         {modalConfigAberta && (
           <div
-            className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto"
+            className="fixed inset-0 w-screen h-screen bg-slate-100 flex flex-col overflow-hidden text-slate-800"
             style={{ zIndex: 10000000 }}
           >
-            <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-slate-800">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                <div className="flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-purple-600" />
-                  <h3 className="text-base font-bold text-slate-900">Configurações de Delivery da Loja</h3>
+            {/* Header Fixo em Tela Toda */}
+            <div className="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
+                  <Settings className="w-5 h-5" />
                 </div>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
+                    Configurações de Delivery da Loja
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Gerencie horários, taxas, alertas sonoros, impressão térmica e links de acesso em tela cheia
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => setModalConfigAberta(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                 >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="space-y-3 text-xs">
-                {/* Ligar / Desligar Loja */}
-                {(() => {
-                  const statusForm = verificarStatusFuncionamentoDelivery(formConfig);
-                  const estaAberta = statusForm.aberta;
-                  return (
-                    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 gap-3">
-                      <div className="min-w-0 flex-1">
-                        <span className="font-bold text-sm text-slate-900 block">Status da Loja no Delivery:</span>
-                        <span className="text-slate-500 text-xs block leading-tight mt-0.5">
-                          {estaAberta
-                            ? 'Permite que clientes façam pedidos online (Loja Aberta)'
-                            : !formConfig.ativo
-                            ? 'Pausada manualmente pelo botão (Loja Fechada)'
-                            : `Fechada automaticamente (fora do horário das ${statusForm.horarioFormatado})`}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormConfig((prev) => {
-                            if (!estaAberta) {
-                              const agora = new Date();
-                              const hhmm = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
-                              const foraDoHorario = prev.ativo !== false && prev.horarioFechamento && prev.horarioFechamento <= hhmm;
-                              return {
-                                ...prev,
-                                ativo: true,
-                                ...(foraDoHorario ? { horarioFechamento: '23:59' } : {}),
-                              };
-                            } else {
-                              return { ...prev, ativo: false };
-                            }
-                          });
-                        }}
-                        className={`px-4 py-2 rounded-xl font-bold text-xs transition cursor-pointer shrink-0 flex items-center gap-1.5 shadow-xs ${
-                          estaAberta
-                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                            : 'bg-rose-600 hover:bg-rose-700 text-white'
-                        }`}
-                        title={estaAberta ? 'Clique para fechar a loja manualmente' : 'Clique para abrir a loja agora'}
-                      >
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            estaAberta ? 'bg-white animate-pulse' : 'bg-white'
-                          }`}
-                        />
-                        <span>{estaAberta ? 'ABERTA' : 'FECHADA'}</span>
-                      </button>
-                    </div>
-                  );
-                })()}
-
-                {/* Toque Sonoro do Novo Pedido & Repetições */}
-                <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <span className="font-bold text-xs text-amber-950 flex items-center gap-1.5">
-                        <span className="text-base">🔔</span>
-                        <span>Toque de Sino de Novo Pedido:</span>
-                      </span>
-                      <span className="text-amber-800 text-[11px] block mt-0.5">
-                        Sino de mão clássico exclusivo (Bell 1)
-                      </span>
-                    </div>
-                    {alertaSinoTocando ? (
-                      <button
-                        type="button"
-                        onClick={() => pararAlertaNovoPedidoDelivery()}
-                        className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0 animate-pulse"
-                      >
-                        <span>🔕</span>
-                        <span>Parar Toque</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)}
-                        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
-                      >
-                        <span>🔔</span>
-                        <span>Testar Toque</span>
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Quantidade de Repetições do Toque */}
-                  <div className="flex items-center justify-between pt-1 border-t border-amber-200/70 gap-2">
-                    <label className="text-slate-800 font-bold text-xs">
-                      Repetir toque quantas vezes:
-                    </label>
-                    <select
-                      value={formConfig.repeticoesAlerta ?? 3}
-                      onChange={(e) =>
-                        setFormConfig((prev) => ({
-                          ...prev,
-                          repeticoesAlerta: Number(e.target.value),
-                        }))
-                      }
-                      className="bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-slate-900 font-bold text-xs focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
-                    >
-                      <option value={1}>1 vez (15s)</option>
-                      <option value={2}>2 vezes (~30s)</option>
-                      <option value={3}>3 vezes (Recomendado)</option>
-                      <option value={5}>5 vezes</option>
-                      <option value={10}>10 vezes</option>
-                      <option value={99}>Contínuo (até aceitar o pedido)</option>
-                    </select>
-                  </div>
-                  <p className="text-[10px] text-amber-900/80 leading-tight">
-                    💡 Assim que você clicar em "Confirmar/Aceitar" no pedido, o sino para de tocar imediatamente.
-                  </p>
-                </div>
-
-                {/* Automações ao Receber Novo Pedido: Aceite Automático & Impressão Automática */}
-                <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 space-y-3">
-                  <div className="flex items-center justify-between pb-1 border-b border-sky-200/60">
-                    <span className="font-black text-xs text-sky-950 flex items-center gap-1.5 uppercase tracking-wide">
-                      <span>⚡</span>
-                      <span>Automações de Novos Pedidos</span>
-                    </span>
-                    <span className="text-[10px] bg-sky-100 text-sky-800 font-bold px-2 py-0.5 rounded-full">
-                      Escolha as Opções
-                    </span>
-                  </div>
-
-                  {/* Caixilha 1: Aceitar Pedido Automaticamente */}
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-sky-200/80 gap-2 shadow-2xs">
-                    <div className="min-w-0 flex-1">
-                      <span className="font-bold text-xs text-slate-900 flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>1. Aceitar Pedidos Automaticamente:</span>
-                      </span>
-                      <span className="text-slate-500 text-[11px] block mt-0.5 leading-tight">
-                        Move o pedido direto para "Em Separação" e já baixa os produtos do estoque
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormConfig((prev) => ({
-                          ...prev,
-                          aceitarAutomatico: !prev.aceitarAutomatico,
-                        }))
-                      }
-                      className={`px-3 py-1.5 rounded-xl font-black text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1 ${
-                        formConfig.aceitarAutomatico
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                          : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
-                      }`}
-                    >
-                      <span>{formConfig.aceitarAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
-                    </button>
-                  </div>
-
-                  {/* Caixilha 2: Impressão Automática de Cupom / Comanda */}
-                  <div className="p-2.5 rounded-xl bg-white border border-sky-200/80 space-y-2 shadow-2xs">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <span className="font-bold text-xs text-slate-900 flex items-center gap-1">
-                          <Printer className="w-3.5 h-3.5 text-sky-600" />
-                          <span>2. Impressão Automática de Cupom:</span>
-                        </span>
-                        <span className="text-slate-500 text-[11px] block mt-0.5 leading-tight">
-                          Abre a comanda térmica para impressão na hora que o cliente pedir
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setFormConfig((prev) => ({
-                            ...prev,
-                            imprimirAutomatico: !prev.imprimirAutomatico,
-                          }))
-                        }
-                        className={`px-3 py-1.5 rounded-xl font-black text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1 ${
-                          formConfig.imprimirAutomatico
-                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                            : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
-                        }`}
-                      >
-                        <span>{formConfig.imprimirAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
-                      </button>
-                    </div>
-
-                    {formConfig.imprimirAutomatico && (
-                      <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                        <span className="text-slate-800 font-bold">Largura da Bobina Térmica:</span>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))}
-                            className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
-                              (formConfig.larguraImpressao || '80mm') === '80mm'
-                                ? 'bg-sky-900 text-white shadow-2xs'
-                                : 'bg-white border border-slate-300 text-slate-700'
-                            }`}
-                          >
-                            80mm (Padrão)
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))}
-                            className={`px-3 py-1 rounded-lg font-bold text-xs transition cursor-pointer ${
-                              formConfig.larguraImpressao === '58mm'
-                                ? 'bg-sky-900 text-white shadow-2xs'
-                                : 'bg-white border border-slate-300 text-slate-700'
-                            }`}
-                          >
-                            58mm (Estreita)
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
-                <div className="p-3.5 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-purple-950 flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-purple-600" />
-                      <span>Horário de Funcionamento do Delivery:</span>
-                    </span>
-                    <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">
-                      Bloqueio Automático
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 pt-0.5">
-                    <div>
-                      <label className="text-slate-700 block mb-1 font-semibold text-[11px]">
-                        Horário de Início (Abertura):
-                      </label>
-                      <input
-                        type="time"
-                        value={formConfig.horarioAbertura || '08:00'}
-                        onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioAbertura: e.target.value }))}
-                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-slate-700 block mb-1 font-semibold text-[11px]">
-                        Horário de Término (Fechamento):
-                      </label>
-                      <input
-                        type="time"
-                        value={formConfig.horarioFechamento || '23:00'}
-                        onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioFechamento: e.target.value }))}
-                        className="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
-                      />
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] text-purple-800/80 leading-tight">
-                    💡 Fora deste horário, o cliente não conseguirá enviar pedidos pelo cardápio online e verá o aviso de loja fechada.
-                  </p>
-                </div>
-
-                {/* Taxa de Entrega e Raio */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-slate-600 block mb-1 font-semibold">Taxa de Entrega Fixa (R$):</label>
-                    <input
-                      type="number"
-                      step="0.50"
-                      value={formConfig.taxaEntregaFixa}
-                      onChange={(e) => setFormConfig((prev) => ({ ...prev, taxaEntregaFixa: Number(e.target.value) }))}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-600 block mb-1 font-semibold">Raio Máximo Atendido (km):</label>
-                    <input
-                      type="number"
-                      value={formConfig.raioMaximoKm}
-                      onChange={(e) => setFormConfig((prev) => ({ ...prev, raioMaximoKm: Number(e.target.value) }))}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Tempos Estimados e Pedido Mínimo */}
-                <div className="grid grid-cols-3 gap-2">
-                  <div>
-                    <label className="text-slate-600 block mb-1 font-semibold">Tempo Mín (min):</label>
-                    <input
-                      type="number"
-                      value={formConfig.tempoMinimoMinutos}
-                      onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMinimoMinutos: Number(e.target.value) }))}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-600 block mb-1 font-semibold">Tempo Máx (min):</label>
-                    <input
-                      type="number"
-                      value={formConfig.tempoMaximoMinutos}
-                      onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMaximoMinutos: Number(e.target.value) }))}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-600 block mb-1 font-semibold">Ped. Mínimo (R$):</label>
-                    <input
-                      type="number"
-                      value={formConfig.valorMinimoPedido}
-                      onChange={(e) => setFormConfig((prev) => ({ ...prev, valorMinimoPedido: Number(e.target.value) }))}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Chave PIX da Loja */}
-                <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">Chave PIX da Loja (para pagamentos online):</label>
-                  <input
-                    type="text"
-                    value={formConfig.chavePix || ''}
-                    onChange={(e) => setFormConfig((prev) => ({ ...prev, chavePix: e.target.value }))}
-                    placeholder="CNPJ, E-mail, Celular ou Chave Aleatória"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-
-                {/* Telefone / WhatsApp da Loja */}
-                <div>
-                  <label className="text-slate-600 block mb-1 font-semibold">WhatsApp da Loja para Suporte:</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={formConfig.telefoneContatoLoja || ''}
-                    onChange={(e) => setFormConfig((prev) => ({ ...prev, telefoneContatoLoja: mascaraTelefone(e.target.value) }))}
-                    placeholder="(00) 90000-0000"
-                    maxLength={15}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-slate-900 focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-
-                {/* LINKS EXCLUSIVOS DA LOJA E CARDÁPIO DIGITAL */}
-                {lojaAtual && (() => {
-                  const linksLoja = obterLinksExclusivosLoja(lojaAtual);
-                  const itensLinks = [
-                    {
-                      id: 'cardapio',
-                      label: '🛵 Cardápio Digital (Clientes - Público)',
-                      url: linksLoja.cardapio,
-                      cor: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-                      btnCor: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-                    },
-                    {
-                      id: 'admin',
-                      label: '🔑 Link Oficial da Loja (Admin & Funcionários)',
-                      url: linksLoja.admin,
-                      cor: 'bg-slate-50 border-slate-200 text-slate-800',
-                      btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
-                    },
-                  ];
-
-                  return (
-                    <div className="p-3.5 rounded-2xl bg-slate-900/5 border border-slate-200 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <span className="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
-                          <KeyRound className="w-4 h-4 text-purple-600" />
-                          <span>Links da Loja & Cardápio</span>
-                        </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">
-                          Token Protegido
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-600 leading-tight">
-                        O Admin e todos os funcionários cadastrados entram pelo mesmo Link Oficial da Loja:
-                      </p>
-                      <div className="space-y-2">
-                        {itensLinks.map((item) => (
-                          <div
-                            key={item.id}
-                            className={`p-2.5 rounded-xl border ${item.cor} flex flex-col gap-1.5`}
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="font-bold text-[11px]">{item.label}</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(item.url);
-                                  setCopiouTokenEquipe(item.id);
-                                  setTimeout(() => setCopiouTokenEquipe(null), 2200);
-                                }}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition flex items-center gap-1 cursor-pointer shrink-0 ${item.btnCor}`}
-                              >
-                                {copiouTokenEquipe === item.id ? (
-                                  <>
-                                    <Check className="w-3 h-3" />
-                                    <span>Copiado!</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="w-3 h-3" />
-                                    <span>Copiar Link</span>
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                            <input
-                              type="text"
-                              readOnly
-                              value={item.url}
-                              className="w-full bg-white/90 border border-slate-200/80 rounded-lg px-2 py-1 text-[10px] font-mono text-slate-600 select-all focus:outline-none"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setModalConfigAberta(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl cursor-pointer"
-                >
-                  Cancelar
+                  <X className="w-4 h-4" />
+                  <span>Voltar aos Pedidos</span>
                 </button>
                 <button
                   type="button"
@@ -1554,11 +1134,477 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     onSalvarConfig(formConfig);
                     setModalConfigAberta(false);
                   }}
-                  className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-black shadow-sm transition cursor-pointer flex items-center gap-1.5"
                 >
-                  Salvar Configurações
+                  <Check className="w-4 h-4" />
+                  <span>Salvar Configurações</span>
                 </button>
               </div>
+            </div>
+
+            {/* Corpo Rolável em Tela Cheia (Grid de 2 Colunas no Desktop) */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+              <div className="w-full max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 items-start text-xs">
+                {/* COLUNA 1: Status, Som, Automações e Horário */}
+                <div className="space-y-5">
+                  {/* Ligar / Desligar Loja */}
+                  {(() => {
+                    const statusForm = verificarStatusFuncionamentoDelivery(formConfig);
+                    const estaAberta = statusForm.aberta;
+                    return (
+                      <div className="flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs gap-4">
+                        <div className="min-w-0 flex-1">
+                          <span className="font-black text-sm sm:text-base text-slate-900 block">
+                            Status da Loja no Delivery:
+                          </span>
+                          <span className="text-slate-500 text-xs block leading-relaxed mt-1">
+                            {estaAberta
+                              ? 'Permite que clientes façam pedidos online (Loja Aberta)'
+                              : !formConfig.ativo
+                              ? 'Pausada manualmente pelo botão (Loja Fechada)'
+                              : `Fechada automaticamente (fora do horário das ${statusForm.horarioFormatado})`}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormConfig((prev) => {
+                              if (!estaAberta) {
+                                const agora = new Date();
+                                const hhmm = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                                const foraDoHorario = prev.ativo !== false && prev.horarioFechamento && prev.horarioFechamento <= hhmm;
+                                return {
+                                  ...prev,
+                                  ativo: true,
+                                  ...(foraDoHorario ? { horarioFechamento: '23:59' } : {}),
+                                };
+                              } else {
+                                return { ...prev, ativo: false };
+                              }
+                            });
+                          }}
+                          className={`px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm transition cursor-pointer shrink-0 flex items-center gap-2 shadow-xs ${
+                            estaAberta
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                              : 'bg-rose-600 hover:bg-rose-700 text-white'
+                          }`}
+                          title={estaAberta ? 'Clique para fechar a loja manualmente' : 'Clique para abrir a loja agora'}
+                        >
+                          <span
+                            className={`w-2.5 h-2.5 rounded-full ${
+                              estaAberta ? 'bg-white animate-pulse' : 'bg-white'
+                            }`}
+                          />
+                          <span>{estaAberta ? 'ABERTA' : 'FECHADA'}</span>
+                        </button>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Toque Sonoro do Novo Pedido & Repetições */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200 shadow-xs space-y-3.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <span className="font-black text-sm text-amber-950 flex items-center gap-2">
+                          <span className="text-lg">🔔</span>
+                          <span>Toque de Sino de Novo Pedido:</span>
+                        </span>
+                        <span className="text-amber-800 text-xs block mt-0.5">
+                          Sino de mão clássico exclusivo (Bell 1)
+                        </span>
+                      </div>
+                      {alertaSinoTocando ? (
+                        <button
+                          type="button"
+                          onClick={() => pararAlertaNovoPedidoDelivery()}
+                          className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0 animate-pulse"
+                        >
+                          <span>🔕</span>
+                          <span>Parar Toque</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)}
+                          className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
+                        >
+                          <span>🔔</span>
+                          <span>Testar Toque</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Quantidade de Repetições do Toque */}
+                    <div className="flex items-center justify-between pt-2.5 border-t border-amber-200/80 gap-3">
+                      <label className="text-slate-800 font-bold text-xs sm:text-sm">
+                        Repetir toque quantas vezes:
+                      </label>
+                      <select
+                        value={formConfig.repeticoesAlerta ?? 3}
+                        onChange={(e) =>
+                          setFormConfig((prev) => ({
+                            ...prev,
+                            repeticoesAlerta: Number(e.target.value),
+                          }))
+                        }
+                        className="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 font-bold text-xs sm:text-sm focus:outline-none focus:border-amber-500 shadow-2xs cursor-pointer"
+                      >
+                        <option value={1}>1 vez (15s)</option>
+                        <option value={2}>2 vezes (~30s)</option>
+                        <option value={3}>3 vezes (Recomendado)</option>
+                        <option value={5}>5 vezes</option>
+                        <option value={10}>10 vezes</option>
+                        <option value={99}>Contínuo (até aceitar o pedido)</option>
+                      </select>
+                    </div>
+                    <p className="text-xs text-amber-900/80 leading-relaxed">
+                      💡 Assim que você clicar em "Confirmar/Aceitar" no pedido, o sino para de tocar imediatamente.
+                    </p>
+                  </div>
+
+                  {/* Automações ao Receber Novo Pedido: Aceite Automático & Impressão Automática */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-sky-50/90 border border-sky-200 shadow-xs space-y-3.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-sky-200/70">
+                      <span className="font-black text-xs sm:text-sm text-sky-950 flex items-center gap-2 uppercase tracking-wide">
+                        <span>⚡</span>
+                        <span>Automações de Novos Pedidos</span>
+                      </span>
+                      <span className="text-[11px] bg-sky-100 text-sky-800 font-bold px-2.5 py-0.5 rounded-full">
+                        Escolha as Opções
+                      </span>
+                    </div>
+
+                    {/* Caixilha 1: Aceitar Pedido Automaticamente */}
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-white border border-sky-200/80 gap-3 shadow-2xs">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <span>1. Aceitar Pedidos Automaticamente:</span>
+                        </span>
+                        <span className="text-slate-500 text-xs block mt-1 leading-relaxed">
+                          Move o pedido direto para "Em Separação" e já baixa os produtos do estoque
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormConfig((prev) => ({
+                            ...prev,
+                            aceitarAutomatico: !prev.aceitarAutomatico,
+                          }))
+                        }
+                        className={`px-4 py-2 rounded-xl font-black text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1.5 ${
+                          formConfig.aceitarAutomatico
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                            : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                        }`}
+                      >
+                        <span>{formConfig.aceitarAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                      </button>
+                    </div>
+
+                    {/* Caixilha 2: Impressão Automática de Cupom / Comanda */}
+                    <div className="p-3.5 rounded-xl bg-white border border-sky-200/80 space-y-3 shadow-2xs">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <span className="font-bold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
+                            <Printer className="w-4 h-4 text-sky-600" />
+                            <span>2. Impressão Automática de Cupom:</span>
+                          </span>
+                          <span className="text-slate-500 text-xs block mt-1 leading-relaxed">
+                            Abre a comanda térmica para impressão na hora que o cliente pedir
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              imprimirAutomatico: !prev.imprimirAutomatico,
+                            }))
+                          }
+                          className={`px-4 py-2 rounded-xl font-black text-xs transition cursor-pointer shadow-2xs shrink-0 flex items-center gap-1.5 ${
+                            formConfig.imprimirAutomatico
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                              : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                          }`}
+                        >
+                          <span>{formConfig.imprimirAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                        </button>
+                      </div>
+
+                      {formConfig.imprimirAutomatico && (
+                        <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 text-xs">
+                          <span className="text-slate-800 font-bold">Largura da Bobina Térmica:</span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))}
+                              className={`px-3.5 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
+                                (formConfig.larguraImpressao || '80mm') === '80mm'
+                                  ? 'bg-sky-900 text-white shadow-2xs'
+                                  : 'bg-white border border-slate-300 text-slate-700'
+                              }`}
+                            >
+                              80mm (Padrão)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))}
+                              className={`px-3.5 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
+                                formConfig.larguraImpressao === '58mm'
+                                  ? 'bg-sky-900 text-white shadow-2xs'
+                                  : 'bg-white border border-slate-300 text-slate-700'
+                              }`}
+                            >
+                              58mm (Estreita)
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
+                  <div className="p-4 sm:p-5 rounded-2xl bg-purple-50/80 border border-purple-200 shadow-xs space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-xs sm:text-sm text-purple-950 flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-purple-600" />
+                        <span>Horário de Funcionamento do Delivery:</span>
+                      </span>
+                      <span className="text-[11px] bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full font-bold">
+                        Bloqueio Automático
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-1">
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Horário de Início (Abertura):
+                        </label>
+                        <input
+                          type="time"
+                          value={formConfig.horarioAbertura || '08:00'}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioAbertura: e.target.value }))}
+                          className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Horário de Término (Fechamento):
+                        </label>
+                        <input
+                          type="time"
+                          value={formConfig.horarioFechamento || '23:00'}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioFechamento: e.target.value }))}
+                          className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-purple-800/80 leading-relaxed">
+                      💡 Fora deste horário, o cliente não conseguirá enviar pedidos pelo cardápio online e verá o aviso de loja fechada.
+                    </p>
+                  </div>
+                </div>
+
+                {/* COLUNA 2: Taxas, Tempos, PIX, WhatsApp e Links da Loja */}
+                <div className="space-y-5">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+                    <div className="border-b border-slate-100 pb-2.5">
+                      <h4 className="font-black text-sm text-slate-900">
+                        Taxas de Entrega, Tempos & Pagamento
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Defina valores de entrega, tempo médio estimado e dados de contato da loja
+                      </p>
+                    </div>
+
+                    {/* Taxa de Entrega e Raio */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Taxa de Entrega Fixa (R$):</label>
+                        <input
+                          type="number"
+                          step="0.50"
+                          value={formConfig.taxaEntregaFixa}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, taxaEntregaFixa: Number(e.target.value) }))}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Raio Máximo Atendido (km):</label>
+                        <input
+                          type="number"
+                          value={formConfig.raioMaximoKm}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, raioMaximoKm: Number(e.target.value) }))}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Tempos Estimados e Pedido Mínimo */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Tempo Mín (min):</label>
+                        <input
+                          type="number"
+                          value={formConfig.tempoMinimoMinutos}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMinimoMinutos: Number(e.target.value) }))}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Tempo Máx (min):</label>
+                        <input
+                          type="number"
+                          value={formConfig.tempoMaximoMinutos}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMaximoMinutos: Number(e.target.value) }))}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Ped. Mínimo (R$):</label>
+                        <input
+                          type="number"
+                          value={formConfig.valorMinimoPedido}
+                          onChange={(e) => setFormConfig((prev) => ({ ...prev, valorMinimoPedido: Number(e.target.value) }))}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Chave PIX da Loja */}
+                    <div>
+                      <label className="text-slate-700 block mb-1.5 font-bold text-xs">Chave PIX da Loja (para pagamentos online):</label>
+                      <input
+                        type="text"
+                        value={formConfig.chavePix || ''}
+                        onChange={(e) => setFormConfig((prev) => ({ ...prev, chavePix: e.target.value }))}
+                        placeholder="CNPJ, E-mail, Celular ou Chave Aleatória"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+
+                    {/* Telefone / WhatsApp da Loja */}
+                    <div>
+                      <label className="text-slate-700 block mb-1.5 font-bold text-xs">WhatsApp da Loja para Suporte:</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formConfig.telefoneContatoLoja || ''}
+                        onChange={(e) => setFormConfig((prev) => ({ ...prev, telefoneContatoLoja: mascaraTelefone(e.target.value) }))}
+                        placeholder="(00) 90000-0000"
+                        maxLength={15}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* LINKS EXCLUSIVOS DA LOJA E CARDÁPIO DIGITAL */}
+                  {lojaAtual && (() => {
+                    const linksLoja = obterLinksExclusivosLoja(lojaAtual);
+                    const itensLinks = [
+                      {
+                        id: 'cardapio',
+                        label: '🛵 Cardápio Digital (Clientes - Público)',
+                        url: linksLoja.cardapio,
+                        cor: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+                        btnCor: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+                      },
+                      {
+                        id: 'admin',
+                        label: '🔑 Link Oficial da Loja (Admin & Funcionários)',
+                        url: linksLoja.admin,
+                        cor: 'bg-slate-50 border-slate-200 text-slate-800',
+                        btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
+                      },
+                    ];
+
+                    return (
+                      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3.5">
+                        <div className="flex items-center justify-between">
+                          <span className="font-black text-slate-900 text-sm flex items-center gap-2">
+                            <KeyRound className="w-4 h-4 text-purple-600" />
+                            <span>Links da Loja & Cardápio</span>
+                          </span>
+                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800">
+                            Token Protegido
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 leading-relaxed">
+                          O Admin e todos os funcionários cadastrados entram pelo mesmo Link Oficial da Loja:
+                        </p>
+                        <div className="space-y-3">
+                          {itensLinks.map((item) => (
+                            <div
+                              key={item.id}
+                              className={`p-3.5 rounded-xl border ${item.cor} flex flex-col gap-2`}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-bold text-xs">{item.label}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(item.url);
+                                    setCopiouTokenEquipe(item.id);
+                                    setTimeout(() => setCopiouTokenEquipe(null), 2200);
+                                  }}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${item.btnCor}`}
+                                >
+                                  {copiouTokenEquipe === item.id ? (
+                                    <>
+                                      <Check className="w-3.5 h-3.5" />
+                                      <span>Copiado!</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3.5 h-3.5" />
+                                      <span>Copiar Link</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                              <input
+                                type="text"
+                                readOnly
+                                value={item.url}
+                                className="w-full bg-white/95 border border-slate-200/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-700 select-all focus:outline-none"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+
+            {/* Rodapé Fixo em Tela Toda */}
+            <div className="bg-white border-t border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-end gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setModalConfigAberta(false)}
+                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-xl cursor-pointer transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSalvarConfig(formConfig);
+                  setModalConfigAberta(false);
+                }}
+                className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-sm cursor-pointer transition flex items-center gap-2"
+              >
+                <Check className="w-4 h-4" />
+                <span>Salvar Configurações</span>
+              </button>
             </div>
           </div>
         )}
