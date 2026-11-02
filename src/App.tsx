@@ -719,11 +719,12 @@ export default function App() {
       if (isPublicDelivery && !painelParam) {
         return false;
       }
-    }
-    // Se o Dono ou a Equipe acessar via link com parâmetros na URL, sempre exige autenticação / formulário de login visível
-    const portalParam = urlParams.get('portal');
-    if (portalParam === 'master' || painelParam) {
-      return true;
+
+      // Se o Dono ou a Equipe acessar via link com parâmetros na URL, sempre exige autenticação / formulário de login visível
+      const portalParam = urlParams.get('portal');
+      if (portalParam === 'master' || painelParam) {
+        return true;
+      }
     }
 
     const isAutenticado = localStorage.getItem('usuario_autenticado') === 'true';
