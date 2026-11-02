@@ -46,6 +46,27 @@ export function subscribeSupermercados(callback: (lojas: Supermercado[]) => void
         }
       });
       if (lojas.length > 0) {
+        // Preserva permissões de loja (ex: extensão de delivery) e tokens caso já existam localmente mais recentes
+        try {
+          const salvo = localStorage.getItem('lista_supermercados_app');
+          if (salvo) {
+            const locais: Supermercado[] = JSON.parse(salvo);
+            lojas.forEach((remota) => {
+              const local = locais.find((l) => l.id === remota.id);
+              if (local) {
+                if (!remota.permissoesLoja && local.permissoesLoja) {
+                  remota.permissoesLoja = local.permissoesLoja;
+                } else if (remota.permissoesLoja && local.permissoesLoja) {
+                  remota.permissoesLoja = { ...local.permissoesLoja, ...remota.permissoesLoja };
+                }
+                if (!remota.token_admin && local.token_admin) remota.token_admin = local.token_admin;
+                if (!remota.token_caixa && local.token_caixa) remota.token_caixa = local.token_caixa;
+                if (!remota.token_garcom && local.token_garcom) remota.token_garcom = local.token_garcom;
+                if (!remota.token_cozinha && local.token_cozinha) remota.token_cozinha = local.token_cozinha;
+              }
+            });
+          }
+        } catch (e) {}
         callback(lojas);
       } else {
         // Se a nuvem retornou vazio (modo offline), protege as lojas locais existentes

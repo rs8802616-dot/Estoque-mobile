@@ -729,8 +729,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   // Bloqueio imediato do Link do Cliente caso a loja esteja bloqueada ou NÃO tenha a Extensão de Delivery contratada
   const extensaoDeliveryDesativada =
     loja?.status === 'bloqueado' ||
-    loja?.permissoesLoja?.delivery === false ||
-    configDelivery?.extensaoContratada === false;
+    loja?.permissoesLoja?.delivery === false;
 
   if (extensaoDeliveryDesativada) {
     return (

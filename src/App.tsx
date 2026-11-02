@@ -409,16 +409,50 @@ export default function App() {
   const motoboyPedidoParam = urlParamsAtivo?.get('pedido');
   const motoboyTokenParam = urlParamsAtivo?.get('token');
 
+  // Resolução determinística do ID e Nome da loja por slug a partir dos dados locais
+  const resolverIdLojaPorSlug = (slugOuId: string | null): string | null => {
+    if (!slugOuId) return null;
+    const sLimpo = slugOuId.trim().toLowerCase();
+    try {
+      const salvo = typeof window !== 'undefined' ? localStorage.getItem('lista_supermercados_app') : null;
+      if (salvo) {
+        const lojas: any[] = JSON.parse(salvo);
+        const enc = lojas.find(
+          (l) =>
+            String(l.id || '').toLowerCase() === sLimpo ||
+            (l.slug && String(l.slug).toLowerCase() === sLimpo) ||
+            normalizarSlugLoja(l.nome) === sLimpo ||
+            (sLimpo === 'loja-centro' && l.id === 'loja_matriz_01')
+        );
+        if (enc) return enc.id;
+      }
+    } catch {}
+    if (sLimpo === 'loja-centro') return 'loja_matriz_01';
+    return slugOuId;
+  };
+
+  const idLojaUrlResolvida = resolverIdLojaPorSlug(publicLojaSlugAtivo);
+
   // Global & Store States
   const [supermercadoAtual, setSupermercadoAtual] = useState<string>(() => {
-    if (publicLojaSlugAtivo) {
-      return publicLojaSlugAtivo;
+    if (idLojaUrlResolvida) {
+      return idLojaUrlResolvida;
     }
     return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoAtualId') : null) || 'loja_matriz_01';
   });
-  const [nomeSupermercadoAtivo, setNomeSupermercadoAtivo] = useState<string>(
-    () => localStorage.getItem('supermercadoNome') || 'Supermercado Matriz'
-  );
+  const [nomeSupermercadoAtivo, setNomeSupermercadoAtivo] = useState<string>(() => {
+    if (idLojaUrlResolvida) {
+      try {
+        const salvo = typeof window !== 'undefined' ? localStorage.getItem('lista_supermercados_app') : null;
+        if (salvo) {
+          const lojas: any[] = JSON.parse(salvo);
+          const enc = lojas.find((l) => l.id === idLojaUrlResolvida);
+          if (enc?.nome) return enc.nome;
+        }
+      } catch {}
+    }
+    return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoNome') : null) || 'Supermercado Matriz';
+  });
 
   const [totalProdutosCadastrados, setTotalProdutosCadastrados] = useState<number>(() => {
     try {
@@ -715,7 +749,7 @@ export default function App() {
   const [senhaVisivel, setSenhaVisivel] = useState<boolean>(false);
   const [msgRegLoja, setMsgRegLoja] = useState<React.ReactNode>('');
 
-  // Active User Profile & Session State (Sessão persistida apenas se autenticada explicitamente)
+  // Active User Profile & Session State (Isolamento total: Link da Loja NUNCA herda sessão do Dono!)
   const [telaLoginVisivel, setTelaLoginVisivel] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -729,35 +763,81 @@ export default function App() {
         window.location.hash.includes('cardapio') ||
         window.location.hash.includes('delivery');
       const painelParam = urlParams.get('painel');
-      if (isPublicDelivery && !painelParam) {
+      const portalParam = urlParams.get('portal');
+      const tokenParam = urlParams.get('token');
+      const isStoreRoute = Boolean(urlParams.get('loja') || urlParams.get('loja_id'));
+
+      // Se for apenas o cardápio público do cliente, abre diretamente sem login
+      if (isPublicDelivery && !painelParam && !portalParam && !tokenParam) {
         return false;
       }
 
-      const portalParam = urlParams.get('portal');
       const isAutenticadoUrl = localStorage.getItem('usuario_autenticado') === 'true';
       const perfilSalvoUrl = localStorage.getItem('perfilAtivoTipo');
+      const lojaSalvaUrl = localStorage.getItem('supermercadoAtualId');
 
-      // Se já estiver autenticado, preserva a sessão ao atualizar a tela (F5)
-      if (isAutenticadoUrl && perfilSalvoUrl) {
-        if (portalParam === 'master') {
-          return perfilSalvoUrl !== 'dona_app';
+      // SE É UM LINK DE LOJA (?loja=...):
+      // NUNCA PODE REAPROVEITAR SESSÃO DA DONA DO APP!
+      if (isStoreRoute && portalParam !== 'master') {
+        if (perfilSalvoUrl === 'dona_app') {
+          // A sessão salva no navegador é do Dono em outra aba; nesta aba da loja, DEVE EXIGIR LOGIN DA LOJA!
+          return true;
         }
+        // Se já está autenticado como lojista/caixa DESTA MESMA LOJA:
+        if (isAutenticadoUrl && (perfilSalvoUrl === 'admin_loja' || perfilSalvoUrl === 'caixa')) {
+          if (!idLojaUrlResolvida || lojaSalvaUrl === idLojaUrlResolvida) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      // SE É O LINK DO DONO (?portal=master):
+      if (portalParam === 'master') {
+        return !(isAutenticadoUrl && perfilSalvoUrl === 'dona_app');
+      }
+
+      // Se já estiver autenticado genericamente ao atualizar a tela (F5)
+      if (isAutenticadoUrl && perfilSalvoUrl) {
         return false;
       }
 
-      if (portalParam === 'master' || painelParam) {
+      if (painelParam) {
         return true;
       }
     }
 
-    const isAutenticado = localStorage.getItem('usuario_autenticado') === 'true';
-    const perfilSalvo = localStorage.getItem('perfilAtivoTipo');
+    const isAutenticado = typeof window !== 'undefined' && localStorage.getItem('usuario_autenticado') === 'true';
+    const perfilSalvo = typeof window !== 'undefined' ? localStorage.getItem('perfilAtivoTipo') : null;
     return !isAutenticado || !perfilSalvo;
   });
+
   const [perfilAtivo, setPerfilAtivo] = useState<'dona_app' | 'admin_loja' | 'caixa'>(() => {
-    const isAutenticado = localStorage.getItem('usuario_autenticado') === 'true';
-    if (!isAutenticado) return 'dona_app';
-    return (localStorage.getItem('perfilAtivoTipo') as any) || 'dona_app';
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isStoreRoute = Boolean(urlParams.get('loja') || urlParams.get('loja_id'));
+      const portalParam = urlParams.get('portal');
+      const perfilSalvo = localStorage.getItem('perfilAtivoTipo');
+      const isAutenticado = localStorage.getItem('usuario_autenticado') === 'true';
+
+      // Se entrou por um link de loja e não é o portal master:
+      if (isStoreRoute && portalParam !== 'master') {
+        // NUNCA aceita 'dona_app'
+        if (isAutenticado && (perfilSalvo === 'admin_loja' || perfilSalvo === 'caixa')) {
+          return perfilSalvo;
+        }
+        return 'admin_loja';
+      }
+
+      if (portalParam === 'master') {
+        return 'dona_app';
+      }
+
+      if (isAutenticado && perfilSalvo) {
+        return perfilSalvo as any;
+      }
+    }
+    return 'dona_app';
   });
   const [operadorAtivoId, setOperadorAtivoId] = useState<string | null>(() => {
     const isAutenticado = localStorage.getItem('usuario_autenticado') === 'true';
@@ -3230,7 +3310,7 @@ export default function App() {
     if (!lojaAtualObj || lojaAtualObj.status === 'bloqueado') return false;
     const perms = lojaAtualObj.permissoesLoja || PERMISSOES_LOJA_PADRAO;
     if (modulo === 'delivery') {
-      return perms.delivery !== false && configDelivery?.extensaoContratada !== false;
+      return perms.delivery !== false;
     }
     if (perfilAtivo === 'dona_app') return true;
     return perms[modulo] !== false;
@@ -3241,11 +3321,11 @@ export default function App() {
     acao: keyof PermissoesOperador,
     moduloLoja?: keyof PermissoesLoja
   ): boolean => {
-    // Se for a extensão paga de Delivery e ela estiver desativada para esta loja, oculta para todos (inclusive no teste da Dona)
+    // Se for a extensão de Delivery e ela estiver desativada no plano desta loja:
     if (moduloLoja === 'delivery' || acao === 'gerenciar_delivery') {
       if (!lojaAtualObj || lojaAtualObj.status === 'bloqueado') return false;
       const permsLoja = lojaAtualObj.permissoesLoja || PERMISSOES_LOJA_PADRAO;
-      if (permsLoja.delivery === false || configDelivery?.extensaoContratada === false) {
+      if (permsLoja.delivery === false) {
         return false;
       }
     }

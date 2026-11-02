@@ -99,10 +99,50 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
    - Na reconciliação de dados em `subscribeEstoque` e `subscribeCatalogo`, fotos locais e fotos do IndexedDB nunca devem ser sobrescritas por strings vazias caso a nuvem envie documentos sem a propriedade `foto`/`imagem`.
 3. **Isolamento Multi-Tenant:**
    - Toda operação de estoque, venda, caixa ou cliente deve respeitar rigorosamente o `lojaId` do supermercado atualmente ativo.
+4. **Isolamento Estrito de Links por Rota (Zero Sessão Cruzada entre Dono e Lojas):**
+   - Quando a URL contém `?loja=...` ou `?painel=admin` ou `?token=...`, a aplicação opera no contexto exclusivo daquela loja.
+   - A sessão `dona_app` gravada no `localStorage` do navegador NUNCA pode ser herdada ou vazada para abas que acessem links de lojas.
+   - Se o Dono abrir um link de loja em outra aba no mesmo navegador, a nova aba bloqueia a herança do perfil de Dono, força a tela de login daquela loja específica e isola o perfil para `admin_loja` ou `caixa`, impedindo acesso indevido ao SuperAdmin do Dono.
+5. **Fonte Única de Verdade para Licenciamento de Extensões:**
+   - O status de contratação de extensões (ex: Extensão de Delivery & Cardápio) reside no registro da loja (`loja.permissoesLoja.delivery`).
+   - A verificação de permissão no PDV, menu e cardápio do cliente consulta prioritariamente `loja.permissoesLoja?.delivery !== false`.
+   - Ao ativar ou desativar a extensão no SuperAdmin, o estado é atualizado imediatamente em memória, no `localStorage` e sincronizado no Firestore (`salvarSupermercadoFirestore`). Na reconciliação com o Firestore (`subscribeSupermercados`), permissões locais são mescladas para evitar perda de estado ao recarregar a página (F5).
+6. **Modelo de 2 Links Principais da Plataforma:**
+   - **Link 1: Portal Master do Dono:** `/?portal=master&token=master_9k2m8x7p` (acesso exclusivo à gestão de todas as lojas, licenças e banco).
+   - **Link 2: Link Oficial da Loja:** `/?loja=slug&painel=admin&token=...` (link unificado pelo qual tanto o Gerente/Admin quanto todos os funcionários cadastrados acessam a loja).
+   - *(Público) Cardápio Digital do Cliente:* `/?loja=slug` (link limpo para clientes realizarem pedidos online).
+7. **Integridade da Caderneta de Fiado e Baixa de Estoque:**
+   - Tanto as vendas no PDV/Carrinho quanto os lançamentos diretos na tela de Devedores (`handleLancarCompraFiado`) DEVEM abater imediatamente as quantidades vendidas do estoque da loja no `localStorage` e no Firestore.
+   - Baixas de pagamento de dívidas devem atualizar o saldo na tela em tempo real e, quando pagas em dinheiro, registrar automaticamente um suprimento no caixa aberto do turno para conferência física da gaveta.
 
 ---
 
 ## 5. Histórico de Alterações (Changelog)
+
+### [2026-11-02 - Versão 108 - Auditoria Completa, Isolamento de Links e Correção de Extensões]
+- **Auditoria Completa do Sistema & Correção de Vazamento de Sessão de Links de Loja:**
+  - **Problema Solucionado:** Ao copiar o link oficial da loja (`/?loja=slug&painel=admin&token=...`) e abrir em outra aba do mesmo navegador, a aba herdava a sessão ativa do Dono (`perfilAtivoTipo = 'dona_app'`) gravada no `localStorage`, exibindo o painel e os controles do Dono dentro da loja.
+  - **Isolamento Rigoroso de Rota:** Adicionada verificação estrita na inicialização do estado de sessão. Quando a URL contém rota de loja (`loja` ou `loja_id`), a aplicação recusa categoricamente o perfil `dona_app`. Caso o navegador tenha sessão de Dono em outra aba, a aba da loja exige o login individual daquela loja ou perfil de operador (`admin_loja` / `caixa`), mantendo separação absoluta de contexto.
+  - **Resolução Determinística de Loja por Slug:** Implementada a função `resolverIdLojaPorSlug` para converter slugs da URL (ex: `loja-centro`) no ID real do documento da loja (`loja_matriz_01`), garantindo carregamento imediato do estoque, dados e configurações corretas.
+- **Correção da Ativação de Extensões (Delivery) e Persistência no F5:**
+  - **Problema Solucionado:** Ao clicar em "Liberar Extensão Delivery", o botão não aparecia de imediato e sumia ao recarregar a tela (F5) devido a conflito entre duas fontes de verdade (`loja.permissoesLoja.delivery` vs `configDelivery.extensaoContratada`).
+  - **Fonte Única de Verdade:** Unificada a verificação para consultar a licença da loja (`loja.permissoesLoja?.delivery !== false`).
+  - **Reconciliação Segura com Firestore:** Ajustada a função `subscribeSupermercados` para mesclar as permissões e tokens locais com o snapshot remoto, impedindo que documentos Firestore defasados sobrescrevam alterações locais recentes.
+  - **Sincronização Imediata:** Atualização instantânea em memória e persistência em `lista_supermercados_app`, `config_supermercado_{id}` e `config_delivery_{id}`.
+- **Consolidação do Modelo de 2 Links Principais:**
+  - Eliminados links fragmentados de garçom/cozinha/caixa da interface visual. O sistema padronizou os 2 links centrais:
+    1. **Link do Dono:** Portal Master de controle total.
+    2. **Link da Loja:** Link único de acesso da loja para Admin e todos os colaboradores cadastrados.
+    3. **Cardápio Digital:** Link público exclusivo para clientes.
+- **Sincronização de Fiado e Baixa de Estoque (v107):**
+  - Implementado o handler `handleLancarCompraFiado` para dar baixa automática no estoque ao lançar compras diretamente pela tela da caderneta de devedores.
+  - Sincronização reativa do saldo ao registrar pagamentos/abatimentos de dívidas.
+  - Registro automático de suprimento no caixa do turno atual para pagamentos de fiado recebidos em dinheiro físico.
+- **Proteção e Reserva de Estoque em Pedidos de Delivery (v103-v106):**
+  - Reserva de estoque para pedidos pendentes e bloqueio de confirmação de pedidos no caixa caso o estoque físico seja insuficiente.
+  - Remoção de itens avulsos em pedidos pendentes (`✕`) e modal de contato direto do cliente (`📞 Ligar Agora` / `💬 WhatsApp`).
+- **Modal de Configuração de Delivery em Tela Cheia (v102):**
+  - Modal expandido para visualização completa em duas colunas responsivas, facilitando gestão de taxas, raios e impressões.
 
 ### [2026-10-25 - Atualização 40]
 - **Otimização Extrema de Leituras do Firestore e Ativação de Cache Persistente em Disco (`persistentLocalCache`):**
