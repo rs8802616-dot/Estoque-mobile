@@ -119,6 +119,35 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-12 - Atualização 41]
+- **Migração Completa e Segura de Dados do Banco Antigo (`appestoqueprodutos-bb92d`) para o Novo Banco Dedicado (`adega-delivery-pdv`):**
+  - **Objetivo:** Trazer todos os dados de produção do aplicativo antigo para a versão atualizada mantendo o app anterior rodando normalmente (Opção B).
+  - **Backup Prévio Gerado:** Criado arquivo seguro de recuperação total `backup_producao_antiga.json` contendo todos os registros em JSON.
+  - **Regras de Migração Aplicadas:**
+    1. **Produtos com Código de Barras (EAN):** Transferidos com preços de venda, preços de custo, lotes, validades e quantidades reais. As fotos antigas pesadas não foram transferidas para que o sistema vincule automaticamente as imagens em alta definição já presentes nos +15.500 produtos do catálogo oficial integrado.
+    2. **Itens Especiais / Copões (Sem Código de Barras):** Fotos originais rigorosamente preservadas e aplicadas em 100% dos copões (`Copão 15,00`, `Copão 10 gin`, `Copão 20,00`, `Copão 25,00`, `Copão 30,00`, `Copão 35,00 Black Label`), todos configurados como produto interno com estoque ilimitado para venda contínua.
+    3. **Clientes Fiado / Devedores:** 50 clientes devedores importados integralmente com seus saldos devedores e limites de crédito.
+    4. **Vendas e Lojas:** 421 vendas históricas e as lojas cadastradas (`ADEGAJP` e `Rodrigo`) importadas sem conflito.
+  - **Status Final:** O banco de dados novo (`adega-delivery-pdv`) agora conta com todos os dados da produção real sincronizados.
+
+### [2026-11-02 - Versão 110 - Correção de Autenticação do Caixa, Persistência no F5 e Abertura no PDV]
+- **Autenticação de Abertura e Fechamento de Caixa com Hash Criptográfico e CNPJ (`GestaoCaixaModal.tsx` & `App.tsx`):**
+  - **Problema Solucionado:** Ao tentar autenticar e abrir o caixa no PDV informando o CNPJ da loja (ex: `00.000.000/0001-00`) e a senha cadastrada com hash criptográfico SHA-256, o sistema recusava a abertura com a mensagem *"⚠️ Usuário (CPF/Login) ou Senha incorretos"*. A função `validarCredenciaisOperador` verificava apenas senhas antigas em texto puro (`'123'`, `'1234'`) e não limpava a pontuação do CNPJ nem invocava o verificador de hash criptográfico `verificarSenhaComHash`.
+  - **Autenticação Híbrida & Assíncrona no Caixa:**
+    - Assinaturas de `onAbrirCaixa` e `onFecharCaixa` no `GestaoCaixaModal.tsx` convertidas para assíncronas com retorno `Promise<{ sucesso: boolean; mensagem?: string }>`.
+    - Função `validarCredenciaisOperador` agora é 100% assíncrona e executa verificação contra os 3 perfis autorizados:
+      1. **Operadores de Caixa cadastrados:** Busca por nome, login, ID ou CPF limpo (apenas dígitos), validando senha/PIN via `verificarSenhaComHash` ou PIN numérico.
+      2. **Administrador/Gerente da Loja Atual:** Aceita CNPJ (com ou sem pontuação: `00.000.000/0001-00` ou `00000000000100`), nome da loja, slug ou logins genéricos (`admin`, `gerente`, `supervisor`, `caixa`), validando a senha com `verificarSenhaComHash(senhaLimpa, lojaAtual.senhaHash, lojaAtual.senhaSalt, lojaAtual.senha || lojaAtual.senhaAdmin)`.
+      3. **Dono da Plataforma (SuperAdmin):** Aceita login mestre (`dono`, `super_admin` ou personalizado) com validação de hash mestre.
+- **Persistência de Sessão da Loja ao Recarregar a Tela (F5):**
+  - **Problema Solucionado:** Ao recarregar a página (F5) dentro do painel da loja, o sistema descartava o estado de autenticação e voltava a exibir a tela de login.
+  - **Resolução Segura:** Ao efetuar login com sucesso (`handleLoginSucesso`), a chave `sessao_loja_ativa: 'true'` é gravada no `sessionStorage` da aba. Ao recarregar (F5), o estado inicial `telaLoginVisivel` verifica se a sessão da aba está ativa (`sessionStorage.getItem('sessao_loja_ativa') === 'true'`) e se o usuário está autenticado no `localStorage`, mantendo a sessão perfeitamente aberta sem exigir redigitação de senha, ao mesmo tempo em que preserva o isolamento de abas novas.
+- **Entrada Direta no PDV / Frente de Caixa (Sem Auto-abertura da Tela de Fiado):**
+  - **Problema Solucionado:** Ao logar ou recarregar, o sistema abria automaticamente a tela de clientes devedores (Fiado) por cima do PDV.
+  - **Resolução:** O estado inicial `modalDevedoresVisivel` foi fixado estritamente como `false` e a restauração da chave `'modal_devedores'` foi desativada, garantindo que o usuário sempre pouse diretamente na Frente de Caixa / PDV pronto para operar as vendas.
+- **Atualização de Cache Service Worker:** Cache PWA avançado para `estoque-mobile-pwa-v110` no `public/sw.js` e `src/main.tsx`.
+
+
 ### [2026-11-02 - Versão 109 - Busca Dinâmica de Itens do Estoque no Botão "Item Balcão"]
 - **Pesquisa Dinâmica de Produtos do Estoque no Modal "➕ Item Balcão" (`GestaoDevedoresModal.tsx`):**
   - **Problema Solucionado:** Ao clicar no botão `➕ Item Balcão` na tela de nova compra fiado, abria-se apenas um formulário em branco exigindo digitação manual de nome, quantidade e preço, sem permitir localizar os produtos já cadastrados no estoque da loja.
