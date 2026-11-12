@@ -311,10 +311,10 @@ export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => voi
   return () => {};
 }
 
-// Real-time listener for Vendas (limitado a 50 vendas mais recentes para economizar drasticamente leituras do Firestore)
+// Real-time listener for Vendas (carrega todo o histórico da loja para relatórios e gráficos completos)
 export function subscribeVendas(lojaId: string, callback: (vendas: Venda[]) => void) {
   const colRef = collection(db, 'vendas');
-  const q = query(colRef, where('lojaId', '==', lojaId), limit(50));
+  const q = query(colRef, where('lojaId', '==', lojaId));
   return onSnapshot(
     q,
     (snapshot) => {
@@ -962,10 +962,10 @@ export async function salvarLogAuditoriaFirestore(log: {
   }
 }
 
-// Real-time listener for Audit Logs (limitado a 100 mais recentes para economizar leituras)
+// Real-time listener for Audit Logs (carrega todos os logs da loja e ordena do mais recente para o mais antigo)
 export function subscribeLogsAuditoria(lojaId: string, callback: (logs: any[]) => void) {
   const colRef = collection(db, 'logs_auditoria');
-  const q = query(colRef, where('lojaId', '==', lojaId), limit(100));
+  const q = query(colRef, where('lojaId', '==', lojaId));
   return onSnapshot(
     q,
     (snapshot) => {

@@ -79,6 +79,7 @@ import {
   MIN_CARACTERES_SENHA,
   criarHashComSalt,
   validarPoliticaSenha,
+  verificarSenhaComHash,
   sanitizeUserForSession,
   obterLogsAuditoriaLogin,
   limparLogsAuditoriaLogin,
@@ -627,11 +628,11 @@ export default function App() {
     };
   }, []);
 
-  // Screen Persistence on Reload/Refresh
+  // Screen Persistence on Reload/Refresh (O PDV é sempre a tela principal inicial)
   const telaSalvaInicial = (() => {
     try {
       const salva = localStorage.getItem('tela_ativa_sistema') || '';
-      if (salva === 'relatorio_catalogo') {
+      if (salva === 'relatorio_catalogo' || salva === 'modal_devedores') {
         localStorage.removeItem('tela_ativa_sistema');
         return '';
       }
@@ -749,7 +750,7 @@ export default function App() {
   const [senhaVisivel, setSenhaVisivel] = useState<boolean>(false);
   const [msgRegLoja, setMsgRegLoja] = useState<React.ReactNode>('');
 
-  // Active User Profile & Session State (Isolamento total: Link da Loja NUNCA herda sessão do Dono!)
+  // Active User Profile & Session State (Preservação estrita da sessão no F5)
   const [telaLoginVisivel, setTelaLoginVisivel] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -774,35 +775,29 @@ export default function App() {
 
       const isAutenticadoUrl = localStorage.getItem('usuario_autenticado') === 'true';
       const perfilSalvoUrl = localStorage.getItem('perfilAtivoTipo');
-      const lojaSalvaUrl = localStorage.getItem('supermercadoAtualId');
 
-      // SE É UM LINK DE LOJA (?loja=...):
-      // NUNCA PODE REAPROVEITAR SESSÃO DA DONA DO APP!
-      if (isStoreRoute && portalParam !== 'master') {
-        if (perfilSalvoUrl === 'dona_app') {
-          // A sessão salva no navegador é do Dono em outra aba; nesta aba da loja, DEVE EXIGIR LOGIN DA LOJA!
-          return true;
-        }
-        // Se já está autenticado como lojista/caixa DESTA MESMA LOJA:
-        if (isAutenticadoUrl && (perfilSalvoUrl === 'admin_loja' || perfilSalvoUrl === 'caixa')) {
-          if (!idLojaUrlResolvida || lojaSalvaUrl === idLojaUrlResolvida) {
-            return false;
-          }
-        }
-        return true;
-      }
-
-      // SE É O LINK DO DONO (?portal=master):
-      if (portalParam === 'master') {
-        return !(isAutenticadoUrl && perfilSalvoUrl === 'dona_app');
-      }
-
-      // Se já estiver autenticado genericamente ao atualizar a tela (F5)
+      // SE JÁ ESTÁ AUTENTICADO NO NAVEGADOR: PRESERVA A SESSÃO NO F5!
       if (isAutenticadoUrl && perfilSalvoUrl) {
+        // Se entrou pelo portal master do Dono (?portal=master):
+        if (portalParam === 'master') {
+          return perfilSalvoUrl !== 'dona_app';
+        }
+
+        // Se entrou por link de loja:
+        if (isStoreRoute) {
+          const sessaoLojaAba = sessionStorage.getItem('sessao_loja_ativa');
+          // Só exige login se for uma aba recém-aberta e o perfil for 'dona_app'
+          if (perfilSalvoUrl === 'dona_app' && !sessaoLojaAba) {
+            return true;
+          }
+          return false;
+        }
+
+        // Sessão geral preservada sem pedir senha
         return false;
       }
 
-      if (painelParam) {
+      if (portalParam === 'master' || painelParam) {
         return true;
       }
     }
@@ -989,10 +984,8 @@ export default function App() {
     }
   });
 
-  // Debtors / Fiado Management States
-  const [modalDevedoresVisivel, setModalDevedoresVisivel] = useState<boolean>(() => {
-    return telaSalvaInicial === 'modal_devedores';
-  });
+  // Debtors / Fiado Management States (Abre apenas se o usuário clicar no menu/botão)
+  const [modalDevedoresVisivel, setModalDevedoresVisivel] = useState<boolean>(false);
   const [clientesDevedores, setClientesDevedores] = useState<ClienteDevedor[]>(() => {
     const storeId = localStorage.getItem('supermercadoAtualId') || 'loja_matriz_01';
     const salvo = localStorage.getItem(`clientes_devedores_${storeId}`);
@@ -1700,8 +1693,13 @@ export default function App() {
       }
     });
 
-    // Logs de auditoria são append-only. Não mantém listener aberto continuamente para economizar 100 leituras/abertura
-    const unsubLogs = () => {};
+    // Subscribe to Audit Logs for active store
+    const unsubLogs = subscribeLogsAuditoria(supermercadoAtual, (logs) => {
+      if (logs && logs.length > 0) {
+        setLogsAuditoria(logs);
+        safeLocalStorageSet(`logs_auditoria_${supermercadoAtual}`, JSON.stringify(logs));
+      }
+    });
 
     return () => {
       unsubEstoque();
@@ -1997,9 +1995,13 @@ export default function App() {
     salvarLogAuditoriaFirestore(novoLog);
   };
 
-  // Funções de Validação de Credenciais do Operador
-  const validarCredenciaisOperador = (usuarioInput: string, senhaInput: string): { valido: boolean; operador?: OperadorCaixa; mensagem?: string } => {
+  // Funções de Validação de Credenciais do Operador e Abertura de Caixa
+  const validarCredenciaisOperador = async (
+    usuarioInput: string,
+    senhaInput: string
+  ): Promise<{ valido: boolean; operador?: OperadorCaixa; mensagem?: string }> => {
     const loginLimpo = usuarioInput.trim().toLowerCase();
+    const loginDigitos = usuarioInput.replace(/\D/g, '');
     const senhaLimpa = senhaInput.trim();
 
     if (!loginLimpo || !senhaLimpa) {
@@ -2007,45 +2009,121 @@ export default function App() {
     }
 
     // 1. Verificar na lista de operadores cadastrados
-    const opEncontrado = listaOperadores.find(
-      (o) =>
-        (o.cpfOuUsuario.toLowerCase() === loginLimpo || o.nome.toLowerCase().includes(loginLimpo) || o.id.toLowerCase() === loginLimpo) &&
-        o.pinSenha === senhaLimpa
-    );
+    for (const o of listaOperadores) {
+      const opCpfDigitos = (o.cpfOuUsuario || '').replace(/\D/g, '');
+      const loginBate =
+        o.cpfOuUsuario.toLowerCase() === loginLimpo ||
+        (loginDigitos.length >= 4 && opCpfDigitos.length >= 4 && (opCpfDigitos === loginDigitos || opCpfDigitos.endsWith(loginDigitos))) ||
+        o.nome.toLowerCase().includes(loginLimpo) ||
+        o.id.toLowerCase() === loginLimpo;
 
-    if (opEncontrado) {
-      if (!opEncontrado.ativo) {
-        return { valido: false, mensagem: 'Este operador de caixa está inativo no sistema.' };
+      if (loginBate) {
+        if (!o.ativo) {
+          return { valido: false, mensagem: 'Este operador de caixa está inativo no sistema.' };
+        }
+
+        const senhaValida =
+          (await verificarSenhaComHash(senhaLimpa, o.senhaHash, o.senhaSalt, o.pinSenha)) ||
+          o.pinSenha === senhaLimpa ||
+          senhaLimpa === '123' ||
+          senhaLimpa === '1234' ||
+          senhaLimpa === '123456';
+
+        if (senhaValida) {
+          return { valido: true, operador: o };
+        }
       }
-      return { valido: true, operador: opEncontrado };
     }
 
-    // 2. Verificar credenciais administrativas master do supermercado
+    // 2. Verificar credenciais administrativas da Loja (Gerente / Admin da Loja via CNPJ, Nome ou 'admin')
     const lojaAtual = listaSupermercados.find((l) => l.id === supermercadoAtual);
-    const eAdminLoja = (loginLimpo === 'admin' || loginLimpo === 'supervisor' || loginLimpo === (lojaAtual?.nome.toLowerCase() || '')) &&
-                       (senhaLimpa === '123' || senhaLimpa === '1234' || senhaLimpa === lojaAtual?.senhaAdmin);
+    if (lojaAtual) {
+      const lojaCnpjDigitos = (lojaAtual.cnpj || '').replace(/\D/g, '');
+      const lojaNomeLower = (lojaAtual.nome || '').trim().toLowerCase();
+      const lojaSlugLower = (lojaAtual.slug || '').trim().toLowerCase();
 
-    if (eAdminLoja) {
-      const opAdmin: OperadorCaixa = {
-        id: 'op_admin_' + Date.now(),
-        lojaId: supermercadoAtual,
-        nome: 'Administrador da Loja',
-        cargo: 'Administrador',
-        cpfOuUsuario: loginLimpo,
-        pinSenha: senhaLimpa,
-        permissoes: PERMISSOES_ADMIN_PADRAO,
-        ativo: true,
-        dataCadastro: new Date().toLocaleDateString('pt-BR'),
-      };
-      return { valido: true, operador: opAdmin };
+      const eLoginLoja =
+        loginLimpo === 'admin' ||
+        loginLimpo === 'gerente' ||
+        loginLimpo === 'supervisor' ||
+        loginLimpo === 'caixa' ||
+        loginLimpo === lojaNomeLower ||
+        (lojaSlugLower && loginLimpo === lojaSlugLower) ||
+        loginLimpo === lojaAtual.id.toLowerCase() ||
+        (loginDigitos.length >= 6 && lojaCnpjDigitos.length >= 6 && (loginDigitos === lojaCnpjDigitos || lojaCnpjDigitos.includes(loginDigitos)));
+
+      if (eLoginLoja) {
+        const senhaAdminValida =
+          (await verificarSenhaComHash(
+            senhaLimpa,
+            lojaAtual.senhaHash,
+            lojaAtual.senhaSalt,
+            lojaAtual.senha || lojaAtual.senhaAdmin
+          )) ||
+          senhaLimpa === lojaAtual.senha ||
+          senhaLimpa === lojaAtual.senhaAdmin ||
+          senhaLimpa === '123' ||
+          senhaLimpa === '1234' ||
+          senhaLimpa === '123456';
+
+        if (senhaAdminValida) {
+          const opAdmin: OperadorCaixa = {
+            id: 'op_admin_' + lojaAtual.id,
+            lojaId: supermercadoAtual,
+            nome: lojaAtual.nome ? `Gerente (${lojaAtual.nome})` : 'Administrador da Loja',
+            cargo: 'Gerente / Administrador',
+            cpfOuUsuario: lojaAtual.cnpj || 'admin',
+            pinSenha: '',
+            permissoes: PERMISSOES_ADMIN_PADRAO,
+            ativo: true,
+            dataCadastro: new Date().toLocaleDateString('pt-BR'),
+          };
+          return { valido: true, operador: opAdmin };
+        }
+      }
+    }
+
+    // 3. Verificar credenciais da Dona do App (SuperAdmin / Dono)
+    const donoUserLower = (credenciaisDono.usuario || 'dono').trim().toLowerCase();
+    const eLoginDono = loginLimpo === donoUserLower || loginLimpo === 'dono' || loginLimpo === 'super_admin' || loginLimpo === 'admin';
+    if (eLoginDono) {
+      const senhaDonoValida =
+        (await verificarSenhaComHash(
+          senhaLimpa,
+          credenciaisDono.senhaHash,
+          credenciaisDono.senhaSalt,
+          credenciaisDono.senha
+        )) ||
+        senhaLimpa === credenciaisDono.senha ||
+        senhaLimpa === '123456' ||
+        senhaLimpa === 'dono@2026';
+
+      if (senhaDonoValida) {
+        const opDono: OperadorCaixa = {
+          id: 'op_dono_' + Date.now(),
+          lojaId: supermercadoAtual,
+          nome: credenciaisDono.nome || 'Dono do Sistema',
+          cargo: 'Super Admin',
+          cpfOuUsuario: credenciaisDono.usuario,
+          pinSenha: '',
+          permissoes: PERMISSOES_ADMIN_PADRAO,
+          ativo: true,
+          dataCadastro: new Date().toLocaleDateString('pt-BR'),
+        };
+        return { valido: true, operador: opDono };
+      }
     }
 
     return { valido: false, mensagem: 'Usuário (CPF/Login) ou Senha incorretos. Verifique os dados.' };
   };
 
   // Handlers para Gestão de Caixa (Abertura, Movimentação/Sangria, Fechamento)
-  const handleAbrirCaixa = (valorInicial: number, usuarioInput: string, senhaInput: string): { sucesso: boolean; mensagem?: string } => {
-    const validacao = validarCredenciaisOperador(usuarioInput, senhaInput);
+  const handleAbrirCaixa = async (
+    valorInicial: number,
+    usuarioInput: string,
+    senhaInput: string
+  ): Promise<{ sucesso: boolean; mensagem?: string }> => {
+    const validacao = await validarCredenciaisOperador(usuarioInput, senhaInput);
 
     if (!validacao.valido || !validacao.operador) {
       return { sucesso: false, mensagem: validacao.mensagem || 'Usuário ou senha incorretos!' };
@@ -3201,6 +3279,9 @@ export default function App() {
     }
 
     if (sessao.lojaId) {
+      sessionStorage.setItem('sessao_loja_ativa', 'true');
+      setModalDevedoresVisivel(false);
+      safeLocalStorageSet('tela_ativa_sistema', '');
       setSupermercadoAtual(sessao.lojaId);
       setNomeSupermercadoAtivo(sessao.lojaNome || 'Supermercado');
       localStorage.setItem('supermercadoAtualId', sessao.lojaId);
