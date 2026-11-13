@@ -216,6 +216,8 @@ import {
   subscribeConfigDelivery,
   sanitizarItemEstoque,
   obterQuantidadeTotalCatalogoFirestore,
+  verificarTermoAceitoFirestore,
+  salvarTermoAceitoFirestore,
 } from './lib/firestoreSync';
 import {
   gerarSessaoToken,
@@ -3375,14 +3377,24 @@ export default function App() {
     const chaveTermoDispositivoLogin = `termo_unico_dispositivo_${idContaLogin}`;
     const chaveTermoDispositivoGeral = 'termo_uso_aceito_dispositivo_v1';
 
-    const termoAceito =
+    let termoAceito = Boolean(
       localStorage.getItem(userChaveTermo) ||
       localStorage.getItem(chaveTermoDispositivoLogin) ||
-      localStorage.getItem(chaveTermoDispositivoGeral);
+      localStorage.getItem(chaveTermoDispositivoGeral)
+    );
 
     if (!termoAceito) {
-      localStorage.setItem('ultima_chave_termo_pendente', userChaveTermo);
-      localStorage.setItem('ultima_chave_termo_disp_pendente', chaveTermoDispositivoLogin);
+      termoAceito = await verificarTermoAceitoFirestore(idContaLogin);
+      if (termoAceito) {
+        safeLocalStorageSet(userChaveTermo, JSON.stringify({ aceitou: true }));
+        safeLocalStorageSet(chaveTermoDispositivoLogin, 'true');
+        safeLocalStorageSet(chaveTermoDispositivoGeral, 'true');
+      }
+    }
+
+    if (!termoAceito) {
+      safeLocalStorageSet('ultima_chave_termo_pendente', userChaveTermo);
+      safeLocalStorageSet('ultima_chave_termo_disp_pendente', chaveTermoDispositivoLogin);
       setTermoApenasLeitura(false);
       setModalTermoVisivel(true);
     }
@@ -13259,14 +13271,20 @@ export default function App() {
           const dataValida = registro?.dataAceite || new Date().toLocaleDateString('pt-BR');
 
           const valorSalvar = JSON.stringify(registro || { aceitou: true, dataAceite: dataValida });
-          try {
-            localStorage.setItem(userChaveTermo, valorSalvar);
-            localStorage.setItem(chaveTermoDispositivoLogin, 'true');
-            localStorage.setItem('termo_uso_aceito_dispositivo_v1', 'true');
-            if (chavePendente1) localStorage.setItem(chavePendente1, valorSalvar);
-            if (chavePendente2) localStorage.setItem(chavePendente2, 'true');
-          } catch {}
           safeLocalStorageSet(userChaveTermo, valorSalvar);
+          safeLocalStorageSet(chaveTermoDispositivoLogin, 'true');
+          safeLocalStorageSet('termo_uso_aceito_dispositivo_v1', 'true');
+          if (chavePendente1) safeLocalStorageSet(chavePendente1, valorSalvar);
+          if (chavePendente2) safeLocalStorageSet(chavePendente2, 'true');
+
+          salvarTermoAceitoFirestore(idContaLogin, {
+            ...(registro || {}),
+            usuarioNome: nomeUsuarioValido,
+            perfil: perfilValido,
+            versaoTermo: versaoValida,
+            dataAceite: dataValida,
+            aceitou: true,
+          });
 
           setModalTermoVisivel(false);
           registrarLogAuditoria(

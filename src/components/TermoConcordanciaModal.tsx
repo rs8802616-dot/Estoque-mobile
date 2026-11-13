@@ -110,10 +110,10 @@ export const TermoConcordanciaModal: React.FC<TermoConcordanciaModalProps> = ({
             <span style={{ fontSize: '1.6rem' }}>📜</span>
             <div>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, letterSpacing: '-0.01em', color: '#ffffff' }}>
-                Termo de Uso e Segurança
+                Termo de Uso, Privacidade e Segurança
               </h2>
               <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: '2px 0 0 0' }}>
-                Normas de acesso, sigilo e boas práticas operacionais
+                Aceite único de boas práticas operacionais e proteção de dados (1º acesso)
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export const TermoConcordanciaModal: React.FC<TermoConcordanciaModalProps> = ({
           </div>
           {lojaNome && (
             <div>
-              <strong>🏢 Supermercado:</strong> {lojaNome}
+              <strong>🏪 Loja:</strong> {lojaNome}
             </div>
           )}
         </div>
@@ -192,10 +192,10 @@ export const TermoConcordanciaModal: React.FC<TermoConcordanciaModalProps> = ({
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span style={{ fontSize: '1.2rem' }}>🔒</span>
-              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>1. Sigilo e Proteção de Dados (LGPD)</strong>
+              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>1. Privacidade, Sigilo e LGPD</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.86rem', color: '#475569' }}>
-              É proibido copiar, fotografar ou compartilhar informações confidenciais do supermercado, tais como preços de custo, margens de lucro, relatórios de faturamento, cadastros e dívidas de clientes fiado.
+              As informações comerciais da loja — incluindo preços de custo, margens de lucro, faturamento, cadastros e dados de clientes — são confidenciais e protegidas pela LGPD, sendo proibido copiá-las ou compartilhá-las sem autorização.
             </p>
           </div>
 
@@ -210,10 +210,10 @@ export const TermoConcordanciaModal: React.FC<TermoConcordanciaModalProps> = ({
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span style={{ fontSize: '1.2rem' }}>🔑</span>
-              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>2. Senha e PIN Pessoais</strong>
+              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>2. Acesso Pessoal e Sessão Única</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.86rem', color: '#475569' }}>
-              Seu login e senha são estritamente pessoais e intransferíveis. Todas as vendas, cancelamentos, aberturas e fechamentos de caixa registrados em seu nome são de sua inteira responsabilidade.
+              Seu usuário e senha são pessoais e intransferíveis. Para segurança da operação, cada conta permanece ativa em um dispositivo por vez e todas as movimentações realizadas ficam vinculadas ao seu perfil.
             </p>
           </div>
 
@@ -228,28 +228,28 @@ export const TermoConcordanciaModal: React.FC<TermoConcordanciaModalProps> = ({
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span style={{ fontSize: '1.2rem' }}>💵</span>
-              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>3. Caixa e Estoque</strong>
+              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>3. Integridade de Caixa, Estoque e Delivery</strong>
             </div>
             <p style={{ margin: 0, fontSize: '0.86rem', color: '#475569' }}>
-              O operador deve conferir o fundo de troco no início do turno e lançar a contagem exata no fechamento. Baixas de estoque por avaria ou perda devem ter motivo justificado.
+              Aberturas e fechamentos de turno, vendas, estornos, entregas e ajustes de estoque devem refletir fielmente a movimentação real da loja, com conferência de valores e justificativa em caso de perdas ou cancelamentos.
             </p>
           </div>
 
           {/* BLOCO 4 */}
           <div
             style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              background: '#f0f9ff',
+              border: '1px solid #bae6fd',
               borderRadius: '12px',
               padding: '12px 14px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span style={{ fontSize: '1.2rem' }}>📋</span>
-              <strong style={{ fontSize: '0.94rem', color: '#0f172a' }}>4. Auditoria Digital</strong>
+              <strong style={{ fontSize: '0.94rem', color: '#0c4a6e' }}>4. Auditoria Digital & Aceite Único</strong>
             </div>
-            <p style={{ margin: 0, fontSize: '0.86rem', color: '#475569' }}>
-              Para segurança mútua da loja e dos colaboradores, as ações importantes (como vendas, sangrias e estornos) são registradas com data, hora e operador responsável.
+            <p style={{ margin: 0, fontSize: '0.86rem', color: '#0369a1' }}>
+              Ações críticas (vendas, sangrias, estornos e alterações de estoque) são registradas automaticamente com data, hora e usuário. Este termo é exibido <strong>apenas uma única vez</strong> no primeiro acesso da sua conta.
             </p>
           </div>
         </div>

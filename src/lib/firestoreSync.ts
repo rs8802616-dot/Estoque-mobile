@@ -1395,3 +1395,31 @@ export function subscribeConfigDelivery(
     }
   );
 }
+
+// Verifica na nuvem se a conta já aceitou o Termo de Uso (evita reaparecer ao trocar de aparelho/limpar cache)
+export async function verificarTermoAceitoFirestore(idContaLogin: string): Promise<boolean> {
+  try {
+    const cleanId = sanitizarIdDoc(idContaLogin);
+    const snap = await getDoc(doc(db, 'termos_concordancia', cleanId));
+    if (snap.exists()) {
+      const data = snap.data();
+      return Boolean(data?.aceitou);
+    }
+  } catch {}
+  return false;
+}
+
+// Registra o aceite do Termo de Uso na nuvem (1 vez por conta)
+export async function salvarTermoAceitoFirestore(idContaLogin: string, registro: Record<string, any>): Promise<void> {
+  try {
+    const cleanId = sanitizarIdDoc(idContaLogin);
+    await setDoc(doc(db, 'termos_concordancia', cleanId), {
+      ...registro,
+      idContaLogin: cleanId,
+      aceitou: true,
+      atualizadoEm: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.warn('Aviso: Não foi possível gravar o aceite do termo no Firestore:', err);
+  }
+}
