@@ -644,6 +644,12 @@ export default function App() {
 
   // Modals visibility
   const [modalSupermercadoVisivel, setModalSupermercadoVisivel] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('portal') !== 'master') {
+        return false;
+      }
+    }
     return telaSalvaInicial === 'modal_supermercados' || telaSalvaInicial === 'modal_banco_dados_master';
   });
   const [modalCadastroVisivel, setModalCadastroVisivel] = useState<boolean>(() => {
@@ -3280,6 +3286,10 @@ export default function App() {
 
     if (sessao.tipo === 'dona_app') {
       setModalSupermercadoVisivel(true);
+    } else {
+      setModalSupermercadoVisivel(false);
+      setModalCredenciaisDonoVisivel(false);
+      setModalCardapioClienteVisivel(false);
     }
 
     if (sessao.lojaId) {
@@ -9543,7 +9553,7 @@ export default function App() {
       <div
         className="tela-relatorio-cheia"
         id="modalSupermercado"
-        style={{ display: modalSupermercadoVisivel ? 'flex' : 'none', background: '#f1f5f9' }}
+        style={{ display: perfilAtivo === 'dona_app' && modalSupermercadoVisivel ? 'flex' : 'none', background: '#f1f5f9' }}
       >
         {/* CABEÇALHO EXECUTIVO DA DONA DO APLICATIVO */}
         <div
