@@ -81,7 +81,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   }, [abaInicial, visivel]);
 
   // Filtros gerais de período
-  const [periodoFiltro, setPeriodoFiltro] = useState<'hoje' | '7dias' | '30dias' | 'mes' | 'todos'>('mes');
+  const [periodoFiltro, setPeriodoFiltro] = useState<'hoje' | '7dias' | '30dias' | 'mes' | 'todos'>('todos');
   const [origemFiltro, setOrigemFiltro] = useState<'todos' | 'balcao' | 'delivery'>('todos');
   const [statusVendaFiltro, setStatusVendaFiltro] = useState<'todas' | 'concluida' | 'estornada'>('todas');
   const [buscaVendas, setBuscaVendas] = useState('');
@@ -297,13 +297,16 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       const qtd = Number(item.quantidade) || 0;
       const custo = Number(item.preco_custo) || 0;
       const venda = Number(item.preco_venda) || 0;
+      const ehIlimitado = Boolean(item.estoqueIlimitado) || qtd >= 99000;
 
       totalItensUnicos++;
-      totalUnidadesFisicas += qtd;
-      valorCustoTotal += custo * qtd;
-      valorVendaTotal += venda * qtd;
+      if (!ehIlimitado) {
+        totalUnidadesFisicas += qtd;
+        valorCustoTotal += custo * qtd;
+        valorVendaTotal += venda * qtd;
+      }
 
-      if (qtd <= 3 && !item.estoqueIlimitado) {
+      if (qtd <= 3 && !ehIlimitado) {
         estoqueBaixo++;
       }
 
@@ -424,7 +427,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       <div className="bg-[#FAF7F2] border-2 border-stone-300 rounded-2xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden text-slate-800">
         
         {/* CABEÇALHO PRINCIPAL COM LOGO & ABAS */}
-        <div className="p-4 sm:p-5 bg-[#F4EFEA] border-b border-stone-300 flex flex-wrap items-center justify-between gap-3">
+        <div className="shrink-0 p-4 sm:p-5 bg-[#F4EFEA] border-b border-stone-300 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
               <TrendingUp className="w-6 h-6" />
@@ -451,7 +454,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
         </div>
 
         {/* NAVEGAÇÃO ENTRE ABAS */}
-        <div className="flex border-b border-stone-300 bg-[#EFECE6] overflow-x-auto px-4 gap-2 pt-2 scrollbar-none">
+        <div className="shrink-0 flex border-b border-stone-300 bg-[#EFECE6] overflow-x-auto px-4 gap-2 pt-2 scrollbar-none">
           <button
             onClick={() => setAbaAtiva('faturamento')}
             className={`flex items-center gap-2 px-4 py-3 font-semibold text-sm border-b-2 transition whitespace-nowrap ${
