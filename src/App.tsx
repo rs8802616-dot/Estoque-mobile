@@ -10612,7 +10612,7 @@ export default function App() {
                       👑 Acesso Exclusivo da Dona do Aplicativo - Gerenciador Geral de Banco de Dados
                     </h3>
                     <p style={{ fontSize: '0.84rem', margin: 0, color: '#0284c7' }}>
-                      Conectado ao Banco de Dados Dedicado: <b>appestoqueprodutos-bb92d</b> • 🌐 <b>{catalogoGlobal.length} produtos</b> no Catálogo Global
+                      Conectado ao Banco de Dados Dedicado: <b>adega-delivery-pdv</b> • 🌐 <b>{catalogoGlobal.length} produtos</b> no Catálogo Global
                     </p>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -10827,9 +10827,11 @@ export default function App() {
                   } else if (filtroMasterOrigem === 'estoque') {
                     listaFinalMaster = estoqueFiltrado.map((item) => ({ tipo: 'estoque', item }));
                   } else {
+                    const codigosNoEstoque = new Set(estoqueFiltrado.map((e) => e.codigo.trim()));
+                    const catalogoSemDuplicar = catalogoFiltrado.filter((c) => !codigosNoEstoque.has(c.codigo.trim()));
                     listaFinalMaster = [
-                      ...catalogoFiltrado.map((item) => ({ tipo: 'catalogo' as const, item })),
                       ...estoqueFiltrado.map((item) => ({ tipo: 'estoque' as const, item })),
+                      ...catalogoSemDuplicar.map((item) => ({ tipo: 'catalogo' as const, item })),
                     ];
                   }
 
@@ -10890,11 +10892,14 @@ export default function App() {
                             >
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
                                 <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                  {cat.imagem ? (
-                                    <img src={otimizarUrlImagem(cat.imagem)} alt={cat.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                  ) : (
-                                    <span style={{ fontSize: '1.2rem' }}>📦</span>
-                                  )}
+                                  {(() => {
+                                    const imgCat = cat.imagem || estoque.find((e) => e.codigo === cat.codigo && e.foto)?.foto || '';
+                                    return imgCat ? (
+                                      <img src={otimizarUrlImagem(imgCat)} alt={cat.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                      <span style={{ fontSize: '1.2rem' }}>📦</span>
+                                    );
+                                  })()}
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
