@@ -227,7 +227,7 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
   }, []);
 
   // Parser robusto de XML de NF-e da SEFAZ
-  const processarTextoXML = (conteudoXML: string, origem: 'xml_upload' | 'xml_colado' = 'xml_upload') => {
+  const processarTextoXML = (conteudoXML: string, origem: 'xml_upload' | 'xml_colado' | 'chave_acesso' = 'xml_upload') => {
     try {
       setCarregando(true);
       setErroMsg(null);

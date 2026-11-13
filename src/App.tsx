@@ -2088,7 +2088,7 @@ export default function App() {
             id: 'op_admin_' + lojaAtual.id,
             lojaId: supermercadoAtual,
             nome: lojaAtual.nome ? `Gerente (${lojaAtual.nome})` : 'Administrador da Loja',
-            cargo: 'Gerente / Administrador',
+            cargo: 'Administrador',
             cpfOuUsuario: lojaAtual.cnpj || 'admin',
             pinSenha: '',
             permissoes: PERMISSOES_ADMIN_PADRAO,
@@ -2101,8 +2101,32 @@ export default function App() {
     }
 
     // 3. Verificar credenciais da Dona do App (SuperAdmin / Dono)
-    const donoUserLower = (credenciaisDono.usuario || 'dono').trim().toLowerCase();
-    const eLoginDono = loginLimpo === donoUserLower || loginLimpo === 'dono' || loginLimpo === 'super_admin' || loginLimpo === 'admin';
+    let credenciaisDono: { usuario: string; senha?: string; senhaHash?: string; senhaSalt?: string; nome?: string } = {
+      usuario: 'rodrigo.souza',
+      senha: (import.meta as any).env?.VITE_MASTER_PASSWORD || 'Mudar@123',
+      nome: 'Dono do Sistema',
+    };
+    try {
+      const salvoMaster = localStorage.getItem('credenciais_dono_app');
+      if (salvoMaster) {
+        const parsed = JSON.parse(salvoMaster);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.usuario) credenciaisDono.usuario = parsed.usuario;
+          if (parsed.senha !== undefined) credenciaisDono.senha = parsed.senha;
+          if (parsed.senhaHash) credenciaisDono.senhaHash = parsed.senhaHash;
+          if (parsed.senhaSalt) credenciaisDono.senhaSalt = parsed.senhaSalt;
+          if (parsed.nomeExibicao) credenciaisDono.nome = parsed.nomeExibicao;
+        }
+      } else {
+        const senhaLegada = localStorage.getItem('senha_master_dono');
+        const usuarioLegado = localStorage.getItem('usuario_master_dono');
+        if (senhaLegada) credenciaisDono.senha = senhaLegada;
+        if (usuarioLegado) credenciaisDono.usuario = usuarioLegado;
+      }
+    } catch {}
+
+    const donoUserLower = (credenciaisDono.usuario || 'rodrigo.souza').trim().toLowerCase();
+    const eLoginDono = loginLimpo === donoUserLower || loginLimpo === 'rodrigo.souza' || loginLimpo === 'dono' || loginLimpo === 'super_admin' || loginLimpo === 'admin';
     if (eLoginDono) {
       const senhaDonoValida =
         (await verificarSenhaComHash(
@@ -2118,7 +2142,7 @@ export default function App() {
           id: 'op_dono_' + Date.now(),
           lojaId: supermercadoAtual,
           nome: credenciaisDono.nome || 'Dono do Sistema',
-          cargo: 'Super Admin',
+          cargo: 'Administrador',
           cpfOuUsuario: credenciaisDono.usuario,
           pinSenha: '',
           permissoes: PERMISSOES_ADMIN_PADRAO,
@@ -2200,19 +2224,19 @@ export default function App() {
     alert(`✅ ${tipo === 'sangria' ? 'Sangria' : 'Suprimento'} de R$ ${valor.toFixed(2)} registrado com sucesso!`);
   };
 
-  const handleFecharCaixa = (
+  const handleFecharCaixa = async (
     dinheiroInformado: number,
     cartaoInformado: number,
     pixInformado: number,
     obs: string,
     usuarioInput: string,
     senhaInput: string
-  ): { sucesso: boolean; mensagem?: string } => {
+  ): Promise<{ sucesso: boolean; mensagem?: string }> => {
     if (!sessaoCaixaAtiva) {
       return { sucesso: false, mensagem: 'Não há sessão de caixa aberta no momento.' };
     }
 
-    const validacao = validarCredenciaisOperador(usuarioInput, senhaInput);
+    const validacao = await validarCredenciaisOperador(usuarioInput, senhaInput);
     if (!validacao.valido || !validacao.operador) {
       return { sucesso: false, mensagem: validacao.mensagem || 'Usuário ou senha incorretos para confirmar fechamento!' };
     }
@@ -4717,7 +4741,7 @@ export default function App() {
     } else if (aba === 'caixa') {
       setModalCaixaVisivel(true);
     } else if (aba === 'relatorios') {
-      setAbaRelatorioInicial('resumo');
+      setAbaRelatorioInicial('faturamento');
       setModalCentralRelatoriosVisivel(true);
     } else if (aba === 'delivery') {
       setModalGestaoDeliveryVisivel(true);
@@ -5545,7 +5569,7 @@ export default function App() {
           nome: item.nome,
           quantidade: item.quantidadeEntrada,
           preco_custo: item.precoCusto,
-          precoVenda: item.precoVenda,
+          preco_venda: item.precoVenda,
           validade: new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString().slice(0, 10), // +6 meses padrão
           lote: `NF-${dadosNF.numeroNF || 'ENTRADA'}`,
           categoria: 'Geral',
