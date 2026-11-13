@@ -1012,6 +1012,10 @@ export default function App() {
   const [modalCardapioClienteVisivel, setModalCardapioClienteVisivel] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
+      const temPainelOuToken = Boolean(urlParams.get('painel') || urlParams.get('portal') || urlParams.get('token'));
+      if (temPainelOuToken) {
+        return false;
+      }
       if (
         urlParams.get('delivery') === 'true' ||
         urlParams.get('delivery') === '1' ||
