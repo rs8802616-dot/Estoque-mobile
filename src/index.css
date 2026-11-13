@@ -895,6 +895,7 @@
     height: 100vh;
     height: 100dvh;
     width: 100vw;
+    padding-bottom: 76px;
     scrollbar-width: thin;
     scrollbar-color: #0284c7 #e2e8f0;
 }

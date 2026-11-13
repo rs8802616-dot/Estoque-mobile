@@ -588,7 +588,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   return (
     <div
       className="fixed inset-0 flex flex-col bg-white p-0 overflow-hidden"
-      style={{ zIndex: 9999999 }}
+      style={{ zIndex: 99999 }}
     >
       <div className="bg-white border-0 rounded-none w-screen h-screen flex flex-col overflow-hidden text-slate-800">
         

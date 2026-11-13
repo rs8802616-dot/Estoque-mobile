@@ -655,6 +655,7 @@ export default function App() {
   const [modalCadastroVisivel, setModalCadastroVisivel] = useState<boolean>(() => {
     return telaSalvaInicial === 'modal_cadastro_estoque' || telaSalvaInicial === 'modal_cadastro_master';
   });
+  const [continuarCadastrandoAposSalvar, setContinuarCadastrandoAposSalvar] = useState<boolean>(true);
   const [modalPesquisaCatalogoVisivel, setModalPesquisaCatalogoVisivel] = useState<boolean>(false);
   const [modalVendaVisivel, setModalVendaVisivel] = useState<boolean>(false);
   const [modalNotificacoesVisivel, setModalNotificacoesVisivel] = useState<boolean>(() => {
@@ -4635,10 +4636,7 @@ export default function App() {
     return `${limpoPrefixo}-${prox}`;
   };
 
-  // Add / Edit Product Modal
-  const abrirCadastro = (modo: 'estoque' | 'master' = 'estoque', tipo: 'padrao' | 'interno' = 'padrao') => {
-    fecharMenu();
-    setModoCadastroItem(perfilAtivo === 'dona_app' ? modo : 'estoque');
+  const resetarCamposCadastro = (tipo: 'padrao' | 'interno' = 'padrao') => {
     setTipoProdutoCadastro(tipo);
     setCadEstoqueIlimitado(tipo === 'interno');
     setCodigoEditando(null);
@@ -4661,6 +4659,42 @@ export default function App() {
     setCadNome('');
     setCadCusto('');
     setCadPreco('');
+  };
+
+  type AbaNavegacaoSistema = 'inicio' | 'cadastro' | 'caixa' | 'relatorios' | 'delivery' | 'devedores' | 'master';
+
+  const navegarParaAba = (aba: AbaNavegacaoSistema) => {
+    fecharMenu();
+    setModalCadastroVisivel(false);
+    setModalCentralRelatoriosVisivel(false);
+    setModalGestaoDeliveryVisivel(false);
+    setModalGestaoCaixaVisivel(false);
+    setModalDevedoresVisivel(false);
+    setModalSupermercadoVisivel(false);
+    setModalRelatorioVisivel(false);
+    setModalGraficosVisivel(false);
+
+    if (aba === 'cadastro') {
+      abrirCadastro('estoque', 'padrao');
+    } else if (aba === 'caixa') {
+      setModalGestaoCaixaVisivel(true);
+    } else if (aba === 'relatorios') {
+      setAbaRelatorioInicial('resumo');
+      setModalCentralRelatoriosVisivel(true);
+    } else if (aba === 'delivery') {
+      setModalGestaoDeliveryVisivel(true);
+    } else if (aba === 'devedores') {
+      setModalDevedoresVisivel(true);
+    } else if (aba === 'master' && perfilAtivo === 'dona_app') {
+      setModalSupermercadoVisivel(true);
+    }
+  };
+
+  // Add / Edit Product Modal
+  const abrirCadastro = (modo: 'estoque' | 'master' = 'estoque', tipo: 'padrao' | 'interno' = 'padrao') => {
+    fecharMenu();
+    setModoCadastroItem(perfilAtivo === 'dona_app' ? modo : 'estoque');
+    resetarCamposCadastro(tipo);
     setMsgCad('');
     setModalCadastroVisivel(true);
   };
@@ -5028,8 +5062,13 @@ export default function App() {
         notificarSincronizacao();
 
         setTimeout(() => {
-          setCodigoEditando(null);
-          setModalCadastroVisivel(false);
+          if (continuarCadastrandoAposSalvar) {
+            resetarCamposCadastro(tipoProdutoCadastro);
+            setMsgCad(<span style={{ color: 'var(--sucesso)' }}>✅ Salvo! Pronto para cadastrar o próximo produto.</span>);
+          } else {
+            setCodigoEditando(null);
+            setModalCadastroVisivel(false);
+          }
         }, 700);
       } catch (err: any) {
         console.error('Erro ao salvar produto master:', err);
@@ -12435,12 +12474,36 @@ export default function App() {
               </div>
             </div>
             <div className="grupo-botoes" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  color: '#334155',
+                  background: '#f8fafc',
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={continuarCadastrandoAposSalvar}
+                  onChange={(e) => setContinuarCadastrandoAposSalvar(e.target.checked)}
+                  style={{ width: '16px', height: '16px', accentColor: '#0284c7', cursor: 'pointer' }}
+                />
+                <span>Continuar nesta tela após salvar (para cadastrar mais produtos)</span>
+              </label>
               <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
                 <button className="btn btn-salvar" style={{ flex: 1 }} onClick={salvarProduto}>
                   💾 Salvar Produto
                 </button>
                 <button className="btn btn-cancelar" style={{ flex: 1 }} onClick={() => setModalCadastroVisivel(false)}>
-                  Cancelar
+                  Fechar
                 </button>
               </div>
               {codigoEditando && (
@@ -13500,6 +13563,112 @@ export default function App() {
               </div>
             </div>
           </div>
+        );
+      })()}
+
+      {/* BARRA DE NAVEGAÇÃO POR ABAS PERSISTENTE (TROCA DIRETA ENTRE ÁREAS SEM VOLTAR AO INÍCIO) */}
+      {!telaLoginVisivel && !isModoCliente && !isMotoboyRoute && !modalCardapioClienteVisivel && (() => {
+        const abaAtualSistema: AbaNavegacaoSistema =
+          modalSupermercadoVisivel && perfilAtivo === 'dona_app'
+            ? 'master'
+            : modalCadastroVisivel
+              ? 'cadastro'
+              : modalGestaoCaixaVisivel
+                ? 'caixa'
+                : modalCentralRelatoriosVisivel || modalRelatorioVisivel || modalGraficosVisivel
+                  ? 'relatorios'
+                  : modalGestaoDeliveryVisivel
+                    ? 'delivery'
+                    : modalDevedoresVisivel
+                      ? 'devedores'
+                      : 'inicio';
+
+        const pendentesDeliveryQtd = pedidosDelivery.filter((p) => p.status === 'pendente').length;
+
+        const abasVisiveis: { id: AbaNavegacaoSistema; icone: string; label: string; badge?: number }[] = [
+          { id: 'inicio', icone: '📦', label: 'Estoque' },
+          ...(temPermissaoOperador('cadastrar_produto', 'estoque') ? [{ id: 'cadastro' as const, icone: '➕', label: 'Cadastrar' }] : []),
+          ...(temPermissaoOperador('abrir_caixa', 'caixa') ? [{ id: 'caixa' as const, icone: '💰', label: 'Caixa' }] : []),
+          ...(temPermissaoOperador('ver_relatorios', 'relatorios') ? [{ id: 'relatorios' as const, icone: '📊', label: 'Relatórios' }] : []),
+          ...(temPermissaoOperador('gerenciar_delivery', 'delivery') ? [{ id: 'delivery' as const, icone: '🛵', label: 'Delivery', badge: pendentesDeliveryQtd }] : []),
+          ...(temPermissaoOperador('gerenciar_devedores', 'devedores') ? [{ id: 'devedores' as const, icone: '📒', label: 'Fiado' }] : []),
+          ...(perfilAtivo === 'dona_app' ? [{ id: 'master' as const, icone: '👑', label: 'Master' }] : []),
+        ];
+
+        return (
+          <nav
+            aria-label="Navegação por abas"
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 999998,
+              background: 'rgba(15, 23, 42, 0.97)',
+              backdropFilter: 'blur(10px)',
+              borderTop: '1px solid rgba(148, 163, 184, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              padding: '6px 6px calc(6px + env(safe-area-inset-bottom, 0px))',
+              gap: '4px',
+              overflowX: 'auto',
+              boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.25)',
+            }}
+          >
+            {abasVisiveis.map((aba) => {
+              const ativa = abaAtualSistema === aba.id;
+              return (
+                <button
+                  key={aba.id}
+                  type="button"
+                  onClick={() => navegarParaAba(aba.id)}
+                  style={{
+                    position: 'relative',
+                    flex: '1 1 auto',
+                    minWidth: '64px',
+                    maxWidth: '140px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '2px',
+                    padding: '6px 8px',
+                    borderRadius: '10px',
+                    border: ativa ? '1px solid rgba(56, 189, 248, 0.6)' : '1px solid transparent',
+                    background: ativa ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : 'transparent',
+                    color: ativa ? '#ffffff' : '#cbd5e1',
+                    cursor: 'pointer',
+                    fontSize: '0.72rem',
+                    fontWeight: ativa ? 800 : 600,
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>{aba.icone}</span>
+                  <span>{aba.label}</span>
+                  {aba.badge && aba.badge > 0 ? (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '2px',
+                        right: '6px',
+                        background: '#ef4444',
+                        color: '#fff',
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
+                        borderRadius: '999px',
+                        padding: '1px 5px',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {aba.badge}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </nav>
         );
       })()}
 
