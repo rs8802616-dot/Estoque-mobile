@@ -4668,16 +4668,14 @@ export default function App() {
     setModalCadastroVisivel(false);
     setModalCentralRelatoriosVisivel(false);
     setModalGestaoDeliveryVisivel(false);
-    setModalGestaoCaixaVisivel(false);
+    setModalCaixaVisivel(false);
     setModalDevedoresVisivel(false);
     setModalSupermercadoVisivel(false);
-    setModalRelatorioVisivel(false);
-    setModalGraficosVisivel(false);
 
     if (aba === 'cadastro') {
       abrirCadastro('estoque', 'padrao');
     } else if (aba === 'caixa') {
-      setModalGestaoCaixaVisivel(true);
+      setModalCaixaVisivel(true);
     } else if (aba === 'relatorios') {
       setAbaRelatorioInicial('resumo');
       setModalCentralRelatoriosVisivel(true);
@@ -13573,9 +13571,9 @@ export default function App() {
             ? 'master'
             : modalCadastroVisivel
               ? 'cadastro'
-              : modalGestaoCaixaVisivel
+              : modalCaixaVisivel
                 ? 'caixa'
-                : modalCentralRelatoriosVisivel || modalRelatorioVisivel || modalGraficosVisivel
+                : modalCentralRelatoriosVisivel
                   ? 'relatorios'
                   : modalGestaoDeliveryVisivel
                     ? 'delivery'
