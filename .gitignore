@@ -37,3 +37,11 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Backups e dumps locais de auditoria
+backup_*.json
+estoque_banco_*.json
+auditoria_*.json
+analise_produtos.json
+relatorio_auditoria_completa.json
+resumo_produtos_todos.json

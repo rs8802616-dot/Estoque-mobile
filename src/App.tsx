@@ -1947,42 +1947,53 @@ export default function App() {
   useEffect(() => {
     if (!perfilAtivo || telaLoginVisivel) return;
 
-    let token = sessaoTokenAtivo || localStorage.getItem('sessao_ativa_token');
-    if (!token) {
-      token = gerarSessaoToken();
-      setSessaoTokenAtivo(token);
-      localStorage.setItem('sessao_ativa_token', token);
-    }
+    let cancelado = false;
+    let unsub: (() => void) | null = null;
 
-    const sessaoAtual: Partial<SessaoUsuario> = {
-      tipo: perfilAtivo,
-      lojaId: supermercadoAtual,
-      operadorId: operadorAtivoId || undefined,
+    const inicializarMonitoramento = async () => {
+      let token = sessaoTokenAtivo || localStorage.getItem('sessao_ativa_token');
+      const sessaoAtual: Partial<SessaoUsuario> = {
+        tipo: perfilAtivo,
+        lojaId: supermercadoAtual,
+        operadorId: operadorAtivoId || undefined,
+      };
+      const userKey = obterUserKey(sessaoAtual);
+
+      if (!token) {
+        token = gerarSessaoToken();
+        setSessaoTokenAtivo(token);
+        safeLocalStorageSet('sessao_ativa_token', token);
+        await registrarSessaoAtivaNoFirestore(sessaoAtual as SessaoUsuario, token);
+      }
+
+      if (cancelado) return;
+
+      unsub = monitorarSessaoUnicaDispositivo(userKey, token, (motivo) => {
+        console.warn('Alerta de concorrência de sessão recebido:', motivo);
+        setAvisoDesconectadoMultiAparelho(motivo);
+        setPerfilAtivo(null as any);
+        setOperadorAtivoId(null);
+        localStorage.removeItem('usuario_autenticado');
+        localStorage.removeItem('perfilAtivoTipo');
+        localStorage.removeItem('operadorAtivoId');
+        localStorage.removeItem('sessao_ativa_token');
+        // Fechar quaisquer modais que estejam abertos
+        setModalCarrinhoVisivel(false);
+        setModalCaixaVisivel(false);
+        setModalManualVisivel(false);
+        setModalRelatorioVendasVisivel(false);
+        setModalDevedoresVisivel(false);
+        setModalEtiquetasVisivel(false);
+        setModalGraficosVendasVisivel(false);
+        setTelaLoginVisivel(true);
+      });
     };
-    const userKey = obterUserKey(sessaoAtual);
 
-    const unsub = monitorarSessaoUnicaDispositivo(userKey, token, (motivo) => {
-      console.warn('Alerta de concorrência de sessão recebido:', motivo);
-      setAvisoDesconectadoMultiAparelho(motivo);
-      setPerfilAtivo(null as any);
-      setOperadorAtivoId(null);
-      localStorage.removeItem('usuario_autenticado');
-      localStorage.removeItem('perfilAtivoTipo');
-      localStorage.removeItem('operadorAtivoId');
-      localStorage.removeItem('sessao_ativa_token');
-      // Fechar quaisquer modais que estejam abertos
-      setModalCarrinhoVisivel(false);
-      setModalCaixaVisivel(false);
-      setModalManualVisivel(false);
-      setModalRelatorioVendasVisivel(false);
-      setModalDevedoresVisivel(false);
-      setModalEtiquetasVisivel(false);
-      setModalGraficosVendasVisivel(false);
-      setTelaLoginVisivel(true);
-    });
+    inicializarMonitoramento();
 
     return () => {
-      unsub();
+      cancelado = true;
+      if (unsub) unsub();
     };
   }, [perfilAtivo, telaLoginVisivel, supermercadoAtual, operadorAtivoId, sessaoTokenAtivo]);
 
@@ -2036,10 +2047,7 @@ export default function App() {
 
         const senhaValida =
           (await verificarSenhaComHash(senhaLimpa, o.senhaHash, o.senhaSalt, o.pinSenha)) ||
-          o.pinSenha === senhaLimpa ||
-          senhaLimpa === '123' ||
-          senhaLimpa === '1234' ||
-          senhaLimpa === '123456';
+          Boolean(o.pinSenha && o.pinSenha === senhaLimpa);
 
         if (senhaValida) {
           return { valido: true, operador: o };
@@ -2072,11 +2080,8 @@ export default function App() {
             lojaAtual.senhaSalt,
             lojaAtual.senha || lojaAtual.senhaAdmin
           )) ||
-          senhaLimpa === lojaAtual.senha ||
-          senhaLimpa === lojaAtual.senhaAdmin ||
-          senhaLimpa === '123' ||
-          senhaLimpa === '1234' ||
-          senhaLimpa === '123456';
+          Boolean(lojaAtual.senha && senhaLimpa === lojaAtual.senha) ||
+          Boolean(lojaAtual.senhaAdmin && senhaLimpa === lojaAtual.senhaAdmin);
 
         if (senhaAdminValida) {
           const opAdmin: OperadorCaixa = {
@@ -2106,9 +2111,7 @@ export default function App() {
           credenciaisDono.senhaSalt,
           credenciaisDono.senha
         )) ||
-        senhaLimpa === credenciaisDono.senha ||
-        senhaLimpa === '123456' ||
-        senhaLimpa === 'dono@2026';
+        Boolean(credenciaisDono.senha && senhaLimpa === credenciaisDono.senha);
 
       if (senhaDonoValida) {
         const opDono: OperadorCaixa = {
@@ -3279,12 +3282,12 @@ export default function App() {
     const sessao = sanitizeUserForSession(sessaoInput);
     const novoToken = gerarSessaoToken();
     setSessaoTokenAtivo(novoToken);
-    localStorage.setItem('sessao_ativa_token', novoToken);
-    localStorage.setItem('usuario_autenticado', 'true');
+    safeLocalStorageSet('sessao_ativa_token', novoToken);
+    safeLocalStorageSet('usuario_autenticado', 'true');
     setAvisoDesconectadoMultiAparelho(null);
 
     setPerfilAtivo(sessao.tipo);
-    localStorage.setItem('perfilAtivoTipo', sessao.tipo);
+    safeLocalStorageSet('perfilAtivoTipo', sessao.tipo);
 
     if (sessao.tipo === 'dona_app') {
       setModalSupermercadoVisivel(true);
@@ -3300,8 +3303,8 @@ export default function App() {
       safeLocalStorageSet('tela_ativa_sistema', '');
       setSupermercadoAtual(sessao.lojaId);
       setNomeSupermercadoAtivo(sessao.lojaNome || 'Supermercado');
-      localStorage.setItem('supermercadoAtualId', sessao.lojaId);
-      localStorage.setItem('supermercadoNome', sessao.lojaNome || 'Supermercado');
+      safeLocalStorageSet('supermercadoAtualId', sessao.lojaId);
+      safeLocalStorageSet('supermercadoNome', sessao.lojaNome || 'Supermercado');
 
       const estSalvo = localStorage.getItem(`estoque_${sessao.lojaId}`);
       if (estSalvo) {
@@ -3325,7 +3328,7 @@ export default function App() {
 
     if (sessao.tipo === 'caixa' && sessao.operadorId) {
       setOperadorAtivoId(sessao.operadorId);
-      localStorage.setItem('operadorAtivoId', sessao.operadorId);
+      safeLocalStorageSet('operadorAtivoId', sessao.operadorId);
     } else {
       setOperadorAtivoId(null);
       localStorage.removeItem('operadorAtivoId');
