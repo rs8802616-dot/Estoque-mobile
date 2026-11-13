@@ -656,6 +656,7 @@ export default function App() {
     return telaSalvaInicial === 'modal_cadastro_estoque' || telaSalvaInicial === 'modal_cadastro_master';
   });
   const [continuarCadastrandoAposSalvar, setContinuarCadastrandoAposSalvar] = useState<boolean>(true);
+  const [abasAbertas, setAbasAbertas] = useState<('cadastro' | 'caixa' | 'relatorios' | 'delivery' | 'devedores' | 'master')[]>([]);
   const [modalPesquisaCatalogoVisivel, setModalPesquisaCatalogoVisivel] = useState<boolean>(false);
   const [modalVendaVisivel, setModalVendaVisivel] = useState<boolean>(false);
   const [modalNotificacoesVisivel, setModalNotificacoesVisivel] = useState<boolean>(() => {
@@ -4662,8 +4663,35 @@ export default function App() {
   };
 
   type AbaNavegacaoSistema = 'inicio' | 'cadastro' | 'caixa' | 'relatorios' | 'delivery' | 'devedores' | 'master';
+  type AbaSecundariaSistema = Exclude<AbaNavegacaoSistema, 'inicio'>;
 
-  const navegarParaAba = (aba: AbaNavegacaoSistema) => {
+  // Registra automaticamente na barra compacta do canto inferior direito qualquer tela aberta
+  useEffect(() => {
+    const ativasAgora: AbaSecundariaSistema[] = [];
+    if (modalCadastroVisivel) ativasAgora.push('cadastro');
+    if (modalCaixaVisivel) ativasAgora.push('caixa');
+    if (modalCentralRelatoriosVisivel) ativasAgora.push('relatorios');
+    if (modalGestaoDeliveryVisivel) ativasAgora.push('delivery');
+    if (modalDevedoresVisivel) ativasAgora.push('devedores');
+    if (modalSupermercadoVisivel && perfilAtivo === 'dona_app') ativasAgora.push('master');
+
+    if (ativasAgora.length > 0) {
+      setAbasAbertas((prev) => {
+        const faltantes = ativasAgora.filter((a) => !prev.includes(a));
+        return faltantes.length > 0 ? [...prev, ...faltantes] : prev;
+      });
+    }
+  }, [
+    modalCadastroVisivel,
+    modalCaixaVisivel,
+    modalCentralRelatoriosVisivel,
+    modalGestaoDeliveryVisivel,
+    modalDevedoresVisivel,
+    modalSupermercadoVisivel,
+    perfilAtivo,
+  ]);
+
+  const fecharTodosModaisSemRemoverAbas = () => {
     fecharMenu();
     setModalCadastroVisivel(false);
     setModalCentralRelatoriosVisivel(false);
@@ -4671,9 +4699,18 @@ export default function App() {
     setModalCaixaVisivel(false);
     setModalDevedoresVisivel(false);
     setModalSupermercadoVisivel(false);
+  };
+
+  const navegarParaAba = (aba: AbaNavegacaoSistema) => {
+    fecharTodosModaisSemRemoverAbas();
 
     if (aba === 'cadastro') {
-      abrirCadastro('estoque', 'padrao');
+      if (abasAbertas.includes('cadastro')) {
+        // Reabre preservando o que já estava sendo digitado no cadastro
+        setModalCadastroVisivel(true);
+      } else {
+        abrirCadastro('estoque', 'padrao');
+      }
     } else if (aba === 'caixa') {
       setModalCaixaVisivel(true);
     } else if (aba === 'relatorios') {
@@ -4685,6 +4722,24 @@ export default function App() {
       setModalDevedoresVisivel(true);
     } else if (aba === 'master' && perfilAtivo === 'dona_app') {
       setModalSupermercadoVisivel(true);
+    }
+  };
+
+  const fecharAbaDefinitivo = (aba: AbaSecundariaSistema) => {
+    setAbasAbertas((prev) => prev.filter((a) => a !== aba));
+    if (aba === 'cadastro') {
+      setCodigoEditando(null);
+      setModalCadastroVisivel(false);
+    } else if (aba === 'caixa') {
+      setModalCaixaVisivel(false);
+    } else if (aba === 'relatorios') {
+      setModalCentralRelatoriosVisivel(false);
+    } else if (aba === 'delivery') {
+      setModalGestaoDeliveryVisivel(false);
+    } else if (aba === 'devedores') {
+      setModalDevedoresVisivel(false);
+    } else if (aba === 'master') {
+      setModalSupermercadoVisivel(false);
     }
   };
 
@@ -9666,7 +9721,7 @@ export default function App() {
                 borderRadius: '10px',
                 fontWeight: 700,
               }}
-              onClick={() => setModalSupermercadoVisivel(false)}
+              onClick={() => fecharAbaDefinitivo('master')}
             >
               ← Voltar ao PDV
             </button>
@@ -12500,7 +12555,7 @@ export default function App() {
                 <button className="btn btn-salvar" style={{ flex: 1 }} onClick={salvarProduto}>
                   💾 Salvar Produto
                 </button>
-                <button className="btn btn-cancelar" style={{ flex: 1 }} onClick={() => setModalCadastroVisivel(false)}>
+                <button className="btn btn-cancelar" style={{ flex: 1 }} onClick={() => fecharAbaDefinitivo('cadastro')}>
                   Fechar
                 </button>
               </div>
@@ -12987,7 +13042,7 @@ export default function App() {
       {/* CENTRAL ÚNICA DE RELATÓRIOS & DESEMPENHO (VENDAS, LUCRO REAL, ESTOQUE & DELIVERY) */}
       <CentralRelatoriosModal
         visivel={modalCentralRelatoriosVisivel}
-        onFechar={() => setModalCentralRelatoriosVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('relatorios')}
         vendas={vendas}
         estoque={estoque}
         operadores={listaOperadores}
@@ -13002,7 +13057,7 @@ export default function App() {
       {/* MÓDULO DE GESTÃO DE DELIVERY (ESTILO ZÉ DELIVERY - PAINEL LOJISTA) */}
       <GestaoDeliveryModal
         visivel={modalGestaoDeliveryVisivel}
-        onFechar={() => setModalGestaoDeliveryVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('delivery')}
         pedidos={pedidosDelivery}
         configDelivery={configDelivery}
         onSalvarConfig={handleSalvarConfigDelivery}
@@ -13089,7 +13144,7 @@ export default function App() {
       <GestaoCaixaModal
         visivel={modalCaixaVisivel}
         onFechar={() => {
-          setModalCaixaVisivel(false);
+          fecharAbaDefinitivo('caixa');
           setMotivoCaixaObrigatorio(null);
           setAbaCaixaInicial('status');
         }}
@@ -13125,7 +13180,7 @@ export default function App() {
       {/* MODAL DE GESTÃO DE ÁREA DE DEVEDORES (CADERNETA FIADO) */}
       <GestaoDevedoresModal
         visivel={modalDevedoresVisivel}
-        onFechar={() => setModalDevedoresVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('devedores')}
         clientes={clientesDevedores || []}
         lojaId={supermercadoAtual}
         nomeLoja={nomeSupermercadoAtivo}
@@ -13564,7 +13619,7 @@ export default function App() {
         );
       })()}
 
-      {/* BARRA DE NAVEGAÇÃO POR ABAS PERSISTENTE (TROCA DIRETA ENTRE ÁREAS SEM VOLTAR AO INÍCIO) */}
+      {/* ABAS FLUTUANTES COMPACTAS NO CANTO INFERIOR DIREITO (MANTÉM TELAS ABERTAS ATÉ CLICAR NO X) */}
       {!telaLoginVisivel && !isModoCliente && !isMotoboyRoute && !modalCardapioClienteVisivel && (() => {
         const abaAtualSistema: AbaNavegacaoSistema =
           modalSupermercadoVisivel && perfilAtivo === 'dona_app'
@@ -13581,89 +13636,122 @@ export default function App() {
                       ? 'devedores'
                       : 'inicio';
 
-        const pendentesDeliveryQtd = pedidosDelivery.filter((p) => p.status === 'pendente').length;
+        const metaAbas: Record<AbaSecundariaSistema, { icone: string; label: string }> = {
+          cadastro: { icone: '➕', label: 'Cadastro' },
+          caixa: { icone: '💰', label: 'Caixa' },
+          relatorios: { icone: '📊', label: 'Relatórios' },
+          delivery: { icone: '🛵', label: 'Delivery' },
+          devedores: { icone: '📒', label: 'Fiado' },
+          master: { icone: '👑', label: 'Master' },
+        };
 
-        const abasVisiveis: { id: AbaNavegacaoSistema; icone: string; label: string; badge?: number }[] = [
-          { id: 'inicio', icone: '📦', label: 'Estoque' },
-          ...(temPermissaoOperador('cadastrar_produto', 'estoque') ? [{ id: 'cadastro' as const, icone: '➕', label: 'Cadastrar' }] : []),
-          ...(temPermissaoOperador('abrir_caixa', 'caixa') ? [{ id: 'caixa' as const, icone: '💰', label: 'Caixa' }] : []),
-          ...(temPermissaoOperador('ver_relatorios', 'relatorios') ? [{ id: 'relatorios' as const, icone: '📊', label: 'Relatórios' }] : []),
-          ...(temPermissaoOperador('gerenciar_delivery', 'delivery') ? [{ id: 'delivery' as const, icone: '🛵', label: 'Delivery', badge: pendentesDeliveryQtd }] : []),
-          ...(temPermissaoOperador('gerenciar_devedores', 'devedores') ? [{ id: 'devedores' as const, icone: '📒', label: 'Fiado' }] : []),
-          ...(perfilAtivo === 'dona_app' ? [{ id: 'master' as const, icone: '👑', label: 'Master' }] : []),
-        ];
+        // Só exibe as abas abertas (ou enquanto houver pelo menos 1 aba aberta além do Início)
+        if (abasAbertas.length === 0) return null;
 
         return (
           <nav
-            aria-label="Navegação por abas"
+            aria-label="Abas abertas"
             style={{
               position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
+              bottom: '12px',
+              right: '12px',
               zIndex: 999998,
-              background: 'rgba(15, 23, 42, 0.97)',
-              backdropFilter: 'blur(10px)',
-              borderTop: '1px solid rgba(148, 163, 184, 0.25)',
+              background: 'rgba(15, 23, 42, 0.92)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(148, 163, 184, 0.3)',
+              borderRadius: '999px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-around',
-              padding: '6px 6px calc(6px + env(safe-area-inset-bottom, 0px))',
+              padding: '4px 6px',
               gap: '4px',
+              maxWidth: 'calc(100vw - 24px)',
               overflowX: 'auto',
-              boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
             }}
           >
-            {abasVisiveis.map((aba) => {
-              const ativa = abaAtualSistema === aba.id;
+            {/* Aba fixa de Início */}
+            <button
+              type="button"
+              onClick={() => navegarParaAba('inicio')}
+              title="Ir para a tela inicial (mantém as outras abas abertas)"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '4px 9px',
+                borderRadius: '999px',
+                border: 'none',
+                background: abaAtualSistema === 'inicio' ? '#0284c7' : 'rgba(255,255,255,0.08)',
+                color: '#ffffff',
+                cursor: 'pointer',
+                fontSize: '0.72rem',
+                fontWeight: abaAtualSistema === 'inicio' ? 800 : 600,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <span>🏠</span>
+              <span>Início</span>
+            </button>
+
+            {/* Abas abertas que ainda não foram fechadas no X */}
+            {abasAbertas.map((abaId) => {
+              const info = metaAbas[abaId];
+              if (!info) return null;
+              const ativa = abaAtualSistema === abaId;
               return (
-                <button
-                  key={aba.id}
-                  type="button"
-                  onClick={() => navegarParaAba(aba.id)}
+                <div
+                  key={abaId}
                   style={{
-                    position: 'relative',
-                    flex: '1 1 auto',
-                    minWidth: '64px',
-                    maxWidth: '140px',
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '2px',
-                    padding: '6px 8px',
-                    borderRadius: '10px',
-                    border: ativa ? '1px solid rgba(56, 189, 248, 0.6)' : '1px solid transparent',
-                    background: ativa ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : 'transparent',
-                    color: ativa ? '#ffffff' : '#cbd5e1',
-                    cursor: 'pointer',
-                    fontSize: '0.72rem',
-                    fontWeight: ativa ? 800 : 600,
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.15s ease',
+                    borderRadius: '999px',
+                    background: ativa ? '#0284c7' : 'rgba(255,255,255,0.1)',
+                    border: ativa ? '1px solid rgba(56, 189, 248, 0.7)' : '1px solid transparent',
+                    overflow: 'hidden',
+                    flexShrink: 0,
                   }}
                 >
-                  <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>{aba.icone}</span>
-                  <span>{aba.label}</span>
-                  {aba.badge && aba.badge > 0 ? (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        top: '2px',
-                        right: '6px',
-                        background: '#ef4444',
-                        color: '#fff',
-                        fontSize: '0.65rem',
-                        fontWeight: 800,
-                        borderRadius: '999px',
-                        padding: '1px 5px',
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {aba.badge}
-                    </span>
-                  ) : null}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => navegarParaAba(abaId)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '4px 6px 4px 9px',
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#ffffff',
+                      cursor: 'pointer',
+                      fontSize: '0.72rem',
+                      fontWeight: ativa ? 800 : 600,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span>{info.icone}</span>
+                    <span>{info.label}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fecharAbaDefinitivo(abaId);
+                    }}
+                    title={`Fechar aba ${info.label}`}
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#cbd5e1',
+                      cursor: 'pointer',
+                      padding: '4px 7px 4px 2px',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
               );
             })}
           </nav>
