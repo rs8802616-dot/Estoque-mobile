@@ -94,9 +94,9 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f8fafc', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #0284c7' }}>
               <span style={{ background: '#0284c7', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>3</span>
               <div>
-                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Atender no Balcão (PDV Principal)</div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem' }}>Atender no Balcão (PDV Principal + Painel Lateral)</div>
                 <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px', lineHeight: 1.5 }}>
-                  Na tela principal, bipe os produtos com o leitor USB/Bluetooth, câmera ou clique no card do produto. Escolha a forma de pagamento (Dinheiro com cálculo automático de troco, PIX, Cartão ou Fiado) e finalize emitindo o cupom térmico.
+                  Na tela principal, os produtos ficam à esquerda e o <strong>Painel Lateral com 2 abas (🛒 Caixa / Venda e 🛵 Delivery)</strong> fica fixo à direita. Clique em <strong>+ Carrinho</strong> ou bipe os produtos, escolha o pagamento direto no painel (PIX, Dinheiro com cálculo automático de troco, Crédito, Débito ou Fiado com pesquisa por nome/telefone) e clique em <strong>Finalizar Venda</strong>.
                 </div>
               </div>
             </div>
@@ -249,7 +249,27 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
                   <strong>📷 Câmera do Celular / Tablet:</strong> Clique no ícone da câmera na barra de pesquisa para ler códigos de barras usando a câmera com suporte a lanterna e zoom.
                 </li>
                 <li>
-                  <strong>🔍 Pesquisa Rápida ou Clique Direto no Card:</strong> Digite qualquer parte do nome, marca ou código na barra de pesquisa superior ou clique diretamente sobre o card do produto na grade para abrir a janela de venda.
+                  <strong>🔍 Pesquisa Rápida, + Carrinho ou Clique no Card:</strong> Digite na barra superior, clique em <strong>+ Carrinho</strong> para jogar direto no painel lateral direito, ou toque no card do produto para venda unitária rápida.
+                </li>
+              </ul>
+            </div>
+
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '12px', padding: '16px', color: '#1e3a8a' }}>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: '0.96rem', color: '#1e3a8a', fontWeight: 800 }}>
+                🖥️ Painel Lateral Fixo (Caixa + Delivery) & Atalhos de Teclado
+              </h4>
+              <ul style={{ paddingLeft: '20px', lineHeight: 1.6, margin: 0, fontSize: '0.85rem' }}>
+                <li style={{ marginBottom: '4px' }}>
+                  <strong>Abas 🛒 Caixa / Venda e 🛵 Delivery:</strong> alterne com 1 clique na coluna direita sem sair da grade de produtos.
+                </li>
+                <li style={{ marginBottom: '4px' }}>
+                  <strong>Fiado com Pesquisa Rápida:</strong> ao escolher <code>📒 Fiado</code>, pesquise o cliente pelo <strong>nome ou telefone</strong> na hora.
+                </li>
+                <li style={{ marginBottom: '4px' }}>
+                  <strong>Carrinho Isolado por Loja:</strong> ao trocar de unidade/loja no seletor do topo, o carrinho carrega apenas os itens daquela loja.
+                </li>
+                <li>
+                  <strong>Atalhos de Teclado (Computador):</strong> <code>F2</code> Buscar produto • <code>F4</code> Abrir/Fechar Caixa • <code>F8</code> Carrinho ampliado • <code>F9</code> Balcão rápido • <code>ESC</code> Fechar janelas.
                 </li>
               </ul>
             </div>
@@ -579,16 +599,16 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px',
+        padding: '8px',
       }}
     >
       <div
         style={{
           background: '#ffffff',
           width: '100%',
-          maxWidth: '1020px',
-          height: '90vh',
-          borderRadius: '18px',
+          maxWidth: '96vw',
+          height: '95vh',
+          borderRadius: '14px',
           boxShadow: '0 25px 60px rgba(0, 0, 0, 0.4)',
           border: '1px solid #cbd5e1',
           overflow: 'hidden',
@@ -682,8 +702,8 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
             </span>
           </div>
 
-          {/* PÍLULAS HORIZONTAIS PARA NAVEGAÇÃO RÁPIDA EM TELAS MENORES E DESKTOP */}
-          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+          {/* PÍLULAS HORIZONTAIS PARA NAVEGAÇÃO RÁPIDA APENAS EM TELAS MENORES */}
+          <div className="flex md:hidden" style={{ gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
             {topicosFiltrados.map((topico) => {
               const ativo = topicoAtivo?.id === topico.id;
               return (
