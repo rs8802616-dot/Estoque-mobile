@@ -17,6 +17,7 @@ export interface ProdutoCatalogo {
 }
 
 export interface ItemEstoque {
+  firestoreDocId?: string;
   lojaId?: string;
   codigo_barras?: string;
   codigo: string;

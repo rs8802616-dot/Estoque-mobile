@@ -153,19 +153,40 @@ export function subscribeEstoque(lojaId: string, callback: (itens: ItemEstoque[]
     q,
     (snapshot) => {
       const agora = Date.now();
-      const itensRemotos: ItemEstoque[] = [];
+      const mapaRemotosPorChave = new Map<string, ItemEstoque>();
+      const safeLojaId = sanitizarIdDoc(lojaId || 'loja_padrao');
+
       snapshot.forEach((docSnap) => {
         const data = docSnap.data() as ItemEstoque;
         if (data && (data.codigo || data.codigo_barras)) {
-          const itemSanitizado = sanitizarItemEstoque(data);
+          const itemSanitizado = sanitizarItemEstoque({ ...data, firestoreDocId: docSnap.id });
           const chaveExclusao = gerarChaveItemEstoque(lojaId, itemSanitizado.codigo, itemSanitizado.validade, itemSanitizado.lote);
           const tsExcluido = itensRecemExcluidosMemoria.get(chaveExclusao);
           if (tsExcluido && agora - tsExcluido < 15000) {
             return; // Ignora item recém-excluído caso snapshot antigo ainda o traga
           }
-          itensRemotos.push(itemSanitizado);
+
+          const canonicalDocId = `${safeLojaId}_${sanitizarIdDoc(itemSanitizado.codigo || 'semcod')}_${sanitizarIdDoc(itemSanitizado.validade || 'semval')}_${sanitizarIdDoc(itemSanitizado.lote || 'semlote')}`;
+          const existente = mapaRemotosPorChave.get(chaveExclusao);
+          if (!existente) {
+            mapaRemotosPorChave.set(chaveExclusao, itemSanitizado);
+          } else {
+            // Se houver duplicata do mesmo lote no Firestore (ID antigo vs canônico), mantém o canônico e remove o obsoleto
+            const existenteEhCanonico = existente.firestoreDocId === canonicalDocId;
+            const novoEhCanonico = docSnap.id === canonicalDocId;
+            if (novoEhCanonico && !existenteEhCanonico) {
+              if (existente.firestoreDocId) {
+                deleteDoc(doc(db, 'estoque', existente.firestoreDocId)).catch(() => {});
+              }
+              mapaRemotosPorChave.set(chaveExclusao, itemSanitizado);
+            } else if (!novoEhCanonico) {
+              deleteDoc(docSnap.ref).catch(() => {});
+            }
+          }
         }
       });
+
+      const itensRemotos: ItemEstoque[] = Array.from(mapaRemotosPorChave.values());
 
       // Ler dados locais para preservar eventuais fotos que não subiram pro remoto
       let itensLocais: ItemEstoque[] = [];
@@ -480,10 +501,18 @@ export async function salvarSupermercadoFirestore(loja: Supermercado) {
 export async function salvarItemEstoqueFirestore(item: ItemEstoque, lojaId: string) {
   try {
     const itemLimpo = sanitizarItemEstoque({ ...item, lojaId });
+    const safeLojaId = sanitizarIdDoc(lojaId || 'loja_padrao');
+    const safeCod = sanitizarIdDoc(itemLimpo.codigo || 'semcod');
+    const safeVal = sanitizarIdDoc(itemLimpo.validade || 'semval');
+    const safeLote = sanitizarIdDoc(itemLimpo.lote || 'semlote');
+    const canonicalDocId = `${safeLojaId}_${safeCod}_${safeVal}_${safeLote}`;
+    const targetDocId = itemLimpo.firestoreDocId || canonicalDocId;
+    const itemComDocId: ItemEstoque = { ...itemLimpo, firestoreDocId: targetDocId };
+
     const chaveMemoria = gerarChaveItemEstoque(lojaId, itemLimpo.codigo, itemLimpo.validade, itemLimpo.lote);
     itensRecemExcluidosMemoria.delete(chaveMemoria);
     itensRecemSalvosMemoria.set(chaveMemoria, {
-      item: itemLimpo,
+      item: itemComDocId,
       lojaId,
       timestamp: Date.now(),
     });
@@ -500,22 +529,35 @@ export async function salvarItemEstoqueFirestore(item: ItemEstoque, lojaId: stri
             String(x?.lote || '').trim() === itemLimpo.lote
         );
         if (idx !== -1) {
-          listaAtual[idx] = itemLimpo;
+          listaAtual[idx] = itemComDocId;
         } else {
-          listaAtual.push(itemLimpo);
+          listaAtual.push(itemComDocId);
         }
         safeLocalStorageSet(`estoque_${lojaId}`, JSON.stringify(listaAtual));
         notificarListenersEstoqueImediato(lojaId);
       }
     } catch (e) {}
 
-    const safeLojaId = sanitizarIdDoc(lojaId || 'loja_padrao');
-    const safeCod = sanitizarIdDoc(itemLimpo.codigo || 'semcod');
-    const safeVal = sanitizarIdDoc(itemLimpo.validade || 'semval');
-    const safeLote = sanitizarIdDoc(itemLimpo.lote || 'semlote');
-    const docId = `${safeLojaId}_${safeCod}_${safeVal}_${safeLote}`;
-    const docRef = doc(db, 'estoque', docId);
-    await setDoc(docRef, limparUndefined({ ...itemLimpo, lojaId }), { merge: true });
+    const { firestoreDocId: _omitDocId, ...dadosSemDocId } = itemLimpo;
+    const docRef = doc(db, 'estoque', targetDocId);
+    await setDoc(docRef, limparUndefined({ ...dadosSemDocId, lojaId }), { merge: true });
+
+    // Remove eventuais duplicatas com ID diferente para o mesmo (lojaId, codigo, validade, lote)
+    if (!item.firestoreDocId) {
+      try {
+        const qDup = query(collection(db, 'estoque'), where('lojaId', '==', lojaId), where('codigo', '==', itemLimpo.codigo));
+        const snapDup = await getDocs(qDup);
+        for (const d of snapDup.docs) {
+          if (d.id === targetDocId) continue;
+          const dData = d.data() as ItemEstoque;
+          const dVal = String(dData.validade || '2099-12-31').trim();
+          const dLote = String(dData.lote || '').trim();
+          if (dVal === itemLimpo.validade && dLote === itemLimpo.lote) {
+            await deleteDoc(d.ref);
+          }
+        }
+      } catch (_) {}
+    }
   } catch (err: any) {
     if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
       console.warn('Aviso: Permissão de escrita pendente no Firestore para itens de estoque.');
