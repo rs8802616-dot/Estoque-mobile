@@ -7,9 +7,9 @@ interface GestaoCaixaModalProps {
   sessaoAtiva: SessaoCaixaTurno | null;
   vendasSessao: Venda[];
   movimentacoes: MovimentacaoCaixa[];
-  onAbrirCaixa: (valorInicial: number, usuario: string, senha: string) => { sucesso: boolean; mensagem?: string };
+  onAbrirCaixa: (valorInicial: number, usuario: string, senha: string) => Promise<{ sucesso: boolean; mensagem?: string }> | { sucesso: boolean; mensagem?: string };
   onRegistrarMovimentacao: (tipo: 'sangria' | 'suprimento', valor: number, descricao: string) => void;
-  onFecharCaixa: (dinheiroInformado: number, cartaoInformado: number, pixInformado: number, obs: string, usuario: string, senha: string) => { sucesso: boolean; mensagem?: string };
+  onFecharCaixa: (dinheiroInformado: number, cartaoInformado: number, pixInformado: number, obs: string, usuario: string, senha: string) => Promise<{ sucesso: boolean; mensagem?: string }> | { sucesso: boolean; mensagem?: string };
   operadorAtivo: OperadorCaixa | null;
   loja: Supermercado | null;
   listaOperadores?: OperadorCaixa[];
@@ -21,8 +21,8 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
   visivel,
   onFechar,
   sessaoAtiva,
-  vendasSessao,
-  movimentacoes,
+  vendasSessao = [],
+  movimentacoes = [],
   onAbrirCaixa,
   onRegistrarMovimentacao,
   onFecharCaixa,
@@ -106,7 +106,7 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
   const saldoDinheiroEmEspecieEsperado =
     (sessaoAtiva?.valorInicialSuprimento || 0) + totalSuprimentos + totalVendasDinheiro - totalSangrias;
 
-  const handleSubmeterAbertura = (e: React.FormEvent) => {
+  const handleSubmeterAbertura = async (e: React.FormEvent) => {
     e.preventDefault();
     setMsgErroAbertura('');
     const val = parseFloat(valorInicialStr.replace(',', '.')) || 0;
@@ -116,7 +116,7 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
       return;
     }
 
-    const resultado = onAbrirCaixa(val, loginAbrir, senhaAbrir);
+    const resultado = await onAbrirCaixa(val, loginAbrir, senhaAbrir);
     if (resultado.sucesso) {
       setSenhaAbrir('');
       setMsgErroAbertura('');
@@ -142,7 +142,7 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
     setAba('status');
   };
 
-  const handleSubmeterFechamento = (e: React.FormEvent) => {
+  const handleSubmeterFechamento = async (e: React.FormEvent) => {
     e.preventDefault();
     setMsgErroFechamento('');
     const din = parseFloat(dinheiroInfStr.replace(',', '.')) || 0;
@@ -154,7 +154,7 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
       return;
     }
 
-    const resultado = onFecharCaixa(din, car, pix, obsFechamento, loginFechar, senhaFechar);
+    const resultado = await onFecharCaixa(din, car, pix, obsFechamento, loginFechar, senhaFechar);
     if (resultado.sucesso) {
       setSenhaFechar('');
       setMsgErroFechamento('');
