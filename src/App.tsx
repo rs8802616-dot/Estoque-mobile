@@ -659,7 +659,24 @@ export default function App() {
     return telaSalvaInicial === 'modal_cadastro_estoque' || telaSalvaInicial === 'modal_cadastro_master';
   });
   const [continuarCadastrandoAposSalvar, setContinuarCadastrandoAposSalvar] = useState<boolean>(true);
-  const [abasAbertas, setAbasAbertas] = useState<('cadastro' | 'caixa' | 'relatorios' | 'delivery' | 'devedores' | 'master')[]>([]);
+  const [abasAbertas, setAbasAbertas] = useState<(
+    | 'cadastro'
+    | 'caixa'
+    | 'relatorios'
+    | 'delivery'
+    | 'devedores'
+    | 'master'
+    | 'estoque'
+    | 'graficos'
+    | 'historico_vendas'
+    | 'equipe'
+    | 'etiquetas'
+    | 'xml'
+    | 'manual'
+    | 'notificacoes'
+    | 'whatsapp'
+    | 'catalogo'
+  )[]>([]);
   const [modalPesquisaCatalogoVisivel, setModalPesquisaCatalogoVisivel] = useState<boolean>(false);
   const [modalVendaVisivel, setModalVendaVisivel] = useState<boolean>(false);
   const [modalNotificacoesVisivel, setModalNotificacoesVisivel] = useState<boolean>(() => {
@@ -4638,7 +4655,24 @@ export default function App() {
     setCadPreco('');
   };
 
-  type AbaNavegacaoSistema = 'inicio' | 'cadastro' | 'caixa' | 'relatorios' | 'delivery' | 'devedores' | 'master';
+  type AbaNavegacaoSistema =
+    | 'inicio'
+    | 'cadastro'
+    | 'caixa'
+    | 'relatorios'
+    | 'delivery'
+    | 'devedores'
+    | 'master'
+    | 'estoque'
+    | 'graficos'
+    | 'historico_vendas'
+    | 'equipe'
+    | 'etiquetas'
+    | 'xml'
+    | 'manual'
+    | 'notificacoes'
+    | 'whatsapp'
+    | 'catalogo';
   type AbaSecundariaSistema = Exclude<AbaNavegacaoSistema, 'inicio'>;
 
   // Registra automaticamente na barra compacta do canto inferior direito qualquer tela aberta
@@ -4650,6 +4684,16 @@ export default function App() {
     if (modalGestaoDeliveryVisivel) ativasAgora.push('delivery');
     if (modalDevedoresVisivel) ativasAgora.push('devedores');
     if (modalSupermercadoVisivel && perfilAtivo === 'dona_app') ativasAgora.push('master');
+    if (relatorioCheioVisivel) ativasAgora.push('estoque');
+    if (modalGraficosVendasVisivel) ativasAgora.push('graficos');
+    if (modalRelatorioVendasVisivel) ativasAgora.push('historico_vendas');
+    if (modalOperadoresVisivel) ativasAgora.push('equipe');
+    if (modalEtiquetasVisivel) ativasAgora.push('etiquetas');
+    if (modalEntradaNotaVisivel) ativasAgora.push('xml');
+    if (modalManualVisivel) ativasAgora.push('manual');
+    if (modalNotificacoesVisivel) ativasAgora.push('notificacoes');
+    if (modalAlertasWhatsAppVisivel) ativasAgora.push('whatsapp');
+    if (modalPesquisaCatalogoVisivel) ativasAgora.push('catalogo');
 
     if (ativasAgora.length > 0) {
       setAbasAbertas((prev) => {
@@ -4664,6 +4708,16 @@ export default function App() {
     modalGestaoDeliveryVisivel,
     modalDevedoresVisivel,
     modalSupermercadoVisivel,
+    relatorioCheioVisivel,
+    modalGraficosVendasVisivel,
+    modalRelatorioVendasVisivel,
+    modalOperadoresVisivel,
+    modalEtiquetasVisivel,
+    modalEntradaNotaVisivel,
+    modalManualVisivel,
+    modalNotificacoesVisivel,
+    modalAlertasWhatsAppVisivel,
+    modalPesquisaCatalogoVisivel,
     perfilAtivo,
   ]);
 
@@ -4675,6 +4729,16 @@ export default function App() {
     setModalCaixaVisivel(false);
     setModalDevedoresVisivel(false);
     setModalSupermercadoVisivel(false);
+    setRelatorioCheioVisivel(false);
+    setModalGraficosVendasVisivel(false);
+    setModalRelatorioVendasVisivel(false);
+    setModalOperadoresVisivel(false);
+    setModalEtiquetasVisivel(false);
+    setModalEntradaNotaVisivel(false);
+    setModalManualVisivel(false);
+    setModalNotificacoesVisivel(false);
+    setModalAlertasWhatsAppVisivel(false);
+    setModalPesquisaCatalogoVisivel(false);
   };
 
   const navegarParaAba = (aba: AbaNavegacaoSistema) => {
@@ -4698,6 +4762,26 @@ export default function App() {
       setModalDevedoresVisivel(true);
     } else if (aba === 'master' && perfilAtivo === 'dona_app') {
       setModalSupermercadoVisivel(true);
+    } else if (aba === 'estoque') {
+      setRelatorioCheioVisivel(true);
+    } else if (aba === 'graficos') {
+      setModalGraficosVendasVisivel(true);
+    } else if (aba === 'historico_vendas') {
+      setModalRelatorioVendasVisivel(true);
+    } else if (aba === 'equipe') {
+      setModalOperadoresVisivel(true);
+    } else if (aba === 'etiquetas') {
+      setModalEtiquetasVisivel(true);
+    } else if (aba === 'xml') {
+      setModalEntradaNotaVisivel(true);
+    } else if (aba === 'manual') {
+      setModalManualVisivel(true);
+    } else if (aba === 'notificacoes') {
+      setModalNotificacoesVisivel(true);
+    } else if (aba === 'whatsapp') {
+      setModalAlertasWhatsAppVisivel(true);
+    } else if (aba === 'catalogo') {
+      setModalPesquisaCatalogoVisivel(true);
     }
   };
 
@@ -4716,6 +4800,26 @@ export default function App() {
       setModalDevedoresVisivel(false);
     } else if (aba === 'master') {
       setModalSupermercadoVisivel(false);
+    } else if (aba === 'estoque') {
+      setRelatorioCheioVisivel(false);
+    } else if (aba === 'graficos') {
+      setModalGraficosVendasVisivel(false);
+    } else if (aba === 'historico_vendas') {
+      setModalRelatorioVendasVisivel(false);
+    } else if (aba === 'equipe') {
+      setModalOperadoresVisivel(false);
+    } else if (aba === 'etiquetas') {
+      setModalEtiquetasVisivel(false);
+    } else if (aba === 'xml') {
+      setModalEntradaNotaVisivel(false);
+    } else if (aba === 'manual') {
+      setModalManualVisivel(false);
+    } else if (aba === 'notificacoes') {
+      setModalNotificacoesVisivel(false);
+    } else if (aba === 'whatsapp') {
+      setModalAlertasWhatsAppVisivel(false);
+    } else if (aba === 'catalogo') {
+      setModalPesquisaCatalogoVisivel(false);
     }
   };
 
@@ -13771,7 +13875,27 @@ export default function App() {
                     ? 'delivery'
                     : modalDevedoresVisivel
                       ? 'devedores'
-                      : 'inicio';
+                      : relatorioCheioVisivel
+                        ? 'estoque'
+                        : modalGraficosVendasVisivel
+                          ? 'graficos'
+                          : modalRelatorioVendasVisivel
+                            ? 'historico_vendas'
+                            : modalOperadoresVisivel
+                              ? 'equipe'
+                              : modalEtiquetasVisivel
+                                ? 'etiquetas'
+                                : modalEntradaNotaVisivel
+                                  ? 'xml'
+                                  : modalManualVisivel
+                                    ? 'manual'
+                                    : modalNotificacoesVisivel
+                                      ? 'notificacoes'
+                                      : modalAlertasWhatsAppVisivel
+                                        ? 'whatsapp'
+                                        : modalPesquisaCatalogoVisivel
+                                          ? 'catalogo'
+                                          : 'inicio';
 
         const metaAbas: Record<AbaSecundariaSistema, { icone: string; label: string }> = {
           cadastro: { icone: '➕', label: 'Cadastro' },
@@ -13780,6 +13904,16 @@ export default function App() {
           delivery: { icone: '🛵', label: 'Delivery' },
           devedores: { icone: '📒', label: 'Fiado' },
           master: { icone: '👑', label: 'Master' },
+          estoque: { icone: '📦', label: 'Estoque' },
+          graficos: { icone: '📈', label: 'Gráficos' },
+          historico_vendas: { icone: '🧾', label: 'Vendas' },
+          equipe: { icone: '👥', label: 'Equipe' },
+          etiquetas: { icone: '🏷️', label: 'Etiquetas' },
+          xml: { icone: '📄', label: 'XML' },
+          manual: { icone: '📘', label: 'Tutorial' },
+          notificacoes: { icone: '🔔', label: 'Alertas' },
+          whatsapp: { icone: '📱', label: 'WhatsApp' },
+          catalogo: { icone: '🗂️', label: 'Catálogo' },
         };
 
         // Só exibe as abas abertas (ou enquanto houver pelo menos 1 aba aberta além do Início)
@@ -13792,7 +13926,7 @@ export default function App() {
               position: 'fixed',
               bottom: '3px',
               right: '10px',
-              zIndex: 999998,
+              zIndex: 1000000,
               background: 'rgba(15, 23, 42, 0.92)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(148, 163, 184, 0.3)',
