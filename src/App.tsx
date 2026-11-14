@@ -3577,6 +3577,46 @@ export default function App() {
     let lastKeyTime = Date.now();
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Atalhos globais de teclado do PDV (apenas quando logado)
+      if (!telaLoginVisivel) {
+        if (e.key === 'F2') {
+          e.preventDefault();
+          setModalCarrinhoVisivel((prev) => !prev);
+          return;
+        }
+        if (e.key === 'F3') {
+          e.preventDefault();
+          const campoBusca = document.querySelector<HTMLInputElement>('input[type="search"], .input-busca');
+          if (campoBusca) {
+            campoBusca.focus();
+            campoBusca.select();
+          }
+          return;
+        }
+        if (e.key === 'F4') {
+          e.preventDefault();
+          setModalCaixaVisivel((prev) => !prev);
+          return;
+        }
+        if (e.key === 'F8') {
+          e.preventDefault();
+          setModalGestaoDeliveryVisivel((prev) => !prev);
+          return;
+        }
+        if (e.key === 'F9') {
+          e.preventDefault();
+          abrirCentralRelatorios('faturamento');
+          return;
+        }
+        if (e.key === 'Escape') {
+          if (modalVendaVisivel) { setModalVendaVisivel(false); return; }
+          if (modalCarrinhoVisivel) { setModalCarrinhoVisivel(false); return; }
+          if (modalCaixaVisivel) { setModalCaixaVisivel(false); return; }
+          if (modalCentralRelatoriosVisivel) { fecharAbaDefinitivo('relatorios'); return; }
+          if (modalGestaoDeliveryVisivel) { fecharAbaDefinitivo('delivery'); return; }
+        }
+      }
+
       const target = e.target as HTMLElement;
       const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
       
@@ -3612,7 +3652,18 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [estoque, sessaoCaixaAtiva, carrinho, catalogoGlobal]);
+  }, [
+    estoque,
+    sessaoCaixaAtiva,
+    carrinho,
+    catalogoGlobal,
+    telaLoginVisivel,
+    modalVendaVisivel,
+    modalCarrinhoVisivel,
+    modalCaixaVisivel,
+    modalCentralRelatoriosVisivel,
+    modalGestaoDeliveryVisivel,
+  ]);
 
   const processarCodigoScaneado = (codigoLido: string) => {
     const codLimpo = codigoLido.trim();
@@ -12453,78 +12504,27 @@ export default function App() {
             }}
           >
             <span>🛒 Baixa de Estoque / Venda</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              {prodAtual && (
-                <>
-                  <button
-                    type="button"
-                    title="Editar Dados do Produto"
-                    onClick={() => {
-                      setModalVendaVisivel(false);
-                      editarProduto(prodAtual.codigo, prodAtual.validade, prodAtual.lote || '');
-                    }}
-                    style={{
-                      background: 'rgba(255,255,255,0.18)',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      width: '30px',
-                      height: '30px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    type="button"
-                    title="Excluir Produto"
-                    onClick={() => {
-                      excluirProduto(prodAtual.codigo, prodAtual.validade, prodAtual.lote || '');
-                    }}
-                    style={{
-                      background: 'rgba(239,68,68,0.3)',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      width: '30px',
-                      height: '30px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    🗑️
-                  </button>
-                </>
-              )}
-              <button
-                type="button"
-                title="Fechar"
-                onClick={() => setModalVendaVisivel(false)}
-                style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  width: '30px',
-                  height: '30px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  fontSize: '0.95rem',
-                  fontWeight: 800,
-                }}
-              >
-                ✕
-              </button>
-            </div>
+            <button
+              type="button"
+              title="Fechar (Esc)"
+              onClick={() => setModalVendaVisivel(false)}
+              style={{
+                background: 'rgba(255,255,255,0.2)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '8px',
+                width: '30px',
+                height: '30px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+                fontWeight: 800,
+              }}
+            >
+              ✕
+            </button>
           </div>
           {prodAtual && (
             <div className="corpo-modal" id="corpo-venda">
@@ -12751,6 +12751,34 @@ export default function App() {
                   >
                     +
                   </button>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>📦 Caixas:</span>
+                  {[6, 12, 24].map((cx) => (
+                    <button
+                      key={cx}
+                      type="button"
+                      onClick={() => {
+                        const atual = typeof qtdBaixa === 'number' ? qtdBaixa : parseInt(qtdBaixa, 10) || 1;
+                        const ilimitado = prodAtual.tipoCadastro === 'interno' || prodAtual.estoqueIlimitado;
+                        const maxQtd = ilimitado ? 9999 : Math.max(1, Number(prodAtual.quantidade) || 1);
+                        const proxima = atual === 1 ? cx : atual + cx;
+                        setQtdBaixa(Math.min(maxQtd, proxima));
+                      }}
+                      style={{
+                        padding: '3px 9px',
+                        borderRadius: '6px',
+                        border: '1px solid #cbd5e1',
+                        background: '#f1f5f9',
+                        color: '#334155',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      +{cx} un
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="total-texto">
