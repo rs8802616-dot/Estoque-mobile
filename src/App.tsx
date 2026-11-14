@@ -6905,73 +6905,6 @@ export default function App() {
     }
   };
 
-  const handleSimularPedidoTeste = () => {
-    const storeId = supermercadoAtual || 'loja_matriz_01';
-    const numPed = Math.floor(1000 + Math.random() * 9000);
-    const pin = Math.floor(1000 + Math.random() * 9000).toString();
-    const agora = new Date();
-
-    const itensTeste = estoque.length > 0
-      ? [
-          {
-            codigo: estoque[0].codigo,
-            nome: `${estoque[0].nome} (Gelada)`,
-            quantidade: 2,
-            preco_unitario: estoque[0].preco_venda,
-            preco_custo: estoque[0].preco_custo || 0,
-            subtotal: estoque[0].preco_venda * 2,
-            gelado: true,
-            foto: estoque[0].foto,
-          },
-        ]
-      : [
-          {
-            codigo: '7891000100102',
-            nome: 'Cerveja Heineken 330ml (Gelada)',
-            quantidade: 4,
-            preco_unitario: 8.50,
-            preco_custo: 5.50,
-            subtotal: 34.00,
-            gelado: true,
-          },
-        ];
-
-    const sub: number = (itensTeste as any[]).reduce((acc: number, cur: any) => acc + (cur.subtotal || 0), 0);
-    const taxa = configDelivery.taxaEntregaFixa || 6.90;
-
-    const sim: PedidoDelivery = {
-      id: `del_${Date.now()}`,
-      numeroPedido: numPed,
-      lojaId: storeId,
-      data: agora.toISOString().slice(0, 10),
-      hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      timestamp: agora.getTime(),
-      cliente: {
-        nome: 'Rodrigo Souza',
-        telefone: '(11) 99887-1122',
-        maior18AnosConfirmado: true,
-      },
-      enderecoEntrega: {
-        logradouro: 'Rua das Palmeiras',
-        numero: '342',
-        complemento: 'Apto 101',
-        bairro: 'Jardins',
-        cidade: 'São Paulo',
-        referencia: 'Em frente à praça',
-      },
-      itens: itensTeste as any,
-      subtotal: sub,
-      taxaEntrega: taxa,
-      valorTotal: sub + taxa,
-      formaPagamento: 'pix',
-      status: 'pendente',
-      tipo_pedido: 'delivery',
-      codigoEntregaPin: pin,
-    };
-
-    handleCriarPedidoCliente(sim);
-  };
-
   // Low Stock & Reorder Threshold Handler
   const alterarLimiarEstoque = (novoValor: number) => {
     const val = Math.max(1, Math.floor(novoValor));
@@ -13108,7 +13041,6 @@ export default function App() {
         }}
         estoque={estoque}
         lojaAtual={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
-        onSimularNovoPedidoTeste={handleSimularPedidoTeste}
       />
 
       {/* CARDÁPIO ONLINE DO CLIENTE (MESMO PADRÃO DO PDV) */}

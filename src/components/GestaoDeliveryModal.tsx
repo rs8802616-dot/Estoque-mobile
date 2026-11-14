@@ -61,7 +61,6 @@ interface GestaoDeliveryModalProps {
   onAbrirCardapioCliente: () => void;
   estoque: ItemEstoque[];
   lojaAtual: Supermercado | null;
-  onSimularNovoPedidoTeste?: () => void;
 }
 
 export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
@@ -76,7 +75,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   onAbrirCardapioCliente,
   estoque,
   lojaAtual,
-  onSimularNovoPedidoTeste,
 }) => {
   // Filtros de status estilo AtendeJá / Imagem de referência
   // 'todos' | 'novo' | 'em_preparo' | 'pronto' | 'a_caminho' | 'entregue'
@@ -683,18 +681,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               <span className="hidden sm:inline text-[11px] sm:text-xs">Toque Motoboy</span>
             </button>
 
-            {/* Simulação de Pedido Teste */}
-            {onSimularNovoPedidoTeste && (
-              <button
-                onClick={onSimularNovoPedidoTeste}
-                className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition border border-slate-200 shadow-2xs cursor-pointer"
-                title="Cria um pedido de teste para testar o alarme e o fluxo"
-              >
-                <PlusCircle className="w-4 h-4 text-emerald-600" />
-                <span>Simular Pedido</span>
-              </button>
-            )}
-
             {/* Botão de Configurações */}
             <button
               onClick={() => setModalConfigAberta(true)}
@@ -880,16 +866,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 <p className="text-xs text-slate-500">
                   Novos pedidos feitos no cardápio do cliente tocarão alerta e aparecerão aqui em tempo real.
                 </p>
-                {onSimularNovoPedidoTeste && (
-                  <button
-                    type="button"
-                    onClick={onSimularNovoPedidoTeste}
-                    className="mt-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer inline-flex items-center gap-1.5"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                    <span>Simular Pedido de Teste</span>
-                  </button>
-                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
