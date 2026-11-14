@@ -94,6 +94,7 @@ import { CardapioClienteDeliveryModal } from './components/CardapioClienteDelive
 import { CustomerDeliveryView } from './components/CustomerDeliveryView';
 import { MotoboyDeliveryView } from './components/MotoboyDeliveryView';
 import { CaixaDeliveryPanel } from './components/CaixaDeliveryPanel';
+import { CaixaPdvLateralPanel } from './components/CaixaPdvLateralPanel';
 import { CupomVendaModal } from './components/CupomVendaModal';
 import { EtiquetasModal } from './components/EtiquetasModal';
 import { GestaoCaixaModal } from './components/GestaoCaixaModal';
@@ -1045,6 +1046,7 @@ export default function App() {
   const [colunaDeliveryFixaVisivel, setColunaDeliveryFixaVisivel] = useState<boolean>(() => {
     return localStorage.getItem('coluna_delivery_fixa_visivel') !== 'false';
   });
+  const [abaPainelLateral, setAbaPainelLateral] = useState<'caixa' | 'delivery'>('caixa');
 
   const [configDelivery, setConfigDelivery] = useState<ConfiguracaoDelivery>(() => {
     try {
@@ -8655,7 +8657,7 @@ export default function App() {
               className="layout-caixa-delivery-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: (colunaDeliveryFixaVisivel && temPermissaoOperador('gerenciar_delivery', 'delivery')) ? 'minmax(0, 1fr) 465px' : 'minmax(0, 1fr)',
+                gridTemplateColumns: (colunaDeliveryFixaVisivel && (temPermissaoOperador('vender', 'caixa') || temPermissaoOperador('gerenciar_delivery', 'delivery'))) ? 'minmax(0, 1fr) 465px' : 'minmax(0, 1fr)',
                 gap: '16px',
                 alignItems: 'start',
               }}
@@ -8943,51 +8945,173 @@ export default function App() {
 
               </div>
 
-              {/* COLUNA FIXA DE PEDIDOS DO DELIVERY (ESTILO ATENDEJÁ CAIXAVIEW) - SOMENTE DESKTOP */}
-              {colunaDeliveryFixaVisivel && temPermissaoOperador('gerenciar_delivery', 'delivery') && (
-                <div
-                  className="coluna-delivery-fixa-lateral hidden lg:flex"
-                >
-                  <CaixaDeliveryPanel
-                    pedidos={pedidosDelivery}
-                    loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || listaSupermercados[0] || null}
-                    onAtualizarStatus={handleAtualizarStatusPedidoDelivery}
-                    onConfirmarEntregaPin={handleConfirmarEntregaPin}
-                    onAbrirCardapioCliente={() => setModalCardapioClienteVisivel(true)}
-                    onImprimirComanda={(pedido) => {
-                      const novaVendaSimulada: Venda = {
-                        id: `ven_del_${pedido.numeroPedido}`,
-                        pedidoDeliveryId: pedido.id,
-                        numeroVenda: pedido.numeroPedido,
-                        data: pedido.data,
-                        hora: pedido.hora,
-                        timestamp: pedido.timestamp,
-                        itens: pedido.itens.map((it) => ({
-                          codigo: it.codigo,
-                          nome: it.nome,
-                          quantidade: it.quantidade,
-                          preco_unitario: it.preco_unitario,
-                          preco_custo: it.preco_custo,
-                          subtotal: it.subtotal,
-                        })),
-                        subtotal: pedido.subtotal,
-                        desconto: 0,
-                        acrescimo: pedido.taxaEntrega,
-                        valorTotal: pedido.valorTotal,
-                        total: pedido.valorTotal,
-                        formaPagamento: pedido.formaPagamento === 'pix' ? 'pix' : pedido.formaPagamento === 'dinheiro' ? 'dinheiro' : pedido.formaPagamento === 'cartao_debito' ? 'cartao_debito' : 'cartao_credito',
-                        valorRecebido: pedido.trocoPara || pedido.valorTotal,
-                        troco: pedido.trocoPara ? Math.max(0, pedido.trocoPara - pedido.valorTotal) : 0,
-                        status: 'concluida',
-                        lojaId: pedido.lojaId,
-                        operadorId: operadorAtivoId || 'caixa_delivery',
-                        origem: 'delivery',
-                      };
-                      setVendaCupomVer(novaVendaSimulada);
-                    }}
-                  />
-                </div>
-              )}
+              {/* COLUNA FIXA LATERAL: ABAS CAIXA PDV & DELIVERY - SOMENTE DESKTOP */}
+              {colunaDeliveryFixaVisivel && (temPermissaoOperador('vender', 'caixa') || temPermissaoOperador('gerenciar_delivery', 'delivery')) && (() => {
+                const podeCaixaLateral = temPermissaoOperador('vender', 'caixa');
+                const podeDeliveryLateral = temPermissaoOperador('gerenciar_delivery', 'delivery');
+                const abaAtiva = !podeCaixaLateral && podeDeliveryLateral
+                  ? 'delivery'
+                  : !podeDeliveryLateral && podeCaixaLateral
+                    ? 'caixa'
+                    : abaPainelLateral;
+                const qtdPendentesDelivery = pedidosDelivery.filter((p) => p.status === 'pendente').length;
+                const qtdItensCarrinho = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+
+                return (
+                  <div
+                    className="coluna-delivery-fixa-lateral hidden lg:flex"
+                    style={{ gap: '8px' }}
+                  >
+                    {/* ABAS DE NAVEGAÇÃO RÁPIDA: CAIXA PDV | DELIVERY */}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: podeCaixaLateral && podeDeliveryLateral ? '1fr 1fr' : '1fr',
+                        gap: '6px',
+                        padding: '4px',
+                        background: '#e2e8f0',
+                        borderRadius: '12px',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {podeCaixaLateral && (
+                        <button
+                          type="button"
+                          onClick={() => setAbaPainelLateral('caixa')}
+                          style={{
+                            padding: '8px 10px',
+                            borderRadius: '9px',
+                            border: 'none',
+                            background: abaAtiva === 'caixa' ? '#ffffff' : 'transparent',
+                            color: abaAtiva === 'caixa' ? '#0f172a' : '#475569',
+                            fontWeight: abaAtiva === 'caixa' ? 800 : 600,
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            boxShadow: abaAtiva === 'caixa' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
+                          }}
+                        >
+                          <span>🛒 Caixa / Venda</span>
+                          {qtdItensCarrinho > 0 && (
+                            <span
+                              style={{
+                                background: '#2563eb',
+                                color: '#ffffff',
+                                borderRadius: '999px',
+                                padding: '1px 7px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              {Number.isInteger(qtdItensCarrinho) ? qtdItensCarrinho : qtdItensCarrinho.toFixed(1)}
+                            </span>
+                          )}
+                        </button>
+                      )}
+
+                      {podeDeliveryLateral && (
+                        <button
+                          type="button"
+                          onClick={() => setAbaPainelLateral('delivery')}
+                          style={{
+                            padding: '8px 10px',
+                            borderRadius: '9px',
+                            border: 'none',
+                            background: abaAtiva === 'delivery' ? '#ffffff' : 'transparent',
+                            color: abaAtiva === 'delivery' ? '#0f172a' : '#475569',
+                            fontWeight: abaAtiva === 'delivery' ? 800 : 600,
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            boxShadow: abaAtiva === 'delivery' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
+                          }}
+                        >
+                          <span>🛵 Delivery</span>
+                          {qtdPendentesDelivery > 0 && (
+                            <span
+                              style={{
+                                background: '#ef4444',
+                                color: '#ffffff',
+                                borderRadius: '999px',
+                                padding: '1px 7px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              {qtdPendentesDelivery}
+                            </span>
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* CONTEÚDO DA ABA SELECIONADA */}
+                    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                      {abaAtiva === 'caixa' ? (
+                        <CaixaPdvLateralPanel
+                          carrinho={carrinho}
+                          onAlterarQuantidade={alterarQuantidadeCarrinho}
+                          onRemoverItem={removerItemCarrinho}
+                          onLimparCarrinho={limparCarrinho}
+                          onFinalizarVenda={finalizarVendaCarrinho}
+                          clientesDevedores={clientesDevedores}
+                          onAbrirCadastroCliente={() => setModalDevedoresVisivel(true)}
+                          sessaoCaixaAberta={!!(sessaoCaixaAtiva && sessaoCaixaAtiva.status === 'aberto')}
+                          onAbrirCaixaModal={() => setModalCaixaVisivel(true)}
+                          obterFotoProduto={obterFotoProduto}
+                          onAbrirLeitorCameraContinuo={abrirLeitorCarrinho}
+                          ultimoItemBipadoToast={ultimoItemBipadoToast}
+                        />
+                      ) : (
+                        <CaixaDeliveryPanel
+                          pedidos={pedidosDelivery}
+                          loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || listaSupermercados[0] || null}
+                          onAtualizarStatus={handleAtualizarStatusPedidoDelivery}
+                          onConfirmarEntregaPin={handleConfirmarEntregaPin}
+                          onAbrirCardapioCliente={() => setModalCardapioClienteVisivel(true)}
+                          onImprimirComanda={(pedido) => {
+                            const novaVendaSimulada: Venda = {
+                              id: `ven_del_${pedido.numeroPedido}`,
+                              pedidoDeliveryId: pedido.id,
+                              numeroVenda: pedido.numeroPedido,
+                              data: pedido.data,
+                              hora: pedido.hora,
+                              timestamp: pedido.timestamp,
+                              itens: pedido.itens.map((it) => ({
+                                codigo: it.codigo,
+                                nome: it.nome,
+                                quantidade: it.quantidade,
+                                preco_unitario: it.preco_unitario,
+                                preco_custo: it.preco_custo,
+                                subtotal: it.subtotal,
+                              })),
+                              subtotal: pedido.subtotal,
+                              desconto: 0,
+                              acrescimo: pedido.taxaEntrega,
+                              valorTotal: pedido.valorTotal,
+                              total: pedido.valorTotal,
+                              formaPagamento: pedido.formaPagamento === 'pix' ? 'pix' : pedido.formaPagamento === 'dinheiro' ? 'dinheiro' : pedido.formaPagamento === 'cartao_debito' ? 'cartao_debito' : 'cartao_credito',
+                              valorRecebido: pedido.trocoPara || pedido.valorTotal,
+                              troco: pedido.trocoPara ? Math.max(0, pedido.trocoPara - pedido.valorTotal) : 0,
+                              status: 'concluida',
+                              lojaId: pedido.lojaId,
+                              operadorId: operadorAtivoId || 'caixa_delivery',
+                              origem: 'delivery',
+                            };
+                            setVendaCupomVer(novaVendaSimulada);
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </>
         )}
