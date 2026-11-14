@@ -21,6 +21,7 @@ export function limparArmazenamentoLocalCorrompido(): void {
         k.startsWith('estoque_sync_cache') ||
         k.startsWith('temp_') ||
         k.startsWith('firestore_clients_') ||
+        k.startsWith('firestore_targets_') ||
         k.startsWith('firestore_mutations_') ||
         k.startsWith('firestore_online_state_') ||
         k.startsWith('firestore_sequence_number_')

@@ -3652,6 +3652,7 @@ export default function App() {
         return;
       }
 
+      if (!e.key) return;
       if (e.key.length === 1) {
         if (diff > 120) {
           buffer = e.key; // Reset on slow typing
