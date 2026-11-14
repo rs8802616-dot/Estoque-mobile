@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import {
   initializeFirestore,
   persistentLocalCache,
-  persistentMultipleTabManager,
+  persistentSingleTabManager,
   memoryLocalCache,
   memoryLruGarbageCollector,
   getFirestore,
@@ -20,14 +20,13 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 let firestoreInstance: Firestore;
 try {
-  // Ativa cache persistente em disco (IndexedDB) com gerenciador multi-abas.
-  // Isso impede que o Firebase baixe os mesmos documentos do servidor a cada F5/recarregamento de tela,
-  // economizando dezenas de milhares de leituras diárias e mantendo o consumo na cota gratuita de 50.000 leituras/dia!
+  // Ativa cache persistente em disco (IndexedDB) sem depender de WebStorage (localStorage),
+  // evitando QuotaExceededError (ID: b815) do persistentMultipleTabManager e mantendo economia de leituras no F5.
   firestoreInstance = initializeFirestore(
     app,
     {
       localCache: persistentLocalCache({
-        tabManager: persistentMultipleTabManager(),
+        tabManager: persistentSingleTabManager({ forceOwnership: true }),
       }),
     },
     firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId !== '(default)'

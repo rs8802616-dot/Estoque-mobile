@@ -15,11 +15,15 @@ export function limparArmazenamentoLocalCorrompido(): void {
       const k = localStorage.key(i);
       if (!k) continue;
 
-      // Remove apenas caches temporários antigos ou logs residuais que possam exceder a cota de 5MB do localStorage
+      // Remove caches temporários, logs residuais e estados zumbis do Firestore no localStorage
       if (
         k.startsWith('logs_auditoria_') ||
         k.startsWith('estoque_sync_cache') ||
-        k.startsWith('temp_')
+        k.startsWith('temp_') ||
+        k.startsWith('firestore_clients_') ||
+        k.startsWith('firestore_mutations_') ||
+        k.startsWith('firestore_online_state_') ||
+        k.startsWith('firestore_sequence_number_')
       ) {
         chavesParaRemover.push(k);
       }
