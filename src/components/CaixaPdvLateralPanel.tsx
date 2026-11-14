@@ -42,7 +42,24 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
 }) => {
   const [formaPagamento, setFormaPagamento] = useState<FormaPagamentoPdv>('pix');
   const [clienteFiadoId, setClienteFiadoId] = useState<string>('');
+  const [buscaClienteFiado, setBuscaClienteFiado] = useState<string>('');
+  const [listaFiadoAberta, setListaFiadoAberta] = useState<boolean>(false);
   const [valorRecebidoDinheiro, setValorRecebidoDinheiro] = useState<string>('');
+
+  const clienteFiadoSelecionado = useMemo(
+    () => clientesDevedores.find((c) => c.id === clienteFiadoId) || null,
+    [clientesDevedores, clienteFiadoId]
+  );
+
+  const clientesFiadoFiltrados = useMemo(() => {
+    const termo = buscaClienteFiado.trim().toLowerCase();
+    if (!termo) return clientesDevedores;
+    return clientesDevedores.filter((c) => {
+      const nome = (c.nome || '').toLowerCase();
+      const tel = (c.telefone || '').toLowerCase();
+      return nome.includes(termo) || tel.includes(termo);
+    });
+  }, [clientesDevedores, buscaClienteFiado]);
 
   const totalVenda = useMemo(
     () => carrinho.reduce((acc, item) => acc + (item.subtotal || item.preco_unitario * item.quantidade), 0),
@@ -463,44 +480,171 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
           </div>
         )}
 
-        {/* SELETOR DE CLIENTE QUANDO FIADO */}
+        {/* SELETOR COM PESQUISA DE CLIENTE QUANDO FIADO */}
         {formaPagamento === 'fiado' && (
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-            <select
-              value={clienteFiadoId}
-              onChange={(e) => setClienteFiadoId(e.target.value)}
-              style={{
-                flex: 1,
-                padding: '7px 8px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '12.5px',
-                background: '#ffffff',
-              }}
-            >
-              <option value="">Selecione o cliente do Fiado...</option>
-              {clientesDevedores.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nome} {c.telefone ? `(${c.telefone})` : ''}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={onAbrirCadastroCliente}
-              style={{
-                padding: '7px 10px',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                background: '#f8fafc',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              + Cliente
-            </button>
+          <div style={{ position: 'relative' }}>
+            {listaFiadoAberta && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 6px)',
+                  left: 0,
+                  right: 0,
+                  maxHeight: '200px',
+                  overflowY: 'auto',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '10px',
+                  boxShadow: '0 -8px 24px rgba(15, 23, 42, 0.14)',
+                  zIndex: 30,
+                  padding: '4px',
+                }}
+              >
+                {clientesFiadoFiltrados.length === 0 ? (
+                  <div style={{ padding: '10px', fontSize: '12px', color: '#64748b', textAlign: 'center' }}>
+                    Nenhum cliente encontrado para "{buscaClienteFiado}"
+                  </div>
+                ) : (
+                  clientesFiadoFiltrados.map((c) => {
+                    const selecionado = c.id === clienteFiadoId;
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setClienteFiadoId(c.id);
+                          setBuscaClienteFiado('');
+                          setListaFiadoAberta(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '7px 10px',
+                          border: 'none',
+                          borderRadius: '7px',
+                          background: selecionado ? '#eff6ff' : 'transparent',
+                          color: selecionado ? '#1d4ed8' : '#0f172a',
+                          fontSize: '12.5px',
+                          fontWeight: selecionado ? 700 : 500,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                        }}
+                      >
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {c.nome}
+                        </span>
+                        {c.telefone && (
+                          <span style={{ fontSize: '11px', color: '#64748b', flexShrink: 0 }}>
+                            {c.telefone}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              {clienteFiadoSelecionado && !listaFiadoAberta ? (
+                <div
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '6px',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #2563eb',
+                    background: '#eff6ff',
+                    color: '#1e3a8a',
+                    fontSize: '12.5px',
+                    fontWeight: 700,
+                    minWidth: 0,
+                  }}
+                >
+                  <span
+                    onClick={() => setListaFiadoAberta(true)}
+                    style={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
+                      flex: 1,
+                    }}
+                    title="Clique para trocar o cliente"
+                  >
+                    👤 {clienteFiadoSelecionado.nome}
+                    {clienteFiadoSelecionado.telefone ? ` (${clienteFiadoSelecionado.telefone})` : ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setClienteFiadoId('');
+                      setBuscaClienteFiado('');
+                      setListaFiadoAberta(true);
+                    }}
+                    title="Limpar e pesquisar outro cliente"
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      color: '#1d4ed8',
+                      fontWeight: 800,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      padding: '0 2px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <input
+                  type="text"
+                  value={buscaClienteFiado}
+                  onFocus={() => setListaFiadoAberta(true)}
+                  onBlur={() => setTimeout(() => setListaFiadoAberta(false), 150)}
+                  onChange={(e) => {
+                    setBuscaClienteFiado(e.target.value);
+                    setListaFiadoAberta(true);
+                  }}
+                  placeholder="🔍 Pesquisar cliente (nome ou telefone)..."
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    padding: '7px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '12.5px',
+                    background: '#ffffff',
+                  }}
+                />
+              )}
+
+              <button
+                type="button"
+                onClick={onAbrirCadastroCliente}
+                style={{
+                  padding: '7px 10px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                + Cliente
+              </button>
+            </div>
           </div>
         )}
 
