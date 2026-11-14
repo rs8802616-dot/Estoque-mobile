@@ -1074,74 +1074,16 @@ export default function App() {
       const salvo = localStorage.getItem(`pedidos_delivery_${storeId}`);
       if (salvo) {
         const parsed = JSON.parse(salvo);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          const limpos = parsed.filter((p: PedidoDelivery) => p && p.id !== 'del_1001' && p.id !== 'del_1002');
+          if (limpos.length !== parsed.length) {
+            safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(limpos));
+          }
+          return limpos;
+        }
       }
     } catch {}
-    // Seed inicial para demonstração e teste imediato
-    const hoje = new Date().toISOString().slice(0, 10);
-    return [
-      {
-        id: 'del_1001',
-        numeroPedido: 1042,
-        lojaId: 'loja_matriz_01',
-        data: hoje,
-        hora: '20:15',
-        timestamp: Date.now() - 15 * 60 * 1000,
-        cliente: {
-          nome: 'Rafael Mendonça',
-          telefone: '(11) 99123-4567',
-          maior18AnosConfirmado: true,
-        },
-        enderecoEntrega: {
-          logradouro: 'Rua das Palmeiras',
-          numero: '342',
-          complemento: 'Apto 101',
-          bairro: 'Jardins',
-          cidade: 'São Paulo',
-          referencia: 'Em frente à praça',
-        },
-        itens: [
-          { codigo: '7891000100102', nome: 'Cerveja Heineken Long Neck 330ml (Gelada)', quantidade: 6, preco_unitario: 8.50, subtotal: 51.00, gelado: true },
-          { codigo: '7891000379585', nome: 'Saco de Gelo Filtrado 5kg', quantidade: 1, preco_unitario: 14.00, subtotal: 14.00, gelado: true },
-        ],
-        subtotal: 65.00,
-        taxaEntrega: 6.90,
-        valorTotal: 71.90,
-        formaPagamento: 'pix',
-        status: 'pendente',
-        codigoEntregaPin: '4819',
-      },
-      {
-        id: 'del_1002',
-        numeroPedido: 1041,
-        lojaId: 'loja_matriz_01',
-        data: hoje,
-        hora: '19:40',
-        timestamp: Date.now() - 50 * 60 * 1000,
-        cliente: {
-          nome: 'Juliana Costa',
-          telefone: '(11) 98877-6655',
-          maior18AnosConfirmado: true,
-        },
-        enderecoEntrega: {
-          logradouro: 'Av. Paulista',
-          numero: '1500',
-          bairro: 'Bela Vista',
-          cidade: 'São Paulo',
-        },
-        itens: [
-          { codigo: '7891000100102', nome: 'Vinho Tinto Chileno Cabernet 750ml', quantidade: 2, preco_unitario: 39.90, subtotal: 79.80, gelado: false },
-        ],
-        subtotal: 79.80,
-        taxaEntrega: 6.90,
-        valorTotal: 86.70,
-        formaPagamento: 'cartao_credito',
-        status: 'entregue',
-        codigoEntregaPin: '7392',
-        dataFinalizacao: hoje,
-        horaFinalizacao: '20:10',
-      },
-    ];
+    return [];
   });
 
   // Vendas, Estornos & Gráficos Modals
@@ -1212,86 +1154,18 @@ export default function App() {
     const salvo = localStorage.getItem(`vendas_${storeId}`);
     if (salvo) {
       try {
-        return JSON.parse(salvo);
+        const parsed = JSON.parse(salvo);
+        if (Array.isArray(parsed)) {
+          const idsDemo = new Set(['ven_1001', 'ven_1002', 'ven_1003', 'ven_1004']);
+          const limpos = parsed.filter((v: Venda) => v && !idsDemo.has(v.id));
+          if (limpos.length !== parsed.length) {
+            safeLocalStorageSet(`vendas_${storeId}`, JSON.stringify(limpos));
+          }
+          return limpos;
+        }
       } catch (e) {}
     }
-    // Seed initial sales data for demonstration
-    const hoje = new Date();
-    const hojeIso = hoje.toISOString().slice(0, 10);
-    const ontem = new Date(hoje.getTime() - 24 * 60 * 60 * 1000);
-    const ontemIso = ontem.toISOString().slice(0, 10);
-    const ha3dias = new Date(hoje.getTime() - 3 * 24 * 60 * 60 * 1000);
-    const ha3diasIso = ha3dias.toISOString().slice(0, 10);
-
-    const vendasIniciais: Venda[] = [
-      {
-        id: 'ven_1001',
-        lojaId: storeId,
-        data: hojeIso,
-        hora: '10:15',
-        timestamp: hoje.getTime() - 4 * 3600 * 1000,
-        operadorId: 'op_padrao_01',
-        operadorNome: 'João Silva (Operador Caixa)',
-        itens: [
-          { codigo: '7891000100102', nome: 'Arroz Integral 1kg', quantidade: 3, preco_unitario: 8.90, subtotal: 26.70, lote: 'L001', validade: '2027-01-15' },
-          { codigo: '7891000379585', nome: 'Nescau 2.0 370g', quantidade: 2, preco_unitario: 12.50, subtotal: 25.00, lote: 'L002', validade: '2026-12-10' },
-        ],
-        valorTotal: 51.70,
-        formaPagamento: 'pix',
-        status: 'concluida',
-      },
-      {
-        id: 'ven_1002',
-        lojaId: storeId,
-        data: hojeIso,
-        hora: '11:42',
-        timestamp: hoje.getTime() - 2 * 3600 * 1000,
-        operadorId: 'op_padrao_02',
-        operadorNome: 'Maria Souza (Supervisora)',
-        itens: [
-          { codigo: '7891000100102', nome: 'Arroz Integral 1kg', quantidade: 5, preco_unitario: 8.90, subtotal: 44.50, lote: 'L001', validade: '2027-01-15' },
-        ],
-        valorTotal: 44.50,
-        formaPagamento: 'cartao_credito',
-        status: 'concluida',
-      },
-      {
-        id: 'ven_1003',
-        lojaId: storeId,
-        data: ontemIso,
-        hora: '16:30',
-        timestamp: ontem.getTime(),
-        operadorId: 'op_padrao_01',
-        operadorNome: 'João Silva (Operador Caixa)',
-        itens: [
-          { codigo: '7891000379585', nome: 'Nescau 2.0 370g', quantidade: 4, preco_unitario: 12.50, subtotal: 50.00, lote: 'L002', validade: '2026-12-10' },
-        ],
-        valorTotal: 50.00,
-        formaPagamento: 'cartao_debito',
-        status: 'concluida',
-      },
-      {
-        id: 'ven_1004',
-        lojaId: storeId,
-        data: ha3diasIso,
-        hora: '14:20',
-        timestamp: ha3dias.getTime(),
-        operadorId: 'op_padrao_02',
-        operadorNome: 'Maria Souza (Supervisora)',
-        itens: [
-          { codigo: '7891000100102', nome: 'Arroz Integral 1kg', quantidade: 2, preco_unitario: 8.90, subtotal: 17.80, lote: 'L001', validade: '2027-01-15' },
-        ],
-        valorTotal: 17.80,
-        formaPagamento: 'dinheiro',
-        status: 'estornada',
-        dataEstorno: ha3diasIso + ' 15:00',
-        operadorEstornoNome: 'Maria Souza (Supervisora)',
-        motivoEstorno: 'Desistência do cliente',
-      },
-    ];
-
-    safeLocalStorageSet(`vendas_${storeId}`, JSON.stringify(vendasIniciais));
-    return vendasIniciais;
+    return [];
   });
 
   // Controla IDs de pedidos pendentes já conhecidos para tocar o alarme sonoro automaticamente quando chegar pedido novo
