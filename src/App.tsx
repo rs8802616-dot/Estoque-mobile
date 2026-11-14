@@ -13790,8 +13790,8 @@ export default function App() {
             aria-label="Abas abertas"
             style={{
               position: 'fixed',
-              bottom: '12px',
-              right: '12px',
+              bottom: '3px',
+              right: '10px',
               zIndex: 999998,
               background: 'rgba(15, 23, 42, 0.92)',
               backdropFilter: 'blur(8px)',
@@ -13799,11 +13799,11 @@ export default function App() {
               borderRadius: '999px',
               display: 'flex',
               alignItems: 'center',
-              padding: '4px 6px',
-              gap: '4px',
-              maxWidth: 'calc(100vw - 24px)',
+              padding: '2px 5px',
+              gap: '3px',
+              maxWidth: 'calc(100vw - 20px)',
               overflowX: 'auto',
-              boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.28)',
             }}
           >
             {/* Aba fixa de Início */}
@@ -13814,14 +13814,15 @@ export default function App() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '4px',
-                padding: '4px 9px',
+                gap: '3px',
+                padding: '2px 7px',
                 borderRadius: '999px',
                 border: 'none',
                 background: abaAtualSistema === 'inicio' ? '#0284c7' : 'rgba(255,255,255,0.08)',
                 color: '#ffffff',
                 cursor: 'pointer',
-                fontSize: '0.72rem',
+                fontSize: '0.67rem',
+                lineHeight: 1.25,
                 fontWeight: abaAtualSistema === 'inicio' ? 800 : 600,
                 whiteSpace: 'nowrap',
               }}
@@ -13854,13 +13855,14 @@ export default function App() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '4px',
-                      padding: '4px 6px 4px 9px',
+                      gap: '3px',
+                      padding: '2px 5px 2px 7px',
                       border: 'none',
                       background: 'transparent',
                       color: '#ffffff',
                       cursor: 'pointer',
-                      fontSize: '0.72rem',
+                      fontSize: '0.67rem',
+                      lineHeight: 1.25,
                       fontWeight: ativa ? 800 : 600,
                       whiteSpace: 'nowrap',
                     }}

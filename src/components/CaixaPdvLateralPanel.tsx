@@ -381,12 +381,12 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
       {/* RODAPÉ: FORMA DE PAGAMENTO + TOTAL + FINALIZAR */}
       <div
         style={{
-          padding: '12px',
+          padding: '10px 12px 26px 12px',
           borderTop: '1px solid #cbd5e1',
           background: '#ffffff',
           display: 'flex',
           flexDirection: 'column',
-          gap: '10px',
+          gap: '8px',
           flexShrink: 0,
         }}
       >
