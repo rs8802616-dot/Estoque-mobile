@@ -1,21 +1,32 @@
 import * as Sentry from '@sentry/react';
 
+const SENTRY_FALLBACK_DSN =
+  'https://0a24fa5fd1c3ea88c7c8ff6bd735f162@o4512427242553344.ingest.us.sentry.io/4512427262869504';
+
 let sentryInicializado = false;
+
+function obterSentryDsn(): string {
+  const envDsn = (import.meta as any).env?.VITE_SENTRY_DSN;
+  if (envDsn && typeof envDsn === 'string' && envDsn.trim().startsWith('http')) {
+    return envDsn.trim();
+  }
+  return SENTRY_FALLBACK_DSN;
+}
 
 /**
  * Inicializa o monitoramento global de erros (Sentry + captura global de exceções).
- * Se VITE_SENTRY_DSN estiver configurado nas variáveis de ambiente, envia os erros
- * com arquivo, linha exata (via Source Maps) e contexto da loja/usuário.
+ * Envia os erros com arquivo, linha exata (via Source Maps) e contexto da loja/usuário.
  */
 export function inicializarMonitoramentoErros(): void {
   if (typeof window === 'undefined' || sentryInicializado) return;
   sentryInicializado = true;
 
-  const dsn = (import.meta as any).env?.VITE_SENTRY_DSN;
-  if (dsn && typeof dsn === 'string' && dsn.trim().startsWith('http')) {
+  const dsn = obterSentryDsn();
+  if (dsn) {
     Sentry.init({
-      dsn: dsn.trim(),
+      dsn,
       environment: (import.meta as any).env?.MODE || 'production',
+      integrations: [Sentry.browserTracingIntegration()],
       tracesSampleRate: 0.2,
       beforeSend(event) {
         try {
@@ -53,9 +64,9 @@ export function inicializarMonitoramentoErros(): void {
 
 export function capturarErroProducao(erro: unknown, contexto?: Record<string, unknown>): void {
   const errObj = erro instanceof Error ? erro : new Error(String(erro || 'Erro desconhecido'));
-  const dsn = (import.meta as any).env?.VITE_SENTRY_DSN;
+  const dsn = obterSentryDsn();
 
-  if (dsn && typeof dsn === 'string' && dsn.trim().startsWith('http')) {
+  if (dsn) {
     Sentry.withScope((scope) => {
       try {
         scope.setTag('lojaId', localStorage.getItem('supermercadoAtualId') || 'desconhecida');
