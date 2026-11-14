@@ -1377,6 +1377,14 @@ export default function App() {
   useEffect(() => {
     if (!supermercadoAtual) return;
 
+    // Recarrega o carrinho específico da loja ativa ao trocar de loja
+    try {
+      const carrinhoLojaSalvo = localStorage.getItem(`carrinho_vendas_${supermercadoAtual}`);
+      setCarrinho(carrinhoLojaSalvo ? JSON.parse(carrinhoLojaSalvo) : []);
+    } catch {
+      setCarrinho([]);
+    }
+
     // Carregamento imediato do cache local para resposta instantânea e suporte offline perfeito
     const estSalvoImediato = localStorage.getItem(`estoque_${supermercadoAtual}`);
     if (estSalvoImediato) {
@@ -9055,6 +9063,7 @@ export default function App() {
                     <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                       {abaAtiva === 'caixa' ? (
                         <CaixaPdvLateralPanel
+                          key={supermercadoAtual}
                           carrinho={carrinho}
                           onAlterarQuantidade={alterarQuantidadeCarrinho}
                           onRemoverItem={removerItemCarrinho}
