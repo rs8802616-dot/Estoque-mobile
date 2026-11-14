@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { capturarErroProducao } from '../lib/errorMonitoring';
 
 interface Props {
   children: ReactNode;
@@ -26,6 +27,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught React Error:', error, errorInfo);
+    capturarErroProducao(error, { componentStack: errorInfo.componentStack || '' });
   }
 
   private handleReset = () => {
@@ -49,8 +51,14 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
 
             {this.state.error && (
-              <div className="p-3 bg-stone-50 rounded-xl text-left font-mono text-[11px] text-red-600 overflow-x-auto max-h-32 border border-red-200">
-                {this.state.error.message}
+              <div className="p-3 bg-stone-50 rounded-xl text-left font-mono text-[11px] text-red-600 overflow-x-auto max-h-40 border border-red-200 space-y-2">
+                <div className="font-bold">{this.state.error.message}</div>
+                {this.state.error.stack && (
+                  <details className="text-[10px] text-stone-600">
+                    <summary className="cursor-pointer font-semibold text-stone-700">Ver linha e detalhes técnicos</summary>
+                    <pre className="mt-1 whitespace-pre-wrap break-all">{this.state.error.stack}</pre>
+                  </details>
+                )}
               </div>
             )}
 

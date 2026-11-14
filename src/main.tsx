@@ -2,14 +2,17 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { inicializarMonitoramentoErros } from './lib/errorMonitoring';
 import './index.css';
+
+inicializarMonitoramentoErros();
 
 // Limpa caches antigos do Service Worker (v1..v6) para garantir que o layout e bundles mais recentes sejam sempre exibidos
 if (typeof window !== 'undefined') {
   if ('caches' in window) {
     caches.keys().then((names) => {
       names.forEach((name) => {
-        if (name !== 'estoque-mobile-pwa-v106') {
+        if (name !== 'estoque-mobile-pwa-v110') {
           caches.delete(name).catch(() => {});
         }
       });
