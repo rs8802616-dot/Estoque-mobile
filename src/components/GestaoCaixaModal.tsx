@@ -89,9 +89,15 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
     .filter((v) => v.formaPagamento === 'dinheiro')
     .reduce((acc, v) => acc + (v.valorTotal || 0), 0);
 
-  const totalVendasCartao = vendasConcluidas
-    .filter((v) => v.formaPagamento === 'cartao_credito' || v.formaPagamento === 'cartao_debito')
+  const totalVendasCredito = vendasConcluidas
+    .filter((v) => v.formaPagamento === 'cartao_credito')
     .reduce((acc, v) => acc + (v.valorTotal || 0), 0);
+
+  const totalVendasDebito = vendasConcluidas
+    .filter((v) => v.formaPagamento === 'cartao_debito')
+    .reduce((acc, v) => acc + (v.valorTotal || 0), 0);
+
+  const totalVendasCartao = totalVendasCredito + totalVendasDebito;
 
   const totalVendasPix = vendasConcluidas
     .filter((v) => v.formaPagamento === 'pix')
@@ -105,6 +111,8 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
 
   const saldoDinheiroEmEspecieEsperado =
     (sessaoAtiva?.valorInicialSuprimento || 0) + totalSuprimentos + totalVendasDinheiro - totalSangrias;
+
+  const fmtBRL = (v: number) => `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`;
 
   const handleSubmeterAbertura = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -307,54 +315,181 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
             {/* ABA 1: RESUMO DO TURNO ISOLADO DESTE OPERADOR */}
             {aba === 'status' && (
               <div>
-                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* CABEÇALHO DO TURNO ESTILO PDV */}
+                <div
+                  style={{
+                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                    border: '1px solid #86efac',
+                    padding: '14px 16px',
+                    borderRadius: '12px',
+                    marginBottom: '14px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap',
+                  }}
+                >
                   <div>
-                    <span style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 700, display: 'block' }}>MEU TURNO DE CAIXA ABERTO</span>
-                    <strong style={{ fontSize: '1.05rem', color: '#14532d' }}>{sessaoAtiva.operadorNome}</strong>
-                    <span style={{ fontSize: '0.78rem', color: '#15803d', display: 'block' }}>Aberto às {sessaoAtiva.horaAbertura} em {sessaoAtiva.dataAbertura}</span>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#166534' }}>Faturamento do Turno:</span>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#14532d' }}>R$ {totalFaturadoNesteTurno.toFixed(2)}</div>
-                    <span style={{ fontSize: '0.72rem', color: '#166534' }}>({vendasConcluidas.length} vendas realizadas)</span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat( auto-fit, minmax(140px, 1fr) )', gap: '10px', marginBottom: '16px' }}>
-                  <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>💵 Dinheiro em Vendas</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#16a34a' }}>R$ {totalVendasDinheiro.toFixed(2)}</div>
-                  </div>
-
-                  <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>💳 Cartão Crédito/Débito</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#2563eb' }}>R$ {totalVendasCartao.toFixed(2)}</div>
-                  </div>
-
-                  <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>⚡ Vendas PIX</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0d9488' }}>R$ {totalVendasPix.toFixed(2)}</div>
-                  </div>
-
-                  <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>📖 Vendas no Fiado</span>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#d97706' }}>R$ {totalVendasFiado.toFixed(2)}</div>
-                  </div>
-                </div>
-
-                <div style={{ background: '#f1f5f9', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0f172a', display: 'block' }}>💰 Saldo em Dinheiro Físico Esperado na Gaveta:</span>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                      (Fundo R$ {sessaoAtiva.valorInicialSuprimento.toFixed(2)} + Vendas Dinheiro R$ {totalVendasDinheiro.toFixed(2)} + Suprimentos R$ {totalSuprimentos.toFixed(2)} - Sangrias R$ {totalSangrias.toFixed(2)})
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span
+                        style={{
+                          background: '#16a34a',
+                          color: '#ffffff',
+                          fontSize: '0.68rem',
+                          fontWeight: 800,
+                          padding: '2px 8px',
+                          borderRadius: '999px',
+                          letterSpacing: '0.03em',
+                        }}
+                      >
+                        🟢 CAIXA ABERTO
+                      </span>
+                      <span style={{ fontSize: '0.76rem', color: '#166534', fontWeight: 600 }}>
+                        Troco Inicial: <b>{fmtBRL(sessaoAtiva.valorInicialSuprimento)}</b>
+                      </span>
+                    </div>
+                    <strong style={{ fontSize: '1.08rem', color: '#14532d', display: 'block' }}>{sessaoAtiva.operadorNome}</strong>
+                    <span style={{ fontSize: '0.76rem', color: '#15803d', display: 'block' }}>
+                      Aberto às {sessaoAtiva.horaAbertura} em {sessaoAtiva.dataAbertura}
                     </span>
                   </div>
-                  <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0284c7' }}>R$ {saldoDinheiroEmEspecieEsperado.toFixed(2)}</span>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>Faturamento do Turno</span>
+                    <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#14532d', whiteSpace: 'nowrap' }}>
+                      {fmtBRL(totalFaturadoNesteTurno)}
+                    </div>
+                    <span style={{ fontSize: '0.74rem', color: '#166534' }}>
+                      {vendasConcluidas.length} {vendasConcluidas.length === 1 ? 'venda realizada' : 'vendas realizadas'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* RESUMO POR FORMA DE PAGAMENTO (5 COLUNAS LIMPAS) */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(115px, 1fr))', gap: '8px', marginBottom: '14px' }}>
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>💵 Dinheiro</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#16a34a', marginTop: '3px', whiteSpace: 'nowrap' }}>{fmtBRL(totalVendasDinheiro)}</div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>📱 PIX</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0d9488', marginTop: '3px', whiteSpace: 'nowrap' }}>{fmtBRL(totalVendasPix)}</div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>💳 Crédito</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#2563eb', marginTop: '3px', whiteSpace: 'nowrap' }}>{fmtBRL(totalVendasCredito)}</div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>🏧 Débito</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#4f46e5', marginTop: '3px', whiteSpace: 'nowrap' }}>{fmtBRL(totalVendasDebito)}</div>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>📒 Fiado</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#d97706', marginTop: '3px', whiteSpace: 'nowrap' }}>{fmtBRL(totalVendasFiado)}</div>
+                  </div>
+                </div>
+
+                {/* GAVETA DE DINHEIRO FÍSICO */}
+                <div
+                  style={{
+                    background: '#f8fafc',
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    border: '1px solid #cbd5e1',
+                    marginBottom: '12px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px',
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a', display: 'block' }}>
+                      💰 Saldo Esperado na Gaveta (Dinheiro Físico)
+                    </span>
+                    <span style={{ fontSize: '0.74rem', color: '#64748b', display: 'block', marginTop: '2px' }}>
+                      Abertura {fmtBRL(sessaoAtiva.valorInicialSuprimento)} + Dinheiro {fmtBRL(totalVendasDinheiro)} + Suprimentos {fmtBRL(totalSuprimentos)} − Sangrias {fmtBRL(totalSangrias)}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0284c7', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    {fmtBRL(saldoDinheiroEmEspecieEsperado)}
+                  </span>
+                </div>
+
+                {/* ATALHOS RÁPIDOS DE PDV */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTipoMov('suprimento');
+                      setAba('sangria_suprimento');
+                    }}
+                    style={{
+                      flex: 1,
+                      minWidth: '120px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #bbf7d0',
+                      background: '#f0fdf4',
+                      color: '#15803d',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    📥 + Suprimento
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTipoMov('sangria');
+                      setAba('sangria_suprimento');
+                    }}
+                    style={{
+                      flex: 1,
+                      minWidth: '120px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #fecaca',
+                      background: '#fef2f2',
+                      color: '#b91c1c',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    📤 − Sangria
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAba('fechamento')}
+                    style={{
+                      flex: 1,
+                      minWidth: '120px',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: '#ffffff',
+                      color: '#0f172a',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    🔒 Conferir & Fechar
+                  </button>
                 </div>
 
                 {/* HISTÓRICO DE SANGRIAS E SUPRIMENTOS DO TURNO */}
-                <h4 style={{ fontSize: '0.88rem', margin: '0 0 8px 0', color: '#334155' }}>Histórico de Sangrias e Suprimentos do Meu Turno:</h4>
-                <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '6px', background: '#fff' }}>
+                <h4 style={{ fontSize: '0.84rem', margin: '0 0 6px 0', color: '#334155', fontWeight: 700 }}>
+                  Histórico de Sangrias e Suprimentos do Turno:
+                </h4>
+                <div style={{ maxHeight: '140px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff' }}>
                   {movimentacoes.length === 0 ? (
                     <div style={{ padding: '12px', textAlign: 'center', color: '#94a3b8', fontSize: '0.8rem' }}>
                       Nenhuma sangria ou suprimento registrado neste turno.
@@ -368,8 +503,8 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
                           </strong>
                           <span style={{ color: '#64748b', marginLeft: '6px' }}>({m.descricao})</span>
                         </div>
-                        <div>
-                          <strong>R$ {m.valor.toFixed(2)}</strong>
+                        <div style={{ whiteSpace: 'nowrap' }}>
+                          <strong>{fmtBRL(m.valor)}</strong>
                           <span style={{ fontSize: '0.7rem', color: '#94a3b8', marginLeft: '6px' }}>{m.dataHora.split(' ')[1]}</span>
                         </div>
                       </div>
