@@ -740,6 +740,7 @@ export default function App() {
   const [abaDonaApp, setAbaDonaApp] = useState<'supermercados' | 'banco_dados'>(() => {
     return telaSalvaInicial === 'modal_banco_dados_master' ? 'banco_dados' : 'supermercados';
   });
+  const [modulosLojaExpandidos, setModulosLojaExpandidos] = useState<boolean>(false);
   const [buscaMasterBd, setBuscaMasterBd] = useState<string>('');
   const [filtroMasterOrigem, setFiltroMasterOrigem] = useState<'todos' | 'catalogo' | 'estoque'>('todos');
   const [paginaMasterBd, setPaginaMasterBd] = useState<number>(1);
@@ -9823,44 +9824,37 @@ export default function App() {
                 alignItems: 'center',
                 gap: '8px',
                 flexWrap: 'wrap',
-                background: '#faf5ff',
-                border: '1px solid #e9d5ff',
-                padding: '6px 12px',
-                borderRadius: '12px',
               }}
             >
-              <span style={{ fontSize: '0.78rem', color: '#6b21a8', fontWeight: 700 }}>
-                🔐 Segurança Master: <b style={{ color: '#4c1d95' }}>Dona do Aplicativo</b>
-              </span>
               <button
                 type="button"
                 onClick={() => copiarLinkComFeedback('portal_master', obterLinkPortalMaster())}
                 style={{
-                  background: linkCopiadoFeedback === 'portal_master' ? '#059669' : '#b45309',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '8px',
-                  fontSize: '0.74rem',
-                  fontWeight: 800,
+                  background: linkCopiadoFeedback === 'portal_master' ? '#ecfdf5' : '#f8fafc',
+                  color: linkCopiadoFeedback === 'portal_master' ? '#047857' : '#334155',
+                  border: `1px solid ${linkCopiadoFeedback === 'portal_master' ? '#6ee7b7' : '#cbd5e1'}`,
+                  padding: '7px 12px',
+                  borderRadius: '10px',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
                   cursor: 'pointer',
                 }}
                 title={`Copiar seu Link Secreto Master: ${obterLinkPortalMaster()}`}
               >
                 {linkCopiadoFeedback === 'portal_master'
-                  ? '✓ Link Master Copiado!'
-                  : '👑 Copiar Link Secreto Master'}
+                  ? '✓ Link Master Copiado'
+                  : '🔗 Copiar Link Master'}
               </button>
               <button
                 type="button"
                 onClick={revogarBloqueiosTentativasLogin}
                 style={{
-                  background: '#0284c7',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '8px',
-                  fontSize: '0.74rem',
+                  background: '#f8fafc',
+                  color: '#334155',
+                  border: '1px solid #cbd5e1',
+                  padding: '7px 12px',
+                  borderRadius: '10px',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',
                 }}
@@ -9872,34 +9866,18 @@ export default function App() {
                 type="button"
                 onClick={() => setModalAuditoriaLoginVisivel(true)}
                 style={{
-                  background: '#0f172a',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '8px',
-                  fontSize: '0.74rem',
+                  background: '#f8fafc',
+                  color: '#334155',
+                  border: '1px solid #cbd5e1',
+                  padding: '7px 12px',
+                  borderRadius: '10px',
+                  fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',
                 }}
                 title="Abrir Central de Auditoria de Tentativas de Login"
               >
-                🛡️ Central de Auditoria
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalCredenciaisDonoVisivel(true)}
-                style={{
-                  background: '#9333ea',
-                  color: '#ffffff',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '8px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
-              >
-                🔑 Meu Login & Senha (Dono)
+                🛡️ Auditoria de Login
               </button>
             </div>
           </div>
@@ -10127,16 +10105,12 @@ export default function App() {
                       transition: 'all 0.2s ease',
                       background:
                         regLojaPermissoes.delivery !== false
-                          ? 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)'
-                          : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+                          ? '#f0fdf4'
+                          : '#f8fafc',
                       border:
                         regLojaPermissoes.delivery !== false
-                          ? '2px solid #10b981'
-                          : '2px dashed #f59e0b',
-                      boxShadow:
-                        regLojaPermissoes.delivery !== false
-                          ? '0 4px 14px rgba(16, 185, 129, 0.15)'
-                          : '0 2px 8px rgba(245, 158, 11, 0.1)',
+                          ? '1.5px solid #86efac'
+                          : '1.5px solid #cbd5e1',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
@@ -10145,40 +10119,27 @@ export default function App() {
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                        <span
-                          style={{
-                            background: '#7c3aed',
-                            color: '#ffffff',
-                            fontSize: '0.68rem',
-                            fontWeight: 800,
-                            padding: '3px 9px',
-                            borderRadius: '999px',
-                            letterSpacing: '0.03em',
-                            textTransform: 'uppercase',
-                          }}
-                        >
-                          💎 Extensão do Aplicativo PDV (Cobrada à Parte)
-                        </span>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>🛵 Módulo Delivery & Cardápio Digital</span>
+                        </div>
 
                         <span
                           style={{
-                            background: regLojaPermissoes.delivery !== false ? '#059669' : '#d97706',
-                            color: '#ffffff',
+                            background: regLojaPermissoes.delivery !== false ? '#dcfce7' : '#f1f5f9',
+                            color: regLojaPermissoes.delivery !== false ? '#166534' : '#475569',
+                            border: `1px solid ${regLojaPermissoes.delivery !== false ? '#86efac' : '#cbd5e1'}`,
                             fontSize: '0.72rem',
-                            fontWeight: 800,
-                            padding: '3px 10px',
+                            fontWeight: 700,
+                            padding: '2px 10px',
                             borderRadius: '999px',
                           }}
                         >
-                          {regLojaPermissoes.delivery !== false ? '✅ EXTENSÃO ATIVA' : '🔒 NÃO CONTRATADA'}
+                          {regLojaPermissoes.delivery !== false ? 'Ativa' : 'Desativada'}
                         </span>
                       </div>
 
-                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span>🛵 Módulo Delivery, Cardápio Digital & Motoboy</span>
-                      </div>
-                      <p style={{ fontSize: '0.75rem', color: '#334155', margin: '4px 0 0 0', lineHeight: 1.35 }}>
-                        Libera Cardápio Online do Cliente com Link/QR Code, Painel de Pedidos em Tempo Real, Alerta Sonoro, Impressão Automática e Rastreio de Entregador.
+                      <p style={{ fontSize: '0.76rem', color: '#475569', margin: '0', lineHeight: 1.4 }}>
+                        Cardápio Online com Link/QR Code, Painel de Pedidos em Tempo Real, Alerta Sonoro e Rastreio de Motoboy.
                       </p>
                     </div>
 
@@ -10187,42 +10148,50 @@ export default function App() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        background: 'rgba(255,255,255,0.75)',
+                        background: '#ffffff',
                         padding: '8px 12px',
                         borderRadius: '10px',
-                        border: '1px solid rgba(0,0,0,0.06)',
+                        border: '1px solid #e2e8f0',
                       }}
                     >
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: regLojaPermissoes.delivery !== false ? '#065f46' : '#92400e' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: regLojaPermissoes.delivery !== false ? '#166534' : '#475569' }}>
                         {regLojaPermissoes.delivery !== false
-                          ? '🟢 Cliente contratou a Extensão Delivery (Habilitada)'
-                          : '🔒 Extensão desativada (Apenas PDV & Estoque)'}
+                          ? 'Habilitada para esta loja'
+                          : 'Apenas PDV & Estoque (sem Delivery)'}
                       </span>
                       <input
                         type="checkbox"
                         checked={regLojaPermissoes.delivery !== false}
                         onChange={() => {}}
-                        style={{ width: '20px', height: '20px', accentColor: '#059669', cursor: 'pointer' }}
+                        style={{ width: '18px', height: '18px', accentColor: '#16a34a', cursor: 'pointer' }}
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* QUADRADOS DE PERMISSÃO DOS MÓDULOS DO PDV BASE */}
-                <div style={{ marginTop: '20px', marginBottom: '14px' }}>
+                {/* QUADRADOS DE PERMISSÃO DOS MÓDULOS DO PDV BASE (COLAPSÁVEL PARA REDUZIR POLUIÇÃO VISUAL) */}
+                <div
+                  style={{
+                    marginTop: '18px',
+                    marginBottom: '14px',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '14px',
+                    padding: '12px 14px',
+                  }}
+                >
                   <div
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      marginBottom: '10px',
                       flexWrap: 'wrap',
                       gap: '8px',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <label className="rotulo-campo" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                        📦 Módulos do Sistema Base PDV & Estoque Habilitados:
+                      <label className="rotulo-campo" style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                        📦 Módulos do PDV & Estoque
                       </label>
                       <span
                         style={{
@@ -10235,23 +10204,23 @@ export default function App() {
                           border: '1px solid #bae6fd',
                         }}
                       >
-                        Ativos: {[
+                        {[
                           'caixa', 'gestao_caixa', 'estoque', 'usuarios', 'devedores', 'relatorios',
                           'estorno', 'reimprimir_cupom', 'graficos', 'inteligencia_estoque', 'ocr_ia',
                           'etiquetas', 'balanca', 'alertas', 'alertas_whatsapp', 'baixa_estoque',
                           'catalogo_global', 'exportar_dados', 'manual_ajuda'
-                        ].filter((k) => regLojaPermissoes[k as keyof PermissoesLoja]).length} de 19 módulos
+                        ].filter((k) => regLojaPermissoes[k as keyof PermissoesLoja]).length} de 19 ativos
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <button
                         type="button"
                         style={{
-                          background: '#e0f2fe',
+                          background: '#ffffff',
                           color: '#0284c7',
                           border: '1px solid #bae6fd',
-                          padding: '5px 12px',
+                          padding: '5px 10px',
                           borderRadius: '8px',
                           fontSize: '0.75rem',
                           fontWeight: 700,
@@ -10259,15 +10228,15 @@ export default function App() {
                         }}
                         onClick={() => marcarTodasPermissoesLoja(true)}
                       >
-                        ⚡ Marcar Todos do PDV
+                        Marcar Todos
                       </button>
                       <button
                         type="button"
                         style={{
-                          background: '#f1f5f9',
+                          background: '#ffffff',
                           color: '#64748b',
                           border: '1px solid #cbd5e1',
-                          padding: '5px 12px',
+                          padding: '5px 10px',
                           borderRadius: '8px',
                           fontSize: '0.75rem',
                           fontWeight: 700,
@@ -10275,12 +10244,29 @@ export default function App() {
                         }}
                         onClick={() => marcarTodasPermissoesLoja(false)}
                       >
-                        Limpar PDV
+                        Limpar
+                      </button>
+                      <button
+                        type="button"
+                        style={{
+                          background: modulosLojaExpandidos ? '#0284c7' : '#ffffff',
+                          color: modulosLojaExpandidos ? '#ffffff' : '#0f172a',
+                          border: `1px solid ${modulosLojaExpandidos ? '#0284c7' : '#cbd5e1'}`,
+                          padding: '5px 12px',
+                          borderRadius: '8px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => setModulosLojaExpandidos(!modulosLojaExpandidos)}
+                      >
+                        {modulosLojaExpandidos ? '▲ Ocultar Módulos' : '▼ Personalizar Módulos'}
                       </button>
                     </div>
                   </div>
 
-                  <div className="grid-permissoes">
+                  {modulosLojaExpandidos && (
+                  <div className="grid-permissoes" style={{ marginTop: '12px' }}>
                     {[
                       { key: 'caixa', icon: '🛒', title: 'PDV / Frente de Caixa', desc: 'Permite realizar vendas e registrar saídas no caixa' },
                       { key: 'gestao_caixa', icon: '💵', title: 'Gestão de Caixa & Sangria', desc: 'Abertura de turno, suprimento, sangria e fechamento conferido' },
@@ -10325,6 +10311,7 @@ export default function App() {
                       );
                     })}
                   </div>
+                  )}
                 </div>
 
                 <div className="grupo-botoes" style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>

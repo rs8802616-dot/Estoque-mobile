@@ -1549,12 +1549,12 @@ ${top3 || '- Nenhum produto vendido'}
       style={{ display: 'flex', zIndex: 9999, background: '#FAF7F2' }}
     >
       {/* CABEÇALHO FIXO */}
-      <div className="cabecalho-relatorio" style={{ background: '#141414', borderBottom: '2px solid #292524' }}>
+      <div className="cabecalho-relatorio">
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: 0, fontSize: '0.92rem', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           <span>📈</span>
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>Gráficos & Inteligência ({nomeLoja})</span>
         </h2>
-        <button className="btn-voltar-rel" onClick={onFechar} style={{ flexShrink: 0, padding: '6px 12px', borderRadius: '6px', background: 'rgba(255,255,255,0.15)' }}>
+        <button className="btn-voltar-rel" onClick={onFechar} style={{ flexShrink: 0, padding: '6px 12px', borderRadius: '6px', background: 'rgba(255,255,255,0.18)' }}>
           ✕ Fechar
         </button>
       </div>
@@ -1566,8 +1566,8 @@ ${top3 || '- Nenhum produto vendido'}
           display: 'flex',
           gap: '8px',
           padding: '10px 14px',
-          background: '#FAF7F2',
-          borderBottom: '2px solid #292524',
+          background: '#ffffff',
+          borderBottom: '1px solid #cbd5e1',
           overflowX: 'auto',
           flexShrink: 0,
           whiteSpace: 'nowrap',
