@@ -6210,9 +6210,15 @@ export default function App() {
     let novoEstoque = [...estoque];
 
     for (const itemCar of carrinho) {
-      const idx = novoEstoque.findIndex(
-        (p) => p.codigo === itemCar.codigo && p.validade === itemCar.validade && p.lote === itemCar.lote
+      let idx = novoEstoque.findIndex(
+        (p) =>
+          String(p.codigo || '').trim() === String(itemCar.codigo || '').trim() &&
+          String(p.validade || '').trim() === String(itemCar.validade || '').trim() &&
+          String(p.lote || '').trim() === String(itemCar.lote || '').trim()
       );
+      if (idx < 0) {
+        idx = novoEstoque.findIndex((p) => String(p.codigo || '').trim() === String(itemCar.codigo || '').trim());
+      }
       if (idx >= 0) {
         if (novoEstoque[idx].estoqueIlimitado || novoEstoque[idx].tipoCadastro === 'interno') {
           // Produto interno de produção própria e contínua: não remove o item do estoque
