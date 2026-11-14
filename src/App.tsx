@@ -12442,8 +12442,89 @@ export default function App() {
       {/* STOCK REDUCTION MODAL */}
       <div className="modal" id="modalVenda" style={{ display: modalVendaVisivel ? 'flex' : 'none' }}>
         <div className="modal-conteudo">
-          <div className="cab-modal" id="titulo-modal-baixa">
-            🛒 Baixa de Estoque / Realizar Venda
+          <div
+            className="cab-modal"
+            id="titulo-modal-baixa"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '8px',
+            }}
+          >
+            <span>🛒 Baixa de Estoque / Venda</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {prodAtual && (
+                <>
+                  <button
+                    type="button"
+                    title="Editar Dados do Produto"
+                    onClick={() => {
+                      setModalVendaVisivel(false);
+                      editarProduto(prodAtual.codigo, prodAtual.validade, prodAtual.lote || '');
+                    }}
+                    style={{
+                      background: 'rgba(255,255,255,0.18)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      width: '30px',
+                      height: '30px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    type="button"
+                    title="Excluir Produto"
+                    onClick={() => {
+                      excluirProduto(prodAtual.codigo, prodAtual.validade, prodAtual.lote || '');
+                    }}
+                    style={{
+                      background: 'rgba(239,68,68,0.3)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      width: '30px',
+                      height: '30px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                title="Fechar"
+                onClick={() => setModalVendaVisivel(false)}
+                style={{
+                  background: 'rgba(255,255,255,0.2)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  width: '30px',
+                  height: '30px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                  fontWeight: 800,
+                }}
+              >
+                ✕
+              </button>
+            </div>
           </div>
           {prodAtual && (
             <div className="corpo-modal" id="corpo-venda">
@@ -12598,30 +12679,79 @@ export default function App() {
 
               <div className="grupo-input" style={{ marginTop: '10px' }}>
                 <label className="rotulo-campo">Quantidade para baixa / venda</label>
-                <input
-                  type="number"
-                  id="qtd-baixa"
-                  className="input-modal"
-                  min="1"
-                  max={prodAtual.quantidade}
-                  value={qtdBaixa === '' ? '' : qtdBaixa}
-                  onFocus={(e) => e.target.select()}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === '') {
-                      setQtdBaixa('');
-                      return;
-                    }
-                    const limpo = val.replace(/^0+(?=\d)/, '');
-                    const num = parseInt(limpo, 10);
-                    setQtdBaixa(isNaN(num) ? '' : num);
-                  }}
-                  onBlur={() => {
-                    if (qtdBaixa === '' || Number(qtdBaixa) < 1) {
-                      setQtdBaixa(1);
-                    }
-                  }}
-                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const atual = typeof qtdBaixa === 'number' ? qtdBaixa : parseInt(qtdBaixa, 10) || 1;
+                      setQtdBaixa(Math.max(1, atual - 1));
+                    }}
+                    style={{
+                      width: '44px',
+                      height: '42px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: '#f8fafc',
+                      color: '#0f172a',
+                      fontSize: '1.2rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                    }}
+                    aria-label="Diminuir quantidade"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    id="qtd-baixa"
+                    className="input-modal"
+                    style={{ textAlign: 'center', fontWeight: 700, fontSize: '1rem', margin: 0 }}
+                    min="1"
+                    max={prodAtual.quantidade}
+                    value={qtdBaixa === '' ? '' : qtdBaixa}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '') {
+                        setQtdBaixa('');
+                        return;
+                      }
+                      const limpo = val.replace(/^0+(?=\d)/, '');
+                      const num = parseInt(limpo, 10);
+                      setQtdBaixa(isNaN(num) ? '' : num);
+                    }}
+                    onBlur={() => {
+                      if (qtdBaixa === '' || Number(qtdBaixa) < 1) {
+                        setQtdBaixa(1);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const atual = typeof qtdBaixa === 'number' ? qtdBaixa : parseInt(qtdBaixa, 10) || 1;
+                      const ilimitado = prodAtual.tipoCadastro === 'interno' || prodAtual.estoqueIlimitado;
+                      const maxQtd = ilimitado ? 9999 : Math.max(1, Number(prodAtual.quantidade) || 1);
+                      setQtdBaixa(Math.min(maxQtd, atual + 1));
+                    }}
+                    style={{
+                      width: '44px',
+                      height: '42px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: '#f8fafc',
+                      color: '#0f172a',
+                      fontSize: '1.2rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                    }}
+                    aria-label="Aumentar quantidade"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
               <div className="total-texto">
                 Total: R${' '}
@@ -12713,57 +12843,6 @@ export default function App() {
                     ⚡ Baixar Só Este Item
                   </button>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', width: '100%', marginTop: '4px' }}>
-                  <button
-                    type="button"
-                    className="btn"
-                    style={{
-                      flex: 1,
-                      background: '#f8fafc',
-                      color: '#475569',
-                      border: '1px solid #cbd5e1',
-                      fontWeight: 600,
-                      fontSize: '0.8rem',
-                      padding: '8px',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => {
-                      setModalVendaVisivel(false);
-                      editarProduto(prodAtual.codigo, prodAtual.validade, prodAtual.lote || '');
-                    }}
-                  >
-                    ✏️ Editar Dados
-                  </button>
-                  <button
-                    type="button"
-                    className="btn"
-                    style={{
-                      flex: 1,
-                      background: '#fef2f2',
-                      color: '#dc2626',
-                      border: '1px solid #fca5a5',
-                      fontWeight: 600,
-                      fontSize: '0.8rem',
-                      padding: '8px',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => {
-                      excluirProduto(prodAtual.codigo, prodAtual.validade, prodAtual.lote || '');
-                    }}
-                  >
-                    🗑️ Excluir Produto
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-cancelar"
-                  style={{ width: '100%', marginTop: '2px' }}
-                  onClick={() => setModalVendaVisivel(false)}
-                >
-                  Fechar
-                </button>
               </div>
               <div className="msg" id="msg-venda">
                 {msgVenda}
