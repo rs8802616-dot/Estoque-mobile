@@ -702,8 +702,8 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
             </span>
           </div>
 
-          {/* PÍLULAS HORIZONTAIS PARA NAVEGAÇÃO RÁPIDA APENAS EM TELAS MENORES */}
-          <div className="flex md:hidden" style={{ gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+          {/* PÍLULAS HORIZONTAIS PARA NAVEGAÇÃO RÁPIDA EM TELAS MENORES E DESKTOP */}
+          <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
             {topicosFiltrados.map((topico) => {
               const ativo = topicoAtivo?.id === topico.id;
               return (

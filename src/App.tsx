@@ -9261,7 +9261,7 @@ export default function App() {
 
                     <button
                       className="btn btn-salvar"
-                      style={{ padding: '6px 12px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      style={{ flex: '0 0 auto', width: 'auto', padding: '8px 14px', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                       onClick={() => exportarEstoqueCSV(estoque, nomeSupermercadoAtivo)}
                     >
                       📥 Exportar CSV
@@ -9269,7 +9269,7 @@ export default function App() {
 
                     <button
                       className="btn"
-                      style={{ background: '#4f46e5', color: '#fff', padding: '6px 12px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      style={{ flex: '0 0 auto', width: 'auto', background: '#4f46e5', color: '#fff', padding: '8px 14px', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                       onClick={() => setModalEtiquetasVisivel(true)}
                     >
                       🏷️ Imprimir Etiquetas
@@ -9324,29 +9324,109 @@ export default function App() {
                     </div>
                   );
                 }
-                return lista.map((p, idx) => (
-                  <div className="relatorio-linha-cheia" key={`rel_est_${p.codigo}_${p.validade}_${p.lote}_${idx}`}>
+                return lista.map((p, idx) => {
+                  const fotoItem = obterFotoProduto(p.codigo, p.foto);
+                  const qtdNum = Number(p.quantidade) || 0;
+                  const precoVenda = Number(p.preco_venda || 0);
+                  const precoCusto = Number(p.preco_custo || 0);
+                  const totalLinha = qtdNum * precoVenda;
+                  const vencido = Boolean(p.validade && p.validade < hojeStr);
+                  const diffDias = p.validade
+                    ? Math.ceil((new Date(p.validade).getTime() - new Date(hojeStr).getTime()) / (1000 * 3600 * 24))
+                    : null;
+                  const vencendoLogo = !vencido && diffDias !== null && diffDias >= 0 && diffDias <= 30;
+                  const estoqueBaixo = qtdNum <= 5;
+
+                  return (
                     <div
-                      style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}
-                      onClick={() => {
-                        fecharRelatorio();
-                        abrirVenda(p.codigo, p.validade, p.lote || '');
+                      className="relatorio-linha-cheia"
+                      key={`rel_est_${p.codigo}_${p.validade}_${p.lote}_${idx}`}
+                      style={{
+                        gap: '12px',
+                        alignItems: 'center',
+                        padding: '10px 14px',
+                        borderLeft: vencido
+                          ? '4px solid #dc2626'
+                          : vencendoLogo || estoqueBaixo
+                            ? '4px solid #f59e0b'
+                            : '4px solid #e2e8f0',
                       }}
                     >
-                      <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                        {obterNomeProduto(p.codigo, p.nome)}
-                      </b>
-                      <small style={{ color: 'var(--texto-secundario)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                        Cód: {p.codigo} | Lote: {p.lote || 'N/D'} | Val: {formatarData(p.validade)}
-                      </small>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0, whiteSpace: 'nowrap', marginLeft: '8px' }}>
-                      <span>
-                        Qtd: <b>{p.quantidade} un</b>
-                      </span>
-                      <br />
-                      <span className="preco-destaque">R$ {Number(p.preco_venda || 0).toFixed(2)}</span>
-                      <div className="acoes-relatorio">
+                      {fotoItem ? (
+                        <img
+                          src={fotoItem}
+                          alt={p.nome}
+                          style={{
+                            width: '42px',
+                            height: '42px',
+                            objectFit: 'contain',
+                            borderRadius: '8px',
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            flexShrink: 0,
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: '42px',
+                            height: '42px',
+                            borderRadius: '8px',
+                            background: '#f1f5f9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '18px',
+                            flexShrink: 0,
+                          }}
+                        >
+                          📦
+                        </div>
+                      )}
+
+                      <div
+                        style={{ flex: 1, minWidth: 0, cursor: 'pointer' }}
+                        onClick={() => {
+                          fecharRelatorio();
+                          abrirVenda(p.codigo, p.validade, p.lote || '');
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                            {obterNomeProduto(p.codigo, p.nome)}
+                          </b>
+                          {vencido && (
+                            <span style={{ background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecaca', fontSize: '0.7rem', fontWeight: 800, padding: '1px 7px', borderRadius: '999px' }}>
+                              🚨 Vencido
+                            </span>
+                          )}
+                          {vencendoLogo && (
+                            <span style={{ background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', fontSize: '0.7rem', fontWeight: 800, padding: '1px 7px', borderRadius: '999px' }}>
+                              ⚠️ Vence em {diffDias}d
+                            </span>
+                          )}
+                          {estoqueBaixo && (
+                            <span style={{ background: '#ffedd5', color: '#c2410c', border: '1px solid #fed7aa', fontSize: '0.7rem', fontWeight: 800, padding: '1px 7px', borderRadius: '999px' }}>
+                              📉 Baixo
+                            </span>
+                          )}
+                        </div>
+                        <small style={{ color: 'var(--texto-secundario)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', marginTop: '2px' }}>
+                          Cód: {p.codigo} • Lote: {p.lote || 'N/D'} • Val: {formatarData(p.validade)}
+                          {precoCusto > 0 ? ` • Custo: R$ ${precoCusto.toFixed(2).replace('.', ',')}` : ''}
+                        </small>
+                      </div>
+
+                      <div style={{ textAlign: 'right', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: '0.82rem', color: '#475569' }}>
+                          Qtd: <b style={{ color: estoqueBaixo ? '#c2410c' : '#0f172a' }}>{qtdNum} un</b>
+                          {' • '}
+                          Total: <b style={{ color: '#0f172a' }}>R$ {totalLinha.toFixed(2).replace('.', ',')}</b>
+                        </div>
+                        <span className="preco-destaque">R$ {precoVenda.toFixed(2).replace('.', ',')} / un</span>
+                      </div>
+
+                      <div className="acoes-relatorio" style={{ flexShrink: 0, marginTop: 0 }}>
                         <button
                           className="btn-acao-rel btn-editar-rel"
                           onClick={() => editarProduto(p.codigo, p.validade, p.lote || '')}
@@ -9361,8 +9441,8 @@ export default function App() {
                         </button>
                       </div>
                     </div>
-                  </div>
-                ));
+                  );
+                });
               })()
             }
           </div>
