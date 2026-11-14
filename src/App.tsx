@@ -12752,34 +12752,6 @@ export default function App() {
                     +
                   </button>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>📦 Caixas:</span>
-                  {[6, 12, 24].map((cx) => (
-                    <button
-                      key={cx}
-                      type="button"
-                      onClick={() => {
-                        const atual = typeof qtdBaixa === 'number' ? qtdBaixa : parseInt(qtdBaixa, 10) || 1;
-                        const ilimitado = prodAtual.tipoCadastro === 'interno' || prodAtual.estoqueIlimitado;
-                        const maxQtd = ilimitado ? 9999 : Math.max(1, Number(prodAtual.quantidade) || 1);
-                        const proxima = atual === 1 ? cx : atual + cx;
-                        setQtdBaixa(Math.min(maxQtd, proxima));
-                      }}
-                      style={{
-                        padding: '3px 9px',
-                        borderRadius: '6px',
-                        border: '1px solid #cbd5e1',
-                        background: '#f1f5f9',
-                        color: '#334155',
-                        fontSize: '0.74rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      +{cx} un
-                    </button>
-                  ))}
-                </div>
               </div>
               <div className="total-texto">
                 Total: R${' '}
