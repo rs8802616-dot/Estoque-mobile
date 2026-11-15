@@ -72,7 +72,11 @@ import {
   obterLinksExclusivosLoja,
   obterLinkPortalMaster,
   normalizarSlugLoja,
+  ConfigFiscalLoja,
+  NfceRegistro,
 } from './types';
+import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
+import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
 import {
@@ -956,6 +960,7 @@ export default function App() {
   const [cadPreco, setCadPreco] = useState<string>('');
   const [cadMargemLucro, setCadMargemLucro] = useState<string>('');
   const [modalEntradaNotaVisivel, setModalEntradaNotaVisivel] = useState<boolean>(false);
+  const [modalConfigFiscalVisivel, setModalConfigFiscalVisivel] = useState<boolean>(false);
   const [fotoTemp, setFotoTemp] = useState<string>('');
   const [msgCad, setMsgCad] = useState<React.ReactNode>('');
 
@@ -5581,6 +5586,8 @@ export default function App() {
       quantidadeEntrada: number;
       precoCusto: number;
       precoVenda: number;
+      ncm?: string;
+      uCom?: string;
       produtoExistente?: ItemEstoque;
     }[],
     dadosNF: {
@@ -5609,6 +5616,8 @@ export default function App() {
           quantidade: novaQtd,
           preco_custo: item.precoCusto,
           preco_venda: item.precoVenda > 0 ? item.precoVenda : antigo.preco_venda,
+          ncm: item.ncm || antigo.ncm,
+          unidade_medida: item.uCom || antigo.unidade_medida,
         };
         try {
           await salvarItemEstoqueFirestore(estoqueAtualizado[idx], supermercadoAtual);
@@ -5627,6 +5636,8 @@ export default function App() {
           lote: `NF-${dadosNF.numeroNF || 'ENTRADA'}`,
           categoria: 'Geral',
           tipoCadastro: 'padrao',
+          ncm: item.ncm || undefined,
+          unidade_medida: item.uCom || 'UN',
         };
         estoqueAtualizado.push(novoItem);
         try {
@@ -6262,10 +6273,114 @@ export default function App() {
     salvarCarrinho([]);
   };
 
+  const handleSalvarConfigFiscal = async (configFiscal: ConfigFiscalLoja, cnpjAtualizado?: string) => {
+    const lojaAlvo = listaSupermercados.find((l) => l.id === supermercadoAtual);
+    if (!lojaAlvo) return;
+
+    const lojaAtualizada: Supermercado = {
+      ...lojaAlvo,
+      cnpj: cnpjAtualizado?.trim() ? cnpjAtualizado.trim() : lojaAlvo.cnpj,
+      configFiscal,
+    };
+
+    const novaLista = listaSupermercados.map((l) => (l.id === lojaAtualizada.id ? lojaAtualizada : l));
+    setListaSupermercados(novaLista);
+    safeLocalStorageSet('lista_supermercados_sistema', JSON.stringify(novaLista));
+    try {
+      await salvarSupermercadoFirestore(lojaAtualizada);
+    } catch (e) {
+      console.warn('Erro ao salvar configFiscal no Firestore:', e);
+    }
+    registrarLogAuditoria(
+      'Configuração Fiscal Atualizada',
+      `NFC-e (${configFiscal.ambiente}) ${configFiscal.habilitado ? 'habilitada' : 'desativada'} na loja ${lojaAtualizada.nome}`
+    );
+  };
+
+  const atualizarNfceNaVenda = (vendaAlvo: Venda, nfceRegistro: NfceRegistro, cpfNaNota?: string) => {
+    const vendaAtualizada: Venda = {
+      ...vendaAlvo,
+      cpfNaNota: cpfNaNota ?? vendaAlvo.cpfNaNota,
+      nfce: nfceRegistro,
+    };
+
+    setVendas((prev) => {
+      const prox = prev.map((v) => (v.id === vendaAlvo.id ? vendaAtualizada : v));
+      safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(prox));
+      return prox;
+    });
+    setVendaCupomVer((prev) => (prev && prev.id === vendaAlvo.id ? vendaAtualizada : prev));
+
+    if (navigator.onLine) {
+      salvarVendaFirestore(vendaAtualizada).catch(() => {});
+    }
+    return vendaAtualizada;
+  };
+
+  const handleEmitirNfceParaVenda = async (vendaAlvo: Venda, cpfNaNota?: string) => {
+    const lojaAlvo = listaSupermercados.find((l) => l.id === supermercadoAtual);
+    if (!lojaAlvo) return;
+
+    try {
+      const res = await emitirNfceVenda(vendaAlvo, lojaAlvo, estoque, cpfNaNota);
+      const nfceRegistro: NfceRegistro = {
+        ref: res.ref || vendaAlvo.nfce?.ref || `pdv_${lojaAlvo.id}_${vendaAlvo.id}`,
+        status: res.status || (res.sucesso ? 'processando_autorizacao' : 'erro_autorizacao'),
+        ambiente: res.ambiente || lojaAlvo.configFiscal?.ambiente || 'homologacao',
+        numero: res.numero,
+        serie: res.serie,
+        chave: res.chave,
+        danfeUrl: res.danfeUrl,
+        xmlUrl: res.xmlUrl,
+        qrcodeUrl: res.qrcodeUrl,
+        mensagemSefaz: res.mensagemSefaz || res.erro,
+        emitidoEm: new Date().toISOString(),
+      };
+
+      atualizarNfceNaVenda(vendaAlvo, nfceRegistro, cpfNaNota);
+    } catch (err: any) {
+      atualizarNfceNaVenda(
+        vendaAlvo,
+        {
+          ref: vendaAlvo.nfce?.ref || `pdv_${lojaAlvo.id}_${vendaAlvo.id}`,
+          status: 'erro_autorizacao',
+          ambiente: lojaAlvo.configFiscal?.ambiente || 'homologacao',
+          mensagemSefaz: err?.message || 'Erro ao comunicar com /api/nfce.',
+          emitidoEm: new Date().toISOString(),
+        },
+        cpfNaNota
+      );
+    }
+  };
+
+  const handleConsultarNfceParaVenda = async (vendaAlvo: Venda) => {
+    const lojaAlvo = listaSupermercados.find((l) => l.id === supermercadoAtual);
+    if (!lojaAlvo || !vendaAlvo.nfce?.ref) return;
+
+    try {
+      const res = await consultarNfceVenda(vendaAlvo.nfce.ref, lojaAlvo);
+      const nfceAtualizado: NfceRegistro = {
+        ...vendaAlvo.nfce,
+        status: res.status || vendaAlvo.nfce.status,
+        numero: res.numero || vendaAlvo.nfce.numero,
+        serie: res.serie || vendaAlvo.nfce.serie,
+        chave: res.chave || vendaAlvo.nfce.chave,
+        danfeUrl: res.danfeUrl || vendaAlvo.nfce.danfeUrl,
+        xmlUrl: res.xmlUrl || vendaAlvo.nfce.xmlUrl,
+        qrcodeUrl: res.qrcodeUrl || vendaAlvo.nfce.qrcodeUrl,
+        mensagemSefaz: res.mensagemSefaz || res.erro,
+      };
+      atualizarNfceNaVenda(vendaAlvo, nfceAtualizado);
+    } catch (e) {
+      console.warn('Erro ao consultar NFC-e:', e);
+    }
+  };
+
   // FINALIZAR VENDA COMPLETA DO CARRINHO (MÚLTIPLOS PRODUTOS DE UMA VEZ)
   const finalizarVendaCarrinho = (
     formaPagamentoVenda: 'dinheiro' | 'cartao_credito' | 'cartao_debito' | 'pix' | 'fiado',
-    clienteFiadoIdEscolhido?: string
+    clienteFiadoIdEscolhido?: string,
+    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string }
   ) => {
     if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
       alert('⚠️ Caixa fechado! Abra o turno de caixa antes de concluir a venda.');
@@ -6373,6 +6488,7 @@ export default function App() {
       valorTotal: valorTotalCarrinho,
       formaPagamento: formaPagamentoVenda,
       status: 'concluida',
+      cpfNaNota: opcoesFiscais?.cpfNaNota,
     };
 
     // 6. Atualizar Caderneta de Fiado caso aplicável
@@ -6436,6 +6552,10 @@ export default function App() {
 
     setModalCarrinhoVisivel(false);
     setVendaCupomVer(novaVenda);
+
+    if (opcoesFiscais?.emitirNfce) {
+      handleEmitirNfceParaVenda(novaVenda, opcoesFiscais.cpfNaNota);
+    }
   };
 
   // Sales Reversal (Estorno) Handler
@@ -7991,7 +8111,23 @@ export default function App() {
                     </div>
                   )}
 
-                  {perfilAtivo === 'dona_app' && (
+                  {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja' || temPermissaoOperador('gerenciar_equipe', 'usuarios')) && (
+                  <div
+                    className="sidebar-item"
+                    style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
+                    onClick={() => {
+                      setModalConfigFiscalVisivel(true);
+                      fecharMenu();
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                      <span>Configuração Fiscal (NFC-e / Focus)</span>
+                    </span>
+                  </div>
+                )}
+
+                {perfilAtivo === 'dona_app' && (
                     <div
                       style={{
                         padding: '10px 14px',
@@ -8032,7 +8168,23 @@ export default function App() {
                     </div>
                   )}
 
-                  {perfilAtivo === 'dona_app' && (
+                  {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja' || temPermissaoOperador('gerenciar_equipe', 'usuarios')) && (
+                  <div
+                    className="sidebar-item"
+                    style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
+                    onClick={() => {
+                      setModalConfigFiscalVisivel(true);
+                      fecharMenu();
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                      <span>Configuração Fiscal (NFC-e / Focus)</span>
+                    </span>
+                  </div>
+                )}
+
+                {perfilAtivo === 'dona_app' && (
                     <div
                       className="sidebar-item"
                       onClick={() => {
@@ -8419,6 +8571,22 @@ export default function App() {
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Users size={15} style={{ color: '#475569', flexShrink: 0 }} />
                       <span>Caixas & Permissões</span>
+                    </span>
+                  </div>
+                )}
+
+                {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja' || temPermissaoOperador('gerenciar_equipe', 'usuarios')) && (
+                  <div
+                    className="sidebar-item"
+                    style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
+                    onClick={() => {
+                      setModalConfigFiscalVisivel(true);
+                      fecharMenu();
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                      <span>Configuração Fiscal (NFC-e / Focus)</span>
                     </span>
                   </div>
                 )}
@@ -9152,6 +9320,9 @@ export default function App() {
                           obterFotoProduto={obterFotoProduto}
                           onAbrirLeitorCameraContinuo={abrirLeitorCarrinho}
                           ultimoItemBipadoToast={ultimoItemBipadoToast}
+                          nfceHabilitada={Boolean(lojaAtualObj?.configFiscal?.habilitado)}
+                          nfceAutoPadrao={Boolean(lojaAtualObj?.configFiscal?.emitirAutomaticoNoPdv)}
+                          nfceAmbiente={lojaAtualObj?.configFiscal?.ambiente || 'homologacao'}
                         />
                       ) : (
                         <CaixaDeliveryPanel
@@ -13329,6 +13500,16 @@ export default function App() {
         onFechar={() => setVendaCupomVer(null)}
         venda={vendaCupomVer}
         loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
+        onEmitirNfce={handleEmitirNfceParaVenda}
+        onConsultarNfce={handleConsultarNfceParaVenda}
+      />
+
+      {/* MODAL DE CONFIGURAÇÃO FISCAL (NFC-E / FOCUS NFE) */}
+      <ConfiguracaoFiscalModal
+        visivel={modalConfigFiscalVisivel}
+        onFechar={() => setModalConfigFiscalVisivel(false)}
+        loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
+        onSalvarConfigFiscal={handleSalvarConfigFiscal}
       />
 
       {/* MODAL DE IMPRESSÃO DE ETIQUETAS DE PRATELEIRA */}

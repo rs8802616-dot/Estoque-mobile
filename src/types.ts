@@ -9,6 +9,10 @@ export interface ProdutoCatalogo {
   foto_url?: string;
   descricao?: string;
   ncm?: string;
+  cfop?: string;
+  csosn?: string;
+  cest?: string;
+  origem_fiscal?: string;
   preco?: number;
   preco_custo?: number;
   preco_venda?: number;
@@ -34,6 +38,12 @@ export interface ItemEstoque {
   tipoCadastro?: 'padrao' | 'interno'; // 'interno' para produtos de adega/balcão sem código de barras (espetinhos, doses, etc)
   estoqueIlimitado?: boolean; // Se true, não tem limite de quantidade, sempre permite vender/dar baixa
   exclusivoLoja?: boolean; // Se true, não vai para o catálogo global compartilhado, fica 100% restrito à adega
+  ncm?: string;
+  cfop?: string;
+  csosn?: string;
+  cest?: string;
+  unidade_medida?: string;
+  origem_fiscal?: string;
 }
 
 export interface PermissoesLoja {
@@ -122,6 +132,48 @@ export interface TaxaBairro {
   taxa?: number;
 }
 
+export interface ConfigFiscalLoja {
+  habilitado: boolean;
+  ambiente: 'homologacao' | 'producao';
+  tokenFocusNfe?: string;
+  razaoSocial?: string;
+  nomeFantasia?: string;
+  inscricaoEstadual?: string;
+  regimeTributario?: '1' | '2' | '3' | '4'; // 1=Simples Nacional, 2=Simples Excesso, 3=Regime Normal, 4=MEI
+  cep?: string;
+  logradouro?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  municipio?: string;
+  codigoMunicipioIbge?: string;
+  uf?: string;
+  serieNfce?: number;
+  proximoNumeroNfce?: number;
+  idCsc?: string;
+  codigoCsc?: string;
+  emitirAutomaticoNoPdv?: boolean;
+  ncmPadrao?: string;
+  cfopPadrao?: string;
+  csosnPadrao?: string;
+  unidadePadrao?: string;
+  certificadoA1ConfiguradoNaFocus?: boolean;
+}
+
+export interface NfceRegistro {
+  ref: string;
+  status: 'processando_autorizacao' | 'autorizado' | 'erro_autorizacao' | 'cancelado';
+  ambiente: 'homologacao' | 'producao';
+  numero?: string;
+  serie?: string;
+  chave?: string;
+  danfeUrl?: string;
+  xmlUrl?: string;
+  qrcodeUrl?: string;
+  mensagemSefaz?: string;
+  emitidoEm?: string;
+}
+
 export interface Supermercado {
   id: string;
   nome: string;
@@ -150,6 +202,7 @@ export interface Supermercado {
   token_garcom?: string;       // Token secreto exclusivo do Garçom no salão
   token_cozinha?: string;      // Token secreto exclusivo da Cozinha (KDS)
   token_caixa?: string;        // Token secreto exclusivo da Operação do Caixa e Fechamento
+  configFiscal?: ConfigFiscalLoja;
 }
 
 export interface SessaoUsuario {
@@ -233,6 +286,8 @@ export interface Venda {
   origem?: 'balcao' | 'delivery';
   taxaEntrega?: number;
   pedidoDeliveryId?: string;
+  cpfNaNota?: string;
+  nfce?: NfceRegistro;
 }
 
 export interface CompraFiadoItem {

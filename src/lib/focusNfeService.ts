@@ -1,0 +1,174 @@
+import { ConfigFiscalLoja, ItemEstoque, NfceRegistro, Supermercado, Venda } from '../types';
+
+export interface ProntidaoFiscal {
+  pronto: boolean;
+  habilitado: boolean;
+  pendencias: string[];
+}
+
+export interface RespostaNfceApi {
+  sucesso: boolean;
+  ref?: string;
+  ambiente?: 'homologacao' | 'producao';
+  status?: NfceRegistro['status'];
+  numero?: string;
+  serie?: string;
+  chave?: string;
+  danfeUrl?: string;
+  xmlUrl?: string;
+  qrcodeUrl?: string;
+  mensagemSefaz?: string;
+  mensagem?: string;
+  aviso?: string;
+  erro?: string;
+}
+
+export function validarProntidaoFiscal(loja?: Supermercado | null): ProntidaoFiscal {
+  if (!loja) {
+    return { pronto: false, habilitado: false, pendencias: ['Loja não identificada'] };
+  }
+
+  const cfg = loja.configFiscal;
+  const habilitado = Boolean(cfg?.habilitado);
+  const pendencias: string[] = [];
+
+  const cnpjLimpo = String(loja.cnpj || '').replace(/\D/g, '');
+  if (cnpjLimpo.length !== 14) pendencias.push('CNPJ da loja (14 dígitos)');
+  if (!cfg?.razaoSocial?.trim()) pendencias.push('Razão Social');
+  if (!cfg?.inscricaoEstadual?.trim()) pendencias.push('Inscrição Estadual (IE)');
+  if (!cfg?.logradouro?.trim() || !cfg?.municipio?.trim() || !cfg?.uf?.trim()) {
+    pendencias.push('Endereço fiscal (Logradouro, Município e UF)');
+  }
+  if (!cfg?.tokenFocusNfe?.trim()) pendencias.push('Token da API Focus NFe');
+  if (!cfg?.idCsc?.trim() || !cfg?.codigoCsc?.trim()) pendencias.push('CSC e ID do CSC (SEFAZ)');
+
+  return {
+    pronto: habilitado && pendencias.length === 0,
+    habilitado,
+    pendencias,
+  };
+}
+
+export async function testarConexaoFocusNfe(
+  cnpj: string,
+  configFiscal: Partial<ConfigFiscalLoja>
+): Promise<RespostaNfceApi> {
+  const resp = await fetch('/api/nfce', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      acao: 'testar_conexao',
+      ambiente: configFiscal.ambiente || 'homologacao',
+      tokenFocusNfe: configFiscal.tokenFocusNfe || '',
+      cnpj,
+    }),
+  });
+  return resp.json();
+}
+
+export async function emitirNfceVenda(
+  venda: Venda,
+  loja: Supermercado,
+  estoqueLoja: ItemEstoque[],
+  cpfNaNota?: string
+): Promise<RespostaNfceApi> {
+  const cfg = loja.configFiscal;
+  if (!cfg?.habilitado) {
+    return {
+      sucesso: false,
+      erro: 'Emissão fiscal (NFC-e) não está ativada nas Configurações Fiscais desta loja.',
+    };
+  }
+
+  const itensEnriquecidos = venda.itens.map((item) => {
+    const prodEstoque = estoqueLoja.find(
+      (p) => p.codigo === item.codigo || p.codigo_barras === item.codigo
+    );
+    return {
+      ...item,
+      ncm: prodEstoque?.ncm || cfg.ncmPadrao || '21069090',
+      cfop: prodEstoque?.cfop || cfg.cfopPadrao || '5102',
+      csosn: prodEstoque?.csosn || cfg.csosnPadrao || '102',
+      cest: prodEstoque?.cest || undefined,
+      unidade_medida: prodEstoque?.unidade_medida || cfg.unidadePadrao || 'UN',
+      origem_fiscal: prodEstoque?.origem_fiscal || '0',
+    };
+  });
+
+  const ref = venda.nfce?.ref || `pdv_${loja.id}_${venda.id}_${Date.now()}`;
+
+  const resp = await fetch('/api/nfce', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      acao: 'emitir',
+      ref,
+      ambiente: cfg.ambiente || 'homologacao',
+      tokenFocusNfe: cfg.tokenFocusNfe || '',
+      cpfNaNota: cpfNaNota ?? venda.cpfNaNota ?? '',
+      emitente: {
+        cnpj: loja.cnpj,
+        razaoSocial: cfg.razaoSocial || loja.nome,
+        nomeFantasia: cfg.nomeFantasia || loja.nome,
+        inscricaoEstadual: cfg.inscricaoEstadual || '',
+        regimeTributario: cfg.regimeTributario || '1',
+        cep: cfg.cep || '',
+        logradouro: cfg.logradouro || loja.endereco || '',
+        numero: cfg.numero || 'S/N',
+        bairro: cfg.bairro || '',
+        municipio: cfg.municipio || loja.cidade || '',
+        uf: cfg.uf || '',
+      },
+      padroes: {
+        ncmPadrao: cfg.ncmPadrao || '21069090',
+        cfopPadrao: cfg.cfopPadrao || '5102',
+        csosnPadrao: cfg.csosnPadrao || '102',
+        unidadePadrao: cfg.unidadePadrao || 'UN',
+      },
+      venda: {
+        ...venda,
+        itens: itensEnriquecidos,
+      },
+    }),
+  });
+
+  return resp.json();
+}
+
+export async function consultarNfceVenda(
+  ref: string,
+  loja: Supermercado
+): Promise<RespostaNfceApi> {
+  const cfg = loja.configFiscal;
+  const resp = await fetch('/api/nfce', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      acao: 'consultar',
+      ref,
+      ambiente: cfg?.ambiente || 'homologacao',
+      tokenFocusNfe: cfg?.tokenFocusNfe || '',
+    }),
+  });
+  return resp.json();
+}
+
+export async function cancelarNfceVenda(
+  ref: string,
+  justificativa: string,
+  loja: Supermercado
+): Promise<RespostaNfceApi> {
+  const cfg = loja.configFiscal;
+  const resp = await fetch('/api/nfce', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      acao: 'cancelar',
+      ref,
+      justificativa,
+      ambiente: cfg?.ambiente || 'homologacao',
+      tokenFocusNfe: cfg?.tokenFocusNfe || '',
+    }),
+  });
+  return resp.json();
+}

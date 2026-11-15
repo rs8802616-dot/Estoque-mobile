@@ -8,7 +8,11 @@ interface CaixaPdvLateralPanelProps {
   onAlterarQuantidade: (itemId: string, novaQtd: number) => void;
   onRemoverItem: (itemId: string) => void;
   onLimparCarrinho: () => void;
-  onFinalizarVenda: (formaPagamento: FormaPagamentoPdv, clienteFiadoId?: string) => void;
+  onFinalizarVenda: (
+    formaPagamento: FormaPagamentoPdv,
+    clienteFiadoId?: string,
+    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string }
+  ) => void;
   clientesDevedores: ClienteDevedor[];
   onAbrirCadastroCliente: () => void;
   sessaoCaixaAberta: boolean;
@@ -16,6 +20,9 @@ interface CaixaPdvLateralPanelProps {
   obterFotoProduto?: (codigo: string) => string | undefined;
   onAbrirLeitorCameraContinuo?: () => void;
   ultimoItemBipadoToast?: string | null;
+  nfceHabilitada?: boolean;
+  nfceAutoPadrao?: boolean;
+  nfceAmbiente?: 'homologacao' | 'producao';
 }
 
 const FORMAS_PAGAMENTO: { id: FormaPagamentoPdv; label: string; icon: string }[] = [
@@ -39,12 +46,21 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
   obterFotoProduto,
   onAbrirLeitorCameraContinuo,
   ultimoItemBipadoToast,
+  nfceHabilitada = false,
+  nfceAutoPadrao = false,
+  nfceAmbiente = 'homologacao',
 }) => {
   const [formaPagamento, setFormaPagamento] = useState<FormaPagamentoPdv>('pix');
   const [clienteFiadoId, setClienteFiadoId] = useState<string>('');
   const [buscaClienteFiado, setBuscaClienteFiado] = useState<string>('');
   const [listaFiadoAberta, setListaFiadoAberta] = useState<boolean>(false);
   const [valorRecebidoDinheiro, setValorRecebidoDinheiro] = useState<string>('');
+  const [emitirNfce, setEmitirNfce] = useState<boolean>(nfceAutoPadrao);
+  const [cpfNaNota, setCpfNaNota] = useState<string>('');
+
+  React.useEffect(() => {
+    setEmitirNfce(nfceAutoPadrao);
+  }, [nfceAutoPadrao]);
 
   const clienteFiadoSelecionado = useMemo(
     () => clientesDevedores.find((c) => c.id === clienteFiadoId) || null,
@@ -88,8 +104,13 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
       return;
     }
     if (!podeFinalizar) return;
-    onFinalizarVenda(formaPagamento, formaPagamento === 'fiado' ? clienteFiadoId : undefined);
+    onFinalizarVenda(
+      formaPagamento,
+      formaPagamento === 'fiado' ? clienteFiadoId : undefined,
+      nfceHabilitada ? { emitirNfce, cpfNaNota: cpfNaNota.trim() || undefined } : undefined
+    );
     setValorRecebidoDinheiro('');
+    setCpfNaNota('');
   };
 
   return (
@@ -645,6 +666,63 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
                 + Cliente
               </button>
             </div>
+          </div>
+        )}
+
+        {/* OPÇÃO DE EMISSÃO FISCAL (NFC-E FOCUS NFE) */}
+        {nfceHabilitada && carrinho.length > 0 && (
+          <div
+            style={{
+              background: emitirNfce ? '#eff6ff' : '#f8fafc',
+              border: `1px solid ${emitirNfce ? '#93c5fd' : '#e2e8f0'}`,
+              borderRadius: '10px',
+              padding: '8px 10px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '7px', cursor: 'pointer', fontSize: '12px', fontWeight: 700, color: '#1e3a8a' }}>
+                <input
+                  type="checkbox"
+                  checked={emitirNfce}
+                  onChange={(e) => setEmitirNfce(e.target.checked)}
+                  style={{ width: '15px', height: '15px', accentColor: '#2563eb' }}
+                />
+                <span>🧾 Emitir Cupom Fiscal (NFC-e)</span>
+              </label>
+              <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  padding: '2px 6px',
+                  borderRadius: '999px',
+                  background: nfceAmbiente === 'producao' ? '#dcfce7' : '#fef3c7',
+                  color: nfceAmbiente === 'producao' ? '#166534' : '#92400e',
+                }}
+              >
+                {nfceAmbiente === 'producao' ? 'PROD' : 'HOMOLOG'}
+              </span>
+            </div>
+            {emitirNfce && (
+              <input
+                type="text"
+                value={cpfNaNota}
+                onChange={(e) => setCpfNaNota(e.target.value)}
+                placeholder="CPF ou CNPJ na nota (opcional)"
+                style={{
+                  width: '100%',
+                  padding: '6px 9px',
+                  borderRadius: '7px',
+                  border: '1px solid #bfdbfe',
+                  background: '#ffffff',
+                  fontSize: '11.5px',
+                  color: '#0f172a',
+                  boxSizing: 'border-box',
+                }}
+              />
+            )}
           </div>
         )}
 

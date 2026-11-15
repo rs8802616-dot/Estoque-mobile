@@ -42,7 +42,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 | **OCR & Leitura de Notas** | Tesseract.js + PDF.js + Gemini (`@google/genai`) | Leitura de NF-e, cupons e lotes via cliente e rota serverless `api/ocr-lote.js` |
 | **Backend/Servidor** | Node.js + Express (`server.ts`) & API Vercel (`api/`) | Porta 3000 em dev/prod e funções serverless para consulta externa e OCR |
 | **Testes Automatizados** | Node Test Runner (`tsx --test tests/*.test.ts`) | Validação de regras centrais e segurança |
-| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v144`) |
+| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v145`) |
 
 ---
 
@@ -61,9 +61,10 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 ├── api/                            # Rotas serverless (Vercel / API)
 │   ├── buscar-produtos-externos.js
 │   ├── consultar-produto-codigo.js
+│   ├── nfce.js                     # Proxy seguro Focus NFe API v2 (NFC-e Modelo 65)
 │   └── ocr-lote.js                 # Rota OCR de lote/validade
 ├── public/
-│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v144)
+│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v145)
 ├── tests/
 │   └── core.test.ts                # Testes automatizados do núcleo do sistema
 ├── src/
@@ -80,6 +81,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 │   │   ├── CarrinhoVendaModal.tsx
 │   │   ├── CentralRelatoriosModal.tsx
 │   │   ├── CentroNotificacoesModal.tsx
+│   │   ├── ConfiguracaoFiscalModal.tsx
 │   │   ├── ConsultaProdutosModal.tsx
 │   │   ├── CupomVendaModal.tsx
 │   │   ├── CustomerDeliveryView.tsx
@@ -113,6 +115,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 │   │   ├── exportUtils.ts
 │   │   ├── firebase.ts             # Firebase + persistentSingleTabManager
 │   │   ├── firestoreSync.ts        # Sincronização tempo real e preservação de firestoreDocId
+│   │   ├── focusNfeService.ts      # Validação fiscal, emissão, consulta e cancelamento NFC-e
 │   │   ├── imageCompressor.ts
 │   │   ├── imageIndexedDB.ts
 │   │   ├── mascaras.ts
@@ -160,6 +163,20 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 ---
 
 ## 5. Histórico de Alterações (Changelog)
+
+### [2026-11-15 - Versão 145 - Integração Completa de Configuração e Emissão Fiscal NFC-e (Focus NFe)]
+- **Rota Serverless Segura (`api/nfce.js`) & Serviço Fiscal (`src/lib/focusNfeService.ts`):**
+  - Implementado proxy serverless `/api/nfce` para comunicação direta com a **Focus NFe API v2** (`/v2/nfce`) nos ambientes de **Homologação** e **Produção**, suportando ações `testar_conexao`, `emitir`, `consultar` e `cancelar`.
+  - Mapeamento automático de formas de pagamento do PDV para códigos SEFAZ (`01` Dinheiro, `03` Crédito, `04` Débito, `05` Fiado, `17` PIX) e suporte a `CPF/CNPJ na nota`.
+- **Painel de Configuração Fiscal por Loja (`src/components/ConfiguracaoFiscalModal.tsx`):**
+  - Acessível no menu lateral em **Configurações & Equipe → `Configuração Fiscal (NFC-e / Focus)`**.
+  - Checklist em tempo real de prontidão fiscal (CNPJ, Razão Social, Inscrição Estadual, Endereço Fiscal, Token Focus NFe, CSC/ID do CSC).
+  - Cadastro de **Dados do Emitente**, **Regime Tributário (CRT: Simples Nacional / MEI / Normal)**, **Série/Número NFC-e**, **Padrões Tributários de Fallback** (`NCM`, `CFOP 5102/5405`, `CSOSN 102/500`, `Unidade`) e botão **`Testar Conexão Focus NFe`**.
+- **Emissão Direta no Ato da Venda (`CaixaPdvLateralPanel.tsx`, `CupomVendaModal.tsx`, `App.tsx`, `types.ts`):**
+  - Adicionados tipos `ConfigFiscalLoja`, `NfceRegistro` e campos fiscais (`ncm`, `cfop`, `csosn`, `cest`, `unidade_medida`, `origem_fiscal`) em `src/types.ts`, com preservação automática de `ncm` e `unidade_medida` na importação de XML (`handleConfirmarEntradaNotaFiscal`).
+  - No painel lateral do PDV, quando a loja habilita NFC-e, exibe checkbox **`🧾 Emitir Cupom Fiscal (NFC-e)`** e campo opcional **`CPF/CNPJ na nota`**.
+  - No `CupomVendaModal.tsx`, exibe status em tempo real da NFC-e (Autorizada com chave de acesso + link direto para **DANFE NFC-e SEFAZ** e **XML**, Processando com botão atualizar, ou botão **Emitir NFC-e Agora**).
+- **Atualização de Cache PWA:** Cache do Service Worker atualizado para `estoque-mobile-pwa-v145` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-11-15 - Versão 144 - Ajuste de Responsividade Mobile no Modal de Pesquisa SI5 Global]
 - **Correção de Layout Mobile (`src/components/ModalPesquisaCatalogo.tsx`):**

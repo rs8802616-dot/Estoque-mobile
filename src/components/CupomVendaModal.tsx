@@ -7,6 +7,8 @@ interface CupomVendaModalProps {
   onFechar: () => void;
   venda: Venda | null;
   loja: Supermercado | null;
+  onEmitirNfce?: (venda: Venda, cpfNaNota?: string) => Promise<void> | void;
+  onConsultarNfce?: (venda: Venda) => Promise<void> | void;
 }
 
 export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
@@ -14,8 +16,12 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
   onFechar,
   venda,
   loja,
+  onEmitirNfce,
+  onConsultarNfce,
 }) => {
   const [larguraBobina, setLarguraBobina] = useState<'80mm' | '58mm'>('80mm');
+  const [cpfInput, setCpfInput] = useState<string>('');
+  const [processandoFiscal, setProcessandoFiscal] = useState<boolean>(false);
 
   if (!visivel || !venda) return null;
 
@@ -239,6 +245,184 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
             </div>
           </div>
         </div>
+
+        {/* PAINEL FISCAL NFC-E (FOCUS NFE) */}
+        {loja?.configFiscal?.habilitado && (
+          <div
+            className="no-print"
+            style={{
+              marginTop: '14px',
+              padding: '12px',
+              borderRadius: '10px',
+              border: `1px solid ${
+                venda.nfce?.status === 'autorizado'
+                  ? '#86efac'
+                  : venda.nfce?.status === 'erro_autorizacao'
+                    ? '#fca5a5'
+                    : '#bfdbfe'
+              }`,
+              background:
+                venda.nfce?.status === 'autorizado'
+                  ? '#f0fdf4'
+                  : venda.nfce?.status === 'erro_autorizacao'
+                    ? '#fef2f2'
+                    : '#eff6ff',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a' }}>
+                🧾 Cupom Fiscal Eletrônico (NFC-e)
+              </span>
+              <span
+                style={{
+                  fontSize: '0.68rem',
+                  fontWeight: 800,
+                  padding: '2px 7px',
+                  borderRadius: '999px',
+                  background: loja.configFiscal.ambiente === 'producao' ? '#dcfce7' : '#fef3c7',
+                  color: loja.configFiscal.ambiente === 'producao' ? '#166534' : '#92400e',
+                }}
+              >
+                {loja.configFiscal.ambiente === 'producao' ? 'PRODUÇÃO' : 'HOMOLOGAÇÃO'}
+              </span>
+            </div>
+
+            {venda.nfce?.status === 'autorizado' ? (
+              <div style={{ fontSize: '0.76rem', color: '#166534', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div>
+                  ✅ <b>NFC-e Autorizada</b>
+                  {venda.nfce.numero ? ` • Nº ${venda.nfce.numero}` : ''}
+                  {venda.nfce.serie ? ` (Série ${venda.nfce.serie})` : ''}
+                </div>
+                {venda.nfce.chave && (
+                  <div style={{ fontSize: '0.68rem', fontFamily: 'monospace', wordBreak: 'break-all', color: '#334155' }}>
+                    Chave: {venda.nfce.chave}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '2px' }}>
+                  {venda.nfce.danfeUrl && (
+                    <a
+                      href={venda.nfce.danfeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        flex: 1,
+                        textAlign: 'center',
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        background: '#16a34a',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                        fontSize: '0.78rem',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      🖨️ Abrir DANFE NFC-e (SEFAZ)
+                    </a>
+                  )}
+                  {venda.nfce.xmlUrl && (
+                    <a
+                      href={venda.nfce.xmlUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        background: '#ffffff',
+                        border: '1px solid #86efac',
+                        color: '#166534',
+                        fontWeight: 700,
+                        fontSize: '0.78rem',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      📄 XML
+                    </a>
+                  )}
+                </div>
+              </div>
+            ) : venda.nfce?.status === 'processando_autorizacao' ? (
+              <div style={{ fontSize: '0.76rem', color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <span>⏳ Processando autorização na SEFAZ...</span>
+                {onConsultarNfce && (
+                  <button
+                    type="button"
+                    disabled={processandoFiscal}
+                    onClick={async () => {
+                      setProcessandoFiscal(true);
+                      try {
+                        await onConsultarNfce(venda);
+                      } finally {
+                        setProcessandoFiscal(false);
+                      }
+                    }}
+                    style={{
+                      padding: '6px 10px',
+                      borderRadius: '7px',
+                      border: '1px solid #3b82f6',
+                      background: '#ffffff',
+                      color: '#1d4ed8',
+                      fontWeight: 700,
+                      fontSize: '0.74rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {processandoFiscal ? '⏳...' : '🔄 Atualizar'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {venda.nfce?.mensagemSefaz && (
+                  <div style={{ fontSize: '0.74rem', color: '#b91c1c', fontWeight: 600 }}>
+                    ⚠️ {venda.nfce.mensagemSefaz}
+                  </div>
+                )}
+                {onEmitirNfce && (
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    <input
+                      type="text"
+                      value={cpfInput || venda.cpfNaNota || ''}
+                      onChange={(e) => setCpfInput(e.target.value)}
+                      placeholder="CPF/CNPJ na nota (opcional)"
+                      style={{
+                        flex: '1 1 150px',
+                        padding: '7px 9px',
+                        borderRadius: '7px',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.78rem',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      disabled={processandoFiscal}
+                      onClick={async () => {
+                        setProcessandoFiscal(true);
+                        try {
+                          await onEmitirNfce(venda, (cpfInput || venda.cpfNaNota || '').trim() || undefined);
+                        } finally {
+                          setProcessandoFiscal(false);
+                        }
+                      }}
+                      style={{
+                        padding: '7px 12px',
+                        borderRadius: '7px',
+                        border: 'none',
+                        background: '#2563eb',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                        fontSize: '0.78rem',
+                        cursor: processandoFiscal ? 'wait' : 'pointer',
+                      }}
+                    >
+                      {processandoFiscal ? '⏳ Emitindo...' : '🧾 Emitir NFC-e Agora'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* BOTOES DE AÇÃO */}
         <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }} className="no-print">
