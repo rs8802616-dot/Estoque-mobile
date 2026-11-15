@@ -7307,31 +7307,6 @@ export default function App() {
                   <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>🍢</span>
                   <span className="texto-btn-header">+ Balcão</span>
                 </button>
-
-                <button
-                  className="btn"
-                  style={{
-                    background: '#7c3aed',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.82rem',
-                    padding: '7px 10px',
-                    whiteSpace: 'nowrap',
-                    gap: '4px',
-                    borderRadius: '8px',
-                    boxShadow: '0 2px 4px rgba(124, 58, 237, 0.25)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    flexShrink: 0,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setModalEntradaNotaVisivel(true)}
-                  title="Dar Entrada de Estoque por Nota Fiscal Eletrônica (XML / NF-e)"
-                >
-                  <span style={{ fontSize: '0.95rem' }}>📥</span>
-                  <span className="texto-btn-header">Entrada Nota (XML)</span>
-                </button>
               </>
             )}
 
@@ -7471,33 +7446,6 @@ export default function App() {
                   <span>{colunaDeliveryFixaVisivel ? 'Painel Aberto' : 'Painel Lateral'}</span>
                 </button>
               </>
-            )}
-
-            {/* BOTÃO CENTRAL DE RELATÓRIOS UNIFICADA */}
-            {temPermissaoOperador('ver_relatorios', 'relatorios') && (
-              <button
-                className="btn btn-relatorios-header"
-                onClick={() => abrirCentralRelatorios('faturamento')}
-                title="Central de Relatórios & Lucro Real"
-                style={{
-                  background: '#065f46',
-                  color: '#ffffff',
-                  fontWeight: 800,
-                  fontSize: '0.82rem',
-                  padding: '7px 11px',
-                  borderRadius: '8px',
-                  border: '1.5px solid #10b981',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                }}
-              >
-                <span style={{ fontSize: '0.95rem' }}>📊</span>
-                <span className="texto-relatorios-header" style={{ display: 'inline' }}>
-                  Relatórios
-                </span>
-              </button>
             )}
 
             {(perfilAtivo === 'dona_app' || temPermissaoLoja('ocr_ia') || temPermissaoLoja('caixa') || temPermissaoLoja('estoque')) && (
@@ -7992,6 +7940,22 @@ export default function App() {
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <PlusCircle size={15} style={{ color: '#059669', flexShrink: 0 }} />
                         <span>Adicionar Item ao Estoque</span>
+                      </span>
+                    </div>
+                  )}
+
+                  {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
+                    <div
+                      className="sidebar-item"
+                      style={{ background: '#f5f3ff', color: '#5b21b6', border: '1px solid #ddd6fe' }}
+                      onClick={() => {
+                        setModalEntradaNotaVisivel(true);
+                        fecharMenu();
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <FileCheck2 size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
+                        <span>Entrada de Nota (XML / NF-e)</span>
                       </span>
                     </div>
                   )}

@@ -30,61 +30,103 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 | Componente | Tecnologia | Detalhes |
 |---|---|---|
-| **Frontend** | React 18 + TypeScript + Vite | Interface responsiva mobile e desktop |
-| **Estilização** | Tailwind CSS | Layout sem dependência de CSS externo |
+| **Frontend** | React 19 + TypeScript + Vite | Interface responsiva mobile e desktop |
+| **Estilização** | Tailwind CSS v4 | Estilização moderna via `@tailwindcss/vite` |
 | **Ícones** | Lucide React | Biblioteca padrão de ícones SVG |
+| **Gráficos** | Recharts | Visualização de faturamento, lucro e estoque |
 | **Animações** | Motion (`motion/react`) | Transições de tela suaves |
-| **Banco de Dados** | Google Cloud Firebase Firestore | Sincronização em tempo real multi-tenant |
+| **Banco de Dados** | Google Cloud Firebase Firestore | Sincronização em tempo real multi-tenant com `persistentSingleTabManager` |
 | **Persistência de Imagens** | IndexedDB (`mercado_midia_offline_db`) | Armazenamento de fotos em Base64 com cache síncrono em memória (`imageIndexedDB.ts`) |
-| **Persistência de Estado** | LocalStorage Seguro (`safeStorage.ts`) | Higienização de dados para evitar estouro da cota de 5MB |
-| **Backend/Servidor** | Node.js + Express (`server.ts`) | Porta 3000 obrigatória, modo Vite middleware em dev e static em prod |
+| **Persistência de Estado** | LocalStorage Seguro (`safeStorage.ts`) | Higienização de dados e limpeza automática de chaves residuais (`firestore_targets_`) para evitar estouro da cota de 5MB |
+| **Monitoramento de Erros** | Sentry (`@sentry/react`) | Captura global de exceções via `ErrorBoundary.tsx` e `errorMonitoring.ts` com Source Maps |
+| **OCR & Leitura de Notas** | Tesseract.js + PDF.js + Gemini (`@google/genai`) | Leitura de NF-e, cupons e lotes via cliente e rota serverless `api/ocr-lote.js` |
+| **Backend/Servidor** | Node.js + Express (`server.ts`) & API Vercel (`api/`) | Porta 3000 em dev/prod e funções serverless para consulta externa e OCR |
+| **Testes Automatizados** | Node Test Runner (`tsx --test tests/*.test.ts`) | Validação de regras centrais e segurança |
+| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v143`) |
 
 ---
 
 ## 3. Estrutura de Arquivos e Diretórios
 
 ```
-├── .env.example                # Variáveis de ambiente declaradas
-├── AGENTS.md                   # Instruções persistentes do agente de IA
-├── DOCUMENTACAO-PROJETO.md     # Esta documentação viva do projeto
-├── firestore.rules             # Regras de segurança do Cloud Firestore
-├── firebase-blueprint.json     # Esquema blueprint do Firestore
-├── metadata.json               # Configurações de permissões e metadados da aplicação
-├── package.json                # Dependências e scripts de inicialização
-├── server.ts                   # Servidor Express com integração Vite
+├── .env.example                    # Variáveis de ambiente declaradas (incluindo Sentry)
+├── AGENTS.md                       # Instruções persistentes do agente de IA
+├── DOCUMENTACAO-PROJETO.md         # Esta documentação viva do projeto
+├── firestore.rules                 # Regras de segurança do Cloud Firestore
+├── firebase-blueprint.json         # Esquema blueprint do Firestore
+├── metadata.json                   # Configurações de permissões e metadados da aplicação
+├── package.json                    # Dependências e scripts (dev, build, lint, test)
+├── server.ts                       # Servidor Express com integração Vite
+├── vite.config.ts                  # Configuração Vite, Tailwind e Source Maps
+├── api/                            # Rotas serverless (Vercel / API)
+│   ├── buscar-produtos-externos.js
+│   ├── consultar-produto-codigo.js
+│   └── ocr-lote.js                 # Rota OCR de lote/validade
+├── public/
+│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v143)
+├── tests/
+│   └── core.test.ts                # Testes automatizados do núcleo do sistema
 ├── src/
-│   ├── App.tsx                 # Componente principal, telas, PDV, roteamento e estado central
-│   ├── index.css               # Estilização global com Tailwind CSS
-│   ├── main.tsx                # Ponto de entrada do React
-│   ├── types.ts                # Definições de tipos e interfaces TypeScript
-│   ├── components/             # Modais e componentes da interface
+│   ├── App.tsx                     # Componente principal, telas, PDV, barra flutuante e estado central
+│   ├── index.css                   # Estilização global com Tailwind CSS
+│   ├── main.tsx                    # Ponto de entrada do React e inicialização do Sentry/SW
+│   ├── types.ts                    # Definições de tipos e interfaces TypeScript (incl. firestoreDocId)
+│   ├── components/                 # Modais, painéis e telas da interface
 │   │   ├── AlertasWhatsAppModal.tsx
 │   │   ├── AlterarCredenciaisDonoModal.tsx
+│   │   ├── CaixaDeliveryPanel.tsx
+│   │   ├── CaixaPdvLateralPanel.tsx
+│   │   ├── CardapioClienteDeliveryModal.tsx
 │   │   ├── CarrinhoVendaModal.tsx
+│   │   ├── CentralRelatoriosModal.tsx
 │   │   ├── CentroNotificacoesModal.tsx
 │   │   ├── ConsultaProdutosModal.tsx
 │   │   ├── CupomVendaModal.tsx
+│   │   ├── CustomerDeliveryView.tsx
+│   │   ├── EntradaNotaFiscalModal.tsx
+│   │   ├── ErrorBoundary.tsx
 │   │   ├── EtiquetasModal.tsx
+│   │   ├── GerenciarSenhaLojaModal.tsx
 │   │   ├── GestaoCaixaModal.tsx
+│   │   ├── GestaoDeliveryModal.tsx
 │   │   ├── GestaoDevedoresModal.tsx
 │   │   ├── GraficosVendasModal.tsx
 │   │   ├── ManualUsuarioModal.tsx
+│   │   ├── ModalPesquisaCatalogo.tsx
+│   │   ├── MotoboyDeliveryView.tsx
 │   │   ├── RelatorioVendasModal.tsx
 │   │   ├── TelaLogin.tsx
-│   │   └── TermoConcordanciaModal.tsx
-│   └── lib/                    # Utilitários e serviços de infraestrutura
-│       ├── balancaUtils.ts     # Decodificador de códigos de barras de balança
-│       ├── barcodeScanner.ts   # Utilitários para escaneamento de código de barras
-│       ├── exportUtils.ts      # Exportação de relatórios (CSV, Excel)
-│       ├── firebase.ts         # Inicialização do Firebase e Firestore
-│       ├── firestoreSync.ts    # Sincronização em tempo real com Firestore
-│       ├── imageCompressor.ts  # Compressão inteligente de imagens para economia de dados
-│       ├── imageIndexedDB.ts   # Armazenamento persistente no IndexedDB com cache em memória
-│       ├── offlineSync.ts      # Fila de sincronização para operações offline
-│       ├── safeStorage.ts      # Wrapper seguro para LocalStorage (proteção contra cota 5MB)
-│       ├── screenWakeLock.ts   # Manter tela ativa durante operação de caixa
-│       ├── sessionManager.ts   # Controle de sessões ativas
-│       └── soundUtils.ts       # Efeitos sonoros para bipes de leitor e ações
+│   │   ├── TermoConcordanciaModal.tsx
+│   │   └── UnrecognizedLinkView.tsx
+│   ├── lib/                        # Utilitários e serviços de infraestrutura
+│   │   ├── balancaUtils.ts
+│   │   ├── barcodeScanner.ts
+│   │   ├── bomJawaKitApi.ts
+│   │   ├── catalogoAdegaMix.ts
+│   │   ├── catalogoAmbev.ts
+│   │   ├── catalogoChoppBrahmaExpress.ts
+│   │   ├── catalogoCocaColaFemsa.ts
+│   │   ├── catalogoRissulBebidas.ts
+│   │   ├── catalogoSalgadinhosCosmos.ts
+│   │   ├── catalogoZeDeliveryMix.ts
+│   │   ├── errorMonitoring.ts      # Integração Sentry
+│   │   ├── exportUtils.ts
+│   │   ├── firebase.ts             # Firebase + persistentSingleTabManager
+│   │   ├── firestoreSync.ts        # Sincronização tempo real e preservação de firestoreDocId
+│   │   ├── imageCompressor.ts
+│   │   ├── imageIndexedDB.ts
+│   │   ├── mascaras.ts
+│   │   ├── offlineSync.ts
+│   │   ├── pdfInvoiceParser.ts
+│   │   ├── safeStorage.ts          # Wrapper seguro LocalStorage + limpeza de quota
+│   │   ├── screenWakeLock.ts
+│   │   ├── sessionManager.ts
+│   │   └── soundUtils.ts
+│   └── utils/                      # Utilitários de negócio e segurança
+│       ├── deliveryHorarios.ts
+│       ├── formatters.ts
+│       ├── impressaoTermica.ts
+│       └── security.ts             # Criptografia SHA-256 + Salt
 ```
 
 ---
@@ -118,6 +160,54 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 ---
 
 ## 5. Histórico de Alterações (Changelog)
+
+### [2026-11-15 - Versão 143 - Centralização de Entrada de Notas (XML) e Relatórios Exclusivamente no Menu Lateral]
+- **Cabeçalho Mais Limpo em Celular, Tablet e PC (`src/App.tsx`):**
+  - Removidos do cabeçalho superior (`<header>`) os botões `📥 Entrada Nota (XML)` e `📊 Relatórios` (`btn-relatorios-header`), evitando poluição visual na barra superior em qualquer tamanho de tela.
+- **Acesso Unificado Exclusivamente no Menu Lateral (Gaveta / Drawer):**
+  - Adicionado o item **`Entrada de Nota (XML / NF-e)`** dentro do grupo **`Estoque & Produtos`** no menu lateral (respeitando a permissão `cadastrar_produtos` / `estoque`), logo abaixo de *Adicionar Item ao Estoque*.
+  - Mantido o acesso a **`Central de Relatórios & Lucro`** exclusivamente dentro do grupo **`Relatórios`** do mesmo menu lateral (respeitando a permissão `ver_relatorios` / `relatorios`).
+- **Atualização de Cache PWA:** Cache do Service Worker atualizado para `estoque-mobile-pwa-v143` em `public/sw.js` e `src/main.tsx`.
+
+### [2026-11-14 - Versão 142 - Refinamento e Cobertura Completa da Barra Flutuante de Abas]
+- **Barra Flutuante de Navegação por Abas (`src/App.tsx` & `CaixaPdvLateralPanel.tsx`):**
+  - Registradas **todas as telas e modais** do sistema na barra flutuante de abas no canto inferior direito, permitindo alternar entre qualquer tela aberta sem perder o estado preenchido.
+  - Barra afinada e reposicionada mais abaixo (`fd9ec45`) para não cobrir o botão **Finalizar Venda** no painel lateral do PDV.
+
+### [2026-11-13 - Atualizações 43 a 47 - Novo PDV Lateral, Correção de Estoque/Lotes, Sentry, Firebase Quota e Melhorias de UI]
+- **Integridade de Estoque, Lotes e Baixa no Carrinho (`App.tsx`, `firestoreSync.ts`, `types.ts`):**
+  - Preservação do identificador real `firestoreDocId` nos itens de estoque para eliminar a duplicação de lotes no Firestore ao realizar baixas e vendas (`8a55ade`).
+  - Normalização da busca de lote na baixa do carrinho (`212254e`) e proteção `e.key` no listener global do leitor de código de barras (`7b2c9c1`).
+- **Eliminação de `QuotaExceededError` no Firestore e LocalStorage (`firebase.ts`, `safeStorage.ts`):**
+  - Substituída a persistência padrão por `persistentSingleTabManager` no Firestore para evitar erro `b815` / `QuotaExceededError` (`626cf9d`).
+  - Limpeza automática de chaves residuais `firestore_targets_` acumuladas no `localStorage`.
+- **Novo Painel Lateral do PDV com Abas & Busca no Fiado (`CaixaPdvLateralPanel.tsx`, `App.tsx`):**
+  - Criado o componente `CaixaPdvLateralPanel.tsx` integrando as abas **Caixa/Venda** e **Delivery** diretamente na lateral do PDV (`0d08bbe`).
+  - Adicionada busca instantânea de cliente por **nome ou telefone** na modalidade **Fiado** dentro do painel lateral (`e66fb81`).
+  - Isolamento e recarregamento automático do carrinho ao trocar de loja ativa (`605cb37`).
+  - Simplificação do modal de baixa/venda: ações secundárias movidas para o cabeçalho, adição de botões `+/-`, atalhos de teclado e remoção de botões redundantes (`66b022d`, `7fb9696`, `ba3f3e3`).
+- **Gestão de Caixa, Relatórios, Manual e Painéis (`GestaoCaixaModal.tsx`, `ManualUsuarioModal.tsx`, `GraficosVendasModal.tsx`, `App.tsx`):**
+  - Proteção de arrays opcionais contra `undefined` no `GestaoCaixaModal.tsx` (`4b6ce23`) e reformulação visual do resumo do turno de caixa estilo PDV (`46fb1dc`).
+  - Ampliação da tela do tutorial/manual do usuário, restauração da navegação interna e atualização do guia contemplando o novo PDV lateral (`1830e54`, `b229487`).
+  - Melhorias visuais no Relatório de Estoque (`b229487`), padronização de cabeçalho azul em Gráficos & Inteligência e limpeza visual no Painel Master (`f85792b`).
+- **Monitoramento com Sentry, Termo de Uso e Limpeza de Dados Fictícios:**
+  - Integração do **Sentry** (`@sentry/react`, `src/lib/errorMonitoring.ts`, `ErrorBoundary.tsx`, `vite.config.ts`) com DSN configurado para o projeto `estoque-mobile` e suporte a Source Maps (`db6c3b4`, `110fe63`).
+  - Remoção definitiva de pedidos de teste e vendas/clientes fictícios iniciais (`a129fec`, `94accb0`).
+  - Aprimoramento do texto do Termo de Concordância (`TermoConcordanciaModal.tsx`) com persistência de aceite único na nuvem via `firestoreSync.ts` (`d1e9fec`).
+- **Estabilização de Sessão, OCR Vercel, TypeScript e Testes (`api/ocr-lote.js`, `tests/core.test.ts`, `EntradaNotaFiscalModal.tsx`):**
+  - Adicionada rota serverless `api/ocr-lote.js` para OCR na Vercel e suíte de testes automatizados `tests/core.test.ts` (`c5efcc9`).
+  - Remoção de senhas coringa residuais e estabilização da sessão no F5.
+  - Correção de bugs no fechamento de caixa assíncrono, campo `preco_venda` na importação de NF-e (`EntradaNotaFiscalModal.tsx`), credenciais do dono e eliminação total de erros de TypeScript (`92d6106`).
+
+### [2026-11-12 - Atualização 42 - Navegação por Abas Flutuantes, Isolamento de Rotas e Reconciliação Completa]
+- **Barra Compacta Flutuante de Abas (`App.tsx`):**
+  - Implementada navegação por abas persistentes/flutuantes no canto inferior direito preservando o estado das telas abertas durante o cadastro contínuo após salvar (`d79542d`, `ff08391`, `696b75a`).
+- **Correções Críticas de Roteamento, Catálogo e Relatórios:**
+  - Bloqueada a exibição do Painel do Dono ao logar como loja ou caixa (`424f44b`) e impedida a abertura do cardápio de cliente quando a URL possui parâmetros de `painel` ou `token` administrativo (`1faba3d`).
+  - Evitada duplicação entre catálogo global e estoque da loja com exibição de foto fallback (`625c415`).
+  - Carregamento completo de histórico de vendas, operadores e logs de auditoria na sincronização (`606a04a`).
+  - Correção de totais para produtos de estoque ilimitado, layout de abas e filtro inicial em `CentralRelatoriosModal.tsx` (`d949cb8`).
+
 
 ### [2026-11-12 - Atualização 41]
 - **Migração Completa e Segura de Dados do Banco Antigo (`appestoqueprodutos-bb92d`) para o Novo Banco Dedicado (`adega-delivery-pdv`):**
