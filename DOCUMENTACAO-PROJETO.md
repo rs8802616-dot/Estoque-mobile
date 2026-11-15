@@ -42,7 +42,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 | **OCR & Leitura de Notas** | Tesseract.js + PDF.js + Gemini (`@google/genai`) | Leitura de NF-e, cupons e lotes via cliente e rota serverless `api/ocr-lote.js` |
 | **Backend/Servidor** | Node.js + Express (`server.ts`) & API Vercel (`api/`) | Porta 3000 em dev/prod e funções serverless para consulta externa e OCR |
 | **Testes Automatizados** | Node Test Runner (`tsx --test tests/*.test.ts`) | Validação de regras centrais e segurança |
-| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v143`) |
+| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v144`) |
 
 ---
 
@@ -63,7 +63,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 │   ├── consultar-produto-codigo.js
 │   └── ocr-lote.js                 # Rota OCR de lote/validade
 ├── public/
-│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v143)
+│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v144)
 ├── tests/
 │   └── core.test.ts                # Testes automatizados do núcleo do sistema
 ├── src/
@@ -160,6 +160,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 ---
 
 ## 5. Histórico de Alterações (Changelog)
+
+### [2026-11-15 - Versão 144 - Ajuste de Responsividade Mobile no Modal de Pesquisa SI5 Global]
+- **Correção de Layout Mobile (`src/components/ModalPesquisaCatalogo.tsx`):**
+  - **Barra de Busca e Botão `🔍 Buscar`:** Aplicado `minWidth: 0` e `flex: '1 1 0%'` no campo de entrada para impedir que o input empurrasse o botão de busca para fora da tela em celulares.
+  - **Chips de Exemplos Rápidos:** Alterado para `flexWrap: 'wrap'` com espaçamento uniforme para exibir todas as sugestões sem corte lateral.
+  - **Espaçamento Inferior vs. Barra Flutuante de Abas:** Adicionado `paddingBottom: '44px'` no container externo e `maxHeight: 'calc(100dvh - 54px)'`, além de rodapé flexível com `flexWrap: 'wrap'`, garantindo que o botão **Fechar** não fique coberto pela barra flutuante de abas no celular.
+- **Atualização de Cache PWA:** Cache do Service Worker atualizado para `estoque-mobile-pwa-v144` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-11-15 - Versão 143 - Centralização de Entrada de Notas (XML) e Relatórios Exclusivamente no Menu Lateral]
 - **Cabeçalho Mais Limpo em Celular, Tablet e PC (`src/App.tsx`):**

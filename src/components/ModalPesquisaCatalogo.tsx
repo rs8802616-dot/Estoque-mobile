@@ -136,7 +136,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '12px',
+        padding: '10px 10px 44px 10px',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onFechar();
@@ -146,7 +146,9 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         style={{
           width: '100%',
           maxWidth: '1120px',
-          maxHeight: '92vh',
+          maxHeight: 'calc(100dvh - 54px)',
+          minWidth: 0,
+          boxSizing: 'border-box',
           backgroundColor: '#F4F7FB',
           borderRadius: '16px',
           border: '2px solid #292524',
@@ -160,32 +162,33 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         {/* CABEÇALHO */}
         <div
           style={{
-            padding: '16px 20px',
+            padding: '12px 14px',
             backgroundColor: '#FFFFFF',
             borderBottom: '2px solid #E4E3E0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '12px',
+            gap: '10px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
             <div
               style={{
-                width: '42px',
-                height: '42px',
+                width: '40px',
+                height: '40px',
+                flexShrink: 0,
                 borderRadius: '10px',
                 backgroundColor: '#EFF6FF',
                 border: '1.5px solid #3B82F6',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.35rem',
+                fontSize: '1.3rem',
               }}
             >
               🌐
             </div>
-            <div>
+            <div style={{ minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <h3
                   style={{
@@ -241,33 +244,36 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         </div>
 
         {/* CAMPO DE BUSCA DIRETO NA API */}
-        <div style={{ padding: '14px 20px 10px 20px', backgroundColor: '#FFFFFF' }}>
-          <form onSubmit={handleSubmeterBusca} style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ padding: '10px 14px', backgroundColor: '#FFFFFF' }}>
+          <form onSubmit={handleSubmeterBusca} style={{ display: 'flex', gap: '8px', width: '100%', minWidth: 0 }}>
             <div
               style={{
-                flex: 1,
+                flex: '1 1 0%',
+                minWidth: 0,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '6px',
                 backgroundColor: '#F8FAFC',
                 border: '2px solid #292524',
                 borderRadius: '10px',
-                padding: '6px 12px',
+                padding: '6px 10px',
               }}
             >
-              <span style={{ fontSize: '1.1rem', color: '#64748B' }}>🔍</span>
+              <span style={{ fontSize: '1rem', color: '#64748B', flexShrink: 0 }}>🔍</span>
               <input
                 ref={inputRef}
                 type="text"
                 value={termo}
                 onChange={(e) => setTermo(e.target.value)}
-                placeholder="Digite o nome do produto (ex: Picanha, Heineken, Nescau...)"
+                placeholder="Digite o nome do produto..."
                 style={{
                   flex: 1,
+                  minWidth: 0,
+                  width: '100%',
                   border: 'none',
                   outline: 'none',
                   background: 'transparent',
-                  fontSize: '0.92rem',
+                  fontSize: '0.9rem',
                   fontWeight: 600,
                   color: '#0F172A',
                   padding: '4px 0',
@@ -283,6 +289,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
                     borderRadius: '50%',
                     width: '22px',
                     height: '22px',
+                    flexShrink: 0,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -301,23 +308,25 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
               type="submit"
               disabled={carregando || termo.trim().length < 3}
               style={{
-                padding: '0 18px',
+                padding: '0 14px',
+                minHeight: '40px',
+                flexShrink: 0,
                 borderRadius: '10px',
                 backgroundColor: '#0284C7',
                 color: '#FFFFFF',
                 border: 'none',
                 fontWeight: 700,
-                fontSize: '0.88rem',
+                fontSize: '0.85rem',
                 cursor: carregando || termo.trim().length < 3 ? 'not-allowed' : 'pointer',
                 opacity: carregando || termo.trim().length < 3 ? 0.6 : 1,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '5px',
                 whiteSpace: 'nowrap',
                 boxShadow: '0 2px 4px rgba(2, 132, 199, 0.25)',
               }}
             >
-              {carregando ? '⏳ Buscando...' : '🔍 Buscar na API'}
+              {carregando ? '⏳ ...' : '🔍 Buscar'}
             </button>
           </form>
 
@@ -325,12 +334,12 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
           <div
             style={{
               display: 'flex',
+              flexWrap: 'wrap',
               gap: '6px',
-              overflowX: 'auto',
               paddingTop: '10px',
               paddingBottom: '2px',
-              scrollbarWidth: 'none',
               alignItems: 'center',
+              width: '100%',
             }}
           >
             <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, whiteSpace: 'nowrap' }}>
@@ -362,12 +371,14 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         {/* BARRA DE STATUS DA CONSULTA */}
         <div
           style={{
-            padding: '7px 20px',
+            padding: '7px 14px',
             backgroundColor: '#E2E8F0',
             borderBottom: '1px solid #CBD5E1',
             display: 'flex',
+            flexWrap: 'wrap',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: '6px',
             fontSize: '0.76rem',
             color: '#334155',
           }}
@@ -667,28 +678,33 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         {/* RODAPÉ */}
         <div
           style={{
-            padding: '10px 16px',
+            padding: '10px 14px',
             backgroundColor: '#FFFFFF',
             borderTop: '1px solid #E2E8F0',
             display: 'flex',
+            flexWrap: 'wrap',
             alignItems: 'center',
             justifyContent: 'space-between',
-            fontSize: '0.75rem',
+            gap: '8px',
+            fontSize: '0.74rem',
             color: '#64748B',
           }}
         >
-          <span>💡 Clique em qualquer card da vitrine para preencher código, nome e foto automaticamente.</span>
+          <span style={{ flex: '1 1 180px', lineHeight: 1.3 }}>
+            💡 Clique em qualquer card para preencher código, nome e foto automaticamente.
+          </span>
           <button
             type="button"
             onClick={onFechar}
             style={{
-              padding: '6px 14px',
+              padding: '7px 14px',
               borderRadius: '6px',
               border: '1px solid #CBD5E1',
               backgroundColor: '#F8FAFC',
               fontWeight: 600,
               cursor: 'pointer',
               color: '#334155',
+              flexShrink: 0,
             }}
           >
             Fechar
