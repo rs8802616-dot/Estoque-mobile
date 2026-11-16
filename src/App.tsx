@@ -1079,6 +1079,7 @@ export default function App() {
   });
   const [abaPainelLateral, setAbaPainelLateral] = useState<'caixa' | 'comandas' | 'delivery'>('caixa');
   const [comandaLateralSelecionadaId, setComandaLateralSelecionadaId] = useState<string | null>(null);
+  const [comandaLateralAbertaNaTela, setComandaLateralAbertaNaTela] = useState<boolean>(false);
 
   const [configDelivery, setConfigDelivery] = useState<ConfiguracaoDelivery>(() => {
     try {
@@ -6501,18 +6502,20 @@ export default function App() {
     persistirComandas([nova, ...comandasLocais], nova);
     setCarrinho([]);
     setComandaLateralSelecionadaId(nova.id);
+    setComandaLateralAbertaNaTela(true);
     setAbaPainelLateral('comandas');
   };
 
   const comandaAtivaLateral =
     comandasLocais.find((c) => c.id === comandaLateralSelecionadaId && c.status === 'aberta') ||
-    comandasLocais.find((c) => c.status === 'aberta') ||
     null;
 
   const modoComandaLateralAtivo =
     colunaDeliveryFixaVisivel &&
     temPermissaoOperador('vender', 'caixa') &&
-    abaPainelLateral === 'comandas';
+    abaPainelLateral === 'comandas' &&
+    comandaLateralAbertaNaTela &&
+    Boolean(comandaAtivaLateral);
 
   const handleAdicionarProdutoNaComandaAtiva = (prod: ItemEstoque, qtd = 1) => {
     let alvo = comandaAtivaLateral;
@@ -9731,6 +9734,8 @@ export default function App() {
                           onExpandir={() => setModalComandasVisivel(true)}
                           comandaSelecionadaId={comandaLateralSelecionadaId}
                           onSelectComandaId={setComandaLateralSelecionadaId}
+                          visaoLateral={comandaLateralAbertaNaTela ? 'detalhe' : 'lista'}
+                          onChangeVisaoLateral={(v) => setComandaLateralAbertaNaTela(v === 'detalhe')}
                         />
                       ) : (
                         <CaixaDeliveryPanel

@@ -23,6 +23,8 @@ export interface ComandasPanelProps {
   onExpandir?: () => void;
   comandaSelecionadaId?: string | null;
   onSelectComandaId?: (id: string | null) => void;
+  visaoLateral?: 'lista' | 'detalhe';
+  onChangeVisaoLateral?: (visao: 'lista' | 'detalhe') => void;
 }
 
 interface ComandasModalProps extends Omit<ComandasPanelProps, 'modoLateral' | 'onExpandir'> {
@@ -52,6 +54,8 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   onExpandir,
   comandaSelecionadaId: comandaSelecionadaIdProp,
   onSelectComandaId,
+  visaoLateral: visaoLateralProp,
+  onChangeVisaoLateral,
 }) => {
   const [filtroStatus, setFiltroStatus] = useState<'aberta' | 'fechada'>('aberta');
   const [buscaComanda, setBuscaComanda] = useState<string>('');
@@ -61,7 +65,12 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
     setComandaSelecionadaLocalId(id);
     onSelectComandaId?.(id);
   };
-  const [visaoLateral, setVisaoLateral] = useState<'lista' | 'detalhe'>('lista');
+  const [visaoLateralLocal, setVisaoLateralLocal] = useState<'lista' | 'detalhe'>('lista');
+  const visaoLateral = visaoLateralProp !== undefined ? visaoLateralProp : visaoLateralLocal;
+  const setVisaoLateral = (v: 'lista' | 'detalhe') => {
+    setVisaoLateralLocal(v);
+    onChangeVisaoLateral?.(v);
+  };
 
   // Nova comanda
   const [formNovaAberto, setFormNovaAberto] = useState<boolean>(false);
@@ -294,6 +303,9 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
         loja?.configFiscal?.habilitado ? { emitirNfce, cpfNaNota: cpfNaNota.trim() || undefined } : undefined
       );
       setCpfNaNota('');
+      if (modoLateral) {
+        setVisaoLateral('lista');
+      }
     } else {
       onAtualizarComanda(comandaAtualizada);
     }
@@ -671,6 +683,9 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                         onClick={() => {
                           if (window.confirm(`Cancelar a comanda de ${comandaAtiva.nomeCliente}?`)) {
                             onCancelarComanda(comandaAtiva.id);
+                            if (modoLateral) {
+                              setVisaoLateral('lista');
+                            }
                           }
                         }}
                         title="Cancelar comanda"

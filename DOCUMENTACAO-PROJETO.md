@@ -165,6 +165,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-15 - Versão 150 - Lançamento na Comanda Somente Quando a Comanda do Cliente Estiver Aberta]
+- **Proteção contra Lançamento Acidental na Lista de Comandas (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
+  - Sincronizado o estado `visaoLateral` (`'lista'` vs `'detalhe'`) do `ComandasPanel` com `App.tsx`.
+  - Quando você está apenas visualizando a **lista de comandas**, os cards da vitrine permanecem no modo normal (`🛒 + Carrinho`).
+  - Os cards só mudam para **`🍽️ + Comanda`** e lançam direto na comanda **depois que você abre a comanda de um cliente específico** (e voltam ao normal ao clicar em `← Lista de Comandas` ou fechar/cancelar a comanda).
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v150` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-15 - Versão 149 - Lançamento Direto do Catálogo para a Comanda Ativa]
 - **Clique Direto dos Cards do Estoque para a Aba Comandas (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
   - Quando a aba **`🍽️ Comandas`** está selecionada no painel lateral, os cards da vitrine de produtos mudam o botão **`🛒 + Carrinho`** para **`🍽️ + Comanda`** e exibem a tag **`🍽️ X na comanda`**.
