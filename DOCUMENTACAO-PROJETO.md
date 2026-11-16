@@ -165,6 +165,11 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-16 - Versão 151 - Correção de Duplicação de Lote ao Editar Data de Validade no Estoque]
+- **Correção de Race Condition na Edição de Estoque (`src/App.tsx`):**
+  - Ao editar um lote no estoque alterando a data de validade, lote ou código de barras, o sistema agora aguarda (`await`) a remoção do documento antigo no Firestore (`excluirItemEstoqueFirestore`) e ignora o lote antigo no loop de propagação de metadados para outros lotes, impedindo que o registro vencido/anterior fosse regravado e duplicado.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v151` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-15 - Versão 150 - Lançamento na Comanda Somente Quando a Comanda do Cliente Estiver Aberta]
 - **Proteção contra Lançamento Acidental na Lista de Comandas (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
   - Sincronizado o estado `visaoLateral` (`'lista'` vs `'detalhe'`) do `ComandasPanel` com `App.tsx`.

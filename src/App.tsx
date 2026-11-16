@@ -5394,14 +5394,16 @@ export default function App() {
           });
         };
 
-        // Se estava editando e alterou chave primária (código, lote ou validade), remove o documento antigo do Firestore
-        if (
+        // Se estava editando e alterou chave primária (código, lote ou validade), remove o documento antigo do Firestore antes de salvar o novo
+        const alterouChavePrimariaEdicao = Boolean(
           codigoEditando &&
           (String(codigoEditando.codigo || '').trim() !== codigoFinal ||
             String(codigoEditando.validade || '2099-12-31').trim() !== (valDigitada || '2099-12-31').trim() ||
             String(codigoEditando.lote || '').trim() !== (loteDigitado || '').trim())
-        ) {
-          excluirItemEstoqueFirestore(
+        );
+
+        if (alterouChavePrimariaEdicao && codigoEditando) {
+          await excluirItemEstoqueFirestore(
             codigoEditando.codigo,
             codigoEditando.validade,
             codigoEditando.lote,
@@ -5454,8 +5456,16 @@ export default function App() {
           }
         }
 
-        // Propaga para outros lotes do mesmo código no Firestore se existirem
+        // Propaga para outros lotes do mesmo código no Firestore se existirem (pulando o lote antigo que acabou de ser substituído)
         estoque.forEach((p) => {
+          const ehLoteAntigoEditado = Boolean(
+            codigoEditando &&
+            String(p.codigo || '').trim() === String(codigoEditando.codigo || '').trim() &&
+            String(p.validade || '2099-12-31').trim() === String(codigoEditando.validade || '2099-12-31').trim() &&
+            String(p.lote || '').trim() === String(codigoEditando.lote || '').trim()
+          );
+          if (ehLoteAntigoEditado) return;
+
           if (p.codigo === codigoFinal && (p.validade !== valDigitada || p.lote !== loteDigitado)) {
             salvarItemEstoqueFirestore(
               {
