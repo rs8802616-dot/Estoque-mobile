@@ -165,6 +165,14 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-15 - Versão 148 - Interface Simplificada e Limpa nas Comandas]
+- **Redução de Poluição Visual em `src/components/ComandasModal.tsx` & `src/App.tsx`:**
+  - Cabeçalho da comanda compactado em uma única linha (`#Nº • Cliente`, `🖨️ Imprimir` e `🗑️`).
+  - Busca de produtos exibida apenas como campo limpo; a lista de resultados aparece somente ao digitar, fechando automaticamente após adicionar o item.
+  - Horário dos itens normalizado para `HH:MM` (corrigindo exibição de ISO timestamp quando enviados do carrinho do Caixa).
+  - Resumo, divisão por pessoas (`[-]` `Nx` `[+]`) e pagamento unificados em um único bloco enxuto, mantendo campos de pagamento parcial ocultos por padrão até serem solicitados.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v148` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-15 - Versão 147 - Comandas / Mesas Integradas Direto no Painel Caixa / Venda]
 - **Aba `🍽️ Comandas` no Painel Lateral do Caixa (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
   - Extraído o componente `ComandasPanel` (reutilizado tanto no modal completo quanto diretamente na coluna fixa lateral ao lado de `🛒 Caixa / Venda` e `🛵 Delivery`).

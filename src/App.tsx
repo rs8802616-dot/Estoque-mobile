@@ -6471,7 +6471,7 @@ export default function App() {
 
     const maiorNumero = comandasLocais.reduce((max, c) => Math.max(max, c.numeroComanda || 0), 0);
     const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
-    const agoraIso = new Date().toISOString();
+    const agoraHora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     const itensComanda = carrinho.map((item) => ({
       id: `itcmd_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
       codigo: item.codigo,
@@ -6480,7 +6480,7 @@ export default function App() {
       preco_unitario: item.preco_unitario,
       preco_custo: item.preco_custo,
       subtotal: Number((item.preco_unitario * item.quantidade).toFixed(2)),
-      adicionadoEm: agoraIso,
+      adicionadoEm: agoraHora,
     }));
     const valorTotal = Number(itensComanda.reduce((acc, it) => acc + it.subtotal, 0).toFixed(2));
     const nova: ComandaLocal = {

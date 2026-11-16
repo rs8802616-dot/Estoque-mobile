@@ -71,7 +71,8 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   const [cpfNaNota, setCpfNaNota] = useState<string>('');
 
   // Impressão térmica
-  const [larguraBobina, setLarguraBobina] = useState<'80mm' | '58mm'>('80mm');
+  const [larguraBobina] = useState<'80mm' | '58mm'>('80mm');
+  const [mostrarPagParcial, setMostrarPagParcial] = useState<boolean>(false);
 
   const comandasFiltradas = useMemo(() => {
     const termo = buscaComanda.trim().toLowerCase();
@@ -615,59 +616,45 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
               </div>
             ) : (
               <>
-                {/* CABEÇALHO DA COMANDA SELECIONADA */}
+                {/* CABEÇALHO COMPACTO DA COMANDA */}
                 <div
                   style={{
                     background: '#ffffff',
                     border: '1px solid #e2e8f0',
-                    borderRadius: '12px',
-                    padding: '12px',
+                    borderRadius: '10px',
+                    padding: '10px 12px',
                     display: 'flex',
-                    flexWrap: 'wrap',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '8px',
                   }}
                 >
-                  <div>
-                    <div style={{ fontSize: '1rem', fontWeight: 900, color: '#0f172a' }}>
-                      Comanda #{String(comandaAtiva.numeroComanda).padStart(2, '0')} — {comandaAtiva.nomeCliente}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      #{String(comandaAtiva.numeroComanda).padStart(2, '0')} • {comandaAtiva.nomeCliente}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
                       {comandaAtiva.mesaOuReferencia ? `${comandaAtiva.mesaOuReferencia} • ` : ''}
-                      Aberta em {new Date(comandaAtiva.abertaEm).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                      {new Date(comandaAtiva.abertaEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                    <select
-                      value={larguraBobina}
-                      onChange={(e) => setLarguraBobina(e.target.value as '80mm' | '58mm')}
-                      style={{
-                        padding: '6px 8px',
-                        borderRadius: '7px',
-                        border: '1px solid #cbd5e1',
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      <option value="80mm">80mm</option>
-                      <option value="58mm">58mm</option>
-                    </select>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                     <button
                       type="button"
                       onClick={handleImprimirComanda}
+                      title="Imprimir conferência da comanda"
                       style={{
-                        padding: '7px 12px',
+                        padding: '6px 10px',
                         borderRadius: '8px',
                         border: 'none',
                         background: '#0284c7',
                         color: '#ffffff',
                         fontWeight: 700,
-                        fontSize: '0.8rem',
+                        fontSize: '0.78rem',
                         cursor: 'pointer',
                       }}
                     >
-                      🖨️ Imprimir Comanda
+                      🖨️ Imprimir
                     </button>
                     {comandaAtiva.status === 'aberta' && (
                       <button
@@ -677,8 +664,9 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                             onCancelarComanda(comandaAtiva.id);
                           }
                         }}
+                        title="Cancelar comanda"
                         style={{
-                          padding: '7px 10px',
+                          padding: '6px 8px',
                           borderRadius: '8px',
                           border: '1px solid #fecaca',
                           background: '#fef2f2',
@@ -688,206 +676,175 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                           cursor: 'pointer',
                         }}
                       >
-                        🗑️ Cancelar
+                        🗑️
                       </button>
                     )}
                   </div>
                 </div>
 
-                {/* LANÇAR PRODUTOS NA COMANDA (SOMENTE ABERTA) */}
+                {/* BUSCA LIMPA PARA ADICIONAR PRODUTO (MOSTRA RESULTADOS SÓ AO DIGITAR) */}
                 {comandaAtiva.status === 'aberta' && (
-                  <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
-                    <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', marginBottom: '6px' }}>
-                      📦 Lançar Produto do Estoque na Comanda:
+                  <div style={{ position: 'relative' }}>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        value={buscaProduto}
+                        onChange={(e) => setBuscaProduto(e.target.value)}
+                        placeholder="🔍 Adicionar produto (nome ou código)..."
+                        style={{
+                          flex: 1,
+                          padding: '9px 12px',
+                          borderRadius: '10px',
+                          border: '1px solid #cbd5e1',
+                          background: '#ffffff',
+                          fontSize: '0.84rem',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      {buscaProduto.trim() && (
+                        <button
+                          type="button"
+                          onClick={() => setBuscaProduto('')}
+                          style={{
+                            padding: '8px 10px',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            background: '#ffffff',
+                            color: '#64748b',
+                            fontWeight: 700,
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ✕
+                        </button>
+                      )}
                     </div>
-                    <input
-                      type="text"
-                      value={buscaProduto}
-                      onChange={(e) => setBuscaProduto(e.target.value)}
-                      placeholder="🔍 Digite o nome ou código do produto..."
-                      style={{
-                        width: '100%',
-                        padding: '8px 10px',
-                        borderRadius: '8px',
-                        border: '1px solid #cbd5e1',
-                        fontSize: '0.84rem',
-                        boxSizing: 'border-box',
-                        marginBottom: '8px',
-                      }}
-                    />
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(175px, 1fr))', gap: '6px', maxHeight: '175px', overflowY: 'auto' }}>
-                      {produtosFiltrados.map((prod) => {
-                        const foto = obterFotoProduto ? obterFotoProduto(prod.codigo) : prod.foto;
-                        return (
-                          <button
-                            key={`${prod.codigo}_${prod.lote || ''}`}
-                            type="button"
-                            onClick={() => handleAdicionarProdutoNaComanda(prod)}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '7px 9px',
-                              borderRadius: '9px',
-                              border: '1px solid #e2e8f0',
-                              background: '#f8fafc',
-                              cursor: 'pointer',
-                              textAlign: 'left',
-                            }}
-                          >
-                            {foto ? (
-                              <img src={foto} alt="" style={{ width: '30px', height: '30px', objectFit: 'contain', borderRadius: '6px', background: '#fff', flexShrink: 0 }} />
-                            ) : (
-                              <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>🍾</span>
-                            )}
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+
+                    {buscaProduto.trim().length > 0 && (
+                      <div
+                        style={{
+                          marginTop: '6px',
+                          background: '#ffffff',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '10px',
+                          maxHeight: '190px',
+                          overflowY: 'auto',
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}
+                      >
+                        {produtosFiltrados.length === 0 ? (
+                          <div style={{ padding: '10px 12px', fontSize: '0.8rem', color: '#94a3b8' }}>
+                            Nenhum produto encontrado.
+                          </div>
+                        ) : (
+                          produtosFiltrados.slice(0, 8).map((prod) => (
+                            <button
+                              key={`${prod.codigo}_${prod.lote || ''}`}
+                              type="button"
+                              onClick={() => {
+                                handleAdicionarProdutoNaComanda(prod);
+                                setBuscaProduto('');
+                              }}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: '8px',
+                                padding: '8px 12px',
+                                border: 'none',
+                                borderBottom: '1px solid #f1f5f9',
+                                background: '#ffffff',
+                                cursor: 'pointer',
+                                textAlign: 'left',
+                              }}
+                            >
+                              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {prod.nome}
-                              </div>
-                              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#15803d' }}>
-                                R$ {(prod.preco_venda || 0).toFixed(2).replace('.', ',')}
-                              </div>
-                            </div>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#2563eb' }}>+</span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                              </span>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                                <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#15803d' }}>
+                                  R$ {(prod.preco_venda || 0).toFixed(2).replace('.', ',')}
+                                </span>
+                                <span style={{ fontSize: '0.9rem', fontWeight: 900, color: '#2563eb' }}>+</span>
+                              </span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {/* ITENS CONSUMIDOS NA COMANDA */}
-                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
-                    🍺 Itens Consumidos ({comandaAtiva.itens.length})
+                {/* ITENS CONSUMIDOS */}
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 12px' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#475569', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    Itens ({comandaAtiva.itens.length})
                   </div>
                   {comandaAtiva.itens.length === 0 ? (
-                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', padding: '10px 0' }}>
-                      Nenhum produto lançado nesta comanda ainda.
+                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', padding: '8px 0' }}>
+                      Use a busca acima para lançar produtos nesta comanda.
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {comandaAtiva.itens.map((it) => (
-                        <div
-                          key={it.id}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '8px',
-                            padding: '7px 9px',
-                            borderRadius: '8px',
-                            background: '#f8fafc',
-                            border: '1px solid #f1f5f9',
-                          }}
-                        >
-                          <div style={{ minWidth: 0, flex: 1 }}>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>{it.nome}</div>
-                            <div style={{ fontSize: '0.71rem', color: '#64748b' }}>
-                              R$ {it.preco_unitario.toFixed(2).replace('.', ',')} un • {it.adicionadoEm}
+                      {comandaAtiva.itens.map((it) => {
+                        const horaLimpa = it.adicionadoEm?.includes('T')
+                          ? new Date(it.adicionadoEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                          : it.adicionadoEm;
+                        return (
+                          <div
+                            key={it.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '8px',
+                              padding: '6px 0',
+                              borderBottom: '1px solid #f1f5f9',
+                            }}
+                          >
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>{it.nome}</div>
+                              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                                R$ {it.preco_unitario.toFixed(2).replace('.', ',')} un{horaLimpa ? ` • ${horaLimpa}` : ''}
+                              </div>
+                            </div>
+                            {comandaAtiva.status === 'aberta' ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleAlterarQtdItem(it.id, -1)}
+                                  style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 800, cursor: 'pointer' }}
+                                >
+                                  -
+                                </button>
+                                <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: 800, fontSize: '0.82rem' }}>{it.quantidade}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleAlterarQtdItem(it.id, 1)}
+                                  style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 800, cursor: 'pointer' }}
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>{it.quantidade}x</span>
+                            )}
+                            <div style={{ minWidth: '68px', textAlign: 'right', fontWeight: 800, fontSize: '0.84rem', color: '#0f172a' }}>
+                              R$ {it.subtotal.toFixed(2).replace('.', ',')}
                             </div>
                           </div>
-                          {comandaAtiva.status === 'aberta' ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                              <button
-                                type="button"
-                                onClick={() => handleAlterarQtdItem(it.id, -1)}
-                                style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', fontWeight: 800, cursor: 'pointer' }}
-                              >
-                                -
-                              </button>
-                              <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: 800, fontSize: '0.82rem' }}>{it.quantidade}</span>
-                              <button
-                                type="button"
-                                onClick={() => handleAlterarQtdItem(it.id, 1)}
-                                style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', fontWeight: 800, cursor: 'pointer' }}
-                              >
-                                +
-                              </button>
-                            </div>
-                          ) : (
-                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>{it.quantidade}x</span>
-                          )}
-                          <div style={{ minWidth: '72px', textAlign: 'right', fontWeight: 800, fontSize: '0.82rem', color: '#0f172a' }}>
-                            R$ {it.subtotal.toFixed(2).replace('.', ',')}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
 
-                {/* DIVISÃO DE CONTA POR PESSOAS (RATEIO) */}
-                <div
-                  style={{
-                    background: '#eff6ff',
-                    border: '1px solid #bfdbfe',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                  }}
-                >
-                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#1e3a8a' }}>
-                      👥 Dividir Conta por Pessoas:
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-                      {[1, 2, 3, 4, 5, 6].map((n) => (
-                        <button
-                          key={n}
-                          type="button"
-                          onClick={() => handleAlterarDivisaoPessoas(n)}
-                          style={{
-                            padding: '4px 9px',
-                            borderRadius: '7px',
-                            border: pessoasDivisao === n ? '1.5px solid #1d4ed8' : '1px solid #93c5fd',
-                            background: pessoasDivisao === n ? '#2563eb' : '#ffffff',
-                            color: pessoasDivisao === n ? '#ffffff' : '#1e3a8a',
-                            fontWeight: 800,
-                            fontSize: '0.76rem',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {n}x
-                        </button>
-                      ))}
-                      <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        value={pessoasDivisao}
-                        onChange={(e) => handleAlterarDivisaoPessoas(Number(e.target.value))}
-                        style={{
-                          width: '50px',
-                          padding: '4px 6px',
-                          borderRadius: '7px',
-                          border: '1px solid #93c5fd',
-                          textAlign: 'center',
-                          fontWeight: 800,
-                          fontSize: '0.78rem',
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '10px', fontSize: '0.84rem' }}>
-                    <span>
-                      Total: <b style={{ color: '#0f172a' }}>R$ {comandaAtiva.valorTotal.toFixed(2).replace('.', ',')}</b>
-                      {(comandaAtiva.valorPago || 0) > 0 && (
-                        <> • Pago: <b style={{ color: '#15803d' }}>R$ {(comandaAtiva.valorPago || 0).toFixed(2).replace('.', ',')}</b> • Falta: <b style={{ color: '#b45309' }}>R$ {saldoRestante.toFixed(2).replace('.', ',')}</b></>
-                      )}
-                    </span>
-                    <span style={{ fontWeight: 900, color: '#1d4ed8', fontSize: '0.92rem' }}>
-                      Por Pessoa (÷ {pessoasDivisao}): R$ {valorPorPessoaTotal.toFixed(2).replace('.', ',')}
-                    </span>
-                  </div>
-                </div>
-
-                {/* PAGAMENTOS JÁ REGISTRADOS */}
+                {/* PAGAMENTOS JÁ REGISTRADOS (SÓ QUANDO HOUVER) */}
                 {comandaAtiva.pagamentos && comandaAtiva.pagamentos.length > 0 && (
-                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '10px', fontSize: '0.76rem' }}>
-                    <div style={{ fontWeight: 800, color: '#166534', marginBottom: '4px' }}>💳 Pagamentos Registrados:</div>
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '8px 12px', fontSize: '0.75rem' }}>
+                    <div style={{ fontWeight: 800, color: '#166534', marginBottom: '4px' }}>Pagamentos parciais</div>
                     {comandaAtiva.pagamentos.map((p) => (
                       <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', color: '#14532d' }}>
                         <span>
@@ -900,122 +857,173 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                   </div>
                 )}
 
-                {/* DAR BAIXA / FECHAR COMANDA */}
-                {comandaAtiva.status === 'aberta' && (
-                  <div style={{ background: '#ffffff', border: '1.5px solid #86efac', borderRadius: '12px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '9px' }}>
-                    <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#14532d' }}>
-                      💰 Dar Baixa / Fechar Comanda (Restante: R$ {saldoRestante.toFixed(2).replace('.', ',')})
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
-                      {FORMAS_PAGAMENTO.map((fp) => (
-                        <button
-                          key={fp.id}
-                          type="button"
-                          onClick={() => setFormaPagamento(fp.id)}
-                          style={{
-                            padding: '7px 6px',
-                            borderRadius: '8px',
-                            border: formaPagamento === fp.id ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                            background: formaPagamento === fp.id ? '#dcfce7' : '#f8fafc',
-                            color: formaPagamento === fp.id ? '#166534' : '#334155',
-                            fontWeight: 700,
-                            fontSize: '0.76rem',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          {fp.icon} {fp.label}
-                        </button>
-                      ))}
+                {/* RESUMO, DIVISÃO POR PESSOAS & FECHAMENTO UNIFICADO */}
+                <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {/* TOTAL + DIVISÃO COMPACTA */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div>
+                      <div style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700 }}>
+                        {(comandaAtiva.valorPago || 0) > 0
+                          ? `Total R$ ${comandaAtiva.valorTotal.toFixed(2).replace('.', ',')} • Pago R$ ${(comandaAtiva.valorPago || 0).toFixed(2).replace('.', ',')}`
+                          : 'Total da Comanda'}
+                      </div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0f172a' }}>
+                        R$ {saldoRestante.toFixed(2).replace('.', ',')}
+                      </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      <input
-                        type="text"
-                        value={nomePagador}
-                        onChange={(e) => setNomePagador(e.target.value)}
-                        placeholder="Nome de quem está pagando (opcional)"
-                        style={{ flex: '1 1 160px', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.8rem' }}
-                      />
-                      <input
-                        type="text"
-                        value={valorPagamentoStr}
-                        onChange={(e) => setValorPagamentoStr(e.target.value)}
-                        placeholder={`Valor (padrão: ${saldoRestante.toFixed(2).replace('.', ',')})`}
-                        style={{ flex: '1 1 140px', padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.8rem', fontWeight: 700 }}
-                      />
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '3px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#475569' }}>👥 Dividir:</span>
+                        <button
+                          type="button"
+                          onClick={() => handleAlterarDivisaoPessoas(Math.max(1, pessoasDivisao - 1))}
+                          style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 800, cursor: 'pointer' }}
+                        >
+                          -
+                        </button>
+                        <span style={{ minWidth: '24px', textAlign: 'center', fontWeight: 800, fontSize: '0.84rem', color: '#1d4ed8' }}>
+                          {pessoasDivisao}x
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleAlterarDivisaoPessoas(pessoasDivisao + 1)}
+                          style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 800, cursor: 'pointer' }}
+                        >
+                          +
+                        </button>
+                      </div>
                       {pessoasDivisao > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => setValorPagamentoStr(valorPorPessoaRestante.toFixed(2).replace('.', ','))}
-                          style={{
-                            padding: '8px 10px',
-                            borderRadius: '8px',
-                            border: '1px solid #93c5fd',
-                            background: '#eff6ff',
-                            color: '#1d4ed8',
-                            fontWeight: 700,
-                            fontSize: '0.75rem',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          1 Parte (R$ {valorPorPessoaRestante.toFixed(2).replace('.', ',')})
-                        </button>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1d4ed8' }}>
+                          R$ {valorPorPessoaTotal.toFixed(2).replace('.', ',')} / pessoa
+                        </div>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => setValorPagamentoStr(saldoRestante.toFixed(2).replace('.', ','))}
-                        style={{
-                          padding: '8px 10px',
-                          borderRadius: '8px',
-                          border: '1px solid #cbd5e1',
-                          background: '#f1f5f9',
-                          color: '#334155',
-                          fontWeight: 700,
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Tudo
-                      </button>
                     </div>
+                  </div>
 
-                    {loja?.configFiscal?.habilitado && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', background: '#eff6ff', padding: '7px 10px', borderRadius: '8px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', fontWeight: 700, color: '#1e3a8a', cursor: 'pointer' }}>
-                          <input type="checkbox" checked={emitirNfce} onChange={(e) => setEmitirNfce(e.target.checked)} />
-                          <span>🧾 Emitir NFC-e ao quitar</span>
-                        </label>
-                        {emitirNfce && (
+                  {comandaAtiva.status === 'aberta' && (
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '5px' }}>
+                        {FORMAS_PAGAMENTO.map((fp) => (
+                          <button
+                            key={fp.id}
+                            type="button"
+                            onClick={() => setFormaPagamento(fp.id)}
+                            style={{
+                              padding: '7px 4px',
+                              borderRadius: '8px',
+                              border: formaPagamento === fp.id ? '2px solid #16a34a' : '1px solid #cbd5e1',
+                              background: formaPagamento === fp.id ? '#dcfce7' : '#f8fafc',
+                              color: formaPagamento === fp.id ? '#166534' : '#334155',
+                              fontWeight: 700,
+                              fontSize: '0.74rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {fp.icon} {fp.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {mostrarPagParcial && (
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                           <input
                             type="text"
-                            value={cpfNaNota}
-                            onChange={(e) => setCpfNaNota(e.target.value)}
-                            placeholder="CPF/CNPJ na nota (opcional)"
-                            style={{ flex: 1, minWidth: '150px', padding: '5px 8px', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.76rem' }}
+                            value={nomePagador}
+                            onChange={(e) => setNomePagador(e.target.value)}
+                            placeholder="Nome de quem paga (opcional)"
+                            style={{ flex: '1 1 130px', padding: '7px 9px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.78rem' }}
                           />
-                        )}
-                      </div>
-                    )}
+                          <input
+                            type="text"
+                            value={valorPagamentoStr}
+                            onChange={(e) => setValorPagamentoStr(e.target.value)}
+                            placeholder={`Valor (padrão ${saldoRestante.toFixed(2).replace('.', ',')})`}
+                            style={{ flex: '1 1 110px', padding: '7px 9px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.78rem', fontWeight: 700 }}
+                          />
+                        </div>
+                      )}
 
-                    <button
-                      type="button"
-                      onClick={handleRegistrarPagamento}
-                      style={{
-                        width: '100%',
-                        padding: '11px',
-                        borderRadius: '10px',
-                        border: 'none',
-                        background: '#16a34a',
-                        color: '#ffffff',
-                        fontWeight: 800,
-                        fontSize: '0.9rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      ✅ Dar Baixa / Receber Pagamento
-                    </button>
-                  </div>
-                )}
+                      {loja?.configFiscal?.habilitado && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', background: '#eff6ff', padding: '6px 10px', borderRadius: '8px' }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.76rem', fontWeight: 700, color: '#1e3a8a', cursor: 'pointer' }}>
+                            <input type="checkbox" checked={emitirNfce} onChange={(e) => setEmitirNfce(e.target.checked)} />
+                            <span>🧾 Emitir NFC-e ao quitar</span>
+                          </label>
+                          {emitirNfce && (
+                            <input
+                              type="text"
+                              value={cpfNaNota}
+                              onChange={(e) => setCpfNaNota(e.target.value)}
+                              placeholder="CPF/CNPJ na nota (opcional)"
+                              style={{ flex: 1, minWidth: '140px', padding: '5px 8px', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.75rem' }}
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {pessoasDivisao > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setValorPagamentoStr(valorPorPessoaRestante.toFixed(2).replace('.', ','));
+                              setMostrarPagParcial(true);
+                            }}
+                            style={{
+                              padding: '10px 10px',
+                              borderRadius: '9px',
+                              border: '1px solid #93c5fd',
+                              background: '#eff6ff',
+                              color: '#1d4ed8',
+                              fontWeight: 800,
+                              fontSize: '0.76rem',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            1 Parte (R$ {valorPorPessoaRestante.toFixed(2).replace('.', ',')})
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleRegistrarPagamento}
+                          style={{
+                            flex: 1,
+                            padding: '10px 12px',
+                            borderRadius: '9px',
+                            border: 'none',
+                            background: '#16a34a',
+                            color: '#ffffff',
+                            fontWeight: 800,
+                            fontSize: '0.88rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ✅ {valorPagamentoStr.trim() ? 'Receber Valor' : `Fechar Comanda (R$ ${saldoRestante.toFixed(2).replace('.', ',')})`}
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setMostrarPagParcial((v) => !v)}
+                        style={{
+                          alignSelf: 'center',
+                          background: 'none',
+                          border: 'none',
+                          color: '#64748b',
+                          fontSize: '0.74rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          padding: 0,
+                          textDecoration: 'underline',
+                        }}
+                      >
+                        {mostrarPagParcial ? 'Ocultar pagamento parcial' : 'Informar pagamento parcial / nome do pagador'}
+                      </button>
+                    </>
+                  )}
+                </div>
 
                 {/* ÁREA OCULTA PARA IMPRESSÃO TÉRMICA DA COMANDA */}
                 <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
