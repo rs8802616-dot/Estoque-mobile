@@ -9227,7 +9227,7 @@ export default function App() {
               className="layout-caixa-delivery-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: (colunaDeliveryFixaVisivel && (temPermissaoOperador('vender', 'caixa') || temPermissaoOperador('gerenciar_delivery', 'delivery'))) ? 'minmax(0, 1fr) 465px' : 'minmax(0, 1fr)',
+                gridTemplateColumns: (colunaDeliveryFixaVisivel && (temPermissaoOperador('vender', 'caixa') || temPermissaoOperador('gerenciar_delivery', 'delivery'))) ? 'minmax(0, 1fr) clamp(355px, 30vw, 455px)' : 'minmax(0, 1fr)',
                 gap: '16px',
                 alignItems: 'start',
               }}

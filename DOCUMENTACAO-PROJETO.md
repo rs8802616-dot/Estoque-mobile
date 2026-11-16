@@ -165,6 +165,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-16 - Versão 152 - Ajuste Responsivo para Notebooks (1024px–1439px e Altura <= 820px)]
+- **Proporção Compacta em Notebooks (`src/index.css` & `src/App.tsx`):**
+  - Adicionada media query específica para notebooks (`@media (min-width: 1024px) and (max-width: 1439px), (min-width: 1024px) and (max-height: 820px)`), reduzindo altura das fotos, fontes, espaçamentos do topo e tamanho mínimo dos cards (`minmax(175px, 1fr)`) para evitar elementos gigantes em telas de notebook (ex: 1366x768, 1280x720 ou 125% de escala).
+  - Coluna lateral do Caixa/Comandas/Delivery ajustada de `465px` fixo para `clamp(355px, 30vw, 455px)`, mantendo amplitude em monitores grandes e melhor proporção em notebooks.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v152` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-16 - Versão 151 - Correção de Duplicação de Lote ao Editar Data de Validade no Estoque]
 - **Correção de Race Condition na Edição de Estoque (`src/App.tsx`):**
   - Ao editar um lote no estoque alterando a data de validade, lote ou código de barras, o sistema agora aguarda (`await`) a remoção do documento antigo no Firestore (`excluirItemEstoqueFirestore`) e ignora o lote antigo no loop de propagação de metadados para outros lotes, impedindo que o registro vencido/anterior fosse regravado e duplicado.
