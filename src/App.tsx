@@ -74,8 +74,10 @@ import {
   normalizarSlugLoja,
   ConfigFiscalLoja,
   NfceRegistro,
+  ComandaLocal,
 } from './types';
 import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
+import { ComandasModal } from './components/ComandasModal';
 import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
@@ -194,6 +196,8 @@ import {
   subscribeVendas,
   subscribeOperadores,
   subscribeClientesDevedores,
+  subscribeComandasLocais,
+  salvarComandaLocalFirestore,
   salvarSupermercadoFirestore,
   salvarItemEstoqueFirestore,
   salvarProdutoCatalogoFirestore,
@@ -680,6 +684,8 @@ export default function App() {
     | 'notificacoes'
     | 'whatsapp'
     | 'catalogo'
+    | 'comandas'
+    | 'fiscal'
   )[]>([]);
   const [modalPesquisaCatalogoVisivel, setModalPesquisaCatalogoVisivel] = useState<boolean>(false);
   const [modalVendaVisivel, setModalVendaVisivel] = useState<boolean>(false);
@@ -961,6 +967,8 @@ export default function App() {
   const [cadMargemLucro, setCadMargemLucro] = useState<string>('');
   const [modalEntradaNotaVisivel, setModalEntradaNotaVisivel] = useState<boolean>(false);
   const [modalConfigFiscalVisivel, setModalConfigFiscalVisivel] = useState<boolean>(false);
+  const [modalComandasVisivel, setModalComandasVisivel] = useState<boolean>(false);
+  const [comandasLocais, setComandasLocais] = useState<ComandaLocal[]>([]);
   const [fotoTemp, setFotoTemp] = useState<string>('');
   const [msgCad, setMsgCad] = useState<React.ReactNode>('');
 
@@ -4677,7 +4685,9 @@ export default function App() {
     | 'manual'
     | 'notificacoes'
     | 'whatsapp'
-    | 'catalogo';
+    | 'catalogo'
+    | 'comandas'
+    | 'fiscal';
   type AbaSecundariaSistema = Exclude<AbaNavegacaoSistema, 'inicio'>;
 
   // Registra automaticamente na barra compacta do canto inferior direito qualquer tela aberta
@@ -4699,6 +4709,8 @@ export default function App() {
     if (modalNotificacoesVisivel) ativasAgora.push('notificacoes');
     if (modalAlertasWhatsAppVisivel) ativasAgora.push('whatsapp');
     if (modalPesquisaCatalogoVisivel) ativasAgora.push('catalogo');
+    if (modalComandasVisivel) ativasAgora.push('comandas');
+    if (modalConfigFiscalVisivel) ativasAgora.push('fiscal');
 
     if (ativasAgora.length > 0) {
       setAbasAbertas((prev) => {
@@ -4723,6 +4735,8 @@ export default function App() {
     modalNotificacoesVisivel,
     modalAlertasWhatsAppVisivel,
     modalPesquisaCatalogoVisivel,
+    modalComandasVisivel,
+    modalConfigFiscalVisivel,
     perfilAtivo,
   ]);
 
@@ -4744,6 +4758,8 @@ export default function App() {
     setModalNotificacoesVisivel(false);
     setModalAlertasWhatsAppVisivel(false);
     setModalPesquisaCatalogoVisivel(false);
+    setModalComandasVisivel(false);
+    setModalConfigFiscalVisivel(false);
   };
 
   const navegarParaAba = (aba: AbaNavegacaoSistema) => {
@@ -4787,6 +4803,10 @@ export default function App() {
       setModalAlertasWhatsAppVisivel(true);
     } else if (aba === 'catalogo') {
       setModalPesquisaCatalogoVisivel(true);
+    } else if (aba === 'comandas') {
+      setModalComandasVisivel(true);
+    } else if (aba === 'fiscal') {
+      setModalConfigFiscalVisivel(true);
     }
   };
 
@@ -4825,6 +4845,10 @@ export default function App() {
       setModalAlertasWhatsAppVisivel(false);
     } else if (aba === 'catalogo') {
       setModalPesquisaCatalogoVisivel(false);
+    } else if (aba === 'comandas') {
+      setModalComandasVisivel(false);
+    } else if (aba === 'fiscal') {
+      setModalConfigFiscalVisivel(false);
     }
   };
 
@@ -6373,6 +6397,190 @@ export default function App() {
       atualizarNfceNaVenda(vendaAlvo, nfceAtualizado);
     } catch (e) {
       console.warn('Erro ao consultar NFC-e:', e);
+    }
+  };
+
+  // =========================================================================
+  // COMANDAS / MESAS DE CONSUMO LOCAL
+  // =========================================================================
+  useEffect(() => {
+    if (!supermercadoAtual) {
+      setComandasLocais([]);
+      return;
+    }
+    try {
+      const salvo = localStorage.getItem(`comandas_locais_${supermercadoAtual}`);
+      if (salvo) {
+        const parsed = JSON.parse(salvo);
+        if (Array.isArray(parsed)) setComandasLocais(parsed);
+      } else {
+        setComandasLocais([]);
+      }
+    } catch {
+      setComandasLocais([]);
+    }
+    const unsub = subscribeComandasLocais(supermercadoAtual, (lista) => {
+      setComandasLocais(lista);
+    });
+    return () => {
+      if (typeof unsub === 'function') unsub();
+    };
+  }, [supermercadoAtual]);
+
+  const persistirComandas = (novaLista: ComandaLocal[], comandaAlterada?: ComandaLocal) => {
+    setComandasLocais(novaLista);
+    if (supermercadoAtual) {
+      safeLocalStorageSet(`comandas_locais_${supermercadoAtual}`, JSON.stringify(novaLista));
+    }
+    if (comandaAlterada) {
+      salvarComandaLocalFirestore(comandaAlterada).catch(() => {});
+    }
+  };
+
+  const handleCriarComandaLocal = (dados: {
+    nomeCliente: string;
+    mesaOuReferencia?: string;
+    telefone?: string;
+  }): ComandaLocal => {
+    const maiorNumero = comandasLocais.reduce((max, c) => Math.max(max, c.numeroComanda || 0), 0);
+    const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
+    const nova: ComandaLocal = {
+      id: `cmd_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      lojaId: supermercadoAtual,
+      numeroComanda: maiorNumero + 1,
+      nomeCliente: dados.nomeCliente,
+      mesaOuReferencia: dados.mesaOuReferencia,
+      telefone: dados.telefone,
+      status: 'aberta',
+      itens: [],
+      pagamentos: [],
+      qtdPessoasDivisao: 1,
+      valorTotal: 0,
+      valorPago: 0,
+      abertaEm: new Date().toISOString(),
+      operadorAbertura: opAtivo?.nome || 'Administrador',
+    };
+    persistirComandas([nova, ...comandasLocais], nova);
+    return nova;
+  };
+
+  const handleAtualizarComandaLocal = (comandaAtualizada: ComandaLocal) => {
+    const novaLista = comandasLocais.map((c) => (c.id === comandaAtualizada.id ? comandaAtualizada : c));
+    persistirComandas(novaLista, comandaAtualizada);
+  };
+
+  const handleCancelarComandaLocal = (comandaId: string) => {
+    const alvo = comandasLocais.find((c) => c.id === comandaId);
+    if (!alvo) return;
+    const cancelada: ComandaLocal = {
+      ...alvo,
+      status: 'cancelada',
+      fechadaEm: new Date().toISOString(),
+    };
+    const novaLista = comandasLocais.map((c) => (c.id === comandaId ? cancelada : c));
+    persistirComandas(novaLista, cancelada);
+  };
+
+  const handleFecharComandaComVenda = (
+    comandaQuitada: ComandaLocal,
+    formaPagamentoFinal: 'pix' | 'dinheiro' | 'cartao_credito' | 'cartao_debito',
+    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string }
+  ) => {
+    if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
+      alert('⚠️ Caixa fechado! Abra o turno de caixa antes de fechar a comanda.');
+      setModalCaixaVisivel(true);
+      return;
+    }
+
+    // Baixa no estoque dos itens consumidos na comanda
+    let novoEstoque = [...estoque];
+    for (const itemCmd of comandaQuitada.itens) {
+      if (itemCmd.estoqueIlimitado || itemCmd.tipoCadastro === 'interno') continue;
+      let idx = novoEstoque.findIndex(
+        (p) =>
+          String(p.codigo || '').trim() === String(itemCmd.codigo || '').trim() &&
+          (!itemCmd.lote || String(p.lote || '').trim() === String(itemCmd.lote || '').trim())
+      );
+      if (idx < 0) {
+        idx = novoEstoque.findIndex((p) => String(p.codigo || '').trim() === String(itemCmd.codigo || '').trim());
+      }
+      if (idx >= 0 && !novoEstoque[idx].estoqueIlimitado && novoEstoque[idx].tipoCadastro !== 'interno') {
+        const novaQtd = Math.max(0, Number((novoEstoque[idx].quantidade - itemCmd.quantidade).toFixed(3)));
+        novoEstoque[idx] = { ...novoEstoque[idx], quantidade: novaQtd };
+        if (navigator.onLine) {
+          salvarItemEstoqueFirestore(novoEstoque[idx], supermercadoAtual).catch(() => {});
+        }
+      }
+    }
+
+    const agora = new Date();
+    const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
+    const nomeOperador = opAtivo ? opAtivo.nome : 'Administrador do Supermercado';
+
+    const novaVenda: Venda = {
+      id: 'ven_' + Date.now(),
+      lojaId: supermercadoAtual,
+      data: agora.toISOString().slice(0, 10),
+      hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: agora.getTime(),
+      operadorId: operadorAtivoId || 'admin',
+      operadorNome: nomeOperador,
+      itens: comandaQuitada.itens.map((it) => ({
+        codigo: it.codigo,
+        nome: it.nome,
+        quantidade: it.quantidade,
+        preco_unitario: it.preco_unitario,
+        preco_custo: it.preco_custo,
+        subtotal: it.subtotal,
+        lote: it.lote,
+        validade: it.validade,
+        tipoCadastro: it.tipoCadastro,
+        estoqueIlimitado: it.estoqueIlimitado,
+      })),
+      valorTotal: comandaQuitada.valorTotal,
+      formaPagamento: formaPagamentoFinal,
+      status: 'concluida',
+      origem: 'balcao',
+      cpfNaNota: opcoesFiscais?.cpfNaNota,
+    };
+
+    const novasVendas = [novaVenda, ...vendas];
+    setVendas(novasVendas);
+    safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(novasVendas));
+    if (!navigator.onLine) {
+      adicionarVendaFilaOffline(novaVenda);
+      setVendasPendentesCount(obterVendasPendentesOffline().length);
+    } else {
+      salvarVendaFirestore(novaVenda).catch(() => {
+        adicionarVendaFilaOffline(novaVenda);
+        setVendasPendentesCount(obterVendasPendentesOffline().length);
+      });
+    }
+
+    const comandaFechada: ComandaLocal = {
+      ...comandaQuitada,
+      status: 'fechada',
+      fechadaEm: agora.toISOString(),
+      vendaIdGerada: novaVenda.id,
+    };
+    const novaListaComandas = comandasLocais.map((c) => (c.id === comandaFechada.id ? comandaFechada : c));
+    persistirComandas(novaListaComandas, comandaFechada);
+
+    setEstoque(novoEstoque);
+    safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(novoEstoque));
+    tocarSomSucessoVenda();
+    notificarSincronizacao();
+
+    registrarLogAuditoria(
+      'Comanda Fechada',
+      `Comanda #${comandaFechada.numeroComanda} (${comandaFechada.nomeCliente}) fechada no valor de R$ ${comandaFechada.valorTotal.toFixed(2)} por ${nomeOperador}`
+    );
+
+    setModalComandasVisivel(false);
+    setVendaCupomVer(novaVenda);
+
+    if (opcoesFiscais?.emitirNfce) {
+      handleEmitirNfceParaVenda(novaVenda, opcoesFiscais.cpfNaNota);
     }
   };
 
@@ -7925,6 +8133,37 @@ export default function App() {
                     </div>
                   )}
 
+                  {temPermissaoOperador('vender', 'caixa') && (
+                    <div
+                      className="sidebar-item"
+                      style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
+                      onClick={() => {
+                        setModalComandasVisivel(true);
+                        fecharMenu();
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                        <span>Comandas / Mesas (Consumo Local)</span>
+                      </span>
+                      {comandasLocais.filter((c) => c.status === 'aberta').length > 0 && (
+                        <span
+                          style={{
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            padding: '2px 6px',
+                            borderRadius: '6px',
+                            whiteSpace: 'nowrap',
+                            background: '#dcfce7',
+                            color: '#166534',
+                          }}
+                        >
+                          {comandasLocais.filter((c) => c.status === 'aberta').length} abertas
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {temPermissaoOperador('gerenciar_devedores', 'devedores') && (
                     <div
                       className="sidebar-item"
@@ -8111,22 +8350,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja' || temPermissaoOperador('gerenciar_equipe', 'usuarios')) && (
-                  <div
-                    className="sidebar-item"
-                    style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
-                    onClick={() => {
-                      setModalConfigFiscalVisivel(true);
-                      fecharMenu();
-                    }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
-                      <span>Configuração Fiscal (NFC-e / Focus)</span>
-                    </span>
-                  </div>
-                )}
-
                 {perfilAtivo === 'dona_app' && (
                     <div
                       style={{
@@ -8167,22 +8390,6 @@ export default function App() {
                       </div>
                     </div>
                   )}
-
-                  {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja' || temPermissaoOperador('gerenciar_equipe', 'usuarios')) && (
-                  <div
-                    className="sidebar-item"
-                    style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
-                    onClick={() => {
-                      setModalConfigFiscalVisivel(true);
-                      fecharMenu();
-                    }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
-                      <span>Configuração Fiscal (NFC-e / Focus)</span>
-                    </span>
-                  </div>
-                )}
 
                 {perfilAtivo === 'dona_app' && (
                     <div
@@ -13512,6 +13719,25 @@ export default function App() {
         onSalvarConfigFiscal={handleSalvarConfigFiscal}
       />
 
+      {/* MODAL DE COMANDAS / MESAS (CONSUMO LOCAL E DIVISÃO DE CONTA) */}
+      <ComandasModal
+        visivel={modalComandasVisivel}
+        onFechar={() => setModalComandasVisivel(false)}
+        comandas={comandasLocais}
+        estoque={estoque}
+        loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
+        sessaoCaixaAberta={!!(sessaoCaixaAtiva && sessaoCaixaAtiva.status === 'aberto')}
+        onAbrirCaixaModal={() => {
+          setModalComandasVisivel(false);
+          setModalCaixaVisivel(true);
+        }}
+        onCriarComanda={handleCriarComandaLocal}
+        onAtualizarComanda={handleAtualizarComandaLocal}
+        onFecharComandaComVenda={handleFecharComandaComVenda}
+        onCancelarComanda={handleCancelarComandaLocal}
+        obterFotoProduto={obterFotoProduto}
+      />
+
       {/* MODAL DE IMPRESSÃO DE ETIQUETAS DE PRATELEIRA */}
       <EtiquetasModal
         visivel={modalEtiquetasVisivel}
@@ -14040,7 +14266,11 @@ export default function App() {
                                         ? 'whatsapp'
                                         : modalPesquisaCatalogoVisivel
                                           ? 'catalogo'
-                                          : 'inicio';
+                                          : modalComandasVisivel
+                                            ? 'comandas'
+                                            : modalConfigFiscalVisivel
+                                              ? 'fiscal'
+                                              : 'inicio';
 
         const metaAbas: Record<AbaSecundariaSistema, { icone: string; label: string }> = {
           cadastro: { icone: '➕', label: 'Cadastro' },
@@ -14059,6 +14289,8 @@ export default function App() {
           notificacoes: { icone: '🔔', label: 'Alertas' },
           whatsapp: { icone: '📱', label: 'WhatsApp' },
           catalogo: { icone: '🗂️', label: 'Catálogo' },
+          comandas: { icone: '🧾', label: 'Comandas' },
+          fiscal: { icone: '🏛️', label: 'Fiscal' },
         };
 
         // Só exibe as abas abertas (ou enquanto houver pelo menos 1 aba aberta além do Início)

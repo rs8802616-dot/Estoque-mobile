@@ -290,6 +290,49 @@ export interface Venda {
   nfce?: NfceRegistro;
 }
 
+export interface ItemComanda {
+  id: string;
+  codigo: string;
+  nome: string;
+  quantidade: number;
+  preco_unitario: number;
+  preco_custo?: number;
+  subtotal: number;
+  lote?: string;
+  validade?: string;
+  tipoCadastro?: 'padrao' | 'interno';
+  estoqueIlimitado?: boolean;
+  adicionadoEm: string;
+}
+
+export interface PagamentoComanda {
+  id: string;
+  pagador?: string;
+  valor: number;
+  formaPagamento: 'dinheiro' | 'cartao_credito' | 'cartao_debito' | 'pix';
+  data: string;
+  hora: string;
+}
+
+export interface ComandaLocal {
+  id: string;
+  lojaId: string;
+  numeroComanda: number;
+  nomeCliente: string;
+  mesaOuReferencia?: string;
+  telefone?: string;
+  status: 'aberta' | 'fechada' | 'cancelada';
+  itens: ItemComanda[];
+  pagamentos: PagamentoComanda[];
+  qtdPessoasDivisao?: number;
+  valorTotal: number;
+  valorPago: number;
+  abertaEm: string;
+  fechadaEm?: string;
+  operadorAbertura?: string;
+  vendaIdGerada?: string;
+}
+
 export interface CompraFiadoItem {
   codigo: string;
   nome: string;

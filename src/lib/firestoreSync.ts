@@ -28,6 +28,7 @@ import {
   Venda,
   OperadorCaixa,
   ClienteDevedor,
+  ComandaLocal,
   PedidoDelivery,
   ConfiguracaoDelivery,
 } from '../types';
@@ -1464,4 +1465,44 @@ export async function salvarTermoAceitoFirestore(idContaLogin: string, registro:
   } catch (err) {
     console.warn('Aviso: Não foi possível gravar o aceite do termo no Firestore:', err);
   }
+}
+
+// =========================================================================
+// COMANDAS / MESAS DE CONSUMO LOCAL
+// =========================================================================
+
+export async function salvarComandaLocalFirestore(comanda: ComandaLocal): Promise<void> {
+  try {
+    const cleanId = sanitizarIdDoc(comanda.id);
+    await setDoc(doc(db, 'comandas_locais', cleanId), limparUndefined(comanda), { merge: true });
+  } catch (err) {
+    console.warn('Aviso ao salvar comanda local no Firestore (mantida localmente):', err);
+  }
+}
+
+export function subscribeComandasLocais(lojaId: string, callback: (comandas: ComandaLocal[]) => void) {
+  if (!lojaId) return () => {};
+  const q = query(collection(db, 'comandas_locais'), where('lojaId', '==', lojaId));
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const lista: ComandaLocal[] = [];
+      snapshot.forEach((docSnap) => {
+        const c = { id: docSnap.id, ...docSnap.data() } as ComandaLocal;
+        if (c && c.id) lista.push(c);
+      });
+      lista.sort((a, b) => new Date(b.abertaEm).getTime() - new Date(a.abertaEm).getTime());
+      safeLocalStorageSet(`comandas_locais_${lojaId}`, JSON.stringify(lista));
+      callback(lista);
+    },
+    () => {
+      try {
+        const salvo = localStorage.getItem(`comandas_locais_${lojaId}`);
+        if (salvo) {
+          const parsed = JSON.parse(salvo);
+          if (Array.isArray(parsed)) callback(parsed);
+        }
+      } catch {}
+    }
+  );
 }

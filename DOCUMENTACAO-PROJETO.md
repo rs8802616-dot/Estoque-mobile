@@ -42,7 +42,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 | **OCR & Leitura de Notas** | Tesseract.js + PDF.js + Gemini (`@google/genai`) | Leitura de NF-e, cupons e lotes via cliente e rota serverless `api/ocr-lote.js` |
 | **Backend/Servidor** | Node.js + Express (`server.ts`) & API Vercel (`api/`) | Porta 3000 em dev/prod e funções serverless para consulta externa e OCR |
 | **Testes Automatizados** | Node Test Runner (`tsx --test tests/*.test.ts`) | Validação de regras centrais e segurança |
-| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v145`) |
+| **PWA / Offline** | Service Worker (`public/sw.js`) | Cache offline versionado (atual: `estoque-mobile-pwa-v146`) |
 
 ---
 
@@ -64,7 +64,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 │   ├── nfce.js                     # Proxy seguro Focus NFe API v2 (NFC-e Modelo 65)
 │   └── ocr-lote.js                 # Rota OCR de lote/validade
 ├── public/
-│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v145)
+│   └── sw.js                       # Service Worker PWA (estoque-mobile-pwa-v146)
 ├── tests/
 │   └── core.test.ts                # Testes automatizados do núcleo do sistema
 ├── src/
@@ -81,6 +81,7 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 │   │   ├── CarrinhoVendaModal.tsx
 │   │   ├── CentralRelatoriosModal.tsx
 │   │   ├── CentroNotificacoesModal.tsx
+│   │   ├── ComandasModal.tsx
 │   │   ├── ConfiguracaoFiscalModal.tsx
 │   │   ├── ConsultaProdutosModal.tsx
 │   │   ├── CupomVendaModal.tsx
@@ -163,6 +164,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 ---
 
 ## 5. Histórico de Alterações (Changelog)
+
+### [2026-11-15 - Versão 146 - Comandas/Mesas de Consumo Local com Divisão por Pessoas & Correção de Duplicidade no Menu]
+- **Correção de Duplicidade no Menu Lateral (`src/App.tsx`):**
+  - Removidos os 2 itens duplicados de `Configuração Fiscal (NFC-e / Focus)` que haviam sido inseridos indevidamente dentro de **Estoque & Produtos**, mantendo o item exclusivamente em **Configurações & Equipe**.
+- **Novo Módulo de Comandas / Mesas — Consumo Local (`ComandasModal.tsx`, `types.ts`, `firestoreSync.ts`, `firestore.rules`, `App.tsx`):**
+  - Acessível pelo menu lateral em **Caixa & Vendas → `Comandas / Mesas (Consumo Local)`** (com contador de comandas abertas) e registrado na barra flutuante de abas (`comandas` e `fiscal`).
+  - Permite **abrir comandas no nome do cliente** (com mesa/referência e telefone opcionais), **lançar produtos direto do estoque** com ajuste de quantidade (`- / +`) e **imprimir conferência da comanda** em bobina térmica `80mm`/`58mm`.
+  - **Divisão de Conta por Pessoas (Rateio):** seletor rápido (`1x` a `6x` ou quantidade personalizada) exibindo o **valor exato por pessoa** na tela e na impressão, além de botão **`1 Parte (R$ XX,XX)`** para receber pagamentos parciais de cada pessoa até quitar a comanda.
+  - **Baixa Automática ao Fechar:** ao quitar o saldo total, dá baixa automática dos itens no estoque da loja, registra a `Venda` no caixa/relatórios, abre o cupom e suporta emissão de **NFC-e** no fechamento.
+  - Sincronização em tempo real via coleção `comandas_locais` no Firestore (`subscribeComandasLocais` / `salvarComandaLocalFirestore`) e cache offline em `localStorage`.
+- **Atualização de Cache PWA:** Cache do Service Worker atualizado para `estoque-mobile-pwa-v146` em `public/sw.js` e `src/main.tsx`.
 
 ### [2026-11-15 - Versão 145 - Integração Completa de Configuração e Emissão Fiscal NFC-e (Focus NFe)]
 - **Rota Serverless Segura (`api/nfce.js`) & Serviço Fiscal (`src/lib/focusNfeService.ts`):**

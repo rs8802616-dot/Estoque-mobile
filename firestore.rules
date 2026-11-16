@@ -178,6 +178,13 @@ service cloud.firestore {
     }
 
     // =========================================================================
+    // 13. COMANDAS / MESAS DE CONSUMO LOCAL
+    // =========================================================================
+    match /comandas_locais/{comandaId} {
+      allow read, write: if true;
+    }
+
+    // =========================================================================
     // BLOQUEIO PADRÃO PARA TODAS AS OUTRAS COLEÇÕES (Princípio do Menor Privilégio)
     // =========================================================================
     match /{document=**} {
