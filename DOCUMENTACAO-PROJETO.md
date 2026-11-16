@@ -165,6 +165,14 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-15 - Versão 147 - Comandas / Mesas Integradas Direto no Painel Caixa / Venda]
+- **Aba `🍽️ Comandas` no Painel Lateral do Caixa (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
+  - Extraído o componente `ComandasPanel` (reutilizado tanto no modal completo quanto diretamente na coluna fixa lateral ao lado de `🛒 Caixa / Venda` e `🛵 Delivery`).
+  - Adicionada a aba **`🍽️ Comandas`** (com contador de comandas abertas) ao lado de **`🛒 Caixa / Venda`** no painel lateral do PDV, com navegação em lista/detalhe adaptada para 465px e botão `⛶ Expandir` para abrir em tela cheia.
+- **Atalho `🍽️ Comanda` no Carrinho do Caixa (`src/components/CaixaPdvLateralPanel.tsx` & `src/App.tsx`):**
+  - Quando houver itens no carrinho do Caixa/Venda, o operador pode clicar em **`🍽️ Comanda`** para enviar todos os itens bipados diretamente para uma nova comanda no nome do cliente e abrir a aba de Comandas automaticamente.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v147` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-15 - Versão 146 - Comandas/Mesas de Consumo Local com Divisão por Pessoas & Correção de Duplicidade no Menu]
 - **Correção de Duplicidade no Menu Lateral (`src/App.tsx`):**
   - Removidos os 2 itens duplicados de `Configuração Fiscal (NFC-e / Focus)` que haviam sido inseridos indevidamente dentro de **Estoque & Produtos**, mantendo o item exclusivamente em **Configurações & Equipe**.

@@ -77,7 +77,7 @@ import {
   ComandaLocal,
 } from './types';
 import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
-import { ComandasModal } from './components/ComandasModal';
+import { ComandasModal, ComandasPanel } from './components/ComandasModal';
 import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
@@ -1077,7 +1077,7 @@ export default function App() {
   const [colunaDeliveryFixaVisivel, setColunaDeliveryFixaVisivel] = useState<boolean>(() => {
     return localStorage.getItem('coluna_delivery_fixa_visivel') !== 'false';
   });
-  const [abaPainelLateral, setAbaPainelLateral] = useState<'caixa' | 'delivery'>('caixa');
+  const [abaPainelLateral, setAbaPainelLateral] = useState<'caixa' | 'comandas' | 'delivery'>('caixa');
 
   const [configDelivery, setConfigDelivery] = useState<ConfiguracaoDelivery>(() => {
     try {
@@ -6464,6 +6464,44 @@ export default function App() {
     return nova;
   };
 
+  const handleEnviarCarrinhoParaComanda = () => {
+    if (carrinho.length === 0) return;
+    const nome = window.prompt('Nome do cliente para abrir a comanda com os itens do carrinho:');
+    if (!nome || !nome.trim()) return;
+
+    const maiorNumero = comandasLocais.reduce((max, c) => Math.max(max, c.numeroComanda || 0), 0);
+    const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
+    const agoraIso = new Date().toISOString();
+    const itensComanda = carrinho.map((item) => ({
+      id: `itcmd_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      codigo: item.codigo,
+      nome: item.nome,
+      quantidade: item.quantidade,
+      preco_unitario: item.preco_unitario,
+      preco_custo: item.preco_custo,
+      subtotal: Number((item.preco_unitario * item.quantidade).toFixed(2)),
+      adicionadoEm: agoraIso,
+    }));
+    const valorTotal = Number(itensComanda.reduce((acc, it) => acc + it.subtotal, 0).toFixed(2));
+    const nova: ComandaLocal = {
+      id: `cmd_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      lojaId: supermercadoAtual,
+      numeroComanda: maiorNumero + 1,
+      nomeCliente: nome.trim(),
+      status: 'aberta',
+      itens: itensComanda,
+      pagamentos: [],
+      qtdPessoasDivisao: 1,
+      valorTotal,
+      valorPago: 0,
+      abertaEm: new Date().toISOString(),
+      operadorAbertura: opAtivo?.nome || 'Administrador',
+    };
+    persistirComandas([nova, ...comandasLocais], nova);
+    setCarrinho([]);
+    setAbaPainelLateral('comandas');
+  };
+
   const handleAtualizarComandaLocal = (comandaAtualizada: ComandaLocal) => {
     const novaLista = comandasLocais.map((c) => (c.id === comandaAtualizada.id ? comandaAtualizada : c));
     persistirComandas(novaLista, comandaAtualizada);
@@ -9404,28 +9442,30 @@ export default function App() {
 
               </div>
 
-              {/* COLUNA FIXA LATERAL: ABAS CAIXA PDV & DELIVERY - SOMENTE DESKTOP */}
+              {/* COLUNA FIXA LATERAL: ABAS CAIXA PDV, COMANDAS & DELIVERY - SOMENTE DESKTOP */}
               {colunaDeliveryFixaVisivel && (temPermissaoOperador('vender', 'caixa') || temPermissaoOperador('gerenciar_delivery', 'delivery')) && (() => {
                 const podeCaixaLateral = temPermissaoOperador('vender', 'caixa');
                 const podeDeliveryLateral = temPermissaoOperador('gerenciar_delivery', 'delivery');
                 const abaAtiva = !podeCaixaLateral && podeDeliveryLateral
                   ? 'delivery'
-                  : !podeDeliveryLateral && podeCaixaLateral
+                  : !podeDeliveryLateral && podeCaixaLateral && abaPainelLateral === 'delivery'
                     ? 'caixa'
                     : abaPainelLateral;
                 const qtdPendentesDelivery = pedidosDelivery.filter((p) => p.status === 'pendente').length;
                 const qtdItensCarrinho = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+                const qtdComandasAbertas = comandasLocais.filter((c) => c.status === 'aberta').length;
+                const qtdAbasVisiveis = (podeCaixaLateral ? 2 : 0) + (podeDeliveryLateral ? 1 : 0);
 
                 return (
                   <div
                     className="coluna-delivery-fixa-lateral hidden lg:flex"
                     style={{ gap: '8px' }}
                   >
-                    {/* ABAS DE NAVEGAÇÃO RÁPIDA: CAIXA PDV | DELIVERY */}
+                    {/* ABAS DE NAVEGAÇÃO RÁPIDA: CAIXA PDV | COMANDAS | DELIVERY */}
                     <div
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: podeCaixaLateral && podeDeliveryLateral ? '1fr 1fr' : '1fr',
+                        gridTemplateColumns: `repeat(${Math.max(1, qtdAbasVisiveis)}, minmax(0, 1fr))`,
                         gap: '6px',
                         padding: '4px',
                         background: '#e2e8f0',
@@ -9438,18 +9478,18 @@ export default function App() {
                           type="button"
                           onClick={() => setAbaPainelLateral('caixa')}
                           style={{
-                            padding: '8px 10px',
+                            padding: '8px 8px',
                             borderRadius: '9px',
                             border: 'none',
                             background: abaAtiva === 'caixa' ? '#ffffff' : 'transparent',
                             color: abaAtiva === 'caixa' ? '#0f172a' : '#475569',
                             fontWeight: abaAtiva === 'caixa' ? 800 : 600,
-                            fontSize: '13px',
+                            fontSize: '12px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '6px',
+                            gap: '5px',
                             boxShadow: abaAtiva === 'caixa' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
                           }}
                         >
@@ -9460,7 +9500,7 @@ export default function App() {
                                 background: '#2563eb',
                                 color: '#ffffff',
                                 borderRadius: '999px',
-                                padding: '1px 7px',
+                                padding: '1px 6px',
                                 fontSize: '11px',
                                 fontWeight: 800,
                               }}
@@ -9471,23 +9511,61 @@ export default function App() {
                         </button>
                       )}
 
+                      {podeCaixaLateral && (
+                        <button
+                          type="button"
+                          onClick={() => setAbaPainelLateral('comandas')}
+                          style={{
+                            padding: '8px 8px',
+                            borderRadius: '9px',
+                            border: 'none',
+                            background: abaAtiva === 'comandas' ? '#ffffff' : 'transparent',
+                            color: abaAtiva === 'comandas' ? '#0f172a' : '#475569',
+                            fontWeight: abaAtiva === 'comandas' ? 800 : 600,
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '5px',
+                            boxShadow: abaAtiva === 'comandas' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
+                          }}
+                        >
+                          <span>🍽️ Comandas</span>
+                          {qtdComandasAbertas > 0 && (
+                            <span
+                              style={{
+                                background: '#f59e0b',
+                                color: '#ffffff',
+                                borderRadius: '999px',
+                                padding: '1px 6px',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              {qtdComandasAbertas}
+                            </span>
+                          )}
+                        </button>
+                      )}
+
                       {podeDeliveryLateral && (
                         <button
                           type="button"
                           onClick={() => setAbaPainelLateral('delivery')}
                           style={{
-                            padding: '8px 10px',
+                            padding: '8px 8px',
                             borderRadius: '9px',
                             border: 'none',
                             background: abaAtiva === 'delivery' ? '#ffffff' : 'transparent',
                             color: abaAtiva === 'delivery' ? '#0f172a' : '#475569',
                             fontWeight: abaAtiva === 'delivery' ? 800 : 600,
-                            fontSize: '13px',
+                            fontSize: '12px',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '6px',
+                            gap: '5px',
                             boxShadow: abaAtiva === 'delivery' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
                           }}
                         >
@@ -9498,7 +9576,7 @@ export default function App() {
                                 background: '#ef4444',
                                 color: '#ffffff',
                                 borderRadius: '999px',
-                                padding: '1px 7px',
+                                padding: '1px 6px',
                                 fontSize: '11px',
                                 fontWeight: 800,
                               }}
@@ -9530,6 +9608,22 @@ export default function App() {
                           nfceHabilitada={Boolean(lojaAtualObj?.configFiscal?.habilitado)}
                           nfceAutoPadrao={Boolean(lojaAtualObj?.configFiscal?.emitirAutomaticoNoPdv)}
                           nfceAmbiente={lojaAtualObj?.configFiscal?.ambiente || 'homologacao'}
+                          onEnviarParaComanda={handleEnviarCarrinhoParaComanda}
+                        />
+                      ) : abaAtiva === 'comandas' ? (
+                        <ComandasPanel
+                          comandas={comandasLocais}
+                          estoque={estoque}
+                          loja={lojaAtualObj}
+                          sessaoCaixaAberta={!!(sessaoCaixaAtiva && sessaoCaixaAtiva.status === 'aberto')}
+                          onAbrirCaixaModal={() => setModalCaixaVisivel(true)}
+                          onCriarComanda={handleCriarComandaLocal}
+                          onAtualizarComanda={handleAtualizarComandaLocal}
+                          onFecharComandaComVenda={handleFecharComandaComVenda}
+                          onCancelarComanda={handleCancelarComandaLocal}
+                          obterFotoProduto={obterFotoProduto}
+                          modoLateral
+                          onExpandir={() => setModalComandasVisivel(true)}
                         />
                       ) : (
                         <CaixaDeliveryPanel

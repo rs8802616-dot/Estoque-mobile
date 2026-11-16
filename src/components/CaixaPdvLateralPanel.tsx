@@ -23,6 +23,7 @@ interface CaixaPdvLateralPanelProps {
   nfceHabilitada?: boolean;
   nfceAutoPadrao?: boolean;
   nfceAmbiente?: 'homologacao' | 'producao';
+  onEnviarParaComanda?: () => void;
 }
 
 const FORMAS_PAGAMENTO: { id: FormaPagamentoPdv; label: string; icon: string }[] = [
@@ -49,6 +50,7 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
   nfceHabilitada = false,
   nfceAutoPadrao = false,
   nfceAmbiente = 'homologacao',
+  onEnviarParaComanda,
 }) => {
   const [formaPagamento, setFormaPagamento] = useState<FormaPagamentoPdv>('pix');
   const [clienteFiadoId, setClienteFiadoId] = useState<string>('');
@@ -179,6 +181,25 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
               }}
             >
               📷 Bipar
+            </button>
+          )}
+          {carrinho.length > 0 && onEnviarParaComanda && (
+            <button
+              type="button"
+              onClick={onEnviarParaComanda}
+              title="Salvar itens do carrinho em uma comanda de cliente"
+              style={{
+                padding: '5px 9px',
+                borderRadius: '8px',
+                border: '1px solid #fdba74',
+                background: '#fff7ed',
+                color: '#c2410c',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              🍽️ Comanda
             </button>
           )}
           {carrinho.length > 0 && (

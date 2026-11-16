@@ -4,9 +4,7 @@ import { imprimirCupomTermico } from '../utils/impressaoTermica';
 
 type FormaPagamentoComanda = 'pix' | 'dinheiro' | 'cartao_credito' | 'cartao_debito';
 
-interface ComandasModalProps {
-  visivel: boolean;
-  onFechar: () => void;
+export interface ComandasPanelProps {
   comandas: ComandaLocal[];
   estoque: ItemEstoque[];
   loja: Supermercado | null;
@@ -21,6 +19,13 @@ interface ComandasModalProps {
   ) => void;
   onCancelarComanda: (comandaId: string) => void;
   obterFotoProduto?: (codigo: string) => string | undefined;
+  modoLateral?: boolean;
+  onExpandir?: () => void;
+}
+
+interface ComandasModalProps extends Omit<ComandasPanelProps, 'modoLateral' | 'onExpandir'> {
+  visivel: boolean;
+  onFechar: () => void;
 }
 
 const FORMAS_PAGAMENTO: { id: FormaPagamentoComanda; label: string; icon: string }[] = [
@@ -30,9 +35,7 @@ const FORMAS_PAGAMENTO: { id: FormaPagamentoComanda; label: string; icon: string
   { id: 'cartao_debito', label: 'Débito', icon: '🏧' },
 ];
 
-export const ComandasModal: React.FC<ComandasModalProps> = ({
-  visivel,
-  onFechar,
+export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   comandas,
   estoque,
   loja,
@@ -43,10 +46,13 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
   onFecharComandaComVenda,
   onCancelarComanda,
   obterFotoProduto,
+  modoLateral = false,
+  onExpandir,
 }) => {
   const [filtroStatus, setFiltroStatus] = useState<'aberta' | 'fechada'>('aberta');
   const [buscaComanda, setBuscaComanda] = useState<string>('');
   const [comandaSelecionadaId, setComandaSelecionadaId] = useState<string | null>(null);
+  const [visaoLateral, setVisaoLateral] = useState<'lista' | 'detalhe'>('lista');
 
   // Nova comanda
   const [formNovaAberto, setFormNovaAberto] = useState<boolean>(false);
@@ -101,8 +107,6 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
       .slice(0, 20);
   }, [estoque, buscaProduto]);
 
-  if (!visivel) return null;
-
   const totalAbertas = comandas.filter((c) => c.status === 'aberta').length;
 
   const handleCriarNovaComanda = (e: React.FormEvent) => {
@@ -117,6 +121,7 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
       telefone: novoTelefone.trim() || undefined,
     });
     setComandaSelecionadaId(criada.id);
+    setVisaoLateral('detalhe');
     setFiltroStatus('aberta');
     setFormNovaAberto(false);
     setNovoNomeCliente('');
@@ -287,109 +292,79 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
   return (
     <div
       style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.75)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 100050,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '10px 10px 44px 10px',
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onFechar();
+        flex: 1,
+        height: modoLateral ? '100%' : undefined,
+        minHeight: 0,
+        display: 'grid',
+        gridTemplateColumns: modoLateral ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))',
+        overflow: 'hidden',
+        backgroundColor: modoLateral ? '#ffffff' : 'transparent',
+        borderRadius: modoLateral ? '14px' : undefined,
+        border: modoLateral ? '1px solid #cbd5e1' : undefined,
+        boxShadow: modoLateral ? '0 4px 16px rgba(15, 23, 42, 0.06)' : undefined,
       }}
     >
+      {/* COLUNA ESQUERDA: LISTA DE COMANDAS */}
+      {(!modoLateral || visaoLateral === 'lista') && (
       <div
         style={{
-          width: '100%',
-          maxWidth: '1120px',
-          height: 'calc(100dvh - 54px)',
-          backgroundColor: '#f8fafc',
-          borderRadius: '16px',
-          border: '1px solid #cbd5e1',
-          boxShadow: '0 24px 48px rgba(15, 23, 42, 0.35)',
+          borderRight: modoLateral ? 'none' : '1px solid #e2e8f0',
+          backgroundColor: '#ffffff',
           display: 'flex',
           flexDirection: 'column',
+          minHeight: 0,
           overflow: 'hidden',
         }}
       >
-        {/* CABEÇALHO */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e40af 100%)',
-            color: '#ffffff',
-            padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '10px',
-            flexShrink: 0,
-          }}
-        >
-          <div style={{ minWidth: 0 }}>
-            <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>🧾</span>
-              <span>Comandas & Mesas (Consumo Local)</span>
+        {modoLateral && (
+          <div
+            style={{
+              padding: '10px 12px',
+              borderBottom: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '8px',
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>🍽️ Comandas / Mesas</span>
               <span
                 style={{
-                  fontSize: '0.72rem',
+                  fontSize: '0.7rem',
                   fontWeight: 800,
-                  background: '#22c55e',
-                  color: '#ffffff',
-                  padding: '2px 8px',
+                  background: '#dcfce7',
+                  color: '#166534',
+                  padding: '2px 7px',
                   borderRadius: '999px',
                 }}
               >
                 {totalAbertas} abertas
               </span>
-            </h2>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#cbd5e1' }}>
-              Lance produtos no nome do cliente, divida a conta por pessoas, imprima a comanda e dê baixa ao fechar.
-            </p>
+            </div>
+            {onExpandir && (
+              <button
+                type="button"
+                onClick={onExpandir}
+                title="Abrir em tela cheia"
+                style={{
+                  padding: '4px 8px',
+                  borderRadius: '7px',
+                  border: '1px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#334155',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                ⛶ Expandir
+              </button>
+            )}
           </div>
-          <button
-            type="button"
-            onClick={onFechar}
-            style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '8px',
-              border: '1px solid rgba(255,255,255,0.25)',
-              background: 'rgba(255,255,255,0.1)',
-              color: '#ffffff',
-              fontSize: '1rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              flexShrink: 0,
-            }}
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* CORPO PRINCIPAL RESPONSIVO */}
-        <div
-          style={{
-            flex: 1,
-            minHeight: 0,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            overflow: 'hidden',
-          }}
-        >
-          {/* COLUNA ESQUERDA: LISTA DE COMANDAS */}
-          <div
-            style={{
-              borderRight: '1px solid #e2e8f0',
-              backgroundColor: '#ffffff',
-              display: 'flex',
-              flexDirection: 'column',
-              minHeight: 0,
-              overflow: 'hidden',
-            }}
-          >
+        )}
             <div style={{ padding: '12px', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button
@@ -549,7 +524,10 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
                   return (
                     <div
                       key={cmd.id}
-                      onClick={() => setComandaSelecionadaId(cmd.id)}
+                      onClick={() => {
+                        setComandaSelecionadaId(cmd.id);
+                        setVisaoLateral('detalhe');
+                      }}
                       style={{
                         padding: '10px 12px',
                         borderRadius: '11px',
@@ -587,9 +565,49 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
               )}
             </div>
           </div>
+      )}
 
           {/* COLUNA DIREITA: DETALHES DA COMANDA ATIVA */}
-          <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, overflowY: 'auto', padding: '12px', gap: '12px' }}>
+      {(!modoLateral || visaoLateral === 'detalhe') && (
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: 0, overflowY: 'auto', padding: '12px', gap: '12px', background: '#f8fafc' }}>
+            {modoLateral && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexShrink: 0 }}>
+                <button
+                  type="button"
+                  onClick={() => setVisaoLateral('lista')}
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: '#ffffff',
+                    color: '#0f172a',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  ← Lista de Comandas
+                </button>
+                {onExpandir && (
+                  <button
+                    type="button"
+                    onClick={onExpandir}
+                    style={{
+                      padding: '6px 10px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: '#ffffff',
+                      color: '#334155',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ⛶ Expandir
+                  </button>
+                )}
+              </div>
+            )}
             {!comandaAtiva ? (
               <div style={{ textAlign: 'center', padding: '48px 20px', color: '#64748b' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>🧾</div>
@@ -1045,7 +1063,105 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
               </>
             )}
           </div>
+      )}
+    </div>
+  );
+};
+
+export const ComandasModal: React.FC<ComandasModalProps> = ({
+  visivel,
+  onFechar,
+  ...panelProps
+}) => {
+  if (!visivel) return null;
+
+  const totalAbertas = panelProps.comandas.filter((c) => c.status === 'aberta').length;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.75)',
+        backdropFilter: 'blur(4px)',
+        zIndex: 100050,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px 10px 44px 10px',
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onFechar();
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '1120px',
+          height: 'calc(100dvh - 54px)',
+          backgroundColor: '#f8fafc',
+          borderRadius: '16px',
+          border: '1px solid #cbd5e1',
+          boxShadow: '0 24px 48px rgba(15, 23, 42, 0.35)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e40af 100%)',
+            color: '#ffffff',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>🧾</span>
+              <span>Comandas & Mesas (Consumo Local)</span>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  background: '#22c55e',
+                  color: '#ffffff',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                }}
+              >
+                {totalAbertas} abertas
+              </span>
+            </h2>
+            <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#cbd5e1' }}>
+              Lance produtos no nome do cliente, divida a conta por pessoas, imprima a comanda e dê baixa ao fechar.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onFechar}
+            style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.25)',
+              background: 'rgba(255,255,255,0.1)',
+              color: '#ffffff',
+              fontSize: '1rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            ✕
+          </button>
         </div>
+
+        <ComandasPanel {...panelProps} modoLateral={false} />
       </div>
     </div>
   );
