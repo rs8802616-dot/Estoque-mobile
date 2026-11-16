@@ -1078,6 +1078,7 @@ export default function App() {
     return localStorage.getItem('coluna_delivery_fixa_visivel') !== 'false';
   });
   const [abaPainelLateral, setAbaPainelLateral] = useState<'caixa' | 'comandas' | 'delivery'>('caixa');
+  const [comandaLateralSelecionadaId, setComandaLateralSelecionadaId] = useState<string | null>(null);
 
   const [configDelivery, setConfigDelivery] = useState<ConfiguracaoDelivery>(() => {
     try {
@@ -6499,7 +6500,66 @@ export default function App() {
     };
     persistirComandas([nova, ...comandasLocais], nova);
     setCarrinho([]);
+    setComandaLateralSelecionadaId(nova.id);
     setAbaPainelLateral('comandas');
+  };
+
+  const comandaAtivaLateral =
+    comandasLocais.find((c) => c.id === comandaLateralSelecionadaId && c.status === 'aberta') ||
+    comandasLocais.find((c) => c.status === 'aberta') ||
+    null;
+
+  const modoComandaLateralAtivo =
+    colunaDeliveryFixaVisivel &&
+    temPermissaoOperador('vender', 'caixa') &&
+    abaPainelLateral === 'comandas';
+
+  const handleAdicionarProdutoNaComandaAtiva = (prod: ItemEstoque, qtd = 1) => {
+    let alvo = comandaAtivaLateral;
+    if (!alvo) {
+      const nome = window.prompt('Nenhuma comanda aberta. Informe o nome do cliente para abrir a comanda:');
+      if (!nome || !nome.trim()) return;
+      alvo = handleCriarComandaLocal({ nomeCliente: nome.trim() });
+      setComandaLateralSelecionadaId(alvo.id);
+    }
+
+    const agoraHora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const precoUnit = Number(prod.preco_venda || 0);
+    const jaExisteIdx = alvo.itens.findIndex(
+      (it) => it.codigo === prod.codigo && Math.abs(it.preco_unitario - precoUnit) < 0.001
+    );
+
+    const novosItens =
+      jaExisteIdx >= 0
+        ? alvo.itens.map((it, idx) =>
+            idx === jaExisteIdx
+              ? {
+                  ...it,
+                  quantidade: Number((it.quantidade + qtd).toFixed(3)),
+                  subtotal: Number(((it.quantidade + qtd) * it.preco_unitario).toFixed(2)),
+                }
+              : it
+          )
+        : [
+            ...alvo.itens,
+            {
+              id: `itcmd_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+              codigo: prod.codigo,
+              nome: prod.nome,
+              quantidade: qtd,
+              preco_unitario: precoUnit,
+              preco_custo: Number(prod.preco_custo || 0),
+              subtotal: Number((precoUnit * qtd).toFixed(2)),
+              adicionadoEm: agoraHora,
+            },
+          ];
+
+    const valorTotal = Number(novosItens.reduce((acc, it) => acc + it.subtotal, 0).toFixed(2));
+    handleAtualizarComandaLocal({
+      ...alvo,
+      itens: novosItens,
+      valorTotal,
+    });
   };
 
   const handleAtualizarComandaLocal = (comandaAtualizada: ComandaLocal) => {
@@ -9262,12 +9322,24 @@ export default function App() {
                   const qtdNoCarrinho = carrinho
                     .filter((c) => c.codigo === p.codigo)
                     .reduce((acc, c) => acc + c.quantidade, 0);
+                  const qtdNaComanda =
+                    modoComandaLateralAtivo && comandaAtivaLateral
+                      ? comandaAtivaLateral.itens
+                          .filter((it) => it.codigo === p.codigo)
+                          .reduce((acc, it) => acc + it.quantidade, 0)
+                      : 0;
 
                   return (
                     <div className="card-produto" key={`card_${p.codigo || pIdx}_${pIdx}`}>
                       <div
                         className="foto-produto"
-                        onClick={() => abrirVenda(p.codigo, primeiraValidade, primeiroLote)}
+                        onClick={() => {
+                          if (modoComandaLateralAtivo && itemCompleto) {
+                            handleAdicionarProdutoNaComandaAtiva(itemCompleto, 1);
+                          } else {
+                            abrirVenda(p.codigo, primeiraValidade, primeiroLote);
+                          }
+                        }}
                       >
                         {fotoCard ? (
                           <img
@@ -9300,7 +9372,24 @@ export default function App() {
                             🍢 Adega
                           </div>
                         )}
-                        {qtdNoCarrinho > 0 && (
+                        {qtdNaComanda > 0 ? (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '6px',
+                              right: '6px',
+                              background: '#ea580c',
+                              color: '#fff',
+                              borderRadius: '12px',
+                              padding: '2px 7px',
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                            }}
+                          >
+                            🍽️ {qtdNaComanda} na comanda
+                          </div>
+                        ) : qtdNoCarrinho > 0 && (
                           <div
                             style={{
                               position: 'absolute',
@@ -9323,7 +9412,13 @@ export default function App() {
                         <div>
                           <div
                             className="nome-prod"
-                            onClick={() => abrirVenda(p.codigo, primeiraValidade, primeiroLote)}
+                            onClick={() => {
+                              if (modoComandaLateralAtivo && itemCompleto) {
+                                handleAdicionarProdutoNaComandaAtiva(itemCompleto, 1);
+                              } else {
+                                abrirVenda(p.codigo, primeiraValidade, primeiroLote);
+                              }
+                            }}
                           >
                             {p.nome}
                           </div>
@@ -9364,13 +9459,23 @@ export default function App() {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  adicionarAoCarrinho(itemCompleto, 1);
+                                  if (modoComandaLateralAtivo) {
+                                    handleAdicionarProdutoNaComandaAtiva(itemCompleto, 1);
+                                  } else {
+                                    adicionarAoCarrinho(itemCompleto, 1);
+                                  }
                                 }}
-                                title="Adicionar 1 unidade ao Carrinho de Vendas"
+                                title={
+                                  modoComandaLateralAtivo
+                                    ? comandaAtivaLateral
+                                      ? `Lançar 1 unidade na comanda de ${comandaAtivaLateral.nomeCliente}`
+                                      : 'Abrir comanda e lançar 1 unidade'
+                                    : 'Adicionar 1 unidade ao Carrinho de Vendas'
+                                }
                                 style={{
-                                  background: '#e0f2fe',
-                                  color: '#0369a1',
-                                  border: '1px solid #7dd3fc',
+                                  background: modoComandaLateralAtivo ? '#fff7ed' : '#e0f2fe',
+                                  color: modoComandaLateralAtivo ? '#c2410c' : '#0369a1',
+                                  border: `1px solid ${modoComandaLateralAtivo ? '#fdba74' : '#7dd3fc'}`,
                                   borderRadius: '6px',
                                   padding: '4px 8px',
                                   fontSize: '0.76rem',
@@ -9381,8 +9486,8 @@ export default function App() {
                                   gap: '3px',
                                 }}
                               >
-                                <span>🛒</span>
-                                <span>+ Carrinho</span>
+                                <span>{modoComandaLateralAtivo ? '🍽️' : '🛒'}</span>
+                                <span>{modoComandaLateralAtivo ? '+ Comanda' : '+ Carrinho'}</span>
                               </button>
                             )}
                           </div>
@@ -9624,6 +9729,8 @@ export default function App() {
                           obterFotoProduto={obterFotoProduto}
                           modoLateral
                           onExpandir={() => setModalComandasVisivel(true)}
+                          comandaSelecionadaId={comandaLateralSelecionadaId}
+                          onSelectComandaId={setComandaLateralSelecionadaId}
                         />
                       ) : (
                         <CaixaDeliveryPanel

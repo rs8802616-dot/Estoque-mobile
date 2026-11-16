@@ -21,6 +21,8 @@ export interface ComandasPanelProps {
   obterFotoProduto?: (codigo: string) => string | undefined;
   modoLateral?: boolean;
   onExpandir?: () => void;
+  comandaSelecionadaId?: string | null;
+  onSelectComandaId?: (id: string | null) => void;
 }
 
 interface ComandasModalProps extends Omit<ComandasPanelProps, 'modoLateral' | 'onExpandir'> {
@@ -48,10 +50,17 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   obterFotoProduto,
   modoLateral = false,
   onExpandir,
+  comandaSelecionadaId: comandaSelecionadaIdProp,
+  onSelectComandaId,
 }) => {
   const [filtroStatus, setFiltroStatus] = useState<'aberta' | 'fechada'>('aberta');
   const [buscaComanda, setBuscaComanda] = useState<string>('');
-  const [comandaSelecionadaId, setComandaSelecionadaId] = useState<string | null>(null);
+  const [comandaSelecionadaLocalId, setComandaSelecionadaLocalId] = useState<string | null>(null);
+  const comandaSelecionadaId = comandaSelecionadaIdProp !== undefined ? comandaSelecionadaIdProp : comandaSelecionadaLocalId;
+  const setComandaSelecionadaId = (id: string | null) => {
+    setComandaSelecionadaLocalId(id);
+    onSelectComandaId?.(id);
+  };
   const [visaoLateral, setVisaoLateral] = useState<'lista' | 'detalhe'>('lista');
 
   // Nova comanda

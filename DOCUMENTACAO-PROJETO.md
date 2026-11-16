@@ -165,6 +165,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-15 - Versão 149 - Lançamento Direto do Catálogo para a Comanda Ativa]
+- **Clique Direto dos Cards do Estoque para a Aba Comandas (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
+  - Quando a aba **`🍽️ Comandas`** está selecionada no painel lateral, os cards da vitrine de produtos mudam o botão **`🛒 + Carrinho`** para **`🍽️ + Comanda`** e exibem a tag **`🍽️ X na comanda`**.
+  - Clicar no produto (foto, nome ou botão `+ Comanda`) lança o item diretamente na comanda aberta selecionada (ou solicita o nome do cliente para abrir uma nova caso nenhuma esteja aberta).
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v149` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-15 - Versão 148 - Interface Simplificada e Limpa nas Comandas]
 - **Redução de Poluição Visual em `src/components/ComandasModal.tsx` & `src/App.tsx`:**
   - Cabeçalho da comanda compactado em uma única linha (`#Nº • Cliente`, `🖨️ Imprimir` e `🗑️`).
