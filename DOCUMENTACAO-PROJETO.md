@@ -165,6 +165,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-17 - Versão 153 - Auditoria e Blindagem Completa de Isolamento Multi-Loja]
+- **Isolamento Total ao Alternar de Loja (`src/App.tsx`):**
+  - Ao trocar de supermercado/adega (`supermercadoAtual`), todos os estados em memória específicos da loja (`estoque`, `vendas`, `listaOperadores`, `clientesDevedores`, `logsAuditoria`, `movimentacoesCaixa`, `pedidosDelivery`, `configDelivery`, `limiarEstoqueMinimo`, `comandaLateralSelecionadaId`, `comandaLateralAbertaNaTela`, `codigoEditando`) são imediatamente reinicializados com os dados exclusivos da nova loja (ou zerados quando vazios), impedindo que operadores, devedores, logs ou itens da loja anterior permaneçam visíveis na nova loja.
+  - Nos listeners `subscribeEstoque`, `subscribeOperadores`, `subscribeClientesDevedores` e `subscribeLogsAuditoria`, coleções vazias na nuvem agora limpam corretamente o estado quando não houver cache local daquela loja.
+  - A reconciliação de cache local entre lojas ao editar produto foi restringida exclusivamente a produtos globais (`!isInterno`), evitando que itens internos/balcão com mesmo código interno interfiram em outras lojas.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v153` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-16 - Versão 152 - Ajuste Responsivo para Notebooks (1024px–1439px e Altura <= 820px)]
 - **Proporção Compacta em Notebooks (`src/index.css` & `src/App.tsx`):**
   - Adicionada media query específica para notebooks (`@media (min-width: 1024px) and (max-width: 1439px), (min-width: 1024px) and (max-height: 820px)`), reduzindo altura das fotos, fontes, espaçamentos do topo e tamanho mínimo dos cards (`minmax(175px, 1fr)`) para evitar elementos gigantes em telas de notebook (ex: 1366x768, 1280x720 ou 125% de escala).

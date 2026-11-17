@@ -1418,37 +1418,50 @@ export default function App() {
       setCarrinho([]);
     }
 
-    // Carregamento imediato do cache local para resposta instantânea e suporte offline perfeito
-    const estSalvoImediato = localStorage.getItem(`estoque_${supermercadoAtual}`);
-    if (estSalvoImediato) {
-      try {
-        const parsed = JSON.parse(estSalvoImediato);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setEstoque(parsed.map(sanitizarItemEstoque));
-        }
-      } catch (e) {}
-    }
+    // Reseta estados de UI vinculados à loja anterior para evitar vazamento entre lojas
+    setComandaLateralSelecionadaId(null);
+    setComandaLateralAbertaNaTela(false);
+    setCodigoEditando(null);
+    pedidosPendentesConhecidosRef.current.clear();
 
-    const pedSalvoImediato = localStorage.getItem(`pedidos_delivery_${supermercadoAtual}`);
-    if (pedSalvoImediato) {
+    const lerArrayLocal = <T,>(chave: string): T[] => {
       try {
-        const parsedPed = JSON.parse(pedSalvoImediato);
-        if (Array.isArray(parsedPed)) {
-          parsedPed.forEach((p: PedidoDelivery) => {
-            if (p && p.id && p.status === 'pendente') {
-              pedidosPendentesConhecidosRef.current.add(p.id);
-            }
-          });
-          setPedidosDelivery(parsedPed);
-        }
-      } catch (e) {}
-    }
+        const raw = localStorage.getItem(chave);
+        const parsed = raw ? JSON.parse(raw) : null;
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    };
+
+    // Carregamento imediato do cache local da loja ativa (ou zera caso a nova loja esteja vazia)
+    setEstoque(lerArrayLocal<ItemEstoque>(`estoque_${supermercadoAtual}`).map(sanitizarItemEstoque));
+    setVendas(lerArrayLocal<Venda>(`vendas_${supermercadoAtual}`));
+    setListaOperadores(lerArrayLocal<OperadorCaixa>(`operadores_caixa_${supermercadoAtual}`));
+    setClientesDevedores(lerArrayLocal<ClienteDevedor>(`clientes_devedores_${supermercadoAtual}`));
+    setLogsAuditoria(lerArrayLocal<any>(`logs_auditoria_${supermercadoAtual}`));
+    setMovimentacoesCaixa(lerArrayLocal<MovimentacaoCaixa>(`movimentacoes_caixa_${supermercadoAtual}`));
+
+    const limiarSalvo = Number(localStorage.getItem(`limiar_estoque_minimo_${supermercadoAtual}`));
+    setLimiarEstoqueMinimo(Number.isFinite(limiarSalvo) && limiarSalvo > 0 ? limiarSalvo : 5);
+
+    const pedSalvoImediato = lerArrayLocal<PedidoDelivery>(`pedidos_delivery_${supermercadoAtual}`);
+    pedSalvoImediato.forEach((p) => {
+      if (p && p.id && p.status === 'pendente') {
+        pedidosPendentesConhecidosRef.current.add(p.id);
+      }
+    });
+    setPedidosDelivery(pedSalvoImediato);
 
     const cfgSalvoImediato = localStorage.getItem(`config_delivery_${supermercadoAtual}`);
     if (cfgSalvoImediato) {
       try {
         setConfigDelivery(JSON.parse(cfgSalvoImediato));
-      } catch (e) {}
+      } catch {
+        setConfigDelivery(null);
+      }
+    } else {
+      setConfigDelivery(null);
     }
 
     // Subscribe em tempo real às Configurações de Delivery da loja (horários, status aberto/fechado, taxas)
@@ -1563,17 +1576,8 @@ export default function App() {
         safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(itensReconciliados));
       } else {
         setCarregandoEstoqueInicial(false);
-        // Se a nuvem retornou vazio (modo offline), protege o estoque salvo localmente
-        const salvo = localStorage.getItem(`estoque_${supermercadoAtual}`);
-        if (salvo) {
-          try {
-            const parsed = JSON.parse(salvo);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              setEstoque(parsed.map(sanitizarItemEstoque));
-              return;
-            }
-          } catch (e) {}
-        }
+        const salvosLocais = lerArrayLocal<ItemEstoque>(`estoque_${supermercadoAtual}`).map(sanitizarItemEstoque);
+        setEstoque(salvosLocais);
       }
     });
 
@@ -1613,6 +1617,8 @@ export default function App() {
       if (ops && ops.length > 0) {
         setListaOperadores(ops);
         safeLocalStorageSet(`operadores_caixa_${supermercadoAtual}`, JSON.stringify(ops));
+      } else {
+        setListaOperadores(lerArrayLocal<OperadorCaixa>(`operadores_caixa_${supermercadoAtual}`));
       }
     });
 
@@ -1621,6 +1627,8 @@ export default function App() {
       if (clientes && clientes.length > 0) {
         setClientesDevedores(clientes);
         safeLocalStorageSet(`clientes_devedores_${supermercadoAtual}`, JSON.stringify(clientes));
+      } else {
+        setClientesDevedores(lerArrayLocal<ClienteDevedor>(`clientes_devedores_${supermercadoAtual}`));
       }
     });
 
@@ -1629,6 +1637,8 @@ export default function App() {
       if (logs && logs.length > 0) {
         setLogsAuditoria(logs);
         safeLocalStorageSet(`logs_auditoria_${supermercadoAtual}`, JSON.stringify(logs));
+      } else {
+        setLogsAuditoria(lerArrayLocal<any>(`logs_auditoria_${supermercadoAtual}`));
       }
     });
 
@@ -5482,34 +5492,36 @@ export default function App() {
 
         await salvarItemEstoqueFirestore(dadosItemEstoque, supermercadoAtual);
 
-      // Reconciliar caches locais de todos os outros supermercados/adegas
-      try {
-        listaSupermercados.forEach((loja) => {
-          if (loja.id !== supermercadoAtual) {
-            const salvoOutra = localStorage.getItem(`estoque_${loja.id}`);
-            if (salvoOutra) {
-              const itensOutra: ItemEstoque[] = JSON.parse(salvoOutra);
-              let mudouOutra = false;
-              const atualizadosOutra = itensOutra.map((it) => {
-                if (it.codigo?.trim() === codigoFinal) {
-                  mudouOutra = true;
-                  return {
-                    ...it,
-                    nome: nomeDigitado,
-                    marca: marcaDigitada || it.marca,
-                    categoria: categoriaDigitada || it.categoria,
-                    foto: fotoFinal,
-                  };
+      // Reconciliar caches locais de outros supermercados apenas para produtos globais (EAN), nunca para itens internos/balcão
+      if (!isInterno) {
+        try {
+          listaSupermercados.forEach((loja) => {
+            if (loja.id !== supermercadoAtual) {
+              const salvoOutra = localStorage.getItem(`estoque_${loja.id}`);
+              if (salvoOutra) {
+                const itensOutra: ItemEstoque[] = JSON.parse(salvoOutra);
+                let mudouOutra = false;
+                const atualizadosOutra = itensOutra.map((it) => {
+                  if (it.tipoCadastro !== 'interno' && it.codigo?.trim() === codigoFinal) {
+                    mudouOutra = true;
+                    return {
+                      ...it,
+                      nome: nomeDigitado,
+                      marca: marcaDigitada || it.marca,
+                      categoria: categoriaDigitada || it.categoria,
+                      foto: fotoFinal,
+                    };
+                  }
+                  return it;
+                });
+                if (mudouOutra) {
+                  safeLocalStorageSet(`estoque_${loja.id}`, JSON.stringify(atualizadosOutra));
                 }
-                return it;
-              });
-              if (mudouOutra) {
-                safeLocalStorageSet(`estoque_${loja.id}`, JSON.stringify(atualizadosOutra));
               }
             }
-          }
-        });
-      } catch (e) {}
+          });
+        } catch (e) {}
+      }
 
       setMsgCad(
         <span style={{ color: 'var(--sucesso)' }}>
