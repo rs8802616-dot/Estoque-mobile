@@ -653,19 +653,9 @@ export default function App() {
     }
   })();
 
-  // Modals visibility
-  const [modalSupermercadoVisivel, setModalSupermercadoVisivel] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('portal') !== 'master') {
-        return false;
-      }
-    }
-    return telaSalvaInicial === 'modal_supermercados' || telaSalvaInicial === 'modal_banco_dados_master';
-  });
-  const [modalCadastroVisivel, setModalCadastroVisivel] = useState<boolean>(() => {
-    return telaSalvaInicial === 'modal_cadastro_estoque' || telaSalvaInicial === 'modal_cadastro_master';
-  });
+  // Modals visibility (o PDV é sempre a tela inicial, nunca abre direto em cadastro/configuração)
+  const [modalSupermercadoVisivel, setModalSupermercadoVisivel] = useState<boolean>(false);
+  const [modalCadastroVisivel, setModalCadastroVisivel] = useState<boolean>(false);
   const [continuarCadastrandoAposSalvar, setContinuarCadastrandoAposSalvar] = useState<boolean>(true);
   const [abasAbertas, setAbasAbertas] = useState<(
     | 'cadastro'
@@ -3239,16 +3229,17 @@ export default function App() {
     safeLocalStorageSet('usuario_autenticado', 'true');
     setAvisoDesconectadoMultiAparelho(null);
 
+    // Ao entrar com qualquer login/senha, fecha todos os modais e abre sempre na tela do PDV
+    fecharTodosModaisSemRemoverAbas();
+    setAbasAbertas([]);
+    localStorage.removeItem('tela_ativa_sistema');
+
     setPerfilAtivo(sessao.tipo);
     safeLocalStorageSet('perfilAtivoTipo', sessao.tipo);
 
-    if (sessao.tipo === 'dona_app') {
-      setModalSupermercadoVisivel(true);
-    } else {
-      setModalSupermercadoVisivel(false);
-      setModalCredenciaisDonoVisivel(false);
-      setModalCardapioClienteVisivel(false);
-    }
+    setModalSupermercadoVisivel(false);
+    setModalCredenciaisDonoVisivel(false);
+    setModalCardapioClienteVisivel(false);
 
     if (sessao.lojaId) {
       sessionStorage.setItem('sessao_loja_ativa', 'true');
@@ -3352,6 +3343,9 @@ export default function App() {
     }
 
     // Limpeza total de persistência de sessão para impedir acesso indevido ao recarregar a página
+    fecharTodosModaisSemRemoverAbas();
+    setAbasAbertas([]);
+    localStorage.removeItem('tela_ativa_sistema');
     localStorage.removeItem('usuario_autenticado');
     localStorage.removeItem('perfilAtivoTipo');
     localStorage.removeItem('operadorAtivoId');
@@ -7244,6 +7238,14 @@ export default function App() {
       safeLocalStorageSet(`vendas_${storeId}`, JSON.stringify(novasVendas));
       salvarVendaFirestore(novaVenda);
 
+      // Emissão automática de NFC-e no Delivery (somente se a loja tiver habilitado o módulo fiscal)
+      const lojaDeliveryObj = listaSupermercados.find((l) => l.id === storeId) || null;
+      if (lojaDeliveryObj?.configFiscal?.habilitado && lojaDeliveryObj?.configFiscal?.emitirAutomaticoNoPdv) {
+        handleEmitirNfceParaVenda(novaVenda).catch((err) => {
+          console.warn('Falha na emissão automática de NFC-e para pedido Delivery:', err);
+        });
+      }
+
       // Se houver sessão de caixa aberta, registra a movimentação
       if (sessaoCaixaAtiva) {
         const novaMov: MovimentacaoCaixa = {
@@ -9870,6 +9872,13 @@ export default function App() {
                           onConfirmarEntregaPin={handleConfirmarEntregaPin}
                           onAbrirCardapioCliente={() => setModalCardapioClienteVisivel(true)}
                           onImprimirComanda={(pedido) => {
+                            const vendaReal = vendas.find(
+                              (v) => v.pedidoDeliveryId === pedido.id || v.id === `ven_del_${pedido.numeroPedido}`
+                            );
+                            if (vendaReal) {
+                              setVendaCupomVer(vendaReal);
+                              return;
+                            }
                             const novaVendaSimulada: Venda = {
                               id: `ven_del_${pedido.numeroPedido}`,
                               pedidoDeliveryId: pedido.id,

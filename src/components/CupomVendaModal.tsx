@@ -46,12 +46,14 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
 
   const larguraVisual = larguraBobina === '58mm' ? '280px' : '340px';
 
+  const isNfceAutorizada = venda.nfce?.status === 'autorizado';
+
   return (
     <div className="modal-overlay" style={{ zIndex: 100200 }}>
       <div className="modal-container" style={{ maxWidth: '440px', padding: '18px', maxHeight: '92vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.1rem' }}>
-            🧾 Cupom Não Fiscal de Venda
+            {isNfceAutorizada ? '🧾 Cupom Fiscal — DANFE NFC-e' : '🧾 Cupom Não Fiscal de Venda'}
           </h3>
           <button className="btn-fechar-modal" onClick={onFechar}>&times;</button>
         </div>
@@ -122,7 +124,16 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
               <p style={{ margin: '1px 0', fontSize: '0.75rem' }}>CNPJ: {loja?.cnpj || '00.000.000/0001-00'}</p>
               {loja?.endereco && <p style={{ margin: '1px 0', fontSize: '0.72rem' }}>{loja.endereco}</p>}
               {loja?.telefone && <p style={{ margin: '1px 0', fontSize: '0.72rem' }}>Tel: {loja.telefone}</p>}
-              <p style={{ margin: '4px 0 2px 0', fontWeight: 700, fontSize: '0.76rem' }}>CUPOM NÃO FISCAL DE VENDA</p>
+              {isNfceAutorizada ? (
+                <div style={{ margin: '4px 0 2px 0' }}>
+                  <p style={{ margin: 0, fontWeight: 800, fontSize: '0.78rem' }}>DANFE NFC-e</p>
+                  <p style={{ margin: 0, fontWeight: 600, fontSize: '0.66rem' }}>
+                    Documento Auxiliar da Nota Fiscal de Consumidor Eletrônica
+                  </p>
+                </div>
+              ) : (
+                <p style={{ margin: '4px 0 2px 0', fontWeight: 700, fontSize: '0.76rem' }}>CUPOM NÃO FISCAL DE VENDA</p>
+              )}
               <div className="cupom-divisor" style={{ borderBottom: '1px dashed #000', margin: '6px 0' }} />
               <div style={{ textAlign: 'left', fontSize: '0.74rem' }}>
                 <p style={{ margin: '1px 0' }}><strong>Nº VENDA:</strong> #{venda.id.slice(-8).toUpperCase()}</p>
@@ -230,6 +241,26 @@ export const CupomVendaModal: React.FC<CupomVendaModalProps> = ({
                 </div>
               )}
             </div>
+
+            {/* DADOS FISCAIS NO CUPOM IMPRESSO QUANDO NFC-E AUTORIZADA */}
+            {isNfceAutorizada && venda.nfce && (
+              <>
+                <div className="cupom-divisor" style={{ borderBottom: '1px dashed #000', margin: '6px 0' }} />
+                <div style={{ textAlign: 'center', fontSize: '0.68rem', lineHeight: 1.3 }}>
+                  <div style={{ fontWeight: 800 }}>
+                    NFC-e Nº {venda.nfce.numero || '—'} • Série {venda.nfce.serie || '1'}
+                  </div>
+                  {venda.cpfNaNota && <div>Consumidor CPF/CNPJ: {venda.cpfNaNota}</div>}
+                  {venda.nfce.mensagemSefaz && <div>SEFAZ: {venda.nfce.mensagemSefaz}</div>}
+                  {venda.nfce.chave && (
+                    <div style={{ marginTop: '3px', wordBreak: 'break-all', fontSize: '0.64rem' }}>
+                      <b>Chave de Acesso:</b><br />
+                      {venda.nfce.chave}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
 
             <div className="cupom-divisor" style={{ borderBottom: '1px dashed #000', margin: '6px 0' }} />
 

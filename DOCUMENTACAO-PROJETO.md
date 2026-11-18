@@ -165,6 +165,23 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-17 - Versão 160 - Devedores em Ordem Alfabética & Login Sempre Abrindo no PDV]
+- **Ordem Alfabética nos Devedores (`src/components/GestaoDevedoresModal.tsx` & `src/components/CaixaPdvLateralPanel.tsx`):**
+  - A lista de clientes na Caderneta de Devedores e no seletor de Fiado do Caixa agora é ordenada automaticamente de A–Z (`localeCompare(..., 'pt-BR', { sensitivity: 'base' })`).
+- **Abertura Direta no PDV Após Qualquer Login (`src/App.tsx`):**
+  - Ao fazer login (`handleLoginSuccess`) ou sair (`handleLogout`), todos os modais e abas secundárias são fechados e `tela_ativa_sistema` é limpo, garantindo que nenhum operador de caixa (nem qualquer outro usuário) caia em telas de cadastro ou configuração administrativa ao entrar — abrindo sempre direto no PDV.
+  - Removida a restauração automática dos modais de cadastro/supermercados na inicialização.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v160` em `public/sw.js` e `src/main.tsx`.
+
+### [2026-11-17 - Versão 159 - DANFE NFC-e no Cupom & Emissão Automática Opcional no Delivery]
+- **Cupom Fiscal vs Não Fiscal Dinâmico (`src/components/CupomVendaModal.tsx`):**
+  - Quando a venda possuir `nfce.status === 'autorizado'`, o modal e a impressão térmica passam a exibir automaticamente **`DANFE NFC-e — Documento Auxiliar da Nota Fiscal de Consumidor Eletrônica`**, com Número, Série, Protocolo e Chave de Acesso.
+  - Quando a loja não tiver integração fiscal habilitada ou a venda não tiver NFC-e emitida, o cupom continua normalmente como **Cupom Não Fiscal de Venda** sem obrigar emissão.
+- **Emissão de NFC-e no Delivery (`src/App.tsx`):**
+  - Pedidos do Delivery que geram venda agora disparam `handleEmitirNfceParaVenda` automaticamente **apenas** quando a loja tiver `configFiscal.habilitado` e `emitirAutomaticoNoPdv` ativos (lojas sem cadastro fiscal não sofrem nenhuma interferência).
+  - Ao abrir o cupom pelo botão de impressão do Delivery, o sistema localiza a `Venda` real vinculada para exibir e permitir emitir/consultar a NFC-e diretamente.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v159` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-17 - Versão 158 - Alinhamento Exato das Abas Caixa / Comandas / Delivery com o Painel Lateral]
 - **Alinhamento Pixel-a-Pixel (`src/App.tsx`):**
   - A barra superior de abas (`🛒 Caixa / Venda`, `🍽️ Comandas`, `🛵 Delivery`) agora usa `display: grid` com a mesma largura responsiva `clamp(355px, 30vw, 455px)` do painel lateral logo abaixo, centralizando os 3 botões igualmente.

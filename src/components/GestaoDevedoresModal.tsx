@@ -159,21 +159,23 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
   const totalDevedoresComDebito = listaClientes.filter((c) => (c.saldoDevedorTotal || 0) > 0).length;
   const totalDividasAberto = listaClientes.reduce((acc, c) => acc + (c.saldoDevedorTotal || 0), 0);
 
-  // Filtragem de clientes
-  const clientesFiltrados = listaClientes.filter((c) => {
-    const termo = busca.toLowerCase().trim();
-    const bateBusca =
-      !termo ||
-      c.nome.toLowerCase().includes(termo) ||
-      (c.telefone && c.telefone.includes(termo)) ||
-      (c.cpfOuCnpj && c.cpfOuCnpj.includes(termo));
+  // Filtragem de clientes (sempre em ordem alfabética)
+  const clientesFiltrados = listaClientes
+    .filter((c) => {
+      const termo = busca.toLowerCase().trim();
+      const bateBusca =
+        !termo ||
+        c.nome.toLowerCase().includes(termo) ||
+        (c.telefone && c.telefone.includes(termo)) ||
+        (c.cpfOuCnpj && c.cpfOuCnpj.includes(termo));
 
-    if (!bateBusca) return false;
+      if (!bateBusca) return false;
 
-    if (filtroStatus === 'pendentes') return (c.saldoDevedorTotal || 0) > 0;
-    if (filtroStatus === 'quitados') return (c.saldoDevedorTotal || 0) === 0;
-    return true;
-  });
+      if (filtroStatus === 'pendentes') return (c.saldoDevedorTotal || 0) > 0;
+      if (filtroStatus === 'quitados') return (c.saldoDevedorTotal || 0) === 0;
+      return true;
+    })
+    .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
 
   // Abrir modal de novo cliente ou editar
   const handleAbrirModalCadastro = (cliente?: ClienteDevedor) => {

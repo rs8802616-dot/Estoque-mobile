@@ -71,12 +71,14 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
 
   const clientesFiadoFiltrados = useMemo(() => {
     const termo = buscaClienteFiado.trim().toLowerCase();
-    if (!termo) return clientesDevedores;
-    return clientesDevedores.filter((c) => {
-      const nome = (c.nome || '').toLowerCase();
-      const tel = (c.telefone || '').toLowerCase();
-      return nome.includes(termo) || tel.includes(termo);
-    });
+    const base = !termo
+      ? [...clientesDevedores]
+      : clientesDevedores.filter((c) => {
+          const nome = (c.nome || '').toLowerCase();
+          const tel = (c.telefone || '').toLowerCase();
+          return nome.includes(termo) || tel.includes(termo);
+        });
+    return base.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
   }, [clientesDevedores, buscaClienteFiado]);
 
   const totalVenda = useMemo(
