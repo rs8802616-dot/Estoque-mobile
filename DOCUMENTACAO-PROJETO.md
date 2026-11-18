@@ -165,6 +165,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-17 - Versão 156 - Correção de Sobreposição do Tooltip no Gráfico Donut (TOTAL MIX)]
+- **Correção de Camada (`z-index`) e Contraste no Gráfico de Categorias (`src/components/GraficosVendasModal.tsx`):**
+  - Ajustada a ordem de empilhamento (`zIndex: 5` no container do `PieChart` e `zIndex: 1` no círculo central `TOTAL MIX`) para que o tooltip escuro nunca fique atrás do círculo central.
+  - Adicionados `itemStyle` e `labelStyle` claros no `<Tooltip>` para leitura nítida sobre o fundo `#141414`.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v156` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-17 - Versão 155 - Fechamento Completo de Abas na Barra Inferior ao Clicar no X dos Modais]
 - **Sincronização do Botão `×` dos Modais com a Barra de Abas (`src/App.tsx`):**
   - Corrigidos os handlers `onFechar` dos modais (`RelatorioVendasModal`, `ComandasModal`, `ConfiguracaoFiscalModal`, `AlertasWhatsAppModal`, `GraficosVendasModal`, `EtiquetasModal`, `EntradaNotaFiscalModal`, `ManualUsuarioModal`, `CentroNotificacoesModal`, `ModalPesquisaCatalogo` e `fecharRelatorio` do Estoque) para chamarem `fecharAbaDefinitivo(...)`, garantindo que ao clicar no `×` do modal a aba também seja removida da barra de navegação inferior (mantendo o comportamento de minimizar apenas ao clicar em `🏠 Início`).

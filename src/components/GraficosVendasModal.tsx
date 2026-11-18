@@ -2428,32 +2428,38 @@ ${top3 || '- Nenhum produto vendido'}
                 <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {/* Donut Chart com texto central colorido */}
                   <div style={{ width: '100%', height: 195, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={dadosCategorias}
-                          dataKey="valor"
-                          nameKey="nome"
-                          innerRadius={56}
-                          outerRadius={82}
-                          paddingAngle={3}
-                        >
-                          {dadosCategorias.map((c, i) => (
-                            <Cell key={i} fill={c.cor} stroke="#ffffff" strokeWidth={2} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
-                          contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '8px', border: '1px solid #334155', fontSize: '0.78rem' }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <div style={{ width: '100%', height: '100%', position: 'relative', zIndex: 5 }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={dadosCategorias}
+                            dataKey="valor"
+                            nameKey="nome"
+                            innerRadius={56}
+                            outerRadius={82}
+                            paddingAngle={3}
+                          >
+                            {dadosCategorias.map((c, i) => (
+                              <Cell key={i} fill={c.cor} stroke="#ffffff" strokeWidth={2} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
+                            wrapperStyle={{ zIndex: 50, pointerEvents: 'none' }}
+                            contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '8px', border: '1px solid #334155', fontSize: '0.78rem' }}
+                            itemStyle={{ color: '#ffffff', fontWeight: 700 }}
+                            labelStyle={{ color: '#93c5fd', fontWeight: 700 }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
                     <div
                       style={{
                         position: 'absolute',
                         top: '50%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
+                        zIndex: 1,
                         textAlign: 'center',
                         pointerEvents: 'none',
                         background: '#EFF6FF',
