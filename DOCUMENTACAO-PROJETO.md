@@ -165,6 +165,12 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-17 - Versão 155 - Fechamento Completo de Abas na Barra Inferior ao Clicar no X dos Modais]
+- **Sincronização do Botão `×` dos Modais com a Barra de Abas (`src/App.tsx`):**
+  - Corrigidos os handlers `onFechar` dos modais (`RelatorioVendasModal`, `ComandasModal`, `ConfiguracaoFiscalModal`, `AlertasWhatsAppModal`, `GraficosVendasModal`, `EtiquetasModal`, `EntradaNotaFiscalModal`, `ManualUsuarioModal`, `CentroNotificacoesModal`, `ModalPesquisaCatalogo` e `fecharRelatorio` do Estoque) para chamarem `fecharAbaDefinitivo(...)`, garantindo que ao clicar no `×` do modal a aba também seja removida da barra de navegação inferior (mantendo o comportamento de minimizar apenas ao clicar em `🏠 Início`).
+  - Ampliada a área de clique do botão `×` diretamente nas pílulas da barra de navegação inferior.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v155` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-17 - Versão 154 - Bloqueio de Autofill de Senha nos Campos de Busca & Roteamento Inteligente ao Bipar]
 - **Bloqueio de Preenchimento Automático de Login/Senha (`src/components/ComandasModal.tsx`):**
   - Campos de busca e formulário nas Comandas (`buscaComanda`, `buscaProduto`, `novoNomeCliente`, `novaMesa`) atualizados com `type="search"`, `autoComplete="new-password"` / `"off"`, `data-lpignore="true"`, `data-1p-ignore="true"`, `data-form-type="other"` e `readOnly` liberado no foco (`onFocus`), impedindo o navegador de preencher `rodrigo.souza` automaticamente como se fosse campo de login.

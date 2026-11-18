@@ -7546,7 +7546,7 @@ export default function App() {
 
 
   const fecharRelatorio = () => {
-    setRelatorioCheioVisivel(false);
+    fecharAbaDefinitivo('estoque');
   };
 
   // Calculate Expiration Alerts
@@ -13823,7 +13823,7 @@ export default function App() {
       {/* CENTRO DE NOTIFICAÇÕES & REPOSIÇÃO DE ESTOQUE MODAL */}
       <CentroNotificacoesModal
         visivel={modalNotificacoesVisivel}
-        onFechar={() => setModalNotificacoesVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('notificacoes')}
         estoque={estoque}
         catalogoGlobal={catalogoGlobal}
         supermercado={listaSupermercados.find((s) => s.id === supermercadoAtual) || null}
@@ -13989,7 +13989,7 @@ export default function App() {
       {/* MODAIS DE RELATÓRIO DE VENDAS E GRÁFICOS */}
       <RelatorioVendasModal
         visivel={modalRelatorioVendasVisivel}
-        onFechar={() => setModalRelatorioVendasVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('historico_vendas')}
         vendas={vendas}
         onEstornarVenda={handleEstornarVenda}
         operadores={listaOperadores}
@@ -14002,14 +14002,14 @@ export default function App() {
       {/* MODAL DE PESQUISAR PRODUTO DIRETO NA API OFICIAL SI5 GLOBAL */}
       <ModalPesquisaCatalogo
         visivel={modalPesquisaCatalogoVisivel}
-        onFechar={() => setModalPesquisaCatalogoVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('catalogo')}
         termoInicial={cadNome || ''}
         onSelecionarProduto={handleSelecionarProdutoPesquisa}
       />
 
       <GraficosVendasModal
         visivel={modalGraficosVendasVisivel}
-        onFechar={() => setModalGraficosVendasVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('graficos')}
         vendas={vendas}
         estoque={estoque}
         nomeLoja={nomeSupermercadoAtivo}
@@ -14029,7 +14029,7 @@ export default function App() {
       {/* MODAL DE CONFIGURAÇÃO FISCAL (NFC-E / FOCUS NFE) */}
       <ConfiguracaoFiscalModal
         visivel={modalConfigFiscalVisivel}
-        onFechar={() => setModalConfigFiscalVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('fiscal')}
         loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
         onSalvarConfigFiscal={handleSalvarConfigFiscal}
       />
@@ -14037,7 +14037,7 @@ export default function App() {
       {/* MODAL DE COMANDAS / MESAS (CONSUMO LOCAL E DIVISÃO DE CONTA) */}
       <ComandasModal
         visivel={modalComandasVisivel}
-        onFechar={() => setModalComandasVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('comandas')}
         comandas={comandasLocais}
         estoque={estoque}
         loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
@@ -14056,7 +14056,7 @@ export default function App() {
       {/* MODAL DE IMPRESSÃO DE ETIQUETAS DE PRATELEIRA */}
       <EtiquetasModal
         visivel={modalEtiquetasVisivel}
-        onFechar={() => setModalEtiquetasVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('etiquetas')}
         estoque={estoque}
         loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
       />
@@ -14093,7 +14093,7 @@ export default function App() {
       {/* MODAL DE ALERTAS DE VALIDADE NO WHATSAPP / E-MAIL */}
       <AlertasWhatsAppModal
         visivel={modalAlertasWhatsAppVisivel}
-        onFechar={() => setModalAlertasWhatsAppVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('whatsapp')}
         estoque={estoque}
         loja={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
       />
@@ -14117,7 +14117,7 @@ export default function App() {
       {/* MODAL DE ENTRADA DE NOTA FISCAL (XML / NF-E) */}
       <EntradaNotaFiscalModal
         visivel={modalEntradaNotaVisivel}
-        onFechar={() => setModalEntradaNotaVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('xml')}
         lojaAtual={listaSupermercados.find((l) => l.id === supermercadoAtual) || null}
         estoque={estoque}
         onConfirmarEntradaEstoque={handleConfirmarEntradaNotaFiscal}
@@ -14214,7 +14214,7 @@ export default function App() {
       {/* MODAL DO MANUAL DO USUÁRIO ISOLADO POR PERMISSÃO */}
       <ManualUsuarioModal
         visivel={modalManualVisivel}
-        onFechar={() => setModalManualVisivel(false)}
+        onFechar={() => fecharAbaDefinitivo('manual')}
         perfilAtivo={perfilAtivo}
         permissoesOperador={opAtualLogado?.permissoes || PERMISSOES_CAIXA_PADRAO}
         permissoesLoja={lojaAtualObj?.permissoesLoja || PERMISSOES_LOJA_PADRAO}
@@ -14708,10 +14708,13 @@ export default function App() {
                       background: 'transparent',
                       color: '#cbd5e1',
                       cursor: 'pointer',
-                      padding: '4px 7px 4px 2px',
-                      fontSize: '0.75rem',
+                      padding: '4px 8px 4px 4px',
+                      fontSize: '0.82rem',
                       fontWeight: 800,
                       lineHeight: 1,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
                     ×
