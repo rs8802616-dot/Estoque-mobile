@@ -165,6 +165,11 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-17 - Versão 157 - Aproveitamento da Barra Superior para Abas Caixa / Comandas / Delivery]
+- **Subcabeçalho Otimizado (`src/App.tsx`):**
+  - Movidas as abas **`🛒 Caixa / Venda`**, **`🍽️ Comandas`** e **`🛵 Delivery`** para o lado direito da barra branca superior (`.perfil-conteudo-desktop`), aproveitando o espaço vazio ao lado de `Trocar / Sair` e liberando mais altura vertical útil para o painel lateral do Caixa/Comandas/Delivery.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v157` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-17 - Versão 156 - Correção de Sobreposição do Tooltip no Gráfico Donut (TOTAL MIX)]
 - **Correção de Camada (`z-index`) e Contraste no Gráfico de Categorias (`src/components/GraficosVendasModal.tsx`):**
   - Ajustada a ordem de empilhamento (`zIndex: 5` no container do `PieChart` e `zIndex: 1` no círculo central `TOTAL MIX`) para que o tooltip escuro nunca fique atrás do círculo central.

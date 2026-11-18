@@ -8061,6 +8061,144 @@ export default function App() {
               <span>Trocar / Sair</span>
             </button>
           </div>
+
+          {!isModoCliente && !telaLoginVisivel && colunaDeliveryFixaVisivel && (temPermissaoOperador('vender', 'caixa') || temPermissaoOperador('gerenciar_delivery', 'delivery')) && (() => {
+            const podeCaixaLateral = temPermissaoOperador('vender', 'caixa');
+            const podeDeliveryLateral = temPermissaoOperador('gerenciar_delivery', 'delivery');
+            const abaAtiva = !podeCaixaLateral && podeDeliveryLateral
+              ? 'delivery'
+              : !podeDeliveryLateral && podeCaixaLateral && abaPainelLateral === 'delivery'
+                ? 'caixa'
+                : abaPainelLateral;
+            const qtdPendentesDelivery = pedidosDelivery.filter((p) => p.status === 'pendente').length;
+            const qtdItensCarrinho = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+            const qtdComandasAbertas = comandasLocais.filter((c) => c.status === 'aberta').length;
+
+            return (
+              <div
+                className="hidden lg:flex"
+                style={{
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '3px',
+                  background: '#e2e8f0',
+                  borderRadius: '10px',
+                  flexShrink: 0,
+                }}
+              >
+                {podeCaixaLateral && (
+                  <button
+                    type="button"
+                    onClick={() => setAbaPainelLateral('caixa')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: abaAtiva === 'caixa' ? '#ffffff' : 'transparent',
+                      color: abaAtiva === 'caixa' ? '#0f172a' : '#475569',
+                      fontWeight: abaAtiva === 'caixa' ? 800 : 600,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      boxShadow: abaAtiva === 'caixa' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
+                    }}
+                  >
+                    <span>🛒 Caixa / Venda</span>
+                    {qtdItensCarrinho > 0 && (
+                      <span
+                        style={{
+                          background: '#2563eb',
+                          color: '#ffffff',
+                          borderRadius: '999px',
+                          padding: '1px 6px',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                        }}
+                      >
+                        {Number.isInteger(qtdItensCarrinho) ? qtdItensCarrinho : qtdItensCarrinho.toFixed(1)}
+                      </span>
+                    )}
+                  </button>
+                )}
+
+                {podeCaixaLateral && (
+                  <button
+                    type="button"
+                    onClick={() => setAbaPainelLateral('comandas')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: abaAtiva === 'comandas' ? '#ffffff' : 'transparent',
+                      color: abaAtiva === 'comandas' ? '#0f172a' : '#475569',
+                      fontWeight: abaAtiva === 'comandas' ? 800 : 600,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      boxShadow: abaAtiva === 'comandas' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
+                    }}
+                  >
+                    <span>🍽️ Comandas</span>
+                    {qtdComandasAbertas > 0 && (
+                      <span
+                        style={{
+                          background: '#f59e0b',
+                          color: '#ffffff',
+                          borderRadius: '999px',
+                          padding: '1px 6px',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                        }}
+                      >
+                        {qtdComandasAbertas}
+                      </span>
+                    )}
+                  </button>
+                )}
+
+                {podeDeliveryLateral && (
+                  <button
+                    type="button"
+                    onClick={() => setAbaPainelLateral('delivery')}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: abaAtiva === 'delivery' ? '#ffffff' : 'transparent',
+                      color: abaAtiva === 'delivery' ? '#0f172a' : '#475569',
+                      fontWeight: abaAtiva === 'delivery' ? 800 : 600,
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      boxShadow: abaAtiva === 'delivery' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
+                    }}
+                  >
+                    <span>🛵 Delivery</span>
+                    {qtdPendentesDelivery > 0 && (
+                      <span
+                        style={{
+                          background: '#ef4444',
+                          color: '#ffffff',
+                          borderRadius: '999px',
+                          padding: '1px 6px',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                        }}
+                      >
+                        {qtdPendentesDelivery}
+                      </span>
+                    )}
+                  </button>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* CONTEÚDO NO CELULAR: BARRA DE PESQUISA DEDICADA EM DESTAQUE NO LUGAR DO SELETOR DE PERFIL */}
@@ -9667,143 +9805,12 @@ export default function App() {
                   : !podeDeliveryLateral && podeCaixaLateral && abaPainelLateral === 'delivery'
                     ? 'caixa'
                     : abaPainelLateral;
-                const qtdPendentesDelivery = pedidosDelivery.filter((p) => p.status === 'pendente').length;
-                const qtdItensCarrinho = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
-                const qtdComandasAbertas = comandasLocais.filter((c) => c.status === 'aberta').length;
-                const qtdAbasVisiveis = (podeCaixaLateral ? 2 : 0) + (podeDeliveryLateral ? 1 : 0);
 
                 return (
                   <div
                     className="coluna-delivery-fixa-lateral hidden lg:flex"
                     style={{ gap: '8px' }}
                   >
-                    {/* ABAS DE NAVEGAÇÃO RÁPIDA: CAIXA PDV | COMANDAS | DELIVERY */}
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${Math.max(1, qtdAbasVisiveis)}, minmax(0, 1fr))`,
-                        gap: '6px',
-                        padding: '4px',
-                        background: '#e2e8f0',
-                        borderRadius: '12px',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {podeCaixaLateral && (
-                        <button
-                          type="button"
-                          onClick={() => setAbaPainelLateral('caixa')}
-                          style={{
-                            padding: '8px 8px',
-                            borderRadius: '9px',
-                            border: 'none',
-                            background: abaAtiva === 'caixa' ? '#ffffff' : 'transparent',
-                            color: abaAtiva === 'caixa' ? '#0f172a' : '#475569',
-                            fontWeight: abaAtiva === 'caixa' ? 800 : 600,
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '5px',
-                            boxShadow: abaAtiva === 'caixa' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
-                          }}
-                        >
-                          <span>🛒 Caixa / Venda</span>
-                          {qtdItensCarrinho > 0 && (
-                            <span
-                              style={{
-                                background: '#2563eb',
-                                color: '#ffffff',
-                                borderRadius: '999px',
-                                padding: '1px 6px',
-                                fontSize: '11px',
-                                fontWeight: 800,
-                              }}
-                            >
-                              {Number.isInteger(qtdItensCarrinho) ? qtdItensCarrinho : qtdItensCarrinho.toFixed(1)}
-                            </span>
-                          )}
-                        </button>
-                      )}
-
-                      {podeCaixaLateral && (
-                        <button
-                          type="button"
-                          onClick={() => setAbaPainelLateral('comandas')}
-                          style={{
-                            padding: '8px 8px',
-                            borderRadius: '9px',
-                            border: 'none',
-                            background: abaAtiva === 'comandas' ? '#ffffff' : 'transparent',
-                            color: abaAtiva === 'comandas' ? '#0f172a' : '#475569',
-                            fontWeight: abaAtiva === 'comandas' ? 800 : 600,
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '5px',
-                            boxShadow: abaAtiva === 'comandas' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
-                          }}
-                        >
-                          <span>🍽️ Comandas</span>
-                          {qtdComandasAbertas > 0 && (
-                            <span
-                              style={{
-                                background: '#f59e0b',
-                                color: '#ffffff',
-                                borderRadius: '999px',
-                                padding: '1px 6px',
-                                fontSize: '11px',
-                                fontWeight: 800,
-                              }}
-                            >
-                              {qtdComandasAbertas}
-                            </span>
-                          )}
-                        </button>
-                      )}
-
-                      {podeDeliveryLateral && (
-                        <button
-                          type="button"
-                          onClick={() => setAbaPainelLateral('delivery')}
-                          style={{
-                            padding: '8px 8px',
-                            borderRadius: '9px',
-                            border: 'none',
-                            background: abaAtiva === 'delivery' ? '#ffffff' : 'transparent',
-                            color: abaAtiva === 'delivery' ? '#0f172a' : '#475569',
-                            fontWeight: abaAtiva === 'delivery' ? 800 : 600,
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '5px',
-                            boxShadow: abaAtiva === 'delivery' ? '0 2px 6px rgba(15, 23, 42, 0.08)' : 'none',
-                          }}
-                        >
-                          <span>🛵 Delivery</span>
-                          {qtdPendentesDelivery > 0 && (
-                            <span
-                              style={{
-                                background: '#ef4444',
-                                color: '#ffffff',
-                                borderRadius: '999px',
-                                padding: '1px 6px',
-                                fontSize: '11px',
-                                fontWeight: 800,
-                              }}
-                            >
-                              {qtdPendentesDelivery}
-                            </span>
-                          )}
-                        </button>
-                      )}
-                    </div>
-
                     {/* CONTEÚDO DA ABA SELECIONADA */}
                     <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                       {abaAtiva === 'caixa' ? (
