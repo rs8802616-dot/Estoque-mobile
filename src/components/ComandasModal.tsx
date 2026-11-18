@@ -25,6 +25,7 @@ export interface ComandasPanelProps {
   onSelectComandaId?: (id: string | null) => void;
   visaoLateral?: 'lista' | 'detalhe';
   onChangeVisaoLateral?: (visao: 'lista' | 'detalhe') => void;
+  onAbrirLeitorCamera?: () => void;
 }
 
 interface ComandasModalProps extends Omit<ComandasPanelProps, 'modoLateral' | 'onExpandir'> {
@@ -56,6 +57,7 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   onSelectComandaId,
   visaoLateral: visaoLateralProp,
   onChangeVisaoLateral,
+  onAbrirLeitorCamera,
 }) => {
   const [filtroStatus, setFiltroStatus] = useState<'aberta' | 'fechada'>('aberta');
   const [buscaComanda, setBuscaComanda] = useState<string>('');
@@ -423,6 +425,11 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                 >
                   <input
                     type="text"
+                    name="comanda_nome_cliente"
+                    autoComplete="off"
+                    data-form-type="other"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
                     value={novoNomeCliente}
                     onChange={(e) => setNovoNomeCliente(e.target.value)}
                     placeholder="Nome do cliente * (ex: João)"
@@ -437,6 +444,11 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <input
                       type="text"
+                      name="comanda_mesa_ref"
+                      autoComplete="off"
+                      data-form-type="other"
+                      data-lpignore="true"
+                      data-1p-ignore="true"
                       value={novaMesa}
                       onChange={(e) => setNovaMesa(e.target.value)}
                       placeholder="Mesa / Local (ex: Mesa 03)"
@@ -518,7 +530,17 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
               </div>
 
               <input
-                type="text"
+                type="search"
+                name="busca_comanda_nao_login"
+                autoComplete="new-password"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                data-form-type="other"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                readOnly
+                onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
                 value={buscaComanda}
                 onChange={(e) => setBuscaComanda(e.target.value)}
                 placeholder="🔍 Buscar comanda por nome ou mesa..."
@@ -660,6 +682,25 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                    {comandaAtiva.status === 'aberta' && onAbrirLeitorCamera && (
+                      <button
+                        type="button"
+                        onClick={onAbrirLeitorCamera}
+                        title="Bipar produto com a câmera para esta comanda"
+                        style={{
+                          padding: '6px 9px',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          background: '#ffffff',
+                          color: '#0f172a',
+                          fontWeight: 700,
+                          fontSize: '0.76rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📷 Bipar
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={handleImprimirComanda}
@@ -711,7 +752,17 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                   <div style={{ position: 'relative' }}>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <input
-                        type="text"
+                        type="search"
+                        name="busca_produto_comanda_nao_login"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        data-form-type="other"
+                        data-lpignore="true"
+                        data-1p-ignore="true"
+                        readOnly
+                        onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
                         value={buscaProduto}
                         onChange={(e) => setBuscaProduto(e.target.value)}
                         placeholder="🔍 Adicionar produto (nome ou código)..."

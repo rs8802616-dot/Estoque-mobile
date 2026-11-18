@@ -3582,18 +3582,37 @@ export default function App() {
       return;
     }
 
+    const comandaAbertaAlvo =
+      colunaDeliveryFixaVisivel &&
+      temPermissaoOperador('vender', 'caixa') &&
+      abaPainelLateral === 'comandas' &&
+      comandaLateralAbertaNaTela
+        ? comandasLocais.find((c) => c.id === comandaLateralSelecionadaId && c.status === 'aberta') || null
+        : null;
+
     // 1. Verificação de Balança (EAN-13 começando com '2')
     const resBalanca = processarCodigoBarraBalanca(codLimpo, estoque);
     if (resBalanca.isBalanca && resBalanca.itemEncontrado) {
+      const qtdBalanca = resBalanca.quantidadeCalculada || 1;
+      if (comandaAbertaAlvo) {
+        handleAdicionarProdutoNaComandaAtiva(resBalanca.itemEncontrado, qtdBalanca);
+        tocarBeepCaixa();
+        const msg = `🍽️ +${qtdBalanca} un/kg ${resBalanca.itemEncontrado.nome} → Comanda #${String(comandaAbertaAlvo.numeroComanda).padStart(2, '0')} (${comandaAbertaAlvo.nomeCliente})`;
+        setUltimoItemBipadoToast(msg);
+        setTimeout(() => setUltimoItemBipadoToast(''), 3500);
+        return;
+      }
       if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
         tocarSomAlerta();
         alert('⚠️ Caixa Fechado!\n\nAbra o turno de caixa antes de bipar etiquetas de balança.');
         setModalCaixaVisivel(true);
         return;
       }
-      adicionarAoCarrinho(resBalanca.itemEncontrado, resBalanca.quantidadeCalculada || 1);
+      adicionarAoCarrinho(resBalanca.itemEncontrado, qtdBalanca);
+      setColunaDeliveryFixaVisivel(true);
+      setAbaPainelLateral('caixa');
       tocarBeepCaixa();
-      const msg = `⚡ Leitor USB: +${resBalanca.quantidadeCalculada} un/kg ${resBalanca.itemEncontrado.nome} (R$ ${resBalanca.precoTotal?.toFixed(2)}) no carrinho!`;
+      const msg = `⚡ Leitor USB: +${qtdBalanca} un/kg ${resBalanca.itemEncontrado.nome} (R$ ${resBalanca.precoTotal?.toFixed(2)}) no caixa!`;
       setUltimoItemBipadoToast(msg);
       setTimeout(() => setUltimoItemBipadoToast(''), 3500);
       return;
@@ -3602,6 +3621,14 @@ export default function App() {
     // 2. Produto no Estoque
     const achou = localizarMelhorLoteEstoque(codLimpo, estoque);
     if (achou) {
+      if (comandaAbertaAlvo) {
+        handleAdicionarProdutoNaComandaAtiva(achou, 1);
+        tocarBeepCaixa();
+        const msg = `🍽️ +1 ${achou.nome} → Comanda #${String(comandaAbertaAlvo.numeroComanda).padStart(2, '0')} (${comandaAbertaAlvo.nomeCliente})`;
+        setUltimoItemBipadoToast(msg);
+        setTimeout(() => setUltimoItemBipadoToast(''), 3500);
+        return;
+      }
       if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
         tocarSomAlerta();
         alert('⚠️ Caixa Fechado!\n\nAbra o turno de caixa antes de realizar vendas.');
@@ -3609,8 +3636,10 @@ export default function App() {
         return;
       }
       adicionarAoCarrinho(achou, 1);
+      setColunaDeliveryFixaVisivel(true);
+      setAbaPainelLateral('caixa');
       tocarBeepCaixa();
-      const msg = `⚡ Leitor USB: +1 ${achou.nome} (R$ ${Number(achou.preco_venda || 0).toFixed(2)}) no carrinho!`;
+      const msg = `⚡ Leitor USB: +1 ${achou.nome} (R$ ${Number(achou.preco_venda || 0).toFixed(2)}) no caixa!`;
       setUltimoItemBipadoToast(msg);
       setTimeout(() => setUltimoItemBipadoToast(''), 3500);
     } else {
@@ -3623,6 +3652,9 @@ export default function App() {
       setTimeout(() => setUltimoItemBipadoToast(''), 4000);
     }
   };
+
+  const processarBipHardwareRef = useRef(processarBipHardware);
+  processarBipHardwareRef.current = processarBipHardware;
 
   // Keyboard Wedge Listener for Barcode Scanners (USB/Bluetooth)
   useEffect(() => {
@@ -3686,7 +3718,7 @@ export default function App() {
             if (!isInput || (target as HTMLInputElement).placeholder?.toLowerCase().includes('código') || (target as HTMLInputElement).placeholder?.toLowerCase().includes('barra')) {
               e.preventDefault();
             }
-            processarBipHardware(codigoLido);
+            processarBipHardwareRef.current(codigoLido);
           }
         } else {
           buffer = '';
@@ -3725,9 +3757,38 @@ export default function App() {
 
     // NO MODO CARRINHO CONTÍNUO NÃO FECHAMOS A CÂMERA
     if (destino === 'carrinho') {
+      const comandaAbertaCam =
+        colunaDeliveryFixaVisivel &&
+        temPermissaoOperador('vender', 'caixa') &&
+        abaPainelLateral === 'comandas' &&
+        comandaLateralAbertaNaTela
+          ? comandasLocais.find((c) => c.id === comandaLateralSelecionadaId && c.status === 'aberta') || null
+          : null;
+
       // 1. Verificação de Balança
       const resBalanca = processarCodigoBarraBalanca(codLimpo, estoque);
       if (resBalanca.isBalanca && resBalanca.itemEncontrado) {
+        const qtdBal = resBalanca.quantidadeCalculada || 1;
+        if (comandaAbertaCam) {
+          handleAdicionarProdutoNaComandaAtiva(resBalanca.itemEncontrado, qtdBal);
+          tocarBeepCaixa();
+          if (navigator.vibrate) {
+            try { navigator.vibrate([80, 40, 80]); } catch (e) {}
+          }
+          setUltimoItemScaneadoInfo({
+            nome: resBalanca.itemEncontrado.nome,
+            codigo: codLimpo,
+            preco: resBalanca.precoTotal || resBalanca.itemEncontrado.preco_venda,
+            quantidadeNoCarrinho: qtdBal,
+            estoqueDisponivel: resBalanca.itemEncontrado.quantidade,
+            status: 'sucesso',
+            mensagem: `🍽️ Comanda #${String(comandaAbertaCam.numeroComanda).padStart(2, '0')} (${comandaAbertaCam.nomeCliente})`,
+            timestamp: Date.now(),
+          });
+          setUltimoItemBipadoToast(`🍽️ +${qtdBal} un/kg ${resBalanca.itemEncontrado.nome} na comanda!`);
+          return;
+        }
+
         if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
           tocarSomAlerta();
           setUltimoItemScaneadoInfo({
@@ -3743,7 +3804,9 @@ export default function App() {
           return;
         }
 
-        adicionarAoCarrinho(resBalanca.itemEncontrado, resBalanca.quantidadeCalculada || 1);
+        adicionarAoCarrinho(resBalanca.itemEncontrado, qtdBal);
+        setColunaDeliveryFixaVisivel(true);
+        setAbaPainelLateral('caixa');
         tocarBeepCaixa();
         if (navigator.vibrate) {
           try { navigator.vibrate([80, 40, 80]); } catch (e) {}
@@ -3753,19 +3816,40 @@ export default function App() {
           nome: resBalanca.itemEncontrado.nome,
           codigo: codLimpo,
           preco: resBalanca.precoTotal || resBalanca.itemEncontrado.preco_venda,
-          quantidadeNoCarrinho: resBalanca.quantidadeCalculada || 1,
+          quantidadeNoCarrinho: qtdBal,
           estoqueDisponivel: resBalanca.itemEncontrado.quantidade,
           status: 'sucesso',
-          mensagem: `⚖️ Balança: ${resBalanca.quantidadeCalculada} un/kg (R$ ${resBalanca.precoTotal?.toFixed(2)})`,
+          mensagem: `⚖️ Balança: ${qtdBal} un/kg (R$ ${resBalanca.precoTotal?.toFixed(2)})`,
           timestamp: Date.now(),
         });
-        setUltimoItemBipadoToast(`+${resBalanca.quantidadeCalculada} un/kg ${resBalanca.itemEncontrado.nome} no carrinho!`);
+        setUltimoItemBipadoToast(`+${qtdBal} un/kg ${resBalanca.itemEncontrado.nome} no caixa!`);
         return;
       }
 
       // 2. Produto Normal no Estoque
       const achou = localizarMelhorLoteEstoque(codLimpo, estoque);
       if (achou) {
+        if (comandaAbertaCam) {
+          handleAdicionarProdutoNaComandaAtiva(achou, 1);
+          tocarBeepCaixa();
+          if (navigator.vibrate) {
+            try { navigator.vibrate([70, 30, 70]); } catch (e) {}
+          }
+          const qtdNaCmd = (comandaAbertaCam.itens.find((it) => it.codigo === achou.codigo)?.quantidade || 0) + 1;
+          setUltimoItemScaneadoInfo({
+            nome: achou.nome,
+            codigo: codLimpo,
+            preco: Number(achou.preco_venda || 0),
+            quantidadeNoCarrinho: qtdNaCmd,
+            estoqueDisponivel: achou.quantidade,
+            status: 'sucesso',
+            mensagem: `🍽️ Comanda #${String(comandaAbertaCam.numeroComanda).padStart(2, '0')} (${comandaAbertaCam.nomeCliente})`,
+            timestamp: Date.now(),
+          });
+          setUltimoItemBipadoToast(`🍽️ +1 ${achou.nome} na comanda!`);
+          return;
+        }
+
         if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
           tocarSomAlerta();
           setUltimoItemScaneadoInfo({
@@ -3782,6 +3866,8 @@ export default function App() {
         }
 
         adicionarAoCarrinho(achou, 1);
+        setColunaDeliveryFixaVisivel(true);
+        setAbaPainelLateral('caixa');
         tocarBeepCaixa();
         if (navigator.vibrate) {
           try { navigator.vibrate([70, 30, 70]); } catch (e) {}
@@ -9758,6 +9844,7 @@ export default function App() {
                           onSelectComandaId={setComandaLateralSelecionadaId}
                           visaoLateral={comandaLateralAbertaNaTela ? 'detalhe' : 'lista'}
                           onChangeVisaoLateral={(v) => setComandaLateralAbertaNaTela(v === 'detalhe')}
+                          onAbrirLeitorCamera={abrirLeitorCarrinho}
                         />
                       ) : (
                         <CaixaDeliveryPanel

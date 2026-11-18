@@ -165,6 +165,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-17 - Versão 154 - Bloqueio de Autofill de Senha nos Campos de Busca & Roteamento Inteligente ao Bipar]
+- **Bloqueio de Preenchimento Automático de Login/Senha (`src/components/ComandasModal.tsx`):**
+  - Campos de busca e formulário nas Comandas (`buscaComanda`, `buscaProduto`, `novoNomeCliente`, `novaMesa`) atualizados com `type="search"`, `autoComplete="new-password"` / `"off"`, `data-lpignore="true"`, `data-1p-ignore="true"`, `data-form-type="other"` e `readOnly` liberado no foco (`onFocus`), impedindo o navegador de preencher `rodrigo.souza` automaticamente como se fosse campo de login.
+- **Roteamento Automático ao Bipar Produto (`src/App.tsx` & `src/components/ComandasModal.tsx`):**
+  - Ao bipar qualquer produto pelo leitor USB/Bluetooth ou pela câmera:
+    - Se você estiver com uma **comanda de cliente aberta** na aba `🍽️ Comandas`, o produto bipado vai **direto para a comanda daquele cliente** (inclusive com botão rápido `📷 Bipar` dentro da comanda).
+    - Caso contrário, o item vai para o carrinho do **Caixa / Venda** e o painel lateral abre automaticamente na aba **`🛒 Caixa / Venda`**.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v154` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-17 - Versão 153 - Auditoria e Blindagem Completa de Isolamento Multi-Loja]
 - **Isolamento Total ao Alternar de Loja (`src/App.tsx`):**
   - Ao trocar de supermercado/adega (`supermercadoAtual`), todos os estados em memória específicos da loja (`estoque`, `vendas`, `listaOperadores`, `clientesDevedores`, `logsAuditoria`, `movimentacoesCaixa`, `pedidosDelivery`, `configDelivery`, `limiarEstoqueMinimo`, `comandaLateralSelecionadaId`, `comandaLateralAbertaNaTela`, `codigoEditando`) são imediatamente reinicializados com os dados exclusivos da nova loja (ou zerados quando vazios), impedindo que operadores, devedores, logs ou itens da loja anterior permaneçam visíveis na nova loja.
