@@ -5111,7 +5111,7 @@ export default function App() {
     setCadCategoria(cat.categoria || '');
     setFotoTemp(cat.imagem || '');
     setCadQtd('1');
-    setCadLote('LOTE01');
+    setCadLote('');
     const d = new Date();
     d.setMonth(d.getMonth() + 6);
     setCadVal(d.toISOString().slice(0, 10));
@@ -5345,7 +5345,7 @@ export default function App() {
     }
 
     const qtdDigitada = isInterno && cadEstoqueIlimitado ? 99999 : (parseInt(String(cadQtd).replace(/\D/g, ''), 10) || 0);
-    const loteDigitado = cadLote.trim() || (isInterno ? 'PROD_INTERNA' : `LOTE-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}`);
+    const loteDigitado = cadLote.trim();
     const valDigitada = cadVal.trim() || (isInterno ? '2099-12-31' : '');
     const custoDigitado = typeof cadCusto === 'string' ? (parseFloat(cadCusto.replace(',', '.')) || 0) : Number(cadCusto) || 0;
     const precoDigitado = typeof cadPreco === 'string' ? parseFloat(cadPreco.replace(',', '.')) : Number(cadPreco);
@@ -13178,7 +13178,7 @@ export default function App() {
                           type="text"
                           id="cad-lote"
                           className="input-modal"
-                          placeholder="Ex: LOTE-104526 (ou deixe em branco p/ gerar auto)"
+                          placeholder="Ex: LOTE-104526 (opcional)"
                           value={cadLote}
                           onChange={(e) => setCadLote(e.target.value)}
                         />
