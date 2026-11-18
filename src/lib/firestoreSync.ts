@@ -687,8 +687,8 @@ export async function buscarProdutoCatalogoFirestore(codigo: string): Promise<Pr
     if (snap.exists()) {
       return snap.data() as ProdutoCatalogo;
     }
-    // Try query if ID was stored differently
-    const q = query(collection(db, 'catalogo_global'), where('codigo', '==', cleanCod));
+    // Try query if ID was stored differently (limit(1) garante no máximo 1 leitura)
+    const q = query(collection(db, 'catalogo_global'), where('codigo', '==', cleanCod), limit(1));
     const qSnap = await getDocs(q);
     if (!qSnap.empty) {
       return qSnap.docs[0].data() as ProdutoCatalogo;
@@ -707,8 +707,8 @@ export async function buscarItemEstoquePorCodigoFirestore(codigo: string, lojaId
     if (!cleanCod) return null;
     const colRef = collection(db, 'estoque');
     const q = lojaId
-      ? query(colRef, where('codigo', '==', cleanCod), where('lojaId', '==', lojaId))
-      : query(colRef, where('codigo', '==', cleanCod));
+      ? query(colRef, where('codigo', '==', cleanCod), where('lojaId', '==', lojaId), limit(1))
+      : query(colRef, where('codigo', '==', cleanCod), limit(1));
     const snap = await getDocs(q);
     if (!snap.empty) {
       return snap.docs[0].data() as ItemEstoque;

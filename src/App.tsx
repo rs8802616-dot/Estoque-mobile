@@ -4561,6 +4561,7 @@ export default function App() {
 
   // Product Catalog Look Up (Ordem estrita: Estoque Local -> Cache Memória -> Banco de Dados Firestore)
   const [buscandoProdutoCodigo, setBuscandoProdutoCodigo] = useState<boolean>(false);
+  const codigosNaoEncontradosFirestoreRef = useRef<Set<string>>(new Set());
 
   const buscarProdutoPeloCodigo = async (codigoInformado?: string) => {
     if (buscandoProdutoCodigo) return;
@@ -4604,7 +4605,8 @@ export default function App() {
 
     // 3. TERCEIRO: Se NÃO tiver no estoque nem no cache, aí sim busca no banco de dados Firestore (apenas 1 documento)
     try {
-      const prodRemoto = await buscarProdutoCatalogoFirestore(codLimpo);
+      const jaFalhouNoFirestore = codigosNaoEncontradosFirestoreRef.current.has(codLimpo);
+      const prodRemoto = jaFalhouNoFirestore ? null : await buscarProdutoCatalogoFirestore(codLimpo);
       if (prodRemoto && prodRemoto.nome) {
         setCadNome(prodRemoto.nome);
         if (prodRemoto.marca) setCadMarca(prodRemoto.marca);
@@ -4625,7 +4627,7 @@ export default function App() {
       }
 
       // Se nem no catálogo master existir, verifica se existe no estoque remoto de outra filial
-      const itemRemotoEstoque = await buscarItemEstoquePorCodigoFirestore(codLimpo);
+      const itemRemotoEstoque = jaFalhouNoFirestore ? null : await buscarItemEstoquePorCodigoFirestore(codLimpo);
       if (itemRemotoEstoque && itemRemotoEstoque.nome) {
         setCadNome(itemRemotoEstoque.nome);
         if (itemRemotoEstoque.marca) setCadMarca(itemRemotoEstoque.marca);
@@ -4636,6 +4638,10 @@ export default function App() {
         if (itemRemotoEstoque.preco_custo && !cadCusto) setCadCusto(String(itemRemotoEstoque.preco_custo));
         setBuscandoProdutoCodigo(false);
         return;
+      }
+
+      if (!jaFalhouNoFirestore) {
+        codigosNaoEncontradosFirestoreRef.current.add(codLimpo);
       }
 
       // 4. QUARTO: Se não encontrou no estoque, nem no cache, nem no banco Firestore,
@@ -4676,7 +4682,7 @@ export default function App() {
       }
 
       // Se não encontrou em nenhum lugar:
-      alert(`ℹ️ Código "${codLimpo}" não encontrado no estoque, banco de dados ou nas 4 chaves da API.\n\nPreencha as informações do produto manualmente para salvá-lo.`);
+      alert(`ℹ️ Código "${codLimpo}" não encontrado no estoque, banco de dados ou na API.\n\nPreencha as informações do produto manualmente para salvá-lo.`);
     } catch (err) {
       console.warn('Erro ao consultar produto no banco de dados:', err);
     } finally {

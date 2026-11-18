@@ -17,10 +17,28 @@ export interface SI5ProdutoRetorno {
   fonte: string;
 }
 
+function isSI5TokenEsgotado(index: number, dataHoje: string): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return localStorage.getItem(`si5_token_esgotado_${index}_${dataHoje}`) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function marcarSI5TokenEsgotado(index: number, dataHoje: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(`si5_token_esgotado_${index}_${dataHoje}`, 'true');
+  } catch {}
+}
+
 /**
- * Consulta de produtos na API SI5 Global utilizando as 4 chaves em cascata.
- * Se a Chave 1 atingir o limite diário de 100 consultas (HTTP 429), pula imediatamente para a Chave 2,
- * depois 3 e 4, garantindo até 400 consultas diárias gratuitas sem travar o usuário.
+ * Consulta de produtos na API SI5 Global utilizando a chave ativa no momento.
+ * Utiliza a Chave 1 por padrão e só avança para 2, 3 e 4 se a chave atual
+ * atingir o limite diário de 100 consultas (HTTP 429).
+ * Se o produto não existir (404/vazio) ou ocorrer outro erro, retorna null
+ * imediatamente sem gastar cota das próximas chaves.
  */
 export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5ProdutoRetorno | null> {
   const clean = (codigo || '').trim().replace(/\D/g, '');
@@ -29,17 +47,11 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
   const dataHoje = new Date().toISOString().slice(0, 10);
 
   for (let i = 0; i < SI5_GLOBAL_TOKENS.length; i++) {
-    const token = SI5_GLOBAL_TOKENS[i];
-    const chaveStorage = `si5_token_esgotado_${i}_${dataHoje}`;
-
-    // Pula token se já marcou cota esgotada na data de hoje
-    if (typeof window !== 'undefined') {
-      try {
-        if (localStorage.getItem(chaveStorage) === 'true') {
-          continue;
-        }
-      } catch {}
+    if (isSI5TokenEsgotado(i, dataHoje)) {
+      continue;
     }
+
+    const token = SI5_GLOBAL_TOKENS[i];
 
     try {
       const ctrl = new AbortController();
@@ -55,14 +67,10 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
       });
       clearTimeout(timeoutId);
 
-      // Cota de 100 consultas diárias atingida
+      // Cota de 100 consultas diárias atingida: marca esta chave como esgotada hoje e passa para a próxima
       if (res.status === 429) {
-        console.warn(`[SI5 Global] Token #${i + 1} atingiu limite de 100 consultas hoje. Passando para o próximo token...`);
-        if (typeof window !== 'undefined') {
-          try {
-            localStorage.setItem(chaveStorage, 'true');
-          } catch {}
-        }
+        console.warn(`[SI5 Global] Token #${i + 1} atingiu limite diário (429). Passando para o próximo token...`);
+        marcarSI5TokenEsgotado(i, dataHoje);
         continue;
       }
 
@@ -81,8 +89,12 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
           };
         }
       }
+
+      // Não encontrou (404, 200 vazio) ou outro erro não-429: não consome as demais chaves
+      return null;
     } catch (e: any) {
       console.warn(`[SI5 Global] Falha na Chave #${i + 1}:`, e?.message || e);
+      return null;
     }
   }
 
@@ -113,16 +125,11 @@ export async function pesquisarSI5GlobalPorNome(
   const dataHoje = new Date().toISOString().slice(0, 10);
 
   for (let i = 0; i < SI5_GLOBAL_TOKENS.length; i++) {
-    const token = SI5_GLOBAL_TOKENS[i];
-    const chaveStorage = `si5_token_esgotado_${i}_${dataHoje}`;
-
-    if (typeof window !== 'undefined') {
-      try {
-        if (localStorage.getItem(chaveStorage) === 'true') {
-          continue;
-        }
-      } catch {}
+    if (isSI5TokenEsgotado(i, dataHoje)) {
+      continue;
     }
+
+    const token = SI5_GLOBAL_TOKENS[i];
 
     try {
       const ctrl = new AbortController();
@@ -140,12 +147,8 @@ export async function pesquisarSI5GlobalPorNome(
       clearTimeout(timeoutId);
 
       if (res.status === 429) {
-        console.warn(`[SI5 Global] Token #${i + 1} atingiu limite diário ao pesquisar nome. Passando para o próximo token...`);
-        if (typeof window !== 'undefined') {
-          try {
-            localStorage.setItem(chaveStorage, 'true');
-          } catch {}
-        }
+        console.warn(`[SI5 Global] Token #${i + 1} atingiu limite diário (429) ao pesquisar nome. Passando para o próximo token...`);
+        marcarSI5TokenEsgotado(i, dataHoje);
         continue;
       }
 
@@ -175,8 +178,12 @@ export async function pesquisarSI5GlobalPorNome(
           chaveUtilizada: i + 1,
         };
       }
+
+      // Qualquer resposta não-429 (404, 400, 500, etc.) encerra imediatamente sem gastar outras chaves
+      return null;
     } catch (e: any) {
       console.warn(`[SI5 Global] Erro na busca por nome com token #${i + 1}:`, e?.message || e);
+      return null;
     }
   }
 
