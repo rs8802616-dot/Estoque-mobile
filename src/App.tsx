@@ -8073,11 +8073,14 @@ export default function App() {
             const qtdPendentesDelivery = pedidosDelivery.filter((p) => p.status === 'pendente').length;
             const qtdItensCarrinho = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
             const qtdComandasAbertas = comandasLocais.filter((c) => c.status === 'aberta').length;
+            const qtdAbasVisiveis = (podeCaixaLateral ? 2 : 0) + (podeDeliveryLateral ? 1 : 0);
 
             return (
               <div
-                className="hidden lg:flex"
+                className="hidden lg:grid"
                 style={{
+                  gridTemplateColumns: `repeat(${Math.max(1, qtdAbasVisiveis)}, minmax(0, 1fr))`,
+                  width: 'clamp(355px, 30vw, 455px)',
                   alignItems: 'center',
                   gap: '4px',
                   padding: '3px',
@@ -8101,7 +8104,9 @@ export default function App() {
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '5px',
+                      whiteSpace: 'nowrap',
                       boxShadow: abaAtiva === 'caixa' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
                     }}
                   >
@@ -8138,7 +8143,9 @@ export default function App() {
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '5px',
+                      whiteSpace: 'nowrap',
                       boxShadow: abaAtiva === 'comandas' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
                     }}
                   >
@@ -8175,7 +8182,9 @@ export default function App() {
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
+                      justifyContent: 'center',
                       gap: '5px',
+                      whiteSpace: 'nowrap',
                       boxShadow: abaAtiva === 'delivery' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
                     }}
                   >
