@@ -658,7 +658,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
   if (!visivel) return null;
 
   return (
-    <div className="tela-relatorio-cheia" style={{ display: 'flex', zIndex: 400 }}>
+    <div className="tela-relatorio-cheia" style={{ display: 'flex', zIndex: 10050 }}>
       {/* CABEÇALHO */}
       <div
         className="cabecalho-relatorio"

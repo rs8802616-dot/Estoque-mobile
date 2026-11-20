@@ -165,6 +165,31 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-20 - Versão 162 - Correções do Lote 2 da Auditoria Multi-Agente (UI/UX, Responsividade, Z-Index e Performance)]
+- **Performance em Renderização (`src/App.tsx`):**
+  - Substituídas buscas lineares `.find()` e `localStorage.getItem + JSON.parse` dentro de `obterNomeProduto` e `obterFotoProduto` por `Map` memoizado (`mapaCatalogoPorCodigo` e `mapaFotoEstoquePorCodigo`), reduzindo o lookup por card para `O(1)`.
+- **Padronização de Camadas `z-index` (`src/App.tsx`, `src/components/CentroNotificacoesModal.tsx`, `src/components/GestaoDevedoresModal.tsx`):**
+  - Barra flutuante de abas ajustada para `zIndex: 900` (não cobre mais rodapés de modais ou botões no mobile) e modais `CentroNotificacoesModal` e `GestaoDevedoresModal` elevados para `zIndex: 10050` (acima da sidebar).
+- **Responsividade Tablet / Notebook / Celular (`index.html`, `src/index.css`, `src/components/GraficosVendasModal.tsx`, `src/components/RelatorioVendasModal.tsx`):**
+  - Removido bloqueio de zoom (`user-scalable=no`) em `index.html`; `font-family` movido de `*` para `body` em `src/index.css`.
+  - Ocultado `.btn-coluna-delivery` abaixo de `1024px`, habilitada quebra limpa de `.barra-acoes` em tablets (`768px–1023px`) e corrigidos os seletores de notebook (`.cabecalho`, `.barra-acoes`, `.input-busca`, `.btn`, `.painel-alertas:empty`).
+  - Corrigidos grids `minmax(min(100%, 280px), 1fr)` e `overflowX: 'auto'` em `GraficosVendasModal`, filtro de ano no gráfico mensal, cor âmbar de `'7 dias'`, e `flexWrap: 'wrap'` na paginação de `RelatorioVendasModal`.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v162` em `public/sw.js` e `src/main.tsx`.
+
+### [2026-11-20 - Versão 161 - Correções do Lote 1 da Auditoria Multi-Agente (Caixa, Comandas, Estorno, Delivery e Permissões)]
+- **Integridade de Lotes e Estorno (`src/lib/firestoreSync.ts` & `src/App.tsx`):**
+  - Corrigida a exclusão de lote sem número de lote em `excluirItemEstoqueFirestore` para exigir igualdade exata de `validade` e `lote`, evitando apagar outros lotes do mesmo produto.
+  - Corrigido `handleEstornarVenda` para abater também a compra correspondente na caderneta de Devedores (Fiado), pular itens ilimitados/internos e validar permissão `estornar_venda`.
+  - Corrigido o cancelamento de pedidos Delivery (`em_separacao`, `pronto`, `saiu_para_entrega`) para não devolver estoque duas vezes quando já existe venda vinculada para estorno.
+- **Caixa, Troco, Fiado e Comandas (`src/components/GestaoCaixaModal.tsx`, `src/components/CaixaPdvLateralPanel.tsx`, `src/components/ComandasModal.tsx` & `src/App.tsx`):**
+  - `GestaoCaixaModal` agora filtra `movimentacoes` apenas pelo `sessaoId` ativo (sem somar suprimentos/sangrias de turnos passados) e bloqueia valores negativos na abertura/fechamento.
+  - `CaixaPdvLateralPanel` agora envia `valorRecebido` e `troco` para a venda, bloqueia pagamento em dinheiro menor que o total e `finalizarVendaCarrinho` passa a validar `limiteFiado`.
+  - Corrigido o botão `1 Parte` em `ComandasModal` para usar o valor da parte (`Math.min(saldoRestante, valorPorPessoaTotal)`) mesmo após pagamentos parciais.
+- **Permissões e Cache Fiscal (`src/App.tsx`):**
+  - Corrigida a chave `localStorage` em `handleSalvarConfigFiscal` (`'lista_supermercados_sistema'` -> `'lista_supermercados_app'`).
+  - Adicionada checagem de permissão nos atalhos `F4` (`gestao_caixa`) e `F8` (`gerenciar_delivery`) e restringida a Configuração Fiscal exclusivamente para `admin_loja` / `dona_app`.
+- **PWA Cache:** Versão atualizada para `estoque-mobile-pwa-v161` em `public/sw.js` e `src/main.tsx`.
+
 ### [2026-11-17 - Versão 160 - Devedores em Ordem Alfabética & Login Sempre Abrindo no PDV]
 - **Ordem Alfabética nos Devedores (`src/components/GestaoDevedoresModal.tsx` & `src/components/CaixaPdvLateralPanel.tsx`):**
   - A lista de clientes na Caderneta de Devedores e no seletor de Fiado do Caixa agora é ordenada automaticamente de A–Z (`localeCompare(..., 'pt-BR', { sensitivity: 'base' })`).

@@ -77,11 +77,15 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
     return true;
   });
 
-  const totalSuprimentos = movimentacoes
+  const movimentacoesSessao = movimentacoes.filter(
+    (m) => !sessaoAtiva?.id || !m.sessaoId || m.sessaoId === sessaoAtiva.id
+  );
+
+  const totalSuprimentos = movimentacoesSessao
     .filter((m) => m.tipo === 'suprimento')
     .reduce((acc, m) => acc + m.valor, 0);
 
-  const totalSangrias = movimentacoes
+  const totalSangrias = movimentacoesSessao
     .filter((m) => m.tipo === 'sangria')
     .reduce((acc, m) => acc + m.valor, 0);
 
@@ -118,6 +122,10 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
     e.preventDefault();
     setMsgErroAbertura('');
     const val = parseFloat(valorInicialStr.replace(',', '.')) || 0;
+    if (val < 0 || !Number.isFinite(val)) {
+      setMsgErroAbertura('O fundo de troco inicial não pode ser negativo.');
+      return;
+    }
 
     if (!loginAbrir.trim() || !senhaAbrir.trim()) {
       setMsgErroAbertura('Informe o login/CPF e a senha para abrir o caixa.');
@@ -156,6 +164,10 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
     const din = parseFloat(dinheiroInfStr.replace(',', '.')) || 0;
     const car = parseFloat(cartaoInfStr.replace(',', '.')) || 0;
     const pix = parseFloat(pixInfStr.replace(',', '.')) || 0;
+    if (din < 0 || car < 0 || pix < 0) {
+      setMsgErroFechamento('Os valores contados no fechamento não podem ser negativos.');
+      return;
+    }
 
     if (!loginFechar.trim() || !senhaFechar.trim()) {
       setMsgErroFechamento('Informe seu usuário e senha para autorizar o encerramento do caixa.');

@@ -1068,7 +1068,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
                 Página <b style={{ color: '#0f172a' }}>{paginaCorreta}</b> de <b style={{ color: '#0f172a' }}>{totalPaginas}</b> ({totalRegistros} vendas filtradas)
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <button
                   type="button"
                   disabled={paginaCorreta <= 1}

@@ -229,7 +229,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
   };
 
   return (
-    <div className="modal" style={{ display: 'flex', zIndex: 350 }}>
+    <div className="modal" style={{ display: 'flex', zIndex: 10050 }}>
       <div
         className="modal-conteudo"
         style={{

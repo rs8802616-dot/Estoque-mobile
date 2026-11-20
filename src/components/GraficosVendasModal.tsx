@@ -408,8 +408,10 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
           porMes[i] = { index: i, label: nomesMeses[i], faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 };
         }
 
+        const anoAtual = hoje.getFullYear();
         vendasValidas.forEach((v) => {
           const dt = parseDataVenda(v);
+          if (dt.getFullYear() !== anoAtual) return;
           const mesIndex = dt.getMonth();
           const m = calcularMetricasVenda(v);
           if (porMes[mesIndex]) {
@@ -2149,7 +2151,7 @@ ${top3 || '- Nenhum produto vendido'}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                 gap: '14px',
               }}
             >
@@ -2534,7 +2536,7 @@ ${top3 || '- Nenhum produto vendido'}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
                 gap: '14px',
               }}
             >
@@ -2840,7 +2842,7 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
 
               {/* Tabela Formatada Estilo Imagem 5 */}
-              <div style={{ overflowX: 'auto', border: '2px solid #292524', borderRadius: '6px', overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto', border: '2px solid #292524', borderRadius: '6px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
                   <thead>
                     <tr style={{ background: '#141414', color: '#ffffff', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -3420,7 +3422,7 @@ ${top3 || '- Nenhum produto vendido'}
                       {dadosPerdas.graficoRisco.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={entry.label.includes('Vencido') ? '#dc2626' : entry.label.includes('7 Dias') ? '#d97706' : '#2563eb'} 
+                          fill={entry.label.includes('Vencido') ? '#dc2626' : entry.label.toLowerCase().includes('7 dias') ? '#d97706' : '#2563eb'} 
                         />
                       ))}
                     </Bar>

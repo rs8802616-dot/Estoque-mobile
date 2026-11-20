@@ -5,8 +5,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
   }
 
   :root {
@@ -2178,13 +2181,25 @@
     }
 }
 
-/* No celular / tablet: não exibir a coluna lateral fixa de Delivery no Caixa */
+/* No celular / tablet: não exibir a coluna lateral fixa de Delivery no Caixa nem o botão de alterná-la */
 @media (max-width: 1023px) {
-    .coluna-delivery-fixa-lateral {
+    .coluna-delivery-fixa-lateral,
+    .btn-coluna-delivery {
         display: none !important;
     }
     .layout-caixa-delivery-grid {
         grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .barra-acoes {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .input-busca {
+        flex: 1 1 220px;
+        min-width: 180px;
     }
 }
 
@@ -2258,18 +2273,19 @@
 
 /* Otimização específica para Notebooks (1024px-1439px ou telas com altura <= 820px como 1366x768 / 1280x720 / 125% zoom) */
 @media (min-width: 1024px) and (max-width: 1439px), (min-width: 1024px) and (max-height: 820px) {
-    .topo {
-        padding: 8px 14px;
+    .cabecalho {
+        padding: 7px 14px;
     }
-    .topo-conteudo {
-        gap: 8px;
+    .container-cabecalho,
+    .barra-acoes {
+        gap: 6px;
     }
-    .caixa-busca input {
-        padding: 8px 12px 8px 34px;
+    .input-busca {
+        padding: 7px 12px;
         font-size: 0.85rem;
     }
-    .btn-acao-topo {
-        padding: 7px 11px;
+    .btn {
+        padding: 7px 10px;
         font-size: 0.8rem;
     }
     main.espaco-topo {
@@ -2277,8 +2293,13 @@
         padding-left: 12px;
         padding-right: 12px;
     }
+    .painel-alertas:empty {
+        display: none;
+        padding: 0;
+        margin: 0;
+    }
     .painel-alertas {
-        padding: 7px 12px;
+        padding: 6px 12px;
         margin-bottom: 8px;
         font-size: 0.8rem;
     }

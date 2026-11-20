@@ -788,7 +788,7 @@ export async function excluirItemEstoqueFirestore(codigo: string, validade: stri
         const dVal = String(data.validade || '2099-12-31').trim();
         const dLote = String(data.lote || '').trim();
         const valAlvo = cleanVal || '2099-12-31';
-        if ((!cleanVal || dVal === valAlvo) && (!cleanLote || dLote === cleanLote)) {
+        if (dVal === valAlvo && dLote === cleanLote) {
           await deleteDoc(d.ref);
         }
       }

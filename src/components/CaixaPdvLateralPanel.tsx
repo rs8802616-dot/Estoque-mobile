@@ -11,7 +11,7 @@ interface CaixaPdvLateralPanelProps {
   onFinalizarVenda: (
     formaPagamento: FormaPagamentoPdv,
     clienteFiadoId?: string,
-    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string }
+    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string; valorRecebido?: number; troco?: number }
   ) => void;
   clientesDevedores: ClienteDevedor[];
   onAbrirCadastroCliente: () => void;
@@ -108,10 +108,27 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
       return;
     }
     if (!podeFinalizar) return;
+    if (formaPagamento === 'dinheiro' && valorRecebidoDinheiro.trim() !== '') {
+      if (isNaN(valorRecebidoNum) || valorRecebidoNum < totalVenda - 0.009) {
+        alert(`⚠️ Valor recebido em dinheiro (R$ ${(isNaN(valorRecebidoNum) ? 0 : valorRecebidoNum).toFixed(2).replace('.', ',')}) é menor que o total da venda (R$ ${totalVenda.toFixed(2).replace('.', ',')}).`);
+        return;
+      }
+    }
+    const valorRecebidoFinal =
+      formaPagamento === 'dinheiro' && !isNaN(valorRecebidoNum) && valorRecebidoNum > 0
+        ? Number(valorRecebidoNum.toFixed(2))
+        : undefined;
+    const trocoFinal =
+      formaPagamento === 'dinheiro' && trocoCalculado > 0
+        ? Number(trocoCalculado.toFixed(2))
+        : 0;
     onFinalizarVenda(
       formaPagamento,
       formaPagamento === 'fiado' ? clienteFiadoId : undefined,
-      nfceHabilitada ? { emitirNfce, cpfNaNota: cpfNaNota.trim() || undefined } : undefined
+      {
+        ...(nfceHabilitada ? { emitirNfce, cpfNaNota: cpfNaNota.trim() || undefined } : {}),
+        ...(valorRecebidoFinal !== undefined ? { valorRecebido: valorRecebidoFinal, troco: trocoFinal } : {}),
+      }
     );
     setValorRecebidoDinheiro('');
     setCpfNaNota('');

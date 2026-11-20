@@ -3674,11 +3674,13 @@ export default function App() {
         }
         if (e.key === 'F4') {
           e.preventDefault();
+          if (!verificarPermissaoOuAvisar('caixa', 'gestao_caixa', 'Gestão do Caixa')) return;
           setModalCaixaVisivel((prev) => !prev);
           return;
         }
         if (e.key === 'F8') {
           e.preventDefault();
+          if (!verificarPermissaoOuAvisar('delivery', 'gerenciar_delivery', 'Painel de Delivery')) return;
           setModalGestaoDeliveryVisivel((prev) => !prev);
           return;
         }
@@ -4484,38 +4486,43 @@ export default function App() {
     }, 200);
   };
 
-  // Obter nome do produto de forma centralizada, priorizando atualizações do Catálogo Master
+  const mapaCatalogoPorCodigo = useMemo(() => {
+    const mapa = new Map<string, ProdutoCatalogo>();
+    catalogoGlobal.forEach((c) => {
+      if (c.codigo) mapa.set(String(c.codigo).trim(), c);
+    });
+    return mapa;
+  }, [catalogoGlobal]);
+
+  const mapaFotoEstoquePorCodigo = useMemo(() => {
+    const mapa = new Map<string, string>();
+    estoque.forEach((e) => {
+      const cod = e.codigo ? String(e.codigo).trim() : '';
+      if (cod && !mapa.has(cod) && e.foto && typeof e.foto === 'string' && e.foto.trim().length > 5) {
+        mapa.set(cod, e.foto.trim());
+      }
+    });
+    return mapa;
+  }, [estoque]);
+
+  // Obter nome do produto de forma centralizada, priorizando atualizações do Catálogo Master (O(1))
   const obterNomeProduto = (codigo?: string, nomeItem?: string): string => {
     if (!codigo) return nomeItem || '';
     const codLimpo = String(codigo).trim();
 
-    // 1. Busca no catálogo global mestre (atualizações administrativas)
-    const cat = catalogoGlobal.find((c) => c.codigo === codLimpo);
+    const cat = mapaCatalogoPorCodigo.get(codLimpo);
     if (cat?.nome && cat.nome.trim()) {
       return cat.nome.trim();
     }
 
-    // 2. Se o item local tiver nome válido, usa
     if (nomeItem && nomeItem.trim()) {
       return nomeItem.trim();
     }
 
-    // 3. Fallback no cache local do catálogo
-    try {
-      const salvo = localStorage.getItem('catalogoGlobalFirebase');
-      if (salvo) {
-        const parsed: ProdutoCatalogo[] = JSON.parse(salvo);
-        const achouLocal = parsed.find((p) => p.codigo === codLimpo);
-        if (achouLocal?.nome && achouLocal.nome.trim()) {
-          return achouLocal.nome.trim();
-        }
-      }
-    } catch {}
-
     return nomeItem || 'Produto sem nome';
   };
 
-  // Obter foto do produto de forma centralizada, ultra-resiliente e com compressão máxima de memória
+  // Obter foto do produto de forma centralizada, ultra-resiliente e em O(1)
   const obterFotoProduto = (codigo?: string, fotoItem?: string): string => {
     let fotoBruta = '';
     if (fotoItem && typeof fotoItem === 'string' && fotoItem.trim().length > 5) {
@@ -4523,34 +4530,17 @@ export default function App() {
     } else if (codigo) {
       const codLimpo = String(codigo).trim();
 
-      // 0. Cache em memória do IndexedDB (ultra-resiliente e imune a sobrescrita)
       const fotoCache = obterFotoCache(codLimpo);
       if (fotoCache && typeof fotoCache === 'string' && fotoCache.trim().length > 5) {
         fotoBruta = fotoCache.trim();
       } else {
-        // 1. Busca no catálogo compartilhado em memória
-        const cat = catalogoGlobal.find((c) => c.codigo === codLimpo);
+        const cat = mapaCatalogoPorCodigo.get(codLimpo);
         if (cat?.imagem && cat.imagem.trim().length > 5) {
           fotoBruta = cat.imagem.trim();
         } else {
-          // 2. Busca em qualquer outro lote ou item com o mesmo código no estoque
-          const itemEstoqueComFoto = estoque.find(
-            (e) => e.codigo === codLimpo && e.foto && typeof e.foto === 'string' && e.foto.trim().length > 5
-          );
-          if (itemEstoqueComFoto?.foto) {
-            fotoBruta = itemEstoqueComFoto.foto.trim();
-          } else {
-            // 3. Fallback no cache local do catálogo do navegador
-            try {
-              const salvo = localStorage.getItem('catalogoGlobalFirebase');
-              if (salvo) {
-                const parsed: ProdutoCatalogo[] = JSON.parse(salvo);
-                const achouLocal = parsed.find((p) => p.codigo === codLimpo);
-                if (achouLocal?.imagem && achouLocal.imagem.trim().length > 5) {
-                  fotoBruta = achouLocal.imagem.trim();
-                }
-              }
-            } catch {}
+          const fotoEst = mapaFotoEstoquePorCodigo.get(codLimpo);
+          if (fotoEst) {
+            fotoBruta = fotoEst;
           }
         }
       }
@@ -4904,6 +4894,10 @@ export default function App() {
     } else if (aba === 'comandas') {
       setModalComandasVisivel(true);
     } else if (aba === 'fiscal') {
+      if (perfilAtivo !== 'dona_app' && perfilAtivo !== 'admin_loja') {
+        setAvisoRestrito('🔒 Acesso Restrito: Apenas Administrador da Loja ou Dona do App pode acessar a Configuração Fiscal.');
+        return;
+      }
       setModalConfigFiscalVisivel(true);
     }
   };
@@ -6419,7 +6413,7 @@ export default function App() {
 
     const novaLista = listaSupermercados.map((l) => (l.id === lojaAtualizada.id ? lojaAtualizada : l));
     setListaSupermercados(novaLista);
-    safeLocalStorageSet('lista_supermercados_sistema', JSON.stringify(novaLista));
+    safeLocalStorageSet('lista_supermercados_app', JSON.stringify(novaLista));
     try {
       await salvarSupermercadoFirestore(lojaAtualizada);
     } catch (e) {
@@ -6797,7 +6791,7 @@ export default function App() {
   const finalizarVendaCarrinho = (
     formaPagamentoVenda: 'dinheiro' | 'cartao_credito' | 'cartao_debito' | 'pix' | 'fiado',
     clienteFiadoIdEscolhido?: string,
-    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string }
+    opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string; valorRecebido?: number; troco?: number }
   ) => {
     if (!sessaoCaixaAtiva || sessaoCaixaAtiva.status !== 'aberto') {
       alert('⚠️ Caixa fechado! Abra o turno de caixa antes de concluir a venda.');
@@ -6839,6 +6833,15 @@ export default function App() {
       if (!clienteFiadoEncontrado) {
         alert('Cliente fiado não encontrado!');
         return;
+      }
+      if (clienteFiadoEncontrado.limiteFiado && clienteFiadoEncontrado.limiteFiado > 0) {
+        const novoSaldo = Number(((clienteFiadoEncontrado.saldoDevedorTotal || 0) + valorTotalCarrinho).toFixed(2));
+        if (novoSaldo > clienteFiadoEncontrado.limiteFiado) {
+          const prosseguir = window.confirm(
+            `⚠️ Limite de Fiado Excedido!\n\nCliente: ${clienteFiadoEncontrado.nome}\nSaldo Atual: R$ ${(clienteFiadoEncontrado.saldoDevedorTotal || 0).toFixed(2)}\nCompra: R$ ${valorTotalCarrinho.toFixed(2)}\nNovo Saldo: R$ ${novoSaldo.toFixed(2)}\nLimite: R$ ${clienteFiadoEncontrado.limiteFiado.toFixed(2)}\n\nDeseja liberar esta venda mesmo assim?`
+          );
+          if (!prosseguir) return;
+        }
       }
     }
 
@@ -6904,6 +6907,8 @@ export default function App() {
       itens: itensVenda,
       valorTotal: valorTotalCarrinho,
       formaPagamento: formaPagamentoVenda,
+      valorRecebido: opcoesFiscais?.valorRecebido,
+      troco: opcoesFiscais?.troco,
       status: 'concluida',
       cpfNaNota: opcoesFiscais?.cpfNaNota,
     };
@@ -6976,7 +6981,8 @@ export default function App() {
   };
 
   // Sales Reversal (Estorno) Handler
-  const handleEstornarVenda = (vendaId: string, motivo: string) => {
+  const handleEstornarVenda = (vendaId: string, motivo: string, ignorarChecagemPermissao = false) => {
+    if (!ignorarChecagemPermissao && !verificarPermissaoOuAvisar('caixa', 'estornar_venda', 'Estornar Venda')) return;
     const vendaIndex = vendas.findIndex((v) => v.id === vendaId);
     if (vendaIndex === -1) return;
 
@@ -6997,21 +7003,28 @@ export default function App() {
       motivoEstorno: motivo,
     };
 
-    // 2. Return sold items back to inventory
-    let novoEstoque = [...estoque];
+    // 2. Return sold items back to inventory (pulando itens ilimitados/internos)
+    const novoEstoque = [...estoque];
+    const itensAtualizadosParaSync: ItemEstoque[] = [];
     venda.itens.forEach((itemVenda) => {
-      const idxEst = novoEstoque.findIndex(
-        (p) => p.codigo === itemVenda.codigo && p.lote === itemVenda.lote && p.validade === itemVenda.validade
-      );
+      const idxEst = novoEstoque.findIndex((p) => {
+        if (String(p.codigo || '').trim() !== String(itemVenda.codigo || '').trim()) return false;
+        if (itemVenda.lote && String(p.lote || '').trim() !== String(itemVenda.lote || '').trim()) return false;
+        if (itemVenda.validade && String(p.validade || '').trim() !== String(itemVenda.validade || '').trim()) return false;
+        return true;
+      });
 
       if (idxEst !== -1) {
+        if (novoEstoque[idxEst].estoqueIlimitado || novoEstoque[idxEst].tipoCadastro === 'interno') {
+          return;
+        }
         novoEstoque[idxEst] = {
           ...novoEstoque[idxEst],
-          quantidade: novoEstoque[idxEst].quantidade + itemVenda.quantidade,
+          quantidade: Number((Number(novoEstoque[idxEst].quantidade || 0) + Number(itemVenda.quantidade || 0)).toFixed(3)),
         };
+        itensAtualizadosParaSync.push(novoEstoque[idxEst]);
       } else {
-        // Re-create stock entry if it was completely sold out
-        novoEstoque.push({
+        const novoItem: ItemEstoque = {
           codigo: itemVenda.codigo,
           nome: itemVenda.nome,
           quantidade: itemVenda.quantidade,
@@ -7020,9 +7033,33 @@ export default function App() {
           preco_custo: itemVenda.preco_custo || 0,
           preco_venda: itemVenda.preco_unitario,
           foto: itemVenda.foto,
-        });
+        };
+        novoEstoque.push(novoItem);
+        itensAtualizadosParaSync.push(novoItem);
       }
     });
+
+    // 3. Se a venda foi no Fiado, estorna também a compra na caderneta do cliente devedor
+    if (venda.formaPagamento === 'fiado' && venda.clienteFiadoId) {
+      const novosClientes = clientesDevedores.map((c) => {
+        if (c.id !== venda.clienteFiadoId) return c;
+        const comprasFiltradas = (c.compras || []).filter(
+          (comp) => comp.vendaId !== venda.id && !(comp.data === venda.data && comp.hora === venda.hora && Math.abs((comp.valorTotal || 0) - (venda.valorTotal || 0)) < 0.01)
+        );
+        const novoSaldo = Number(
+          comprasFiltradas.reduce((acc, comp) => acc + Math.max(0, (comp.valorTotal || 0) - (comp.valorPago || 0)), 0).toFixed(2)
+        );
+        const atualizado: ClienteDevedor = {
+          ...c,
+          compras: comprasFiltradas,
+          saldoDevedorTotal: novoSaldo,
+        };
+        salvarClienteDevedorFirestore(atualizado);
+        return atualizado;
+      });
+      setClientesDevedores(novosClientes);
+      safeLocalStorageSet(`clientes_devedores_${supermercadoAtual}`, JSON.stringify(novosClientes));
+    }
 
     setEstoque(novoEstoque);
     safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(novoEstoque));
@@ -7031,13 +7068,8 @@ export default function App() {
     safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(novasVendas));
 
     salvarVendaFirestore(novasVendas[vendaIndex]);
-    venda.itens.forEach((itemVenda) => {
-      const idxEst = novoEstoque.findIndex(
-        (p) => p.codigo === itemVenda.codigo && p.lote === itemVenda.lote && p.validade === itemVenda.validade
-      );
-      if (idxEst !== -1) {
-        salvarItemEstoqueFirestore(novoEstoque[idxEst], supermercadoAtual);
-      }
+    itensAtualizadosParaSync.forEach((it) => {
+      salvarItemEstoqueFirestore(it, supermercadoAtual);
     });
 
     notificarSincronizacao();
@@ -7273,41 +7305,40 @@ export default function App() {
       tocarSomSucessoVenda();
     }
 
-    // Se o pedido foi cancelado após ter sido aceito, devolve ao estoque
-    if (novoStatus === 'cancelado' && (pedidoAlvo.status === 'em_separacao' || pedidoAlvo.status === 'saiu_para_entrega')) {
-      const novoEstoque = [...estoque];
-      pedidoAlvo.itens.forEach((it) => {
-        const idx = novoEstoque.findIndex(
-          (e) => e.codigo === it.codigo && (!it.lote || e.lote === it.lote)
-        );
-        if (idx !== -1) {
-          if (!novoEstoque[idx].estoqueIlimitado) {
-            novoEstoque[idx] = { ...novoEstoque[idx], quantidade: (Number(novoEstoque[idx].quantidade) || 0) + (Number(it.quantidade) || 0) };
-            salvarItemEstoqueFirestore(novoEstoque[idx], storeId);
-          }
-        } else {
-          const loteRestaurado: ItemEstoque = {
-            codigo: it.codigo,
-            nome: it.nome,
-            quantidade: Number(it.quantidade) || 1,
-            lote: it.lote || 'L-DEV',
-            validade: it.validade || '2027-12-31',
-            preco_custo: Number(it.preco_custo) || 0,
-            preco_venda: Number(it.preco_unitario) || 0,
-            foto: it.foto,
-            tipoCadastro: 'padrao',
-          };
-          novoEstoque.push(loteRestaurado);
-          salvarItemEstoqueFirestore(loteRestaurado, storeId);
-        }
-      });
-      setEstoque(novoEstoque);
-      safeLocalStorageSet(`estoque_${storeId}`, JSON.stringify(novoEstoque));
-
-      // Estorna a venda correspondente caso exista
+    // Se o pedido foi cancelado após ter sido aceito, devolve ao estoque (sem duplicar caso já exista venda para estornar)
+    if (novoStatus === 'cancelado' && (pedidoAlvo.status === 'em_separacao' || pedidoAlvo.status === 'pronto' || pedidoAlvo.status === 'saiu_para_entrega')) {
       const vendaCorrespondente = vendas.find((v) => v.pedidoDeliveryId === pedidoAlvo.id || v.id === `ven_del_${pedidoAlvo.numeroPedido}`);
       if (vendaCorrespondente) {
-        handleEstornarVenda(vendaCorrespondente.id, motivo || 'Cancelamento no painel de delivery');
+        handleEstornarVenda(vendaCorrespondente.id, motivo || 'Cancelamento no painel de delivery', true);
+      } else {
+        const novoEstoque = [...estoque];
+        pedidoAlvo.itens.forEach((it) => {
+          const idx = novoEstoque.findIndex(
+            (e) => e.codigo === it.codigo && (!it.lote || e.lote === it.lote)
+          );
+          if (idx !== -1) {
+            if (!novoEstoque[idx].estoqueIlimitado && novoEstoque[idx].tipoCadastro !== 'interno') {
+              novoEstoque[idx] = { ...novoEstoque[idx], quantidade: (Number(novoEstoque[idx].quantidade) || 0) + (Number(it.quantidade) || 0) };
+              salvarItemEstoqueFirestore(novoEstoque[idx], storeId);
+            }
+          } else {
+            const loteRestaurado: ItemEstoque = {
+              codigo: it.codigo,
+              nome: it.nome,
+              quantidade: Number(it.quantidade) || 1,
+              lote: it.lote || 'L-DEV',
+              validade: it.validade || '2027-12-31',
+              preco_custo: Number(it.preco_custo) || 0,
+              preco_venda: Number(it.preco_unitario) || 0,
+              foto: it.foto,
+              tipoCadastro: 'padrao',
+            };
+            novoEstoque.push(loteRestaurado);
+            salvarItemEstoqueFirestore(loteRestaurado, storeId);
+          }
+        });
+        setEstoque(novoEstoque);
+        safeLocalStorageSet(`estoque_${storeId}`, JSON.stringify(novoEstoque));
       }
     }
 
@@ -9146,7 +9177,7 @@ export default function App() {
                   </div>
                 )}
 
-                {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja' || temPermissaoOperador('gerenciar_equipe', 'usuarios')) && (
+                {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja') && (
                   <div
                     className="sidebar-item"
                     style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
@@ -14110,7 +14141,7 @@ export default function App() {
           }
           return v.data === sessaoCaixaAtiva.dataAbertura;
         })}
-        movimentacoes={movimentacoesCaixa}
+        movimentacoes={movimentacoesCaixa.filter((m) => !sessaoCaixaAtiva || !m.sessaoId || m.sessaoId === sessaoCaixaAtiva.id)}
         onAbrirCaixa={handleAbrirCaixa}
         onRegistrarMovimentacao={handleRegistrarMovimentacaoCaixa}
         onFecharCaixa={handleFecharCaixa}
@@ -14649,7 +14680,7 @@ export default function App() {
               position: 'fixed',
               bottom: '3px',
               right: '10px',
-              zIndex: 1000000,
+              zIndex: 900,
               background: 'rgba(15, 23, 42, 0.92)',
               backdropFilter: 'blur(8px)',
               border: '1px solid rgba(148, 163, 184, 0.3)',

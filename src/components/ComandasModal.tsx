@@ -1038,11 +1038,13 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                       )}
 
                       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        {pessoasDivisao > 1 && (
+                        {pessoasDivisao > 1 && (() => {
+                          const valorUmaParte = Number(Math.min(saldoRestante, valorPorPessoaTotal).toFixed(2));
+                          return (
                           <button
                             type="button"
                             onClick={() => {
-                              setValorPagamentoStr(valorPorPessoaRestante.toFixed(2).replace('.', ','));
+                              setValorPagamentoStr(valorUmaParte.toFixed(2).replace('.', ','));
                               setMostrarPagParcial(true);
                             }}
                             style={{
@@ -1057,9 +1059,10 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            1 Parte (R$ {valorPorPessoaRestante.toFixed(2).replace('.', ',')})
+                            1 Parte (R$ {valorUmaParte.toFixed(2).replace('.', ',')})
                           </button>
-                        )}
+                          );
+                        })()}
                         <button
                           type="button"
                           onClick={handleRegistrarPagamento}
