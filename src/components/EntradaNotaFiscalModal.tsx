@@ -513,10 +513,18 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
     }
 
     // Se for arquivo XML
+    const inputEl = e.target;
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result as string;
+      setCarregando(false);
+      inputEl.value = '';
       if (text) processarTextoXML(text, 'xml_upload');
+    };
+    reader.onerror = () => {
+      setCarregando(false);
+      inputEl.value = '';
+      setErroMsg('Erro ao ler o arquivo XML selecionado. Tente novamente.');
     };
     reader.readAsText(file, 'UTF-8');
   };
@@ -634,6 +642,8 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
           quantidadeEntrada: it.quantidadeEntrada,
           precoCusto: it.precoCustoFinal,
           precoVenda: it.precoVendaSugerido,
+          ncm: it.ncm,
+          uCom: it.uCom,
           produtoExistente: it.produtoExistente,
         };
       });

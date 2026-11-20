@@ -1215,12 +1215,11 @@ export default function App() {
 
         if (isModoCliente && publicLojaSlugAtivo) {
           const slugLimpo = publicLojaSlugAtivo.trim().toLowerCase();
-          const lojaCliente =
-            lojas.find(
-              (l) =>
-                l.id.toLowerCase() === slugLimpo ||
-                (l.slug && l.slug.toLowerCase() === slugLimpo)
-            ) || lojas[0];
+          const lojaCliente = lojas.find(
+            (l) =>
+              l.id.toLowerCase() === slugLimpo ||
+              (l.slug && l.slug.toLowerCase() === slugLimpo)
+          );
           if (lojaCliente) {
             setSupermercadoAtual(lojaCliente.id);
             setNomeSupermercadoAtivo(lojaCliente.nome);
@@ -1250,12 +1249,11 @@ export default function App() {
               setListaSupermercados(parsed);
               if (isModoCliente && publicLojaSlugAtivo) {
                 const slugLimpo = publicLojaSlugAtivo.trim().toLowerCase();
-                const lojaCliente =
-                  parsed.find(
-                    (l: any) =>
-                      String(l.id || '').toLowerCase() === slugLimpo ||
-                      (l.slug && String(l.slug).toLowerCase() === slugLimpo)
-                  ) || parsed[0];
+                const lojaCliente = parsed.find(
+                  (l: any) =>
+                    String(l.id || '').toLowerCase() === slugLimpo ||
+                    (l.slug && String(l.slug).toLowerCase() === slugLimpo)
+                );
                 if (lojaCliente) {
                   setSupermercadoAtual(lojaCliente.id);
                   setNomeSupermercadoAtivo(lojaCliente.nome);
@@ -1464,7 +1462,9 @@ export default function App() {
     // Subscribe em tempo real aos Pedidos de Delivery (Apenas para Painel do Lojista/Caixa)
     // O cliente no catálogo online NUNCA baixa a lista com centenas de pedidos da loja (Zero leituras desnecessárias!)
     let cargaInicialPedidosConcluida = false;
-    const unsubPedidosDelivery = subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
+    const unsubPedidosDelivery = isModoCliente
+      ? () => {}
+      : subscribePedidosDelivery(supermercadoAtual, (listaPedidos) => {
       if (Array.isArray(listaPedidos)) {
         const novosPedidosPendentesChegados: PedidoDelivery[] = [];
         listaPedidos.forEach((p) => {
@@ -4616,8 +4616,10 @@ export default function App() {
         return;
       }
 
-      // Se nem no catálogo master existir, verifica se existe no estoque remoto de outra filial
-      const itemRemotoEstoque = jaFalhouNoFirestore ? null : await buscarItemEstoquePorCodigoFirestore(codLimpo);
+      // Se nem no catálogo master existir, verifica se existe no estoque remoto apenas da loja atual
+      const itemRemotoEstoque = jaFalhouNoFirestore
+        ? null
+        : await buscarItemEstoquePorCodigoFirestore(codLimpo, supermercadoAtual);
       if (itemRemotoEstoque && itemRemotoEstoque.nome) {
         setCadNome(itemRemotoEstoque.nome);
         if (itemRemotoEstoque.marca) setCadMarca(itemRemotoEstoque.marca);
@@ -5728,11 +5730,30 @@ export default function App() {
   ) => {
     if (!supermercadoAtual) return;
 
+    const chaveLimpa = String(dadosNF.chaveAcesso || '').trim();
+    if (chaveLimpa) {
+      try {
+        const salvoHist = localStorage.getItem(`historico_nfe_${supermercadoAtual}`);
+        const hist = salvoHist ? JSON.parse(salvoHist) : [];
+        if (
+          Array.isArray(hist) &&
+          hist.some((h: any) => String(h?.chaveAcesso || '').trim() === chaveLimpa)
+        ) {
+          alert('Esta Nota Fiscal já foi importada anteriormente para esta loja.');
+          return;
+        }
+      } catch {}
+    }
+
     let estoqueAtualizado = [...estoque];
 
     for (const item of itensEntrada) {
+      const codItem = String(item.codigo || '').trim();
+      const eanItem = String(item.codigo_barras || '').trim();
       const idx = estoqueAtualizado.findIndex(
-        (e) => String(e.codigo || '').trim() === String(item.codigo || '').trim()
+        (e) =>
+          String(e.codigo || '').trim() === codItem ||
+          (eanItem !== '' && String(e.codigo_barras || '').trim() === eanItem)
       );
 
       if (idx >= 0) {
@@ -6446,6 +6467,12 @@ export default function App() {
   };
 
   const handleEmitirNfceParaVenda = async (vendaAlvo: Venda, cpfNaNota?: string) => {
+    if (
+      vendaAlvo.nfce?.status === 'autorizado' ||
+      vendaAlvo.nfce?.status === 'processando_autorizacao'
+    ) {
+      return;
+    }
     const lojaAlvo = listaSupermercados.find((l) => l.id === supermercadoAtual);
     if (!lojaAlvo) return;
 
@@ -7352,11 +7379,17 @@ export default function App() {
     let pedidoAtualizadoParaSync: PedidoDelivery | null = null;
     const novosPedidos = pedidosDelivery.map((p) => {
       if (p.id === pedidoId) {
+        const motoboyTokenGerado =
+          p.motoboyToken ||
+          (novoStatus === 'saiu_para_entrega'
+            ? 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6)
+            : undefined);
         const atualizado: PedidoDelivery = {
           ...p,
           lojaId: p.lojaId || storeId,
           status: novoStatus,
           motivoCancelamento: motivo || p.motivoCancelamento,
+          ...(motoboyTokenGerado ? { motoboyToken: motoboyTokenGerado } : {}),
           ...(novoStatus === 'entregue' ? { entregueEmTimestamp: agoraTs } : {}),
         };
         pedidoAtualizadoParaSync = atualizado;
@@ -7723,7 +7756,7 @@ export default function App() {
       return <UnrecognizedLinkView />;
     }
 
-    if (pedidoMotoboy.motoboyToken && pedidoMotoboy.motoboyToken !== motoboyTokenParam) {
+    if (!pedidoMotoboy.motoboyToken || pedidoMotoboy.motoboyToken !== motoboyTokenParam) {
       return <UnrecognizedLinkView />;
     }
 

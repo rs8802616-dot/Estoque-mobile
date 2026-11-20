@@ -200,13 +200,66 @@ export default async function handler(req, res) {
       const csosnPadrao = limparDigitos(padroes.csosnPadrao || '102').slice(0, 3) || '102';
       const unidadePadrao = String(padroes.unidadePadrao || 'UN').trim().toUpperCase() || 'UN';
 
+      const descontoTotal = venda.desconto && Number(venda.desconto) > 0 ? Number(Number(venda.desconto).toFixed(2)) : 0;
+      const taxaEntrega = venda.taxaEntrega && Number(venda.taxaEntrega) > 0 ? Number(Number(venda.taxaEntrega).toFixed(2)) : 0;
+      const somaBrutaItens = itensVenda.reduce(
+        (acc, item) => acc + Number((item.subtotal != null ? item.subtotal : Number(item.quantidade || 1) * Number(item.preco_unitario || 0)).toFixed(2)),
+        0
+      );
+      let descontoAcumulado = 0;
+
+      const itemsMapeados = itensVenda.map((item, idx) => {
+        const qtd = Number(item.quantidade || 1);
+        const vUnit = Number(item.preco_unitario || 0);
+        const vBruto = Number((item.subtotal != null ? item.subtotal : qtd * vUnit).toFixed(2));
+        const ncmItem = limparDigitos(item.ncm || ncmPadrao).padEnd(8, '0').slice(0, 8);
+        const cfopItem = limparDigitos(item.cfop || cfopPadrao).slice(0, 4) || cfopPadrao;
+        const csosnItem = limparDigitos(item.csosn || csosnPadrao).slice(0, 3) || csosnPadrao;
+        const unItem = String(item.unidade_medida || unidadePadrao).trim().toUpperCase().slice(0, 6) || 'UN';
+
+        const objItem = {
+          numero_item: idx + 1,
+          codigo_produto: String(item.codigo || `ITEM${idx + 1}`).slice(0, 60),
+          descricao: String(item.nome || 'PRODUTO').slice(0, 120),
+          codigo_ncm: ncmItem,
+          cfop: cfopItem,
+          unidade_comercial: unItem,
+          quantidade_comercial: qtd,
+          valor_unitario_comercial: Number(vUnit.toFixed(4)),
+          valor_bruto: vBruto,
+          unidade_tributavel: unItem,
+          quantidade_tributavel: qtd,
+          valor_unitario_tributavel: Number(vUnit.toFixed(4)),
+          icms_origem: Number(item.origem_fiscal || 0),
+          icms_situacao_tributaria: csosnItem,
+          pis_situacao_tributaria: '07',
+          cofins_situacao_tributaria: '07',
+        };
+
+        if (descontoTotal > 0 && somaBrutaItens > 0) {
+          const descItem =
+            idx === itensVenda.length - 1
+              ? Number(Math.max(0, descontoTotal - descontoAcumulado).toFixed(2))
+              : Number(((vBruto / somaBrutaItens) * descontoTotal).toFixed(2));
+          descontoAcumulado = Number((descontoAcumulado + descItem).toFixed(2));
+          if (descItem > 0) {
+            objItem.valor_desconto = descItem;
+          }
+        }
+
+        if (item.cest) {
+          objItem.cest = limparDigitos(item.cest).slice(0, 7);
+        }
+        return objItem;
+      });
+
       const payloadFocus = {
         natureza_operacao: 'VENDA AO CONSUMIDOR',
         data_emissao: formatarDataIsoBrasil(),
         tipo_documento: 1,
         finalidade_emissao: 1,
         consumidor_final: 1,
-        presenca_comprador: 1,
+        presenca_comprador: taxaEntrega > 0 ? 2 : 1,
         cnpj_emitente: cnpjEmitente,
         nome_emitente: emitente.razaoSocial || emitente.nomeFantasia || 'ESTABELECIMENTO COMERCIAL',
         nome_fantasia_emitente: emitente.nomeFantasia || emitente.razaoSocial || undefined,
@@ -218,39 +271,7 @@ export default async function handler(req, res) {
         municipio_emitente: emitente.municipio || undefined,
         uf_emitente: emitente.uf ? String(emitente.uf).toUpperCase() : undefined,
         cep_emitente: limparDigitos(emitente.cep) || undefined,
-        items: itensVenda.map((item, idx) => {
-          const qtd = Number(item.quantidade || 1);
-          const vUnit = Number(item.preco_unitario || 0);
-          const vBruto = Number((item.subtotal != null ? item.subtotal : qtd * vUnit).toFixed(2));
-          const ncmItem = limparDigitos(item.ncm || ncmPadrao).padEnd(8, '0').slice(0, 8);
-          const cfopItem = limparDigitos(item.cfop || cfopPadrao).slice(0, 4) || cfopPadrao;
-          const csosnItem = limparDigitos(item.csosn || csosnPadrao).slice(0, 3) || csosnPadrao;
-          const unItem = String(item.unidade_medida || unidadePadrao).trim().toUpperCase().slice(0, 6) || 'UN';
-
-          const objItem = {
-            numero_item: idx + 1,
-            codigo_produto: String(item.codigo || `ITEM${idx + 1}`).slice(0, 60),
-            descricao: String(item.nome || 'PRODUTO').slice(0, 120),
-            codigo_ncm: ncmItem,
-            cfop: cfopItem,
-            unidade_comercial: unItem,
-            quantidade_comercial: qtd,
-            valor_unitario_comercial: Number(vUnit.toFixed(4)),
-            valor_bruto: vBruto,
-            unidade_tributavel: unItem,
-            quantidade_tributavel: qtd,
-            valor_unitario_tributavel: Number(vUnit.toFixed(4)),
-            icms_origem: Number(item.origem_fiscal || 0),
-            icms_situacao_tributaria: csosnItem,
-            pis_situacao_tributaria: '07',
-            cofins_situacao_tributaria: '07',
-          };
-
-          if (item.cest) {
-            objItem.cest = limparDigitos(item.cest).slice(0, 7);
-          }
-          return objItem;
-        }),
+        items: itemsMapeados,
         formas_pagamento: [
           {
             forma_pagamento: mapearFormaPagamentoSefaz(venda.formaPagamento),
@@ -266,8 +287,12 @@ export default async function handler(req, res) {
         payloadFocus.cnpj_destinatario = docDest;
       }
 
-      if (venda.desconto && Number(venda.desconto) > 0) {
-        payloadFocus.valor_desconto = Number(Number(venda.desconto).toFixed(2));
+      if (descontoTotal > 0) {
+        payloadFocus.valor_desconto = descontoTotal;
+      }
+
+      if (taxaEntrega > 0) {
+        payloadFocus.valor_outras_despesas = taxaEntrega;
       }
 
       const resp = await fetch(`${baseUrl}/v2/nfce?ref=${encodeURIComponent(refFinal)}`, {

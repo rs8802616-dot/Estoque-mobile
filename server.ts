@@ -16,11 +16,14 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Habilita CORS global para permitir integração com outros sites/apps
+  // Habilita CORS global e cabeçalhos básicos de segurança
   app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key, X-Cosmos-Token");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     if (req.method === "OPTIONS") return res.sendStatus(200);
     next();
   });
@@ -1066,6 +1069,17 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
       return res.status(500).json({ error: "Falha na consulta externa", produtos: [] });
     }
   });
+  // Rota local/Express de NFC-e (Focus NFe) delegando para api/nfce.js
+  app.all("/api/nfce", async (req, res) => {
+    try {
+      const mod = await import("./api/nfce.js");
+      return await mod.default(req, res);
+    } catch (err: any) {
+      console.error("Erro ao processar /api/nfce no servidor Express:", err);
+      return res.status(500).json({ sucesso: false, erro: err?.message || "Erro interno na rota /api/nfce." });
+    }
+  });
+
   // Rota explícita para o Service Worker com cabeçalho Service-Worker-Allowed
   app.get("/sw.js", (req, res) => {
     res.setHeader("Content-Type", "application/javascript");

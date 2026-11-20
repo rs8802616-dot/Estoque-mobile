@@ -165,6 +165,20 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-20 - Versão 163 - Correções do Lote 3 da Auditoria Multi-Agente (Fiscal NFC-e, Delivery, XML NF-e e Segurança)]
+- **Fiscal NFC-e & Servidor Express (`api/nfce.js`, `src/lib/focusNfeService.ts`, `server.ts`, `src/App.tsx`):**
+  - Rateio proporcional de `venda.desconto` entre os itens (`valor_desconto`, com ajuste de centavo residual no último item) e envio de `taxaEntrega` como `valor_outras_despesas` (com `presenca_comprador: 2` quando houver entrega) na Focus NFe.
+  - Parsing resiliente de resposta HTTP (`parseRespostaNfce`) e referência determinística `pdv_${loja.id}_${venda.id}` em `focusNfeService.ts`, além de guarda contra emissão duplicada em `handleEmitirNfceParaVenda`.
+  - Registro da rota `app.all('/api/nfce')` no `server.ts` delegando para `api/nfce.js`, com cabeçalhos de segurança (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`).
+- **Delivery, Impressão Térmica & Privacidade (`src/utils/impressaoTermica.ts`, `src/App.tsx`, `src/components/CardapioClienteDeliveryModal.tsx`, `src/components/CaixaDeliveryPanel.tsx`, `src/components/GestaoDeliveryModal.tsx`):**
+  - Sanitização HTML (`escapeHtml`) contra XSS na comanda térmica de delivery e ID único de iframe para evitar conflito entre impressões simultâneas.
+  - Bloqueio de `subscribePedidosDelivery` no modo cliente (`isModoCliente`), remoção do fallback `lojas[0]` quando `?loja=slug` não é encontrado, persistência de `motoboyToken` no Firestore ao despachar/gerar link e validação estrita de `motoboyToken === motoboyTokenParam`.
+  - Adicionado seletor visual de Entrega vs Retirada no Balcão (Grátis) no `CardapioClienteDeliveryModal.tsx`, sincronização inicial do bairro e respeito a `configDelivery.taxaEntregaFixa`.
+- **Importação XML NF-e & Isolamento Multi-Loja (`src/components/EntradaNotaFiscalModal.tsx`, `src/App.tsx`):**
+  - Repasse de `ncm` e `uCom` na entrada de estoque por XML, tratamento de `reader.onerror` + reset do input de arquivo, correspondência por `codigo_barras` e bloqueio de reimportação pela mesma `chaveAcesso`.
+  - Passagem explícita de `supermercadoAtual` em `buscarItemEstoquePorCodigoFirestore(codLimpo, supermercadoAtual)` para impedir leitura de estoque entre filiais distintas.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v163` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-20 - Versão 162 - Correções do Lote 2 da Auditoria Multi-Agente (UI/UX, Responsividade, Z-Index e Performance)]
 - **Performance em Renderização (`src/App.tsx`):**
   - Substituídas buscas lineares `.find()` e `localStorage.getItem + JSON.parse` dentro de `obterNomeProduto` e `obterFotoProduto` por `Map` memoizado (`mapaCatalogoPorCodigo` e `mapaFotoEstoquePorCodigo`), reduzindo o lookup por card para `O(1)`.

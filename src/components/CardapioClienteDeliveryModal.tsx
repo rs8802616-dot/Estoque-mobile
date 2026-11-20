@@ -178,6 +178,10 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   // Calcula a taxa de entrega baseada no bairro selecionado e tipo de pedido
   const taxaEntregaCalculada = useMemo(() => {
     if (tipoPedido === 'retirada') return 0;
+    const temTaxasPorBairro = Boolean(loja?.taxas_bairro && loja.taxas_bairro.length > 0);
+    if (!temTaxasPorBairro && typeof configDelivery?.taxaEntregaFixa === 'number') {
+      return Number(configDelivery.taxaEntregaFixa) || 0;
+    }
     const bairroEncontrado = listaBairros.find(
       (b) =>
         b.id === bairroSelecionadoId ||
@@ -199,7 +203,12 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
         setBairroSelecionadoId(match.id);
       }
     } else if (!bairroSelecionadoId && listaBairros.length > 0) {
-      setBairroSelecionadoId(listaBairros[0].id || 'b1');
+      const primeiroBairro = listaBairros[0];
+      setBairroSelecionadoId(primeiroBairro.id || 'b1');
+      const nomePrimeiro = primeiroBairro.nome || primeiroBairro.bairro || '';
+      if (nomePrimeiro) {
+        setEndereco((prev: any) => (prev.bairro ? prev : { ...prev, bairro: nomePrimeiro }));
+      }
     }
   }, [endereco.bairro, listaBairros]);
 
@@ -1434,6 +1443,32 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                       className="w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-stone-900 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
+                </div>
+
+                {/* Seletor de Modalidade: Entrega vs Retirada no Balcão */}
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTipoPedido('delivery')}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-extrabold border transition-all ${
+                      tipoPedido === 'delivery'
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                        : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                    }`}
+                  >
+                    🛵 Entrega (Delivery)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTipoPedido('retirada')}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-extrabold border transition-all ${
+                      tipoPedido === 'retirada'
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                        : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                    }`}
+                  >
+                    🏪 Retirar na Loja (Grátis)
+                  </button>
                 </div>
 
                 {/* Se for Delivery -> Campos de endereço */}

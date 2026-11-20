@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { salvarPedidoDeliveryFirestore } from '../lib/firestoreSync';
 import {
   PedidoDelivery,
   ConfiguracaoDelivery,
@@ -209,6 +210,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     if (pedido.motoboyToken) return pedido.motoboyToken;
     const token = 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
     pedido.motoboyToken = token;
+    salvarPedidoDeliveryFirestore(pedido).catch(() => {});
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(`motoboy_pedido_${pedido.numeroPedido}`, JSON.stringify(pedido));

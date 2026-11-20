@@ -49,6 +49,24 @@ export function validarProntidaoFiscal(loja?: Supermercado | null): ProntidaoFis
   };
 }
 
+async function parseRespostaNfce(resp: Response): Promise<RespostaNfceApi> {
+  const texto = await resp.text();
+  try {
+    const parsed = JSON.parse(texto);
+    if (!resp.ok && parsed && !parsed.erro) {
+      return { sucesso: false, erro: `Erro HTTP ${resp.status} no serviço fiscal.` };
+    }
+    return parsed;
+  } catch {
+    return {
+      sucesso: false,
+      erro: resp.ok
+        ? 'Resposta inválida do servidor fiscal.'
+        : `Serviço fiscal indisponível (HTTP ${resp.status}).`,
+    };
+  }
+}
+
 export async function testarConexaoFocusNfe(
   cnpj: string,
   configFiscal: Partial<ConfigFiscalLoja>
@@ -63,7 +81,7 @@ export async function testarConexaoFocusNfe(
       cnpj,
     }),
   });
-  return resp.json();
+  return parseRespostaNfce(resp);
 }
 
 export async function emitirNfceVenda(
@@ -95,7 +113,7 @@ export async function emitirNfceVenda(
     };
   });
 
-  const ref = venda.nfce?.ref || `pdv_${loja.id}_${venda.id}_${Date.now()}`;
+  const ref = venda.nfce?.ref || `pdv_${loja.id}_${venda.id}`;
 
   const resp = await fetch('/api/nfce', {
     method: 'POST',
@@ -132,7 +150,7 @@ export async function emitirNfceVenda(
     }),
   });
 
-  return resp.json();
+  return parseRespostaNfce(resp);
 }
 
 export async function consultarNfceVenda(
@@ -150,7 +168,7 @@ export async function consultarNfceVenda(
       tokenFocusNfe: cfg?.tokenFocusNfe || '',
     }),
   });
-  return resp.json();
+  return parseRespostaNfce(resp);
 }
 
 export async function cancelarNfceVenda(
@@ -170,5 +188,5 @@ export async function cancelarNfceVenda(
       tokenFocusNfe: cfg?.tokenFocusNfe || '',
     }),
   });
-  return resp.json();
+  return parseRespostaNfce(resp);
 }

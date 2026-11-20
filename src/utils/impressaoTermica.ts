@@ -1,5 +1,14 @@
 import { PedidoDelivery, Supermercado } from '../types';
 
+function esc(v: unknown): string {
+  return String(v ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
  * Utilitário universal para impressão de Cupons Térmicos e Comandas (80mm e 58mm).
  *
@@ -25,14 +34,8 @@ export function imprimirCupomTermico(
     return;
   }
 
-  // Remove eventuais iframes anteriores que possam ter sobrado
-  const idIframe = 'iframe-impressao-termica-isolado';
-  const iframeExistente = document.getElementById(idIframe);
-  if (iframeExistente) {
-    try {
-      iframeExistente.remove();
-    } catch (e) {}
-  }
+  // Usa ID único por impressão para evitar colisão em impressões rápidas em sequência
+  const idIframe = `iframe-impressao-termica-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 
   const iframe = document.createElement('iframe');
   iframe.id = idIframe;
@@ -187,15 +190,15 @@ export function imprimirComandaPedidoDelivery(
     </div>
 
     <div style="margin-bottom: 6px; font-size: 11px;">
-      <p style="margin: 1px 0;"><strong>Cliente:</strong> ${pedido.cliente?.nome || 'Consumidor'}</p>
-      <p style="margin: 1px 0;"><strong>WhatsApp:</strong> ${pedido.cliente?.telefone || '-'}</p>
+      <p style="margin: 1px 0;"><strong>Cliente:</strong> ${esc(pedido.cliente?.nome || 'Consumidor')}</p>
+      <p style="margin: 1px 0;"><strong>WhatsApp:</strong> ${esc(pedido.cliente?.telefone || '-')}</p>
       ${
         pedido.tipo_pedido !== 'retirada' && pedido.tipo_pedido !== 'mesa' && pedido.enderecoEntrega
           ? `
-        <p style="margin: 1px 0;"><strong>Endereço:</strong> ${pedido.enderecoEntrega.logradouro || ''}, ${pedido.enderecoEntrega.numero || 'S/N'}</p>
-        <p style="margin: 1px 0;"><strong>Bairro:</strong> ${pedido.enderecoEntrega.bairro || ''}</p>
-        ${pedido.enderecoEntrega.complemento ? `<p style="margin: 1px 0;"><strong>Compl:</strong> ${pedido.enderecoEntrega.complemento}</p>` : ''}
-        ${pedido.enderecoEntrega.referencia ? `<p style="margin: 1px 0;"><strong>Ref:</strong> ${pedido.enderecoEntrega.referencia}</p>` : ''}
+        <p style="margin: 1px 0;"><strong>Endereço:</strong> ${esc(pedido.enderecoEntrega.logradouro || '')}, ${esc(pedido.enderecoEntrega.numero || 'S/N')}</p>
+        <p style="margin: 1px 0;"><strong>Bairro:</strong> ${esc(pedido.enderecoEntrega.bairro || '')}</p>
+        ${pedido.enderecoEntrega.complemento ? `<p style="margin: 1px 0;"><strong>Compl:</strong> ${esc(pedido.enderecoEntrega.complemento)}</p>` : ''}
+        ${pedido.enderecoEntrega.referencia ? `<p style="margin: 1px 0;"><strong>Ref:</strong> ${esc(pedido.enderecoEntrega.referencia)}</p>` : ''}
       `
           : `
         <p style="margin: 1px 0; font-weight: bold;">MODALIDADE: ${pedido.tipo_pedido === 'retirada' ? 'RETIRADA NA LOJA' : 'CONSUMO LOCAL / MESA'}</p>
@@ -212,7 +215,7 @@ export function imprimirComandaPedidoDelivery(
             .map(
               (it) => `
             <tr>
-              <td style="vertical-align: top; padding: 2px 0;">${it.quantidade}x ${it.nome}</td>
+              <td style="vertical-align: top; padding: 2px 0;">${it.quantidade}x ${esc(it.nome)}</td>
               <td style="text-align: right; vertical-align: top; padding: 2px 0; white-space: nowrap;">${formatarMoeda(it.subtotal)}</td>
             </tr>
           `

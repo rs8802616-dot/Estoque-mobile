@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { salvarPedidoDeliveryFirestore } from '../lib/firestoreSync';
 import {
   Bike,
   Search,
@@ -78,8 +79,9 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
   // Obter ou gerar token único de 16 caracteres para o motoboy
   const obterOuGerarTokenMotoboy = (pedido: PedidoDelivery): string => {
     if (pedido.motoboyToken) return pedido.motoboyToken;
-    const token = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    const token = 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
     pedido.motoboyToken = token;
+    salvarPedidoDeliveryFirestore(pedido).catch(() => {});
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(`motoboy_pedido_${pedido.numeroPedido}`, JSON.stringify(pedido));
@@ -136,7 +138,8 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
     }
 
     if (!pedido.motoboyToken) {
-      pedido.motoboyToken = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+      pedido.motoboyToken = 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
+      salvarPedidoDeliveryFirestore(pedido).catch(() => {});
     }
     if (typeof window !== 'undefined') {
       try {
