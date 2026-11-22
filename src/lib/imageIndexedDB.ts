@@ -3,6 +3,44 @@
 const DB_NAME = 'mercado_midia_offline_db';
 const DB_VERSION = 1;
 const STORE_NAME = 'imagens_produtos';
+const MAX_IMAGENS_CACHE = 500;
+const TTL_IMAGEM_MS = 7 * 24 * 60 * 60 * 1000; // 7 dias
+
+async function podarCacheAntigoIndexedDB(db: IDBDatabase, removerFracaoExtra = 0): Promise<void> {
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.getAll();
+      req.onsuccess = () => {
+        const registros: Array<{ codigo: string; timestamp?: number }> = Array.isArray(req.result) ? req.result : [];
+        const agora = Date.now();
+        const expirados = registros.filter((r) => r.timestamp && agora - r.timestamp > TTL_IMAGEM_MS);
+        expirados.forEach((r) => {
+          store.delete(r.codigo);
+          cacheImagensMemoria.delete(r.codigo);
+        });
+
+        const ativos = registros
+          .filter((r) => !r.timestamp || agora - r.timestamp <= TTL_IMAGEM_MS)
+          .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+        const excedente = Math.max(0, ativos.length - MAX_IMAGENS_CACHE);
+        const extra = removerFracaoExtra > 0 ? Math.ceil(ativos.length * removerFracaoExtra) : 0;
+        const totalRemover = Math.min(ativos.length, excedente + extra);
+
+        for (let i = 0; i < totalRemover; i++) {
+          store.delete(ativos[i].codigo);
+          cacheImagensMemoria.delete(ativos[i].codigo);
+        }
+      };
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    } catch {
+      resolve();
+    }
+  });
+}
 
 // Cache em memória para consultas síncronas instantâneas (sem latência de async)
 const cacheImagensMemoria = new Map<string, string>();
@@ -107,10 +145,29 @@ export async function salvarImagemIndexedDB(codigo: string, fotoBase64: string):
 
     return new Promise((resolve) => {
       tx.oncomplete = () => {
+        if (cacheImagensMemoria.size > MAX_IMAGENS_CACHE) {
+          podarCacheAntigoIndexedDB(db).catch(() => {});
+        }
         notificarListeners();
         resolve();
       };
-      tx.onerror = () => resolve();
+      tx.onerror = async (ev: any) => {
+        const errName = ev?.target?.error?.name || tx.error?.name;
+        if (errName === 'QuotaExceededError') {
+          await podarCacheAntigoIndexedDB(db, 0.25);
+          try {
+            const txRetry = db.transaction(STORE_NAME, 'readwrite');
+            txRetry.objectStore(STORE_NAME).put({ codigo: cod, imagem: fotoBase64, timestamp: Date.now() });
+            txRetry.oncomplete = () => {
+              notificarListeners();
+              resolve();
+            };
+            txRetry.onerror = () => resolve();
+            return;
+          } catch {}
+        }
+        resolve();
+      };
     });
   } catch (err) {
     console.warn(`Erro ao salvar imagem no IndexedDB para ${codigo}:`, err);
@@ -153,10 +210,32 @@ export async function salvarLoteImagensIndexedDB(itens: { codigo: string; imagem
 
     return new Promise((resolve) => {
       tx.oncomplete = () => {
+        if (cacheImagensMemoria.size > MAX_IMAGENS_CACHE) {
+          podarCacheAntigoIndexedDB(db).catch(() => {});
+        }
         notificarListeners();
         resolve();
       };
-      tx.onerror = () => resolve();
+      tx.onerror = async (ev: any) => {
+        const errName = ev?.target?.error?.name || tx.error?.name;
+        if (errName === 'QuotaExceededError') {
+          await podarCacheAntigoIndexedDB(db, 0.25);
+          try {
+            const txRetry = db.transaction(STORE_NAME, 'readwrite');
+            const storeRetry = txRetry.objectStore(STORE_NAME);
+            for (const it of itensAlterados) {
+              storeRetry.put({ codigo: it.cod, imagem: it.img, timestamp: Date.now() });
+            }
+            txRetry.oncomplete = () => {
+              notificarListeners();
+              resolve();
+            };
+            txRetry.onerror = () => resolve();
+            return;
+          } catch {}
+        }
+        resolve();
+      };
     });
   } catch (err) {
     console.warn('Erro ao salvar lote de imagens no IndexedDB:', err);

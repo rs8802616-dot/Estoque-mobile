@@ -1,4 +1,4 @@
-import { signInWithCustomToken } from 'firebase/auth';
+import { signInWithCustomToken, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 
 export interface ParametrosAuthServidor {
@@ -35,4 +35,11 @@ export async function autenticarSessaoServidor(params: ParametrosAuthServidor): 
   } catch {
     return false;
   }
+}
+
+export async function encerrarSessaoServidor(): Promise<void> {
+  if (typeof window === 'undefined' || !auth) return;
+  try {
+    await signOut(auth);
+  } catch {}
 }

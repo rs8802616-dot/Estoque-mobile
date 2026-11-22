@@ -24,11 +24,13 @@ export type TipoOperacaoFila =
 
 export interface ItemFilaOffline {
   id: string;
+  idempotencyKey?: string;
   prioridade: PrioridadeSincronizacao;
   tipoOperacao: TipoOperacaoFila;
   lojaId: string;
   timestamp: number;
   tentativas: number;
+  proximaTentativaEm?: number;
   payload: any;
   descricao?: string;
   versaoLocal?: number;
@@ -36,7 +38,16 @@ export interface ItemFilaOffline {
 }
 
 const CHAVE_FILA_OFFLINE_PRIORITARIA = 'fila_sincronizacao_offline_v2';
+const CHAVE_FILA_OFFLINE_ERROS = 'fila_sincronizacao_erros_v2';
 const CHAVE_LEGADA_VENDAS = 'vendas_pendentes_sync_offline';
+const MAX_TENTATIVAS_SYNC = 8;
+
+function gerarIdempotencyKey(): string {
+  if (typeof window !== 'undefined' && window.crypto?.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+  return `idem_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
 
 /**
  * Obtém todos os itens pendentes na fila offline ordenados por prioridade (1 antes de 2 e 3)
@@ -111,9 +122,13 @@ export function adicionarItemFilaOffline(
 
   const fila = obterFilaOfflinePrioritaria();
 
-  // Deduplicação inteligente de estoque: se já houver uma atualização pendente para o mesmo produto/lote,
-  // substituir pelo estado mais recente para economizar dados e evitar conflitos de versão
+  // Deduplicação inteligente: evita duplicar vendas ou atualizações do mesmo produto/lote
   let novaFila = [...fila];
+  if (tipoOperacao === 'VENDA' && payload?.id) {
+    if (novaFila.some((it) => it.tipoOperacao === 'VENDA' && it.payload?.id === payload.id)) {
+      return novaFila.find((it) => it.tipoOperacao === 'VENDA' && it.payload?.id === payload.id)!;
+    }
+  }
   if (tipoOperacao === 'ESTOQUE_UPDATE' && payload?.codigo && payload?.validade) {
     novaFila = novaFila.filter(
       (it) =>
@@ -129,6 +144,7 @@ export function adicionarItemFilaOffline(
 
   const novoItem: ItemFilaOffline = {
     id: 'sync_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+    idempotencyKey: gerarIdempotencyKey(),
     prioridade: prioFinal,
     tipoOperacao,
     lojaId: lojaId || 'loja_padrao',
@@ -215,7 +231,12 @@ export async function sincronizarFilaOfflinePrioritaria(): Promise<{
   let erros = 0;
   const restantes: ItemFilaOffline[] = [];
 
+  const agora = Date.now();
   for (const item of fila) {
+    if (item.proximaTentativaEm && agora < item.proximaTentativaEm) {
+      restantes.push(item);
+      continue;
+    }
     try {
       switch (item.tipoOperacao) {
         case 'VENDA': {
@@ -269,8 +290,18 @@ export async function sincronizarFilaOfflinePrioritaria(): Promise<{
       item.tentativas = (item.tentativas || 0) + 1;
       item.ultimoErro = err?.message || 'Falha de rede/permissão';
 
-      // Se falhou mais de 15 vezes, ainda mantemos na fila para evitar perda de venda
-      restantes.push(item);
+      if (item.tentativas >= MAX_TENTATIVAS_SYNC) {
+        try {
+          const salvoErros = localStorage.getItem(CHAVE_FILA_OFFLINE_ERROS);
+          const listaErros = salvoErros ? JSON.parse(salvoErros) : [];
+          listaErros.unshift({ ...item, arquivadoEm: Date.now() });
+          safeLocalStorageSet(CHAVE_FILA_OFFLINE_ERROS, JSON.stringify(listaErros.slice(0, 50)));
+        } catch {}
+      } else {
+        const backoffMs = Math.min(5 * 60 * 1000, 3000 * Math.pow(2, item.tentativas - 1));
+        item.proximaTentativaEm = Date.now() + backoffMs;
+        restantes.push(item);
+      }
     }
   }
 

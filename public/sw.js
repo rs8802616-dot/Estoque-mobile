@@ -1,7 +1,7 @@
 // Service Worker para Estoque Mobile Multi-Supermercado
 // Permite funcionamento 100% offline mesmo ao recarregar a página (F5 ou abrir app sem conexão)
 
-const CACHE_NAME = 'estoque-mobile-pwa-v166';
+const CACHE_NAME = 'estoque-mobile-pwa-v167';
 
 const ASSETS_PARA_CACHE_INICIAL = [
   '/',
@@ -56,12 +56,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Ignorar chamadas da API local ou Firebase Firestore
+  // Ignorar chamadas de APIs locais, Firebase Auth/Firestore e Focus NFe (nunca cachear)
   if (
     url.pathname.startsWith('/api/') ||
     url.hostname.includes('firestore.googleapis.com') ||
     url.hostname.includes('firebase.googleapis.com') ||
-    url.hostname.includes('identitytoolkit.googleapis.com')
+    url.hostname.includes('identitytoolkit.googleapis.com') ||
+    url.hostname.includes('securetoken.googleapis.com') ||
+    url.hostname.includes('focusnfe.com.br')
   ) {
     return;
   }

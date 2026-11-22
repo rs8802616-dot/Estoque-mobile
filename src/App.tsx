@@ -80,7 +80,7 @@ import {
 import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
 import { ComandasModal, ComandasPanel } from './components/ComandasModal';
 import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
-import { autenticarSessaoServidor } from './lib/authClient';
+import { autenticarSessaoServidor, encerrarSessaoServidor } from './lib/authClient';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
 import {
@@ -3379,7 +3379,12 @@ export default function App() {
     localStorage.removeItem('usuario_autenticado');
     localStorage.removeItem('perfilAtivoTipo');
     localStorage.removeItem('operadorAtivoId');
+    localStorage.removeItem('operadorNomeAtivo');
     localStorage.removeItem('sessao_ativa_token');
+    try {
+      sessionStorage.removeItem('sessao_loja_ativa');
+    } catch {}
+    encerrarSessaoServidor().catch(() => {});
 
     setOperadorAtivoId(null);
     setSessaoTokenAtivo('');

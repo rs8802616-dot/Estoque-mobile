@@ -165,6 +165,13 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 167 - Higiene Local, PWA, Logout Limpo e Idempotência na Fila Offline]
+- **IndexedDB (`src/lib/imageIndexedDB.ts`):** Adicionado limite máximo (`MAX_IMAGENS_CACHE = 500`) e expiração (`7 dias`) com poda LRU automática e retry após poda quando ocorrer `QuotaExceededError`.
+- **Service Worker (`public/sw.js`):** Reforçada a exclusão explícita de cache para `securetoken.googleapis.com` e `focusnfe.com.br` (além de `/api/` e métodos não-GET).
+- **Fila Offline (`src/lib/offlineSync.ts`):** Adicionados `idempotencyKey`, deduplicação de vendas por `payload.id`, backoff exponencial e teto de tentativas (`MAX_TENTATIVAS_SYNC = 8`) movendo falhas persistentes para `fila_sincronizacao_erros_v2`.
+- **Logout Limpo (`src/lib/authClient.ts`, `src/App.tsx`):** Limpeza de `sessionStorage` (`sessao_loja_ativa`), `operadorNomeAtivo` e chamada de `signOut(auth)` via `encerrarSessaoServidor()`.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v167` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 166 - Segurança Fase 3 (Backend /api/auth Custom Token RS256 e firestore.rules.strict)]
 - **Emissão de Custom Token Firebase no Servidor (`api/auth.js`, `server.ts`, `src/lib/authClient.ts`, `src/App.tsx`):**
   - Criado endpoint `/api/auth` (`api/auth.js` + registrado em `server.ts`) usando apenas `node:crypto` nativo para assinar Firebase Custom Tokens (JWT RS256) com claims `{ role, is_master, lojaId, sessaoId }` via `FIREBASE_SERVICE_ACCOUNT_JSON`.
