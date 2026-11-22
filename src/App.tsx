@@ -7419,12 +7419,16 @@ export default function App() {
           (novoStatus === 'saiu_para_entrega'
             ? 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6)
             : undefined);
+        const motoboyTokenExpiraEm =
+          p.motoboyTokenExpiraEm ||
+          (novoStatus === 'saiu_para_entrega' ? Date.now() + 12 * 60 * 60 * 1000 : undefined);
         const atualizado: PedidoDelivery = {
           ...p,
           lojaId: p.lojaId || storeId,
           status: novoStatus,
           motivoCancelamento: motivo || p.motivoCancelamento,
           ...(motoboyTokenGerado ? { motoboyToken: motoboyTokenGerado } : {}),
+          ...(motoboyTokenExpiraEm ? { motoboyTokenExpiraEm } : {}),
           ...(novoStatus === 'entregue' ? { entregueEmTimestamp: agoraTs } : {}),
         };
         pedidoAtualizadoParaSync = atualizado;
@@ -7508,9 +7512,31 @@ export default function App() {
     const storeId = supermercadoAtual || 'loja_matriz_01';
     const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
     if (!pedidoAlvo) return false;
+    if (pedidoAlvo.pinBloqueado || (pedidoAlvo.tentativasPinEntrega || 0) >= 5) {
+      return false;
+    }
 
-    // Confere o PIN
+    // Confere o PIN (máx. 5 tentativas para impedir força bruta)
     if (pedidoAlvo.codigoEntregaPin.trim() !== pinDigitado.trim()) {
+      const novasTentativas = (pedidoAlvo.tentativasPinEntrega || 0) + 1;
+      const pinBloqueado = novasTentativas >= 5;
+      let pedidoFalhaSync: PedidoDelivery | null = null;
+      const listaAtualizada = pedidosDelivery.map((p) => {
+        if (p.id === pedidoId) {
+          pedidoFalhaSync = {
+            ...p,
+            tentativasPinEntrega: novasTentativas,
+            pinBloqueado,
+          };
+          return pedidoFalhaSync;
+        }
+        return p;
+      });
+      setPedidosDelivery(listaAtualizada);
+      safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(listaAtualizada));
+      if (pedidoFalhaSync) {
+        salvarPedidoDeliveryFirestore(pedidoFalhaSync);
+      }
       return false;
     }
 
@@ -7792,6 +7818,9 @@ export default function App() {
     }
 
     if (!pedidoMotoboy.motoboyToken || pedidoMotoboy.motoboyToken !== motoboyTokenParam) {
+      return <UnrecognizedLinkView />;
+    }
+    if (pedidoMotoboy.motoboyTokenExpiraEm && Date.now() > pedidoMotoboy.motoboyTokenExpiraEm) {
       return <UnrecognizedLinkView />;
     }
 

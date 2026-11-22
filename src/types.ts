@@ -630,11 +630,14 @@ export interface PedidoDelivery {
   atendenteNome?: string;
   observacao?: string;
   codigoEntregaPin: string; // Ex: '4912' (PIN de 4 dígitos para confirmação de entrega segura)
+  tentativasPinEntrega?: number;
+  pinBloqueado?: boolean;
   motivoCancelamento?: string;
   dataFinalizacao?: string;
   horaFinalizacao?: string;
   entregadorNome?: string;
   motoboyToken?: string;
+  motoboyTokenExpiraEm?: number;
   chegouAoEndereco?: boolean;
   entregueEmTimestamp?: number;
 }

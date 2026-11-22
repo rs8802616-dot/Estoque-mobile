@@ -193,7 +193,10 @@ export function obterLogsAuditoriaLogin(): LogAuditoriaLogin[] {
     const raw = localStorage.getItem(CHAVE_AUDITORIA_LOGIN);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    const limiteRetencaoMs = 180 * 24 * 60 * 60 * 1000; // 6 meses (LGPD)
+    const agora = Date.now();
+    return parsed.filter((item) => !item?.timestamp || agora - Number(item.timestamp) <= limiteRetencaoMs);
   } catch {
     return [];
   }

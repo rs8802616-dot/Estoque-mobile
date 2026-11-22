@@ -165,6 +165,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 169 - Passo 4 de Segurança (Limite PIN Entrega, Expiração Link Motoboy, Auth Opcional APIs e LGPD)]
+- **Proteção na Entrega (`src/types.ts`, `src/App.tsx`):**
+  - Limite máximo de **5 tentativas** para o PIN de 4 dígitos em `handleConfirmarEntregaPin` (`tentativasPinEntrega` e `pinBloqueado`), persistido no Firestore.
+  - Adicionada validade de **12 horas** (`motoboyTokenExpiraEm`) no link exclusivo do entregador ao despachar pedido.
+- **Auth Opcional nas APIs (`api/nfce.js`, `api/si5.js`):**
+  - Adicionada verificação de Firebase ID Token (`EXIGIR_AUTH_API === 'true'` + `FIREBASE_WEB_API_KEY`) para bloquear chamadas externas não autenticadas quando ativada.
+- **LGPD & Retenção (`PRIVACIDADE-LGPD.md`, `src/utils/security.ts`):**
+  - Criado `PRIVACIDADE-LGPD.md` com política de coleta mínima, retenção e exclusão.
+  - Retenção automática de **180 dias (6 meses)** aplicada em `obterLogsAuditoriaLogin`.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v169` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 168 - Passo 2 de Segurança (Login PBKDF2 + Lockout no Servidor e Troca de Senha Fraca)]
 - **Servidor `/api/auth` (`api/auth.js`):**
   - Adicionada ação `autenticar_loja` com verificação de senha no servidor usando **PBKDF2-SHA256 (210.000 iterações + `SENHA_PEPPER`)** e comparação em tempo constante (`crypto.timingSafeEqual`).

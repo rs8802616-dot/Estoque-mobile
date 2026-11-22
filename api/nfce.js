@@ -98,6 +98,27 @@ export default async function handler(req, res) {
     }
   }
 
+  if (process.env.EXIGIR_AUTH_API === 'true') {
+    const authHeaderReq = String(req.headers.authorization || '');
+    const apiKeyFb = String(process.env.FIREBASE_WEB_API_KEY || process.env.VITE_FIREBASE_API_KEY || '').trim();
+    if (!authHeaderReq.startsWith('Bearer ') || !apiKeyFb) {
+      return res.status(401).json({ sucesso: false, erro: 'Sessão Firebase obrigatória para emitir NFC-e.' });
+    }
+    try {
+      const idToken = authHeaderReq.slice(7).trim();
+      const chk = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(apiKeyFb)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      });
+      if (!chk.ok) {
+        return res.status(401).json({ sucesso: false, erro: 'Token de sessão Firebase inválido ou expirado.' });
+      }
+    } catch {
+      return res.status(401).json({ sucesso: false, erro: 'Falha ao validar sessão Firebase.' });
+    }
+  }
+
   try {
     const body = req.body || {};
     const { acao = 'emitir', ambiente = 'homologacao', tokenFocusNfe } = body;
