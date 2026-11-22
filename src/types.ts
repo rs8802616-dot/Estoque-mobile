@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 export interface ProdutoCatalogo {
   codigo: string;
   nome: string;
@@ -657,7 +659,7 @@ export function gerarTokenAleatorioSeguro(bytes = 12): string {
 }
 
 export function obterMasterPortalToken(): string {
-  const envToken = (import.meta as any)?.env?.VITE_MASTER_PORTAL_TOKEN;
+  const envToken = import.meta.env?.VITE_MASTER_PORTAL_TOKEN;
   if (typeof envToken === 'string' && envToken.trim().length >= 16) {
     return envToken.trim();
   }
