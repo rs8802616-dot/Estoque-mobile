@@ -1,10 +1,14 @@
-// Fila de 4 Chaves em Cascata SI5 Global (100 consultas/dia por chave = 400 consultas/dia)
-export const SI5_GLOBAL_TOKENS = [
-  '317|Xtgp6qwYewWk5ScCiY7JPLbPHZEaFEWPuLgQ3HfV37d19db3',
-  '318|DSFrciYJgudTZgumBUyGSIaoaIhDfVsBJc3wVXRb4c67fd72',
-  '319|IOXdsrllJ7zTek8FQ0rJoQwpNKb7f0WSpr6yMm7M009e4aa4',
-  '320|Gh303pFfHUKK8RxzZ8jDIQbalzFlIJ2FUidPrN9kbe63cec2',
-];
+// Tokens da SI5 Global não ficam mais no bundle do navegador — residem em process.env.SI5_TOKENS no servidor (/api/si5).
+function obterTokensSI5Servidor(): string[] {
+  if (typeof window !== 'undefined') return [];
+  const raw = typeof process !== 'undefined' ? (process.env?.SI5_TOKENS || '') : '';
+  return raw
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
+export const SI5_GLOBAL_TOKENS: string[] = [];
 
 export interface SI5ProdutoRetorno {
   ean: string;
@@ -44,14 +48,35 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
   const clean = (codigo || '').trim().replace(/\D/g, '');
   if (!clean) return null;
 
+  // No navegador, consulta sempre o proxy seguro /api/si5 sem expor Bearer tokens
+  if (typeof window !== 'undefined') {
+    try {
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 7000);
+      const res = await fetch(`/api/si5?ean=${encodeURIComponent(clean)}`, {
+        method: 'GET',
+        signal: ctrl.signal,
+        headers: { Accept: 'application/json' },
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json && json.nomeProduto) return json as SI5ProdutoRetorno;
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  const tokensServidor = obterTokensSI5Servidor();
   const dataHoje = new Date().toISOString().slice(0, 10);
 
-  for (let i = 0; i < SI5_GLOBAL_TOKENS.length; i++) {
+  for (let i = 0; i < tokensServidor.length; i++) {
     if (isSI5TokenEsgotado(i, dataHoje)) {
       continue;
     }
 
-    const token = SI5_GLOBAL_TOKENS[i];
+    const token = tokensServidor[i];
 
     try {
       const ctrl = new AbortController();
@@ -122,14 +147,37 @@ export async function pesquisarSI5GlobalPorNome(
     return { produtos: [], total: 0, currentPage: page, lastPage: 1, chaveUtilizada: 1 };
   }
 
+  // No navegador, consulta sempre o proxy seguro /api/si5 sem expor Bearer tokens
+  if (typeof window !== 'undefined') {
+    try {
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 9000);
+      const res = await fetch(`/api/si5?q=${encodeURIComponent(cleanTermo)}&page=${page}`, {
+        method: 'GET',
+        signal: ctrl.signal,
+        headers: { Accept: 'application/json' },
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json && Array.isArray(json.produtos)) {
+        return json as SI5PesquisaPaginadaRetorno;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  const tokensServidor = obterTokensSI5Servidor();
   const dataHoje = new Date().toISOString().slice(0, 10);
 
-  for (let i = 0; i < SI5_GLOBAL_TOKENS.length; i++) {
+  for (let i = 0; i < tokensServidor.length; i++) {
     if (isSI5TokenEsgotado(i, dataHoje)) {
       continue;
     }
 
-    const token = SI5_GLOBAL_TOKENS[i];
+    const token = tokensServidor[i];
 
     try {
       const ctrl = new AbortController();
@@ -196,11 +244,13 @@ export async function pesquisarSI5GlobalPorNome(
 // A Bluesoft Cosmos roda PRIMEIRO em todas as consultas. Caso atinja o limite diário (429) ou não tenha o produto, a BomJawaKit entra em ação automaticamente.
 
 export const COSMOS_BLUESOFT_API_BASE = 'https://api.cosmos.bluesoft.com.br';
-export const COSMOS_BLUESOFT_DEFAULT_TOKEN = '2Vu6HJqH8130Bk_YhL8Osg';
+export const COSMOS_BLUESOFT_DEFAULT_TOKEN =
+  typeof process !== 'undefined' ? (process.env?.COSMOS_BLUESOFT_TOKEN || '') : '';
 export const COSMOS_BLUESOFT_CDN = 'https://cdn-cosmos.bluesoft.com.br/products';
 
 export const BOMJAWAKIT_API_BASE = 'https://produtos.bomjawakit.com.br';
-export const BOMJAWAKIT_DEFAULT_API_KEY = 'sk_VZvKYX-ldCakrfALLxpzKPvmRUoawNN7hewD678CvGU';
+export const BOMJAWAKIT_DEFAULT_API_KEY =
+  typeof process !== 'undefined' ? (process.env?.BOMJAWAKIT_API_KEY || '') : '';
 export const BOMJAWAKIT_R2_IMAGE_CDN = 'https://pub-648fead133cf496f97cfd8bcb74e4314.r2.dev';
 
 export interface BomJawaKitProdutoRaw {

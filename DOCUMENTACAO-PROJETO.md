@@ -165,6 +165,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 164 - Segurança Fase 1 (Headers CSP/HSTS, Sourcemaps Ocultos, Proxy SI5 e Filtro PII Sentry)]
+- **Borda & Vercel (`vercel.json`, `vite.config.ts`):**
+  - Criado `vercel.json` com cabeçalhos de segurança (`Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`).
+  - Alterado `build.sourcemap` em `vite.config.ts` para `'hidden'` para evitar exposição do código-fonte TypeScript original em produção.
+- **Remoção de Chaves do Bundle (`api/si5.js`, `server.ts`, `src/lib/bomJawaKitApi.ts`):**
+  - Criado endpoint serverless `/api/si5` (`api/si5.js` + registrado em `server.ts`) lendo `process.env.SI5_TOKENS` no servidor.
+  - Removidos os 4 tokens Bearer hardcoded da SI5 Global, além dos tokens default hardcoded da Cosmos Bluesoft e BomJawaKit do bundle do cliente em `src/lib/bomJawaKitApi.ts`.
+- **Privacidade no Monitoramento (`src/lib/errorMonitoring.ts`):**
+  - Configurado `sendDefaultPii: false`, `tracesSampleRate: 0.1` e filtro `beforeSend` no Sentry para remover headers `Authorization`/`Cookie` e mascarar parâmetros sensíveis (`token`, `cpf`, `senha`, `key`) em URLs e breadcrumbs.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v164` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-20 - Versão 163 - Correções do Lote 3 da Auditoria Multi-Agente (Fiscal NFC-e, Delivery, XML NF-e e Segurança)]
 - **Fiscal NFC-e & Servidor Express (`api/nfce.js`, `src/lib/focusNfeService.ts`, `server.ts`, `src/App.tsx`):**
   - Rateio proporcional de `venda.desconto` entre os itens (`valor_desconto`, com ajuste de centavo residual no último item) e envio de `taxaEntrega` como `valor_outras_despesas` (com `presenca_comprador: 2` quando houver entrega) na Focus NFe.

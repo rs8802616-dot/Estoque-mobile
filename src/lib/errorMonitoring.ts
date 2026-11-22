@@ -27,9 +27,38 @@ export function inicializarMonitoramentoErros(): void {
       dsn,
       environment: (import.meta as any).env?.MODE || 'production',
       integrations: [Sentry.browserTracingIntegration()],
-      tracesSampleRate: 0.2,
+      tracesSampleRate: 0.1,
       beforeSend(event) {
         try {
+          if (event.request) {
+            if (event.request.headers) {
+              delete event.request.headers['Authorization'];
+              delete event.request.headers['authorization'];
+              delete event.request.headers['Cookie'];
+              delete event.request.headers['cookie'];
+            }
+            delete event.request.cookies;
+            if (typeof event.request.url === 'string') {
+              event.request.url = event.request.url.replace(/([?&](?:token|cpf|senha|key)=)[^&]+/gi, '$1[FILTRADO]');
+            }
+            if (typeof event.request.query_string === 'string') {
+              event.request.query_string = event.request.query_string.replace(/((?:^|&)(?:token|cpf|senha|key)=)[^&]+/gi, '$1[FILTRADO]');
+            }
+          }
+          if (Array.isArray(event.breadcrumbs)) {
+            event.breadcrumbs = event.breadcrumbs.map((b) => {
+              if (b?.data && typeof b.data.url === 'string') {
+                return {
+                  ...b,
+                  data: {
+                    ...b.data,
+                    url: b.data.url.replace(/([?&](?:token|cpf|senha|key)=)[^&]+/gi, '$1[FILTRADO]'),
+                  },
+                };
+              }
+              return b;
+            });
+          }
           const lojaId = localStorage.getItem('supermercadoAtualId') || 'desconhecida';
           const perfil = localStorage.getItem('perfilAtivoTipo') || 'visitante';
           event.tags = {
