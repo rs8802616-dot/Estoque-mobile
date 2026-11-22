@@ -1,9 +1,32 @@
 import { SessaoUsuario, Supermercado, OperadorCaixa } from '../types';
 
-export const MIN_CARACTERES_SENHA = 6;
+export const MIN_CARACTERES_SENHA = 8;
 export const MAX_TENTATIVAS_LOGIN = 5;
 export const MINUTOS_BLOQUEIO_LOGIN = 15;
 export const TEMPO_BLOQUEIO_LOGIN_MS = MINUTOS_BLOQUEIO_LOGIN * 60 * 1000;
+
+const SENHAS_BLOQUEADAS = new Set([
+  '12345678',
+  '123456789',
+  '1234567890',
+  '00000000',
+  'mudar@123',
+  'mudar123',
+  'senha123',
+  'senha@123',
+  'admin123',
+  'qwerty123',
+  'abc12345',
+]);
+
+function compararTempoConstante(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
 
 export interface LogAuditoriaLogin {
   id: string;
@@ -83,17 +106,18 @@ export async function verificarSenhaComHash(
   if (!senhaDigitada) return false;
   if (senhaHash && senhaSalt) {
     const hashCalculado = await hashSenhaSha256(senhaDigitada, senhaSalt);
-    return hashCalculado === senhaHash;
+    return compararTempoConstante(hashCalculado, senhaHash);
   }
   if (senhaLegadaEspecifica && senhaLegadaEspecifica.trim().length > 0) {
-    return senhaDigitada === senhaLegadaEspecifica;
+    return compararTempoConstante(senhaDigitada, senhaLegadaEspecifica);
   }
   return false;
 }
 
 /**
  * Valida a política obrigatória de senhas:
- * - Mínimo de 6 caracteres
+ * - Mínimo de 8 caracteres
+ * - Bloqueio de senhas comuns/padrão
  * - Confirmação dupla idêntica (Nova Senha === Confirmar Nova Senha)
  */
 export function validarPoliticaSenha(
@@ -105,6 +129,12 @@ export function validarPoliticaSenha(
     return {
       valida: false,
       erro: `A senha deve ter no mínimo ${MIN_CARACTERES_SENHA} caracteres por segurança.`,
+    };
+  }
+  if (SENHAS_BLOQUEADAS.has(s1.toLowerCase())) {
+    return {
+      valida: false,
+      erro: 'Essa senha é muito comum ou padrão do sistema. Escolha uma senha mais forte.',
     };
   }
   if (confirmarNovaSenha !== undefined) {

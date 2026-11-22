@@ -68,6 +68,7 @@ import {
   PedidoDelivery,
   StatusPedidoDelivery,
   MASTER_PORTAL_TOKEN,
+  validarMasterPortalToken,
   garantirTokensLoja,
   obterLinksExclusivosLoja,
   obterLinkPortalMaster,
@@ -395,8 +396,12 @@ export const PRODUTOS_PADRAO_ADEGA: ItemEstoque[] = [
 ];
 
 export default function App() {
-  // Detecta parâmetros de roteamento seguro e links exclusivos na URL
-  const urlParamsAtivo = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  // Congela os parâmetros iniciais da URL para permitir limpar segredos da barra de endereço após leitura
+  const initialSearchRef = useRef<string>(typeof window !== 'undefined' ? window.location.search : '');
+  const urlParamsAtivo = useMemo(
+    () => (typeof window !== 'undefined' ? new URLSearchParams(initialSearchRef.current) : null),
+    []
+  );
   const portalParamAtivo = urlParamsAtivo?.get('portal');
   const painelParamAtivo = urlParamsAtivo?.get('painel');
   const tokenParamAtivo = urlParamsAtivo?.get('token');
@@ -405,12 +410,25 @@ export default function App() {
     urlParamsAtivo?.get('loja_id') ||
     (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
 
+  // Remove ?token= da URL visível após captura em memória (evita vazamento via Referer/histórico)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !tokenParamAtivo) return;
+    try {
+      const urlAtual = new URL(window.location.href);
+      if (urlAtual.searchParams.has('token')) {
+        urlAtual.searchParams.delete('token');
+        const novaUrl = `${urlAtual.pathname}${urlAtual.search}${urlAtual.hash}`;
+        window.history.replaceState({}, '', novaUrl || '/');
+      }
+    } catch {}
+  }, [tokenParamAtivo]);
+
   // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel, sem portal e sem token)
   const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo && !tokenParamAtivo);
 
-  // D. Link Secreto do Dono (?portal=master&token=master_9k2m8x7p)
+  // D. Link Secreto do Dono (?portal=master&token=...)
   const isPortalMasterRoute = Boolean(
-    portalParamAtivo === 'master' && tokenParamAtivo === MASTER_PORTAL_TOKEN
+    portalParamAtivo === 'master' && validarMasterPortalToken(tokenParamAtivo)
   );
 
   // C. Link Exclusivo do Entregador/Motoboy (?motoboy=1&pedido=1042&token=mto_...)

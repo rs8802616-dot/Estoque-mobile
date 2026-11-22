@@ -165,6 +165,17 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 165 - Segurança Fase 2 (Tokens CSPRNG, Limpeza de URL, Política de Senhas e Hardening /api/nfce)]
+- **Tokens Opacos CSPRNG & Limpeza de URL (`src/types.ts`, `src/App.tsx`):**
+  - Substituído `MASTER_PORTAL_TOKEN` fixo (`master_9k2m8x7p`) por `obterMasterPortalToken()`, `rotacionarMasterPortalToken()` e `validarMasterPortalToken()` usando `crypto.getRandomValues` (ou `VITE_MASTER_PORTAL_TOKEN`).
+  - Removido `hashCurtoDeterministico` com sufixo `_tok_2026` em `garantirTokensLoja`; novos tokens de painel (`adm_`, `gar_`, `coz_`, `cx_`) agora são gerados via `gerarTokenAleatorioSeguro(10)`.
+  - Adicionada limpeza automática de `?token=` na URL via `window.history.replaceState` após leitura inicial em `App.tsx`, evitando vazamento por histórico ou `Referer`.
+- **Política de Senhas & Comparação Segura (`src/utils/security.ts`):**
+  - Elevado `MIN_CARACTERES_SENHA` de 6 para 8 caracteres, bloqueio de senhas padrão/comuns em `validarPoliticaSenha` e comparação em tempo constante (`compararTempoConstante`) em `verificarSenhaComHash`.
+- **Hardening Fiscal (`api/nfce.js`):**
+  - Adicionada allowlist estrita de `acao`, validação básica de `venda.id` na emissão, suporte opcional a `NFCE_API_SECRET` via header `X-NFCE-Secret` e rate limit por IP (40 req/min).
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v165` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 164 - Segurança Fase 1 (Headers CSP/HSTS, Sourcemaps Ocultos, Proxy SI5 e Filtro PII Sentry)]
 - **Borda & Vercel (`vercel.json`, `vite.config.ts`):**
   - Criado `vercel.json` com cabeçalhos de segurança (`Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`).

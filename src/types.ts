@@ -641,7 +641,57 @@ export interface PedidoDelivery {
 // CONSTANTES E HELPERS DE LINKS EXCLUSIVOS & TOKENS DE SEGURANÇA
 // ============================================================================
 
-export const MASTER_PORTAL_TOKEN = 'master_9k2m8x7p';
+const CHAVE_MASTER_TOKEN_LOCAL = 'master_portal_token_ativo_v2';
+
+export function gerarTokenAleatorioSeguro(bytes = 12): string {
+  if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+    const buf = new Uint8Array(bytes);
+    window.crypto.getRandomValues(buf);
+    return Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  let out = '';
+  for (let i = 0; i < bytes * 2; i++) {
+    out += Math.floor(Math.random() * 16).toString(16);
+  }
+  return out;
+}
+
+export function obterMasterPortalToken(): string {
+  const envToken = (import.meta as any)?.env?.VITE_MASTER_PORTAL_TOKEN;
+  if (typeof envToken === 'string' && envToken.trim().length >= 16) {
+    return envToken.trim();
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      const salvo = localStorage.getItem(CHAVE_MASTER_TOKEN_LOCAL);
+      if (salvo && salvo.startsWith('mst_') && salvo.length >= 20) {
+        return salvo;
+      }
+      const novo = `mst_${gerarTokenAleatorioSeguro(16)}`;
+      localStorage.setItem(CHAVE_MASTER_TOKEN_LOCAL, novo);
+      return novo;
+    } catch {}
+  }
+  return `mst_${gerarTokenAleatorioSeguro(16)}`;
+}
+
+export function rotacionarMasterPortalToken(): string {
+  const novo = `mst_${gerarTokenAleatorioSeguro(16)}`;
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(CHAVE_MASTER_TOKEN_LOCAL, novo);
+    } catch {}
+  }
+  return novo;
+}
+
+export function validarMasterPortalToken(tokenRecebido: string | null | undefined): boolean {
+  if (!tokenRecebido || typeof tokenRecebido !== 'string') return false;
+  const esperado = obterMasterPortalToken();
+  return tokenRecebido.trim() === esperado;
+}
+
+export const MASTER_PORTAL_TOKEN = obterMasterPortalToken();
 
 export function normalizarSlugLoja(nomeOuId: string): string {
   const limpo = (nomeOuId || 'loja-centro')
@@ -653,24 +703,12 @@ export function normalizarSlugLoja(nomeOuId: string): string {
   return limpo || 'loja-centro';
 }
 
-function hashCurtoDeterministico(seed: string): string {
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h >>> 0).toString(36).slice(0, 4).padEnd(4, '9');
-}
-
 export function garantirTokensLoja(loja: Supermercado, forcarNovoRandom = false): Supermercado {
   const slugBase = loja.slug ? normalizarSlugLoja(loja.slug) : normalizarSlugLoja(loja.nome || loja.id);
   const partes = slugBase.split('-').filter((p) => p && p !== 'loja' && p !== 'supermercado');
   const identificadorCurto = (partes[0] || slugBase.split('-')[0] || 'centro').slice(0, 10);
 
-  const gerarSufixo = (tipo: string) =>
-    forcarNovoRandom
-      ? Math.random().toString(36).substring(2, 6).padEnd(4, 'x')
-      : hashCurtoDeterministico(`${loja.id}_${tipo}_tok_2026`);
+  const gerarSufixo = () => gerarTokenAleatorioSeguro(10);
 
   return {
     ...loja,
@@ -678,19 +716,19 @@ export function garantirTokensLoja(loja: Supermercado, forcarNovoRandom = false)
     token_admin:
       !forcarNovoRandom && loja.token_admin
         ? loja.token_admin
-        : `adm_${identificadorCurto}_${gerarSufixo('adm')}`,
+        : `adm_${identificadorCurto}_${gerarSufixo()}`,
     token_garcom:
       !forcarNovoRandom && loja.token_garcom
         ? loja.token_garcom
-        : `gar_${identificadorCurto}_${gerarSufixo('gar')}`,
+        : `gar_${identificadorCurto}_${gerarSufixo()}`,
     token_cozinha:
       !forcarNovoRandom && loja.token_cozinha
         ? loja.token_cozinha
-        : `coz_${identificadorCurto}_${gerarSufixo('coz')}`,
+        : `coz_${identificadorCurto}_${gerarSufixo()}`,
     token_caixa:
       !forcarNovoRandom && loja.token_caixa
         ? loja.token_caixa
-        : `cx_${identificadorCurto}_${gerarSufixo('cx')}`,
+        : `cx_${identificadorCurto}_${gerarSufixo()}`,
   };
 }
 
@@ -722,6 +760,6 @@ export function obterLinkPortalMaster(originOverride?: string): string {
     originOverride ||
     (typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : 'https://seusite.com/');
   const base = origin.endsWith('/') ? origin.slice(0, -1) : origin;
-  return `${base}/?portal=master&token=${MASTER_PORTAL_TOKEN}`;
+  return `${base}/?portal=master&token=${encodeURIComponent(obterMasterPortalToken())}`;
 }
 

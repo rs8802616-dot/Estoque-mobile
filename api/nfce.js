@@ -44,10 +44,36 @@ function normalizarUrlFocus(baseUrl, pathOrUrl) {
   return `${baseUrl}${pathOrUrl.startsWith('/') ? '' : '/'}${pathOrUrl}`;
 }
 
+const ACOES_PERMITIDAS = new Set(['testar_conexao', 'emitir', 'consultar', 'cancelar']);
+const rateLimitPorIp = new Map();
+const RATE_LIMIT_JANELA_MS = 60 * 1000;
+const RATE_LIMIT_MAX_REQ = 40;
+
+function verificarRateLimitNfce(req) {
+  const ip =
+    String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'local')
+      .split(',')[0]
+      .trim();
+  const agora = Date.now();
+  const registro = rateLimitPorIp.get(ip) || { count: 0, resetEm: agora + RATE_LIMIT_JANELA_MS };
+  if (agora > registro.resetEm) {
+    registro.count = 0;
+    registro.resetEm = agora + RATE_LIMIT_JANELA_MS;
+  }
+  registro.count += 1;
+  rateLimitPorIp.set(ip, registro);
+  if (rateLimitPorIp.size > 500) {
+    for (const [k, v] of rateLimitPorIp.entries()) {
+      if (agora > v.resetEm) rateLimitPorIp.delete(k);
+    }
+  }
+  return registro.count <= RATE_LIMIT_MAX_REQ;
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-NFCE-Secret');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -57,9 +83,31 @@ export default async function handler(req, res) {
     return res.status(405).json({ sucesso: false, erro: 'Método não permitido. Use POST.' });
   }
 
+  if (!verificarRateLimitNfce(req)) {
+    return res.status(429).json({
+      sucesso: false,
+      erro: 'Muitas solicitações fiscais em sequência. Aguarde 1 minuto e tente novamente.',
+    });
+  }
+
+  const secretServidor = String(process.env.NFCE_API_SECRET || '').trim();
+  if (secretServidor) {
+    const secretHeader = String(req.headers['x-nfce-secret'] || '').trim();
+    if (secretHeader !== secretServidor) {
+      return res.status(401).json({ sucesso: false, erro: 'Não autorizado para emitir NFC-e.' });
+    }
+  }
+
   try {
     const body = req.body || {};
     const { acao = 'emitir', ambiente = 'homologacao', tokenFocusNfe } = body;
+
+    if (!ACOES_PERMITIDAS.has(String(acao))) {
+      return res.status(400).json({ sucesso: false, erro: 'Ação fiscal não permitida.' });
+    }
+    if (acao === 'emitir' && (!body.venda || !body.venda.id)) {
+      return res.status(400).json({ sucesso: false, erro: 'Dados da venda inválidos para emissão.' });
+    }
 
     // Permite usar token específico da loja ou token global de revenda/conta Focus NFe no servidor
     const token = String(tokenFocusNfe || process.env.FOCUS_NFE_TOKEN || '').trim();
