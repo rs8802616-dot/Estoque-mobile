@@ -405,16 +405,34 @@ export default function App() {
   );
   const portalParamAtivo = urlParamsAtivo?.get('portal');
   const painelParamAtivo = urlParamsAtivo?.get('painel');
-  const tokenParamAtivo = urlParamsAtivo?.get('token');
   const publicLojaSlugAtivo =
     urlParamsAtivo?.get('loja') ||
     urlParamsAtivo?.get('loja_id') ||
     (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
+  const tokenUrlRaw = urlParamsAtivo?.get('token');
+  const chaveTokenSessao =
+    portalParamAtivo === 'master'
+      ? 'portal_master_token_sessao'
+      : publicLojaSlugAtivo
+        ? `painel_token_sessao_${publicLojaSlugAtivo.trim().toLowerCase()}`
+        : null;
+  const tokenParamAtivo = (() => {
+    if (tokenUrlRaw) return tokenUrlRaw;
+    if (typeof window !== 'undefined' && chaveTokenSessao) {
+      try {
+        return sessionStorage.getItem(chaveTokenSessao);
+      } catch {}
+    }
+    return null;
+  })();
 
-  // Remove ?token= da URL visível após captura em memória (evita vazamento via Referer/histórico)
+  // Persiste token válido em sessionStorage antes de limpar ?token= da URL (permite F5 sem perder acesso)
   useEffect(() => {
-    if (typeof window === 'undefined' || !tokenParamAtivo) return;
+    if (typeof window === 'undefined' || !tokenUrlRaw) return;
     try {
+      if (chaveTokenSessao) {
+        sessionStorage.setItem(chaveTokenSessao, tokenUrlRaw);
+      }
       const urlAtual = new URL(window.location.href);
       if (urlAtual.searchParams.has('token')) {
         urlAtual.searchParams.delete('token');
@@ -422,7 +440,7 @@ export default function App() {
         window.history.replaceState({}, '', novaUrl || '/');
       }
     } catch {}
-  }, [tokenParamAtivo]);
+  }, [tokenUrlRaw, chaveTokenSessao]);
 
   // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel, sem portal e sem token)
   const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo && !tokenParamAtivo);
