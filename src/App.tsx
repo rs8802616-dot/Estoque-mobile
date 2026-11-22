@@ -80,6 +80,7 @@ import {
 import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
 import { ComandasModal, ComandasPanel } from './components/ComandasModal';
 import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
+import { autenticarSessaoServidor } from './lib/authClient';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
 import {
@@ -3241,6 +3242,17 @@ export default function App() {
   // Login & Session Management
   const handleLoginSucesso = async (sessaoInput: SessaoUsuario) => {
     const sessao = sanitizeUserForSession(sessaoInput);
+    const papelAuth =
+      sessao.tipo === 'dona_app'
+        ? 'master'
+        : sessao.tipo === 'caixa' || sessao.operadorCargo === 'caixa'
+          ? 'caixa'
+          : 'admin_loja';
+    autenticarSessaoServidor({
+      papel: papelAuth,
+      lojaId: sessao.lojaId || null,
+      usuarioId: sessao.operadorId || sessao.operadorNome || 'usuario',
+    }).catch(() => {});
     const novoToken = gerarSessaoToken();
     setSessaoTokenAtivo(novoToken);
     safeLocalStorageSet('sessao_ativa_token', novoToken);

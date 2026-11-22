@@ -1069,6 +1069,17 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
       return res.status(500).json({ error: "Falha na consulta externa", produtos: [] });
     }
   });
+  // Rota local/Express de emissão de Custom Token Firebase (/api/auth)
+  app.post("/api/auth", async (req, res) => {
+    try {
+      const mod = await import("./api/auth.js");
+      return await mod.default(req, res);
+    } catch (err: any) {
+      console.error("Erro ao processar /api/auth no servidor Express:", err);
+      return res.status(500).json({ configurado: false, erro: err?.message || "Erro interno na rota /api/auth." });
+    }
+  });
+
   // Rota local/Express de consulta SI5 Global sem expor tokens no navegador
   app.get("/api/si5", async (req, res) => {
     try {

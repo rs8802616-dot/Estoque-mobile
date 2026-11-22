@@ -1,0 +1,142 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // REGRAS ESTRITAS PARA PRODUÇÃO (FASE 3)
+    // ATENÇÃO: Só publique este arquivo como `firestore.rules` APÓS configurar
+    // `FIREBASE_SERVICE_ACCOUNT_JSON` na Vercel (/api/auth emitindo Custom Tokens).
+    // =========================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isMaster() {
+      return isSignedIn() && (
+        request.auth.token.role == 'master' ||
+        request.auth.token.is_master == true
+      );
+    }
+
+    function belongsToLoja(lojaId) {
+      return isSignedIn() && (
+        isMaster() ||
+        (request.auth.token.lojaId != null && request.auth.token.lojaId == lojaId)
+      );
+    }
+
+    function isNonEmptyString(val, maxLen) {
+      return val is string && val.size() > 0 && val.size() <= maxLen;
+    }
+
+    function isValidNumber(val) {
+      return val is number && val >= 0;
+    }
+
+    // 1. Credenciais Master & Configs Sensíveis (Somente Admin SDK)
+    match /usuarios_master/{docId} {
+      allow read, write: if false;
+    }
+    match /config_sistema/{docId} {
+      allow read, write: if false;
+    }
+
+    // 2. Supermercados (Leitura pública limitada para Cardápio Digital; escrita restrita)
+    match /supermercados/{lojaId} {
+      allow read: if true;
+      allow create, delete: if isMaster();
+      allow update: if belongsToLoja(lojaId);
+    }
+
+    // 3. Catálogo Global (Leitura autenticada ou cardápio; escrita apenas operadores/master)
+    match /produtos_catalogo/{codigoBarra} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    match /catalogo_global/{codigoBarra} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // 4. Estoque por Supermercado (Leitura pública para vitrine Delivery; escrita isolada por lojaId)
+    match /estoque/{itemId} {
+      allow read: if true;
+      allow create, update: if belongsToLoja(request.resource.data.lojaId)
+        && isNonEmptyString(request.resource.data.nome, 250)
+        && isValidNumber(request.resource.data.preco_venda)
+        && isValidNumber(request.resource.data.quantidade);
+      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+    }
+
+    // 5. Vendas (Estritamente isolado por lojaId — nunca público)
+    match /vendas/{vendaId} {
+      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create, update: if belongsToLoja(request.resource.data.lojaId)
+        && isValidNumber(request.resource.data.valorTotal)
+        && request.resource.data.itens is list
+        && request.resource.data.itens.size() <= 500;
+      allow delete: if isMaster();
+    }
+
+    // 6. Operadores de Caixa (Estritamente isolado por lojaId)
+    match /operadores/{opId} {
+      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create, update: if belongsToLoja(request.resource.data.lojaId);
+      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+    }
+
+    // 7. Clientes Devedores / Fiado (Dados sensíveis — estritamente isolado por lojaId)
+    match /clientes_devedores/{clienteId} {
+      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create, update: if belongsToLoja(request.resource.data.lojaId)
+        && isNonEmptyString(request.resource.data.nome, 150);
+      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+    }
+
+    // 8. Sessões Ativas & Sessões de Caixa
+    match /sessoes_ativas/{userKey} {
+      allow read, write: if isSignedIn();
+    }
+    match /sessoes_caixa/{sessaoId} {
+      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create, update: if belongsToLoja(request.resource.data.lojaId);
+      allow delete: if isMaster();
+    }
+
+    // 9. Logs de Auditoria (Append-only por loja autenticada)
+    match /logs_auditoria/{logId} {
+      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create: if belongsToLoja(request.resource.data.lojaId);
+      allow update, delete: if false;
+    }
+
+    // 10. Termos de Concordância
+    match /termos_concordancia/{termoId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // 11. Pedidos de Delivery (Cliente cria pedido; leitura/edição restrita à loja ou rastreio por ID)
+    match /pedidos_delivery/{pedidoId} {
+      allow get: if true;
+      allow list: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create: if isNonEmptyString(request.resource.data.lojaId, 128)
+        && isValidNumber(request.resource.data.valorTotal);
+      allow update: if belongsToLoja(request.resource.data.lojaId);
+      allow delete: if isMaster();
+    }
+
+    // 12. Comandas / Mesas Locais
+    match /comandas_locais/{comandaId} {
+      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create, update: if belongsToLoja(request.resource.data.lojaId);
+      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+    }
+
+    // Bloqueio padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

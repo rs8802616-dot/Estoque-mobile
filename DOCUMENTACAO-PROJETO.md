@@ -165,6 +165,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 166 - Segurança Fase 3 (Backend /api/auth Custom Token RS256 e firestore.rules.strict)]
+- **Emissão de Custom Token Firebase no Servidor (`api/auth.js`, `server.ts`, `src/lib/authClient.ts`, `src/App.tsx`):**
+  - Criado endpoint `/api/auth` (`api/auth.js` + registrado em `server.ts`) usando apenas `node:crypto` nativo para assinar Firebase Custom Tokens (JWT RS256) com claims `{ role, is_master, lojaId, sessaoId }` via `FIREBASE_SERVICE_ACCOUNT_JSON`.
+  - Criado `src/lib/authClient.ts` (`autenticarSessaoServidor`) e integrado em `handleLoginSucesso` no `App.tsx`, com fallback silencioso caso `FIREBASE_SERVICE_ACCOUNT_JSON` ainda não esteja configurada no ambiente.
+- **Regras Estritas para as Coleções Reais (`firestore.rules.strict`):**
+  - Criado `firestore.rules.strict` cobrindo as coleções reais do sistema (`supermercados`, `estoque`, `vendas`, `operadores`, `clientes_devedores`, `pedidos_delivery`, `comandas_locais`, `sessoes_ativas`, `sessoes_caixa`, `logs_auditoria`, `termos_concordancia`, `produtos_catalogo`, `catalogo_global`), isolando dados sensíveis por `lojaId` e preservando o Cardápio Digital público.
+  - **Ativação:** Após configurar `FIREBASE_SERVICE_ACCOUNT_JSON` na Vercel, copiar `firestore.rules.strict` para `firestore.rules` e executar `firebase deploy --only firestore:rules`.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v166` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 165 - Segurança Fase 2 (Tokens CSPRNG, Limpeza de URL, Política de Senhas e Hardening /api/nfce)]
 - **Tokens Opacos CSPRNG & Limpeza de URL (`src/types.ts`, `src/App.tsx`):**
   - Substituído `MASTER_PORTAL_TOKEN` fixo (`master_9k2m8x7p`) por `obterMasterPortalToken()`, `rotacionarMasterPortalToken()` e `validarMasterPortalToken()` usando `crypto.getRandomValues` (ou `VITE_MASTER_PORTAL_TOKEN`).
