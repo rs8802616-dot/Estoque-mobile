@@ -37,6 +37,48 @@ export async function autenticarSessaoServidor(params: ParametrosAuthServidor): 
   }
 }
 
+export async function autenticarLojaServidor(
+  lojaId: string,
+  senha: string
+): Promise<{
+  fallbackLocal?: boolean;
+  autenticado?: boolean;
+  deveTrocarSenha?: boolean;
+  bloqueado?: boolean;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { fallbackLocal: true };
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'autenticar_loja', lojaId, senha }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true };
+    }
+    if (!resp.ok) {
+      return {
+        fallbackLocal: false,
+        autenticado: false,
+        bloqueado: Boolean(data?.bloqueado || resp.status === 429),
+        erro: data?.erro || 'Credenciais inválidas.',
+      };
+    }
+    if (data?.autenticado && data?.customToken && auth) {
+      await signInWithCustomToken(auth, data.customToken);
+    }
+    return {
+      fallbackLocal: false,
+      autenticado: Boolean(data?.autenticado),
+      deveTrocarSenha: Boolean(data?.deveTrocarSenha),
+    };
+  } catch {
+    return { fallbackLocal: true };
+  }
+}
+
 export async function encerrarSessaoServidor(): Promise<void> {
   if (typeof window === 'undefined' || !auth) return;
   try {

@@ -11,6 +11,7 @@ import {
   registrarAuditoriaLogin,
   obterChavesLockout,
 } from '../utils/security';
+import { autenticarLojaServidor } from '../lib/authClient';
 
 interface TelaLoginProps {
   visivel: boolean;
@@ -379,6 +380,45 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         if (loja.senha_revogada) {
           setCarregando(false);
           setForcarTelaRedefinicao(true);
+          return;
+        }
+
+        // Tenta autenticar no servidor (/api/auth com PBKDF2 + lockout persistente no Firestore)
+        const resSrv = await autenticarLojaServidor(loja.id, passDigitada);
+        if (!resSrv.fallbackLocal) {
+          if (!resSrv.autenticado) {
+            registrarAuditoriaLogin({
+              usuario: userDigitado,
+              lojaId: loja.id,
+              lojaNome: loja.nome,
+              portal: 'loja',
+              sucesso: false,
+              motivo: resSrv.erro || 'Senha incorreta no servidor',
+            });
+            setCarregando(false);
+            setErro(resSrv.erro || 'Usuário ou senha inválidos.');
+            return;
+          }
+          limparFalhasLogin();
+          if (resSrv.deveTrocarSenha) {
+            setCarregando(false);
+            setForcarTelaRedefinicao(true);
+            return;
+          }
+          registrarAuditoriaLogin({
+            usuario: userDigitado,
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+            portal: 'loja',
+            sucesso: true,
+            motivo: 'Login autenticado no servidor com PBKDF2 + Custom Token',
+          });
+          setCarregando(false);
+          onLoginSucesso({
+            tipo: 'admin_loja',
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+          });
           return;
         }
 

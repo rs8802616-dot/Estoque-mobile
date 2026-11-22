@@ -165,6 +165,16 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 168 - Passo 2 de Segurança (Login PBKDF2 + Lockout no Servidor e Troca de Senha Fraca)]
+- **Servidor `/api/auth` (`api/auth.js`):**
+  - Adicionada ação `autenticar_loja` com verificação de senha no servidor usando **PBKDF2-SHA256 (210.000 iterações + `SENHA_PEPPER`)** e comparação em tempo constante (`crypto.timingSafeEqual`).
+  - Migração automática (lazy migration) de hashes SHA-256 legados para PBKDF2 no login bem-sucedido.
+  - Controle de lockout persistente no Firestore (`controle_login/{lojaId}__{ip}`, 5 tentativas / 15 min) resistente a aba anônima e limpeza de `localStorage`.
+  - Detecção de senhas padrão/fracas (`deveTrocarSenha: true`) exigindo redefinição no primeiro acesso.
+- **Cliente (`src/lib/authClient.ts`, `src/components/TelaLogin.tsx`):**
+  - Integrado `autenticarLojaServidor` no fluxo de login da loja com fallback silencioso caso `FIREBASE_SERVICE_ACCOUNT_JSON` ainda não esteja configurada.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v168` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 167 - Higiene Local, PWA, Logout Limpo e Idempotência na Fila Offline]
 - **IndexedDB (`src/lib/imageIndexedDB.ts`):** Adicionado limite máximo (`MAX_IMAGENS_CACHE = 500`) e expiração (`7 dias`) com poda LRU automática e retry após poda quando ocorrer `QuotaExceededError`.
 - **Service Worker (`public/sw.js`):** Reforçada a exclusão explícita de cache para `securetoken.googleapis.com` e `focusnfe.com.br` (além de `/api/` e métodos não-GET).
