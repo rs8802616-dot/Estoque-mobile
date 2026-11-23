@@ -409,13 +409,19 @@ export default function App() {
     urlParamsAtivo?.get('loja') ||
     urlParamsAtivo?.get('loja_id') ||
     (urlParamsAtivo?.get('delivery') === 'true' || urlParamsAtivo?.get('delivery') === '1' ? 'loja_matriz_01' : null);
+  const isMotoboyUrlFlag = Boolean(
+    urlParamsAtivo?.get('motoboy') === '1' || urlParamsAtivo?.get('motoboy') === 'true'
+  );
+  const motoboyPedidoParam = urlParamsAtivo?.get('pedido');
   const tokenUrlRaw = urlParamsAtivo?.get('token');
   const chaveTokenSessao =
     portalParamAtivo === 'master'
       ? 'portal_master_token_sessao'
-      : publicLojaSlugAtivo
-        ? `painel_token_sessao_${publicLojaSlugAtivo.trim().toLowerCase()}`
-        : null;
+      : isMotoboyUrlFlag && motoboyPedidoParam
+        ? `motoboy_token_sessao_${motoboyPedidoParam.trim()}`
+        : painelParamAtivo && publicLojaSlugAtivo
+          ? `painel_token_sessao_${publicLojaSlugAtivo.trim().toLowerCase()}`
+          : null;
   const tokenParamAtivo = (() => {
     if (tokenUrlRaw) return tokenUrlRaw;
     if (typeof window !== 'undefined' && chaveTokenSessao) {
@@ -442,8 +448,8 @@ export default function App() {
     } catch {}
   }, [tokenUrlRaw, chaveTokenSessao]);
 
-  // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel, sem portal e sem token)
-  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo && !tokenParamAtivo);
+  // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel, sem portal e sem token na URL)
+  const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo && !tokenUrlRaw && !isMotoboyUrlFlag);
 
   // D. Link Secreto do Dono (?portal=master&token=...)
   const isPortalMasterRoute = Boolean(
@@ -451,12 +457,8 @@ export default function App() {
   );
 
   // C. Link Exclusivo do Entregador/Motoboy (?motoboy=1&pedido=1042&token=mto_...)
-  const isMotoboyRoute = Boolean(
-    urlParamsAtivo?.get('motoboy') === '1' ||
-    urlParamsAtivo?.get('motoboy') === 'true'
-  );
-  const motoboyPedidoParam = urlParamsAtivo?.get('pedido');
-  const motoboyTokenParam = urlParamsAtivo?.get('token');
+  const isMotoboyRoute = isMotoboyUrlFlag;
+  const motoboyTokenParam = tokenParamAtivo;
 
   // Resolução determinística do ID e Nome da loja por slug a partir dos dados locais
   const resolverIdLojaPorSlug = (slugOuId: string | null): string | null => {
@@ -2216,7 +2218,10 @@ export default function App() {
       if (sessaoCaixaAtiva.timestampAbertura && v.timestamp) {
         return v.timestamp >= sessaoCaixaAtiva.timestampAbertura;
       }
-      return v.data === sessaoCaixaAtiva.dataAbertura;
+      const dataVendaBr = v.data && /^\d{4}-\d{2}-\d{2}$/.test(v.data)
+        ? v.data.split('-').reverse().join('/')
+        : v.data;
+      return dataVendaBr === sessaoCaixaAtiva.dataAbertura;
     });
 
     // Vendas por modalidade de pagamento
@@ -3266,7 +3271,7 @@ export default function App() {
         : sessao.tipo === 'caixa' || sessao.operadorCargo === 'caixa'
           ? 'caixa'
           : 'admin_loja';
-    autenticarSessaoServidor({
+    await autenticarSessaoServidor({
       papel: papelAuth,
       lojaId: sessao.lojaId || null,
       usuarioId: sessao.operadorId || sessao.operadorNome || 'usuario',
@@ -5781,7 +5786,7 @@ export default function App() {
       valorTotal: number;
     }
   ) => {
-    if (!supermercadoAtual) return;
+    if (!supermercadoAtual) return false;
 
     const chaveLimpa = String(dadosNF.chaveAcesso || '').trim();
     if (chaveLimpa) {
@@ -5793,7 +5798,7 @@ export default function App() {
           hist.some((h: any) => String(h?.chaveAcesso || '').trim() === chaveLimpa)
         ) {
           alert('Esta Nota Fiscal já foi importada anteriormente para esta loja.');
-          return;
+          return false;
         }
       } catch {}
     }
@@ -5803,8 +5808,10 @@ export default function App() {
     for (const item of itensEntrada) {
       const codItem = String(item.codigo || '').trim();
       const eanItem = String(item.codigo_barras || '').trim();
+      const codExistente = String(item.produtoExistente?.codigo || '').trim();
       const idx = estoqueAtualizado.findIndex(
         (e) =>
+          (codExistente !== '' && String(e.codigo || '').trim() === codExistente) ||
           String(e.codigo || '').trim() === codItem ||
           (eanItem !== '' && String(e.codigo_barras || '').trim() === eanItem)
       );
@@ -5872,6 +5879,7 @@ export default function App() {
       `NF: #${dadosNF.numeroNF} | Fornecedor: ${dadosNF.fornecedorNome} | Total Itens: ${itensEntrada.length} | Operador: ${nomeOperador}`
     );
     notificarSincronizacao();
+    return true;
   };
 
   // Handlers para Gestão de Clientes Devedores (Fiado)
@@ -7105,13 +7113,17 @@ export default function App() {
         itensAtualizadosParaSync.push(novoEstoque[idxEst]);
       } else {
         const novoItem: ItemEstoque = {
+          lojaId: supermercadoAtual,
           codigo: itemVenda.codigo,
+          codigo_barras: itemVenda.codigo,
           nome: itemVenda.nome,
           quantidade: itemVenda.quantidade,
           lote: itemVenda.lote || 'LOTE_ESTORNO',
           validade: itemVenda.validade || new Date().toISOString().slice(0, 10),
           preco_custo: itemVenda.preco_custo || 0,
           preco_venda: itemVenda.preco_unitario,
+          categoria: 'Geral',
+          unidade_medida: 'UN',
           foto: itemVenda.foto,
         };
         novoEstoque.push(novoItem);

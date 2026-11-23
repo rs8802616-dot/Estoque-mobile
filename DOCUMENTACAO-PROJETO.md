@@ -165,6 +165,25 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-22 - Versão 172 - Correção Completa dos Achados da Auditoria de 4 Agentes pós-v171]
+- **Roteamento F5, Auth & APIs (`src/App.tsx`, `api/auth.js`, `api/nfce.js`, `api/si5.js`, `server.ts`, `src/lib/focusNfeService.ts`, `src/lib/bomJawaKitApi.ts`):**
+  - Corrigido F5 na rota do motoboy (`?motoboy=1`) preservando o token em `sessionStorage` e corrigido `isModoCliente` para não ser bloqueado por token de painel salvo na mesma aba.
+  - `handleLoginSucesso` agora aguarda `await autenticarSessaoServidor(...)` antes de gravar `sessoes_ativas`/`termos_concordancia`.
+  - Separado `senhaSaltPbkdf2` de `senhaSalt` em `api/auth.js` (não quebra fallback SHA-256 local) e normalizada `private_key` (`\\n`).
+  - Enviado header `Authorization: Bearer <idToken>` em `focusNfeService.ts` e `bomJawaKitApi.ts` para compatibilidade com `EXIGIR_AUTH_API=true`.
+  - Atualizado `server.ts` para `app.all("/api/auth")` e `app.all("/api/si5")` com `pathToFileURL` (compatível com `npm start` / `dist/server.cjs`).
+  - Removido fallback `codigo_barras_url` como foto de produto em `api/si5.js` e adicionado rateio de `valor_outras_despesas` (taxa de entrega) nos itens de `api/nfce.js` (além de limitar desconto ao bruto do item).
+- **CSP, PWA & Cache de Imagens (`vercel.json`, `public/sw.js`, `src/lib/imageIndexedDB.ts`):**
+  - Liberados `media-src 'self' blob:`, `https://cdn.jsdelivr.net`, `https://cdnjs.cloudflare.com`, `https://ws.meudanfe.com.br` e APIs de produtos na CSP do `vercel.json`.
+  - Removidas URLs externas de `ASSETS_PARA_CACHE_INICIAL` no `public/sw.js` para evitar falha atômica no `cache.addAll`.
+  - Corrigido `definirFotoCache` em `imageIndexedDB.ts` (que retornava antes de persistir no IDB) e adicionada notificação aos listeners após poda LRU.
+- **Delivery, Caixa, NF-e & Impressão (`CaixaDeliveryPanel.tsx`, `CardapioClienteDeliveryModal.tsx`, `GestaoDeliveryModal.tsx`, `EntradaNotaFiscalModal.tsx`, `impressaoTermica.ts`, `firestore.rules.strict`):**
+  - Corrigido `z-index: 10000001` no modal de PIN do `CaixaDeliveryPanel.tsx`; adicionada largura dinâmica da bobina na impressão manual do `GestaoDeliveryModal.tsx`; adicionada limpeza por `onafterprint` + timeout 12s em `impressaoTermica.ts`.
+  - Adicionado campo de texto para bairro quando "Outro Bairro" for escolhido no `CardapioClienteDeliveryModal.tsx`.
+  - Corrigida data no fallback de `handleFecharCaixa`, preenchimento completo do item ao recriar estoque em `handleEstornarVenda`, e retorno booleano em `handleConfirmarEntradaNotaFiscal` (evitando tela de sucesso em NF-e duplicada) + match por `produtoExistente`.
+  - Adicionada coleção `config_delivery` em `firestore.rules.strict`.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v172` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 169 - Passo 4 de Segurança (Limite PIN Entrega, Expiração Link Motoboy, Auth Opcional APIs e LGPD)]
 - **Proteção na Entrega (`src/types.ts`, `src/App.tsx`):**
   - Limite máximo de **5 tentativas** para o PIN de 4 dígitos em `handleConfirmarEntregaPin` (`tentativasPinEntrega` e `pinBloqueado`), persistido no Firestore.

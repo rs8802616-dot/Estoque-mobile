@@ -147,19 +147,23 @@ export function imprimirCupomTermico(
 
   // Aguarda 150ms para os estilos e elementos serem completamente computados pelo navegador
   setTimeout(() => {
+    const limparIframe = () => {
+      try {
+        iframe.remove();
+      } catch {}
+    };
     try {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
+      if (iframe.contentWindow) {
+        iframe.contentWindow.onafterprint = limparIframe;
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }
     } catch (err) {
       console.warn('Falha na impressão via iframe, usando fallback:', err);
       window.print();
     } finally {
-      // Remove o iframe do DOM após a conclusão do diálogo
-      setTimeout(() => {
-        try {
-          iframe.remove();
-        } catch (e) {}
-      }, 1500);
+      // Fallback de segurança caso onafterprint não dispare em algum navegador/spooler
+      setTimeout(limparIframe, 12000);
     }
   }, 150);
 }

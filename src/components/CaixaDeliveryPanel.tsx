@@ -895,7 +895,10 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
 
       {/* Modal de Validação de PIN de 4 Dígitos */}
       {validandoPinPedido && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3">
+        <div
+          className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3"
+          style={{ zIndex: 10000001 }}
+        >
           <div className="bg-white border border-stone-200 rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl text-stone-900">
             <div className="flex items-center justify-between pb-2 border-b border-stone-200">
               <div className="flex items-center gap-2">

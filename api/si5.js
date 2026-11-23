@@ -114,7 +114,7 @@ export default async function handler(req, res) {
         nomeProduto: String(item.produto || '').trim(),
         marca: String(item.marca || '').trim(),
         categoria: String(item.categoria || 'Geral').trim(),
-        fotoUrl: String(item.imagem_url || item.codigo_barras_url || '').trim(),
+        fotoUrl: String(item.imagem_url || '').trim(),
         ncm: String(item.ncm || '').trim(),
         descricao: String(item.peso || item.embalagem || item.ncm_descricao || '').trim(),
         fonte: 'API Oficial SI5 Global',

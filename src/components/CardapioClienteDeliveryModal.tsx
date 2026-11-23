@@ -1511,6 +1511,17 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                             </option>
                           ))}
                         </select>
+                        {((listaBairros.find((b) => b.id === bairroSelecionadoId)?.nome ||
+                          listaBairros.find((b) => b.id === bairroSelecionadoId)?.bairro ||
+                          '').includes('Outro')) && (
+                          <input
+                            type="text"
+                            value={endereco.bairro}
+                            onChange={(e) => setEndereco({ ...endereco, bairro: e.target.value })}
+                            placeholder="Digite o nome do seu bairro"
+                            className="mt-2 w-full bg-stone-50 border border-stone-200 rounded-xl p-2.5 text-stone-900 focus:outline-none focus:border-emerald-500"
+                          />
+                        )}
                       </div>
 
                       <div>

@@ -72,7 +72,7 @@ interface EntradaNotaFiscalModalProps {
       dataEmissao: string;
       valorTotal: number;
     }
-  ) => void;
+  ) => Promise<boolean | void> | boolean | void;
 }
 
 export function decodificarChaveAcessoNFe(chaveLimpa: string) {
@@ -628,7 +628,7 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
   };
 
   // Confirmar entrada no estoque
-  const handleConfirmar = () => {
+  const handleConfirmar = async () => {
     if (!dadosNota) return;
 
     const itensParaEntrada = dadosNota.itens
@@ -661,13 +661,17 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
       else novos++;
     });
 
-    onConfirmarEntradaEstoque(itensParaEntrada, {
+    const resultado = await onConfirmarEntradaEstoque(itensParaEntrada, {
       numeroNF: dadosNota.numeroNF,
       fornecedorNome: dadosNota.fornecedorNome,
       chaveAcesso: dadosNota.chaveAcesso,
       dataEmissao: dadosNota.dataEmissao,
       valorTotal: dadosNota.valorTotalNF,
     });
+
+    if (resultado === false) {
+      return;
+    }
 
     setResumoSucesso({
       atualizados,

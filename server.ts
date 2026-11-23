@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import { pathToFileURL } from "node:url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import {
@@ -1070,9 +1071,9 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
     }
   });
   // Rota local/Express de emissão de Custom Token Firebase (/api/auth)
-  app.post("/api/auth", async (req, res) => {
+  app.all("/api/auth", async (req, res) => {
     try {
-      const mod = await import("./api/auth.js");
+      const mod = await import(pathToFileURL(path.join(process.cwd(), "api", "auth.js")).href);
       return await mod.default(req, res);
     } catch (err: any) {
       console.error("Erro ao processar /api/auth no servidor Express:", err);
@@ -1081,9 +1082,9 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
   });
 
   // Rota local/Express de consulta SI5 Global sem expor tokens no navegador
-  app.get("/api/si5", async (req, res) => {
+  app.all("/api/si5", async (req, res) => {
     try {
-      const mod = await import("./api/si5.js");
+      const mod = await import(pathToFileURL(path.join(process.cwd(), "api", "si5.js")).href);
       return await mod.default(req, res);
     } catch (err: any) {
       console.error("Erro ao processar /api/si5 no servidor Express:", err);
@@ -1094,7 +1095,7 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
   // Rota local/Express de NFC-e (Focus NFe) delegando para api/nfce.js
   app.all("/api/nfce", async (req, res) => {
     try {
-      const mod = await import("./api/nfce.js");
+      const mod = await import(pathToFileURL(path.join(process.cwd(), "api", "nfce.js")).href);
       return await mod.default(req, res);
     } catch (err: any) {
       console.error("Erro ao processar /api/nfce no servidor Express:", err);

@@ -1,4 +1,16 @@
 import { ConfigFiscalLoja, ItemEstoque, NfceRegistro, Supermercado, Venda } from '../types';
+import { auth } from './firebase';
+
+async function headersNfceComAuth(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  try {
+    const token = await auth?.currentUser?.getIdToken?.();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  } catch {}
+  return headers;
+}
 
 export interface ProntidaoFiscal {
   pronto: boolean;
@@ -73,7 +85,7 @@ export async function testarConexaoFocusNfe(
 ): Promise<RespostaNfceApi> {
   const resp = await fetch('/api/nfce', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'testar_conexao',
       ambiente: configFiscal.ambiente || 'homologacao',
@@ -117,7 +129,7 @@ export async function emitirNfceVenda(
 
   const resp = await fetch('/api/nfce', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'emitir',
       ref,
@@ -160,7 +172,7 @@ export async function consultarNfceVenda(
   const cfg = loja.configFiscal;
   const resp = await fetch('/api/nfce', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'consultar',
       ref,
@@ -179,7 +191,7 @@ export async function cancelarNfceVenda(
   const cfg = loja.configFiscal;
   const resp = await fetch('/api/nfce', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'cancelar',
       ref,

@@ -275,7 +275,9 @@ export default async function handler(req, res) {
         (acc, item) => acc + Number((item.subtotal != null ? item.subtotal : Number(item.quantidade || 1) * Number(item.preco_unitario || 0)).toFixed(2)),
         0
       );
+      const descontoAplicavel = Math.min(descontoTotal, somaBrutaItens);
       let descontoAcumulado = 0;
+      let outrasDespesasAcumuladas = 0;
 
       const itemsMapeados = itensVenda.map((item, idx) => {
         const qtd = Number(item.quantidade || 1);
@@ -305,14 +307,26 @@ export default async function handler(req, res) {
           cofins_situacao_tributaria: '07',
         };
 
-        if (descontoTotal > 0 && somaBrutaItens > 0) {
-          const descItem =
+        if (descontoAplicavel > 0 && somaBrutaItens > 0) {
+          const descBruto =
             idx === itensVenda.length - 1
-              ? Number(Math.max(0, descontoTotal - descontoAcumulado).toFixed(2))
-              : Number(((vBruto / somaBrutaItens) * descontoTotal).toFixed(2));
+              ? Number(Math.max(0, descontoAplicavel - descontoAcumulado).toFixed(2))
+              : Number(((vBruto / somaBrutaItens) * descontoAplicavel).toFixed(2));
+          const descItem = Number(Math.min(descBruto, vBruto).toFixed(2));
           descontoAcumulado = Number((descontoAcumulado + descItem).toFixed(2));
           if (descItem > 0) {
             objItem.valor_desconto = descItem;
+          }
+        }
+
+        if (taxaEntrega > 0 && somaBrutaItens > 0) {
+          const despItem =
+            idx === itensVenda.length - 1
+              ? Number(Math.max(0, taxaEntrega - outrasDespesasAcumuladas).toFixed(2))
+              : Number(((vBruto / somaBrutaItens) * taxaEntrega).toFixed(2));
+          outrasDespesasAcumuladas = Number((outrasDespesasAcumuladas + despItem).toFixed(2));
+          if (despItem > 0) {
+            objItem.valor_outras_despesas = despItem;
           }
         }
 

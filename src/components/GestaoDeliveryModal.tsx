@@ -1063,7 +1063,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   onClick={() => {
                     imprimirCupomTermico(
                       'comanda-impressao-termica',
-                      '80mm',
+                      configDelivery.larguraImpressao || '80mm',
                       `Comanda_Pedido_${comandaImpressao.numeroPedido}`
                     );
                   }}

@@ -12,6 +12,7 @@ async function podarCacheAntigoIndexedDB(db: IDBDatabase, removerFracaoExtra = 0
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
+      let removeuAlgum = false;
       req.onsuccess = () => {
         const registros: Array<{ codigo: string; timestamp?: number }> = Array.isArray(req.result) ? req.result : [];
         const agora = Date.now();
@@ -33,8 +34,14 @@ async function podarCacheAntigoIndexedDB(db: IDBDatabase, removerFracaoExtra = 0
           store.delete(ativos[i].codigo);
           cacheImagensMemoria.delete(ativos[i].codigo);
         }
+        removeuAlgum = expirados.length > 0 || totalRemover > 0;
       };
-      tx.oncomplete = () => resolve();
+      tx.oncomplete = () => {
+        if (removeuAlgum) {
+          notificarListeners();
+        }
+        resolve();
+      };
       tx.onerror = () => resolve();
     } catch {
       resolve();
@@ -69,13 +76,8 @@ export function obterFotoCache(codigo?: string): string | undefined {
 export function definirFotoCache(codigo: string, foto: string): void {
   if (!codigo || !foto) return;
   const cod = String(codigo).trim();
-  if (foto.length > 10) {
-    const mudou = cacheImagensMemoria.get(cod) !== foto;
-    cacheImagensMemoria.set(cod, foto);
-    if (mudou) {
-      salvarImagemIndexedDB(cod, foto).catch(() => {});
-      notificarListeners();
-    }
+  if (foto.length > 10 && cacheImagensMemoria.get(cod) !== foto) {
+    salvarImagemIndexedDB(cod, foto).catch(() => {});
   }
 }
 

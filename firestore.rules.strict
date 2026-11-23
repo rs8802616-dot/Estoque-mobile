@@ -117,7 +117,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // 11. Pedidos de Delivery (Cliente cria pedido; leitura/edição restrita à loja ou rastreio por ID)
+    // 11. Pedidos de Delivery & Configuração Delivery
+    match /config_delivery/{lojaId} {
+      allow read: if true;
+      allow write: if belongsToLoja(lojaId);
+    }
+
     match /pedidos_delivery/{pedidoId} {
       allow get: if true;
       allow list: if resource != null && belongsToLoja(resource.data.lojaId);

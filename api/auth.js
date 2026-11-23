@@ -200,6 +200,7 @@ export default async function handler(req, res) {
     if (!serviceAccount?.client_email || !serviceAccount?.private_key || !serviceAccount?.project_id) {
       throw new Error('Campos client_email/private_key/project_id ausentes');
     }
+    serviceAccount.private_key = String(serviceAccount.private_key).replace(/\\n/g, '\n');
   } catch {
     return res.status(500).json({
       configurado: false,
@@ -248,9 +249,10 @@ export default async function handler(req, res) {
       let senhaOk = false;
       let precisaMigrarPbkdf2 = false;
 
-      if (lojaDoc.senhaAlgo === 'pbkdf2' && lojaDoc.senhaHashPbkdf2 && lojaDoc.senhaSalt) {
+      const saltPbkdf2Atual = lojaDoc.senhaSaltPbkdf2 || lojaDoc.senhaSalt;
+      if (lojaDoc.senhaAlgo === 'pbkdf2' && lojaDoc.senhaHashPbkdf2 && saltPbkdf2Atual) {
         senhaOk = compararTempoConstante(
-          derivarPbkdf2(senha, lojaDoc.senhaSalt, pepper),
+          derivarPbkdf2(senha, saltPbkdf2Atual, pepper),
           lojaDoc.senhaHashPbkdf2
         );
       } else if (lojaDoc.senhaHash && lojaDoc.senhaSalt) {
@@ -292,7 +294,7 @@ export default async function handler(req, res) {
         const novoSalt = crypto.randomBytes(16).toString('hex');
         await gravarDocFirestoreAdmin(projectId, accessToken, `supermercados/${lojaId}`, {
           senhaAlgo: 'pbkdf2',
-          senhaSalt: novoSalt,
+          senhaSaltPbkdf2: novoSalt,
           senhaHashPbkdf2: derivarPbkdf2(senha, novoSalt, pepper),
         });
       }

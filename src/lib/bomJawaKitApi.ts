@@ -1,3 +1,16 @@
+import { auth } from './firebase';
+
+async function headersSi5ComAuth(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = { Accept: 'application/json' };
+  try {
+    const token = await auth?.currentUser?.getIdToken?.();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  } catch {}
+  return headers;
+}
+
 // Tokens da SI5 Global não ficam mais no bundle do navegador — residem em process.env.SI5_TOKENS no servidor (/api/si5).
 function obterTokensSI5Servidor(): string[] {
   if (typeof window !== 'undefined') return [];
@@ -56,7 +69,7 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
       const res = await fetch(`/api/si5?ean=${encodeURIComponent(clean)}`, {
         method: 'GET',
         signal: ctrl.signal,
-        headers: { Accept: 'application/json' },
+        headers: await headersSi5ComAuth(),
       });
       clearTimeout(timeoutId);
       if (!res.ok) return null;
@@ -155,7 +168,7 @@ export async function pesquisarSI5GlobalPorNome(
       const res = await fetch(`/api/si5?q=${encodeURIComponent(cleanTermo)}&page=${page}`, {
         method: 'GET',
         signal: ctrl.signal,
-        headers: { Accept: 'application/json' },
+        headers: await headersSi5ComAuth(),
       });
       clearTimeout(timeoutId);
       if (!res.ok) return null;
