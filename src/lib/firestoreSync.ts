@@ -34,6 +34,53 @@ import {
 } from '../types';
 
 // Real-time listener for Supermercados (reflete deleções e adições instantaneamente)
+export function extrairDadosPublicosLoja(loja: Supermercado): Partial<Supermercado> {
+  return {
+    id: loja.id,
+    nome: loja.nome,
+    slug: loja.slug,
+    telefone: loja.telefone,
+    cidade: loja.cidade,
+    endereco: loja.endereco,
+    taxa_entrega: loja.taxa_entrega,
+    taxas_bairro: loja.taxas_bairro,
+    status: loja.status,
+    permissoesLoja: loja.permissoesLoja,
+  };
+}
+
+export function subscribeLojasPublicas(callback: (lojas: Supermercado[]) => void) {
+  const colRef = collection(db, 'lojas_publico');
+  let unsubFallback: (() => void) | null = null;
+  const unsubPub = onSnapshot(
+    colRef,
+    (snapshot) => {
+      const lojas: Supermercado[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data() as Supermercado;
+        if (data && data.nome) {
+          lojas.push({ id: docSnap.id, ...data });
+        }
+      });
+      if (lojas.length > 0) {
+        callback(lojas);
+      } else if (!unsubFallback) {
+        // Fallback temporário caso lojas_publico ainda não tenha sido populada
+        unsubFallback = subscribeSupermercados(callback);
+      }
+    },
+    () => {
+      if (!unsubFallback) {
+        unsubFallback = subscribeSupermercados(callback);
+      }
+    }
+  );
+  return () => {
+    unsubPub();
+    if (unsubFallback) unsubFallback();
+  };
+}
+
 export function subscribeSupermercados(callback: (lojas: Supermercado[]) => void) {
   const colRef = collection(db, 'supermercados');
   return onSnapshot(
@@ -489,6 +536,11 @@ export async function salvarSupermercadoFirestore(loja: Supermercado) {
     const docId = sanitizarIdDoc(loja.id);
     const docRef = doc(db, 'supermercados', docId);
     await setDoc(docRef, limparUndefined(loja), { merge: true });
+    // Espelha apenas dados públicos não-sensíveis para o Cardápio Digital
+    try {
+      const pubRef = doc(db, 'lojas_publico', docId);
+      await setDoc(pubRef, limparUndefined(extrairDadosPublicosLoja(loja)), { merge: true });
+    } catch {}
   } catch (err: any) {
     if (err?.code === 'permission-denied' || err?.message?.includes('permission')) {
       console.warn('Aviso: Permissão de escrita pendente no Firestore. Publique as regras de leitura/escrita no Console do Firebase.');

@@ -79,6 +79,38 @@ export async function autenticarLojaServidor(
   }
 }
 
+export async function autenticarMasterServidor(
+  usuario: string,
+  senha: string
+): Promise<{ fallbackLocal?: boolean; autenticado?: boolean; erro?: string }> {
+  if (typeof window === 'undefined') return { fallbackLocal: true };
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'autenticar_master', usuario, senha }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true };
+    }
+    if (!resp.ok) {
+      return {
+        fallbackLocal: false,
+        autenticado: false,
+        erro: data?.erro || 'Credenciais Master inválidas.',
+      };
+    }
+    if (data?.autenticado && data?.customToken && auth) {
+      await signInWithCustomToken(auth, data.customToken);
+    }
+    return { fallbackLocal: false, autenticado: Boolean(data?.autenticado) };
+  } catch {
+    return { fallbackLocal: true };
+  }
+}
+
 export async function validarSessaoMasterServidor(tokenUrl?: string | null): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   try {

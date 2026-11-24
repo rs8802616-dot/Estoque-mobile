@@ -42,9 +42,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // 2. Supermercados (Leitura pública limitada para Cardápio Digital; escrita restrita)
-    match /supermercados/{lojaId} {
+    // 2. Supermercados (Dados sensíveis da loja isolados; vitrine pública fica em lojas_publico)
+    match /lojas_publico/{lojaId} {
       allow read: if true;
+      allow write: if belongsToLoja(lojaId);
+    }
+
+    match /supermercados/{lojaId} {
+      allow read: if belongsToLoja(lojaId);
       allow create, delete: if isMaster();
       allow update: if belongsToLoja(lojaId);
     }

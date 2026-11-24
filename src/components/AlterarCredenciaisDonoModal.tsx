@@ -18,9 +18,9 @@ interface AlterarCredenciaisDonoModalProps {
 
 const obterCredenciaisValidas = (cred?: CredenciaisDonoApp): CredenciaisDonoApp => {
   let base: CredenciaisDonoApp = {
-    usuario: 'Rodrigo.souza',
-    senha: 'Mudar@123',
-    nomeExibicao: 'Rodrigo Souza (Dono do App)',
+    usuario: '',
+    senha: '',
+    nomeExibicao: 'Dono do App (Master)',
   };
 
   if (cred && typeof cred === 'object') {
@@ -63,10 +63,10 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
 }) => {
   const creds = obterCredenciaisValidas(credenciaisAtuais);
 
-  const [novoUsuario, setNovoUsuario] = useState(creds.usuario || 'Rodrigo.souza');
+  const [novoUsuario, setNovoUsuario] = useState(creds.usuario || '');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState('');
-  const [nomeExibicao, setNomeExibicao] = useState(creds.nomeExibicao || 'Rodrigo Souza (Dono do App)');
+  const [nomeExibicao, setNomeExibicao] = useState(creds.nomeExibicao || 'Dono do App (Master)');
 
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState(false);
@@ -75,8 +75,8 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
   React.useEffect(() => {
     if (visivel) {
       const c = obterCredenciaisValidas(credenciaisAtuais);
-      setNovoUsuario(c.usuario || 'Rodrigo.souza');
-      setNomeExibicao(c.nomeExibicao || 'Rodrigo Souza (Dono do App)');
+      setNovoUsuario(c.usuario || '');
+      setNomeExibicao(c.nomeExibicao || 'Dono do App (Master)');
       setNovaSenha('');
       setConfirmarNovaSenha('');
       setErro('');
@@ -111,9 +111,9 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
       const gerado = await criarHashComSalt(novaSenha.trim());
       senhaHashFinal = gerado.senhaHash;
       senhaSaltFinal = gerado.senhaSalt;
-    } else if (!senhaHashFinal || !senhaSaltFinal) {
+    } else if ((!senhaHashFinal || !senhaSaltFinal) && c.senha) {
       // Criptografa a senha legada existente caso ainda estivesse em texto puro
-      const gerado = await criarHashComSalt(c.senha || 'Mudar@123');
+      const gerado = await criarHashComSalt(c.senha);
       senhaHashFinal = gerado.senhaHash;
       senhaSaltFinal = gerado.senhaSalt;
     }

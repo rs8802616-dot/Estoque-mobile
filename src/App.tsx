@@ -194,6 +194,7 @@ import { comprimirImagemParaArmazenamento, calcularTamanhoImagemKB, otimizarUrlI
 import { screenWakeLockManager } from './lib/screenWakeLock';
 import {
   subscribeSupermercados,
+  subscribeLojasPublicas,
   subscribeEstoque,
   subscribeVendas,
   subscribeOperadores,
@@ -1291,9 +1292,12 @@ export default function App() {
 
   // Firebase Firestore Real-time Cloud Database Sync
   useEffect(() => {
-    // Subscribe to Supermercados em tempo real (reflete adições e exclusões instantaneamente)
-    const unsubLojas = subscribeSupermercados((lojasRaw) => {
-      const lojas = Array.isArray(lojasRaw) ? lojasRaw.map((l) => garantirTokensLoja(l)) : [];
+    // Subscribe to Supermercados em tempo real (clientes usam apenas o espelho público lojas_publico)
+    const assinarLojas = isModoCliente ? subscribeLojasPublicas : subscribeSupermercados;
+    const unsubLojas = assinarLojas((lojasRaw) => {
+      const lojas = Array.isArray(lojasRaw)
+        ? lojasRaw.map((l) => (isModoCliente ? l : garantirTokensLoja(l)))
+        : [];
       if (lojas && lojas.length > 0) {
         setListaSupermercados(lojas);
         safeLocalStorageSet('lista_supermercados_app', JSON.stringify(lojas));

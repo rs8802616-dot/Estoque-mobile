@@ -249,6 +249,36 @@ export default async function handler(req, res) {
     return res.status(ok ? 200 : 401).json({ validado: ok });
   }
 
+  if (acao === 'autenticar_master') {
+    const cookies = parseCookies(req);
+    if (!verificarCookieMasterAssinado(cookies.em_master_sessao, hmacSecret)) {
+      return res.status(401).json({ configurado: true, autenticado: false, erro: 'Sessão master inválida.' });
+    }
+    const masterUserEnv = String(process.env.MASTER_ADMIN_USER || '').trim().toLowerCase();
+    const masterPassEnv = String(process.env.MASTER_ADMIN_PASS || '').trim();
+    if (!masterUserEnv || !masterPassEnv) {
+      return res.status(503).json({ configurado: false });
+    }
+    const u = String(body.usuario || '').trim().toLowerCase();
+    const s = String(body.senha || '').trim();
+    if (!compararTempoConstante(u, masterUserEnv) || !compararTempoConstante(s, masterPassEnv)) {
+      return res.status(401).json({ configurado: true, autenticado: false, erro: 'Usuário ou senha Master inválidos.' });
+    }
+    let customToken = null;
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+      try {
+        const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+        sa.private_key = String(sa.private_key).replace(/\\n/g, '\n');
+        customToken = criarCustomTokenFirebase(sa, `master_${u}`, {
+          role: 'master',
+          is_master: true,
+          sessaoId: crypto.randomUUID(),
+        });
+      } catch {}
+    }
+    return res.status(200).json({ configurado: true, autenticado: true, customToken });
+  }
+
   const rawSa = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   if (!rawSa) {
     return res.status(503).json({

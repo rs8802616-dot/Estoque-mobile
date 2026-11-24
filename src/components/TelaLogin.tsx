@@ -11,7 +11,7 @@ import {
   registrarAuditoriaLogin,
   obterChavesLockout,
 } from '../utils/security';
-import { autenticarLojaServidor } from '../lib/authClient';
+import { autenticarLojaServidor, autenticarMasterServidor } from '../lib/authClient';
 
 interface TelaLoginProps {
   visivel: boolean;
@@ -29,7 +29,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   visivel,
   listaSupermercados,
   onLoginSucesso,
-  senhaMasterPadrao = 'Mudar@123',
+  senhaMasterPadrao = '',
   modoPortal = 'loja',
   lojaAlvo = null,
   onRedefinirSenhaLojaRevogada,
@@ -281,10 +281,35 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     // Imunidade total contra Lockout + Criptografia SHA-256 + Salt
     // =========================================================================
     if (isMasterMode) {
+      // 1a. Tenta validar credenciais Master no servidor (/api/auth -> MASTER_ADMIN_USER/PASS)
+      const resMasterSrv = await autenticarMasterServidor(userDigitado, passDigitada);
+      if (!resMasterSrv.fallbackLocal) {
+        if (resMasterSrv.autenticado) {
+          registrarAuditoriaLogin({
+            usuario: userDigitado,
+            portal: 'master',
+            sucesso: true,
+            motivo: 'Login Master autenticado no servidor',
+          });
+          setCarregando(false);
+          onLoginSucesso({ tipo: 'dona_app' });
+          return;
+        }
+        registrarAuditoriaLogin({
+          usuario: userDigitado,
+          portal: 'master',
+          sucesso: false,
+          motivo: resMasterSrv.erro || 'Credenciais Master inválidas no servidor',
+        });
+        setCarregando(false);
+        setErro(resMasterSrv.erro || 'Usuário ou senha Master inválidos.');
+        return;
+      }
+
       let credenciaisMaster: CredenciaisDonoApp = {
-        usuario: 'Rodrigo.souza',
-        senha: senhaMasterPadrao || 'Mudar@123',
-        nomeExibicao: 'Rodrigo Souza (Dono do App)',
+        usuario: '',
+        senha: senhaMasterPadrao || '',
+        nomeExibicao: 'Dono do App (Master)',
       };
 
       const salvoMaster = localStorage.getItem('credenciais_dono_app');
@@ -306,17 +331,16 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         if (usuarioLegado) credenciaisMaster.usuario = usuarioLegado;
       }
 
-      const masterUserEsperado = (credenciaisMaster.usuario || 'rodrigo.souza').trim().toLowerCase();
+      const masterUserEsperado = (credenciaisMaster.usuario || '').trim().toLowerCase();
       const isMasterUser =
-        userDigitadoLower === masterUserEsperado ||
-        userDigitadoLower === 'rodrigo.souza' ||
+        (masterUserEsperado !== '' && userDigitadoLower === masterUserEsperado) ||
         userDigitadoLower === 'dono';
 
       const isMasterPass = await verificarSenhaComHash(
         passDigitada,
         credenciaisMaster.senhaHash,
         credenciaisMaster.senhaSalt,
-        credenciaisMaster.senha || 'Mudar@123'
+        credenciaisMaster.senha
       );
 
       if (isMasterUser && isMasterPass) {
