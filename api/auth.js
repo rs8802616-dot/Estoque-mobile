@@ -171,6 +171,40 @@ async function gravarDocFirestoreAdmin(projectId, accessToken, caminho, payloadO
   if (!resp.ok) throw new Error(`Firestore PATCH ${resp.status}`);
 }
 
+function parseCookies(req) {
+  const raw = String(req.headers?.cookie || '');
+  const out = {};
+  raw.split(';').forEach((part) => {
+    const idx = part.indexOf('=');
+    if (idx > 0) {
+      const k = part.slice(0, idx).trim();
+      const v = part.slice(idx + 1).trim();
+      out[k] = decodeURIComponent(v);
+    }
+  });
+  return out;
+}
+
+function criarCookieMasterAssinado(secretHmac) {
+  const payload = base64Url(JSON.stringify({ role: 'master', exp: Date.now() + 12 * 60 * 60 * 1000 }));
+  const sig = crypto.createHmac('sha256', secretHmac).update(payload).digest('base64url');
+  return `${payload}.${sig}`;
+}
+
+function verificarCookieMasterAssinado(cookieVal, secretHmac) {
+  if (!cookieVal || typeof cookieVal !== 'string' || !cookieVal.includes('.')) return false;
+  const [payload, sig] = cookieVal.split('.');
+  if (!payload || !sig) return false;
+  const esperado = crypto.createHmac('sha256', secretHmac).update(payload).digest('base64url');
+  if (!compararTempoConstante(sig, esperado)) return false;
+  try {
+    const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    return parsed?.role === 'master' && Number(parsed?.exp || 0) > Date.now();
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -184,6 +218,35 @@ export default async function handler(req, res) {
   }
   if (!checarRateLimit(req)) {
     return res.status(429).json({ configurado: false, erro: 'Muitas tentativas. Aguarde 1 minuto.' });
+  }
+
+  const body = req.body || {};
+  const acao = String(body.acao || 'emitir_sessao').trim();
+  const masterSecret = String(
+    process.env.MASTER_PORTAL_TOKEN || process.env.VITE_MASTER_PORTAL_TOKEN || ''
+  ).trim();
+  const hmacSecret = String(
+    process.env.SENHA_PEPPER || masterSecret || 'estoque_master_hmac_v1'
+  );
+
+  if (acao === 'validar_master_token') {
+    const tokenRecebido = String(body.token || '').trim();
+    if (!masterSecret || !tokenRecebido || !compararTempoConstante(tokenRecebido, masterSecret)) {
+      return res.status(401).json({ validado: false, erro: 'Token master inválido.' });
+    }
+    const cookieVal = criarCookieMasterAssinado(hmacSecret);
+    const isHttps =
+      String(req.headers['x-forwarded-proto'] || '').includes('https') ||
+      Boolean(process.env.VERCEL);
+    const flags = `HttpOnly; Path=/; Max-Age=43200; SameSite=Strict${isHttps ? '; Secure' : ''}`;
+    res.setHeader('Set-Cookie', `em_master_sessao=${encodeURIComponent(cookieVal)}; ${flags}`);
+    return res.status(200).json({ validado: true });
+  }
+
+  if (acao === 'checar_sessao_master') {
+    const cookies = parseCookies(req);
+    const ok = verificarCookieMasterAssinado(cookies.em_master_sessao, hmacSecret);
+    return res.status(ok ? 200 : 401).json({ validado: ok });
   }
 
   const rawSa = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -208,8 +271,6 @@ export default async function handler(req, res) {
     });
   }
 
-  const body = req.body || {};
-  const acao = String(body.acao || 'emitir_sessao').trim();
   const pepper = String(process.env.SENHA_PEPPER || 'estoque_mobile_pepper_v1');
 
   // Fluxo completo com verificação de senha + lockout no servidor (para login de loja)

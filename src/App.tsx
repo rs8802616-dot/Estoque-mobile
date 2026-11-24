@@ -80,7 +80,7 @@ import {
 import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
 import { ComandasModal, ComandasPanel } from './components/ComandasModal';
 import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
-import { autenticarSessaoServidor, encerrarSessaoServidor } from './lib/authClient';
+import { autenticarSessaoServidor, encerrarSessaoServidor, validarSessaoMasterServidor } from './lib/authClient';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
 import {
@@ -452,10 +452,31 @@ export default function App() {
   // A. Cardápio Digital Público (Apenas ?loja=slug, sem painel, sem portal e sem token na URL)
   const isModoCliente = Boolean(publicLojaSlugAtivo && !painelParamAtivo && !portalParamAtivo && !tokenUrlRaw && !isMotoboyUrlFlag);
 
-  // D. Link Secreto do Dono (?portal=master&token=...)
-  const isPortalMasterRoute = Boolean(
-    portalParamAtivo === 'master' && validarMasterPortalToken(tokenParamAtivo)
-  );
+  // D. Link Secreto do Dono (?portal=master&token=...) validado exclusivamente no servidor (/api/auth + cookie HttpOnly)
+  const isTentativaPortalMaster = portalParamAtivo === 'master';
+  const [masterAutorizadoServidor, setMasterAutorizadoServidor] = useState<boolean>(false);
+  const [checandoMasterServidor, setChecandoMasterServidor] = useState<boolean>(isTentativaPortalMaster);
+
+  useEffect(() => {
+    if (!isTentativaPortalMaster) return;
+    let ativo = true;
+    setChecandoMasterServidor(true);
+    validarSessaoMasterServidor(tokenUrlRaw)
+      .then((ok) => {
+        if (ativo) setMasterAutorizadoServidor(ok);
+      })
+      .catch(() => {
+        if (ativo) setMasterAutorizadoServidor(false);
+      })
+      .finally(() => {
+        if (ativo) setChecandoMasterServidor(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [isTentativaPortalMaster, tokenUrlRaw]);
+
+  const isPortalMasterRoute = Boolean(isTentativaPortalMaster && masterAutorizadoServidor);
 
   // C. Link Exclusivo do Entregador/Motoboy (?motoboy=1&pedido=1042&token=mto_...)
   const isMotoboyRoute = isMotoboyUrlFlag;
@@ -7984,6 +8005,13 @@ export default function App() {
 
   // E. BLOQUEIO DE URL PURA OU TOKEN INCORRETO (Exibe tela cega UnrecognizedLinkView.tsx — Zero Information Leak)
   if (!isPortalMasterRoute && !isRotaEquipeLojaValida) {
+    if (isTentativaPortalMaster && checandoMasterServidor) {
+      return (
+        <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6 text-sm font-semibold">
+          Validando acesso ao Portal Master...
+        </div>
+      );
+    }
     return <UnrecognizedLinkView />;
   }
 

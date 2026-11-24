@@ -662,10 +662,6 @@ export function gerarTokenAleatorioSeguro(bytes = 12): string {
 }
 
 export function obterMasterPortalToken(): string {
-  const envToken = import.meta.env?.VITE_MASTER_PORTAL_TOKEN;
-  if (typeof envToken === 'string' && envToken.trim().length >= 16) {
-    return envToken.trim();
-  }
   if (typeof window !== 'undefined') {
     try {
       const salvo = localStorage.getItem(CHAVE_MASTER_TOKEN_LOCAL);

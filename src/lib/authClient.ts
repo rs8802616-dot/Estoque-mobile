@@ -79,6 +79,27 @@ export async function autenticarLojaServidor(
   }
 }
 
+export async function validarSessaoMasterServidor(tokenUrl?: string | null): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        tokenUrl
+          ? { acao: 'validar_master_token', token: tokenUrl }
+          : { acao: 'checar_sessao_master' }
+      ),
+    });
+    if (!resp.ok) return false;
+    const data = await resp.json().catch(() => ({}));
+    return Boolean(data?.validado);
+  } catch {
+    return false;
+  }
+}
+
 export async function encerrarSessaoServidor(): Promise<void> {
   if (typeof window === 'undefined' || !auth) return;
   try {
