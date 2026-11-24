@@ -12484,7 +12484,7 @@ export default function App() {
           className="cabecalho-relatorio"
           style={{
             background: '#0284c7',
-            padding: '12px 20px',
+            padding: '10px 20px',
             borderBottom: '1px solid #0369a1',
             display: 'flex',
             alignItems: 'center',
@@ -12496,8 +12496,8 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '38px',
-                height: '38px',
+                width: '36px',
+                height: '36px',
                 borderRadius: '10px',
                 background: 'rgba(255, 255, 255, 0.16)',
                 border: '1px solid rgba(255, 255, 255, 0.25)',
@@ -12508,13 +12508,13 @@ export default function App() {
                 flexShrink: 0,
               }}
             >
-              <Users size={20} strokeWidth={2.2} />
+              <Users size={19} strokeWidth={2.2} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
+              <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
                 Gestão de Caixas, Operadores & Funcionários ({nomeSupermercadoAtivo})
               </h2>
-              <span style={{ fontSize: '0.75rem', color: '#e0f2fe', fontWeight: 500 }}>
+              <span style={{ fontSize: '0.73rem', color: '#e0f2fe', fontWeight: 500 }}>
                 Controle individual de acessos, senhas de operador e permissões por função
               </span>
             </div>
@@ -12527,7 +12527,7 @@ export default function App() {
               background: '#ffffff',
               color: '#0369a1',
               border: '1px solid #ffffff',
-              padding: '7px 14px',
+              padding: '6px 14px',
               borderRadius: '8px',
               fontWeight: 700,
               fontSize: '0.8rem',
@@ -12543,8 +12543,8 @@ export default function App() {
           </button>
         </div>
 
-        <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px 20px 64px' }}>
-          {/* BARRA COMPACTA DO LINK OFICIAL DA LOJA */}
+        <div className="corpo-relatorio-cheio" style={{ maxWidth: '1780px', margin: '0 auto', width: '100%', padding: '14px 18px 58px' }}>
+          {/* BARRA SUPERIOR ENXUTA DO LINK OFICIAL DA LOJA */}
           {lojaAtualObj && (() => {
             const linksEquipeModal = obterLinksExclusivosLoja(lojaAtualObj, window.location.origin);
             const copiado = linkCopiadoFeedback === 'op_admin_unico';
@@ -12553,23 +12553,23 @@ export default function App() {
                 style={{
                   background: '#ffffff',
                   borderRadius: '12px',
-                  padding: '14px 18px',
+                  padding: '10px 14px',
                   border: '1px solid #e2e8f0',
-                  marginBottom: '18px',
-                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+                  marginBottom: '14px',
+                  boxShadow: '0 1px 2px rgba(15, 23, 42, 0.03)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
-                  gap: '14px',
+                  gap: '10px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 320px', minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 320px', minWidth: 0 }}>
                   <div
                     style={{
-                      width: '38px',
-                      height: '38px',
-                      borderRadius: '10px',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
                       background: '#e0f2fe',
                       color: '#0284c7',
                       display: 'flex',
@@ -12578,20 +12578,16 @@ export default function App() {
                       flexShrink: 0,
                     }}
                   >
-                    <Link2 size={18} />
+                    <Link2 size={16} />
                   </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a' }}>
-                        Link Oficial de Acesso da Equipe ({lojaAtualObj.nome})
-                      </span>
-                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                        • Todos entram por este link informando seu Login/CPF e Senha individual
-                      </span>
-                    </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', minWidth: 0, flex: 1 }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                      Link Oficial da Equipe ({lojaAtualObj.nome}):
+                    </span>
                     <div
                       style={{
-                        marginTop: '6px',
+                        flex: '1 1 260px',
+                        minWidth: 0,
                         background: '#f8fafc',
                         border: '1px solid #e2e8f0',
                         borderRadius: '7px',
@@ -12603,6 +12599,7 @@ export default function App() {
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
+                      title={linksEquipeModal.admin}
                     >
                       {linksEquipeModal.admin}
                     </div>
@@ -12617,8 +12614,8 @@ export default function App() {
                     color: '#ffffff',
                     border: `1px solid ${copiado ? '#15803d' : '#0369a1'}`,
                     borderRadius: '8px',
-                    padding: '9px 16px',
-                    fontSize: '0.8rem',
+                    padding: '7px 14px',
+                    fontSize: '0.78rem',
                     fontWeight: 700,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
@@ -12627,90 +12624,91 @@ export default function App() {
                     gap: '6px',
                   }}
                 >
-                  {copiado ? <Check size={15} /> : <Copy size={15} />}
+                  {copiado ? <Check size={14} /> : <Copy size={14} />}
                   <span>{copiado ? 'Link Copiado!' : 'Copiar Link da Loja'}</span>
                 </button>
               </div>
             );
           })()}
 
-          {/* PAINEL DE CADASTRO / EDIÇÃO DE OPERADOR COM PERMISSÕES AGRUPADAS POR ÁREA */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '14px',
-              padding: '20px',
-              border: opEditandoId ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
-              marginBottom: '20px',
-              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
-            }}
-          >
-            {/* CABEÇALHO DO CARD */}
+          {/* LAYOUT EM 3 COLUNAS LADO A LADO: [1. CADASTRO] | [2. PERMISSÕES] | [3. EQUIPE CADASTRADA] */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'flex-start' }}>
+            {/* ==================== COLUNA 1 (ESQUERDA): CADASTRAR / EDITAR FUNCIONÁRIO ==================== */}
             <div
               style={{
+                flex: '0.95 1 300px',
+                minWidth: 'min(100%, 285px)',
+                background: '#ffffff',
+                borderRadius: '14px',
+                padding: '18px',
+                border: opEditandoId ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderBottom: '1px solid #f1f5f9',
-                paddingBottom: '12px',
-                marginBottom: '16px',
-                flexWrap: 'wrap',
-                gap: '10px',
+                flexDirection: 'column',
+                gap: '12px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div
-                  style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '9px',
-                    background: '#e0f2fe',
-                    color: '#0284c7',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
-                >
-                  {opEditandoId ? <Pencil size={17} /> : <UserPlus size={18} />}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #f1f5f9',
+                  paddingBottom: '10px',
+                  gap: '8px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: '#e0f2fe',
+                      color: '#0284c7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {opEditandoId ? <Pencil size={16} /> : <UserPlus size={16} />}
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                      {opEditandoId ? 'Editar Funcionário' : '1. Novo Funcionário'}
+                    </h3>
+                    <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '1px 0 0 0' }}>
+                      Dados de acesso e cargo
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                    {opEditandoId ? 'Editar Operador & Permissões' : 'Novo Operador / Funcionário'}
-                  </h3>
-                  <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                    Preencha os dados de acesso e escolha um perfil pronto ou personalize as funções abaixo
-                  </p>
-                </div>
+
+                {opEditandoId && (
+                  <span
+                    style={{
+                      background: '#e0f2fe',
+                      color: '#0369a1',
+                      border: '1px solid #bae6fd',
+                      padding: '2px 8px',
+                      borderRadius: '999px',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    Editando
+                  </span>
+                )}
               </div>
 
-              {opEditandoId && (
-                <span
-                  style={{
-                    background: '#e0f2fe',
-                    color: '#0369a1',
-                    border: '1px solid #bae6fd',
-                    padding: '3px 10px',
-                    borderRadius: '999px',
-                    fontSize: '0.73rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  Editando Funcionário
-                </span>
-              )}
-            </div>
-
-            {/* LINHA DE INPUTS LIMPOS */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(195px, 1fr))', gap: '12px' }}>
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.76rem', marginBottom: '4px', display: 'block' }}>
                   Nome do Funcionário
                 </label>
                 <input
                   type="text"
                   className="input-modal"
-                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                  style={{ borderRadius: '8px', padding: '8px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.83rem', marginBottom: 0 }}
                   placeholder="Ex: Carlos Oliveira"
                   value={regOpNome}
                   onChange={(e) => setRegOpNome(e.target.value)}
@@ -12719,13 +12717,13 @@ export default function App() {
               </div>
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.76rem', marginBottom: '4px', display: 'block' }}>
                   CPF ou Login do Operador
                 </label>
                 <input
                   type="text"
                   className="input-modal"
-                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                  style={{ borderRadius: '8px', padding: '8px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.83rem', marginBottom: 0 }}
                   placeholder="000.000.000-00 ou caixa01"
                   value={regOpCpf}
                   onChange={(e) => {
@@ -12740,43 +12738,45 @@ export default function App() {
                 />
               </div>
 
-              <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
-                  Senha de Acesso (mín. {MIN_CARACTERES_SENHA})
-                </label>
-                <input
-                  type="password"
-                  className="input-modal"
-                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
-                  placeholder={opEditandoId ? 'Em branco p/ manter' : 'Mínimo 8 caracteres'}
-                  value={regOpSenha}
-                  onChange={(e) => setRegOpSenha(e.target.value)}
-                  minLength={MIN_CARACTERES_SENHA}
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div className="grupo-input" style={{ marginBottom: 0 }}>
+                  <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.75rem', marginBottom: '4px', display: 'block' }}>
+                    Senha (mín. {MIN_CARACTERES_SENHA})
+                  </label>
+                  <input
+                    type="password"
+                    className="input-modal"
+                    style={{ borderRadius: '8px', padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginBottom: 0 }}
+                    placeholder={opEditandoId ? 'Manter atual' : 'Mín. 8 dígitos'}
+                    value={regOpSenha}
+                    onChange={(e) => setRegOpSenha(e.target.value)}
+                    minLength={MIN_CARACTERES_SENHA}
+                  />
+                </div>
+
+                <div className="grupo-input" style={{ marginBottom: 0 }}>
+                  <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.75rem', marginBottom: '4px', display: 'block' }}>
+                    Confirmar Senha
+                  </label>
+                  <input
+                    type="password"
+                    className="input-modal"
+                    style={{ borderRadius: '8px', padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginBottom: 0 }}
+                    placeholder="Repita a senha"
+                    value={regOpConfirmarSenha}
+                    onChange={(e) => setRegOpConfirmarSenha(e.target.value)}
+                    minLength={MIN_CARACTERES_SENHA}
+                  />
+                </div>
               </div>
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
-                  Confirmar Senha
-                </label>
-                <input
-                  type="password"
-                  className="input-modal"
-                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
-                  placeholder="Repita a senha"
-                  value={regOpConfirmarSenha}
-                  onChange={(e) => setRegOpConfirmarSenha(e.target.value)}
-                  minLength={MIN_CARACTERES_SENHA}
-                />
-              </div>
-
-              <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.76rem', marginBottom: '4px', display: 'block' }}>
                   Cargo / Nível Base
                 </label>
                 <select
                   className="input-modal"
-                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}
+                  style={{ borderRadius: '8px', padding: '8px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.83rem', fontWeight: 700, color: '#0f172a', marginBottom: 0 }}
                   value={regOpCargo}
                   onChange={(e) => aplicarPermissoesPorCargo(e.target.value as any)}
                 >
@@ -12785,558 +12785,626 @@ export default function App() {
                   <option value="Administrador">Administrador Local</option>
                 </select>
               </div>
+
+              {/* MODELOS RÁPIDOS DE PERFIL */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px' }}>
+                <div style={{ fontSize: '0.73rem', fontWeight: 700, color: '#475569', marginBottom: '7px' }}>
+                  Aplicar perfil rápido:
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                  {[
+                    { label: 'Perfil Caixa', preset: 'caixa' as const },
+                    { label: 'Estoquista', preset: 'repositor' as const },
+                    { label: 'Supervisor', preset: 'supervisor' as const },
+                    { label: 'Acesso Total', preset: 'admin' as const },
+                  ].map((p) => (
+                    <button
+                      key={p.preset}
+                      type="button"
+                      onClick={() => aplicarPresetPermissoes(p.preset)}
+                      style={{
+                        background: '#ffffff',
+                        color: '#0369a1',
+                        border: '1px solid #bae6fd',
+                        padding: '6px 8px',
+                        borderRadius: '7px',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* BOTÕES DE SALVAR / CANCELAR */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '2px' }}>
+                <button
+                  type="button"
+                  className="btn btn-salvar"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: '9px',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    border: '1px solid #0369a1',
+                    cursor: 'pointer',
+                  }}
+                  onClick={salvarOperador}
+                >
+                  {opEditandoId ? 'Salvar Alterações do Operador' : 'Cadastrar Operador de Caixa'}
+                </button>
+
+                {opEditandoId && (
+                  <button
+                    type="button"
+                    className="btn btn-cancelar"
+                    style={{
+                      width: '100%',
+                      padding: '9px 14px',
+                      borderRadius: '9px',
+                      fontWeight: 600,
+                      fontSize: '0.8rem',
+                      background: '#f1f5f9',
+                      color: '#475569',
+                      border: '1px solid #cbd5e1',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      setOpEditandoId(null);
+                      setRegOpNome('');
+                      setRegOpCpf('');
+                      setRegOpSenha('');
+                      setRegOpCargo('Operador de Caixa');
+                      setRegOpPermissoes(PERMISSOES_CAIXA_PADRAO);
+                      setMsgRegOp('');
+                    }}
+                  >
+                    Cancelar Edição
+                  </button>
+                )}
+              </div>
+
+              {msgRegOp && <div className="msg" style={{ margin: 0 }}>{msgRegOp}</div>}
             </div>
 
-            {/* BARRA DE PERFIS PRONTOS (MODELOS RÁPIDOS) */}
+            {/* ==================== COLUNA 2 (MEIO): ITENS & PERMISSÕES PARA ESCOLHER ==================== */}
             <div
               style={{
-                marginTop: '18px',
-                marginBottom: '14px',
-                padding: '10px 14px',
-                background: '#f8fafc',
+                flex: '1.55 1 460px',
+                minWidth: 'min(100%, 360px)',
+                background: '#ffffff',
+                borderRadius: '14px',
+                padding: '18px',
                 border: '1px solid #e2e8f0',
-                borderRadius: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '10px',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginRight: '4px' }}>
-                  Modelos rápidos:
-                </span>
-                {[
-                  { label: 'Perfil Caixa', preset: 'caixa' as const },
-                  { label: 'Perfil Estoquista', preset: 'repositor' as const },
-                  { label: 'Perfil Supervisor', preset: 'supervisor' as const },
-                  { label: 'Acesso Total', preset: 'admin' as const },
-                ].map((p) => (
-                  <button
-                    key={p.preset}
-                    type="button"
-                    onClick={() => aplicarPresetPermissoes(p.preset)}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #f1f5f9',
+                  paddingBottom: '10px',
+                  marginBottom: '12px',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <div
                     style={{
-                      background: '#ffffff',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: '#e0f2fe',
+                      color: '#0284c7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <ShieldCheck size={16} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                      2. Permissões & Funções Liberadas
+                    </h3>
+                    <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '1px 0 0 0' }}>
+                      Marque o que este funcionário pode acessar no sistema
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <span
+                    style={{
+                      background: '#e0f2fe',
                       color: '#0369a1',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '3px 9px',
+                      borderRadius: '999px',
                       border: '1px solid #bae6fd',
-                      padding: '5px 11px',
-                      borderRadius: '7px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
+                    }}
+                  >
+                    {Object.values(regOpPermissoes).filter(Boolean).length}/23 ativas
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => marcarTodasPermissoesOperador(true)}
+                    style={{
+                      background: '#f8fafc',
+                      color: '#334155',
+                      border: '1px solid #cbd5e1',
+                      padding: '4px 9px',
+                      borderRadius: '6px',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
                       cursor: 'pointer',
                     }}
                   >
-                    {p.label}
+                    Marcar todas
                   </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => marcarTodasPermissoesOperador(true)}
-                  style={{
-                    background: '#ffffff',
-                    color: '#334155',
-                    border: '1px solid #cbd5e1',
-                    padding: '5px 10px',
-                    borderRadius: '7px',
-                    fontSize: '0.74rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Marcar todas
-                </button>
-                <button
-                  type="button"
-                  onClick={() => marcarTodasPermissoesOperador(false)}
-                  style={{
-                    background: '#ffffff',
-                    color: '#64748b',
-                    border: '1px solid #cbd5e1',
-                    padding: '5px 10px',
-                    borderRadius: '7px',
-                    fontSize: '0.74rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Limpar
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => marcarTodasPermissoesOperador(false)}
+                    style={{
+                      background: '#f8fafc',
+                      color: '#64748b',
+                      border: '1px solid #cbd5e1',
+                      padding: '4px 9px',
+                      borderRadius: '6px',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Limpar
+                  </button>
+                </div>
               </div>
 
-              <span
-                style={{
-                  background: '#e0f2fe',
-                  color: '#0369a1',
-                  fontSize: '0.74rem',
-                  fontWeight: 800,
-                  padding: '3px 10px',
-                  borderRadius: '999px',
-                  border: '1px solid #bae6fd',
-                }}
-              >
-                {Object.values(regOpPermissoes).filter(Boolean).length} de 23 permissões ativas
-              </span>
+              {(() => {
+                const lojaTemDelivery = temPermissaoLoja('delivery');
+                const categoriasPermissoes: {
+                  id: string;
+                  titulo: string;
+                  icone: React.ReactNode;
+                  itens: { key: keyof PermissoesOperador; title: string; desc: string; isExtension?: boolean }[];
+                }[] = [
+                  {
+                    id: 'pdv_caixa',
+                    titulo: 'Frente de Caixa & Vendas',
+                    icone: <Wallet size={14} />,
+                    itens: [
+                      { key: 'vender', title: 'Realizar Vendas', desc: 'Vender no PDV e finalizar compras' },
+                      { key: 'gestao_caixa', title: 'Gestão de Caixa / Turno', desc: 'Abrir, fechar caixa e sangrias' },
+                      { key: 'dar_desconto', title: 'Aplicar Desconto', desc: 'Conceder desconto na venda' },
+                      { key: 'alterar_preco', title: 'Alterar Preço Unitário', desc: 'Mudar valor no carrinho' },
+                      { key: 'estornar_venda', title: 'Estornar / Cancelar Venda', desc: 'Cancelar e devolver ao estoque' },
+                      { key: 'reimprimir_cupom', title: 'Reimprimir Cupom (2ª Via)', desc: 'Segunda via de comprovantes' },
+                    ],
+                  },
+                  {
+                    id: 'estoque_catalogo',
+                    titulo: 'Estoque & Produtos',
+                    icone: <Package size={14} />,
+                    itens: [
+                      { key: 'cadastrar_produtos', title: 'Cadastrar & Editar Produtos', desc: 'Criar itens, preços e lotes' },
+                      { key: 'excluir_produtos', title: 'Excluir Produtos', desc: 'Remover itens do estoque' },
+                      { key: 'baixa_estoque', title: 'Baixa Manual / Descarte', desc: 'Perdas, avarias ou vencidos' },
+                      { key: 'catalogo_global', title: 'Catálogo Global Master', desc: 'Usar base compartilhada' },
+                      { key: 'imprimir_etiquetas', title: 'Imprimir Etiquetas', desc: 'Etiquetas térmicas de gôndola' },
+                      { key: 'configurar_balanca', title: 'Configurar Balança', desc: 'Padrão de leitura EAN-13' },
+                      { key: 'usar_ocr_ia', title: 'Leitor Inteligente (OCR)', desc: 'Ler rótulos pela câmera' },
+                    ],
+                  },
+                  {
+                    id: 'delivery_clientes',
+                    titulo: 'Delivery, Fiado & Alertas',
+                    icone: <Bike size={14} />,
+                    itens: [
+                      { key: 'gerenciar_delivery', title: 'Pedidos & Delivery', desc: 'Aceitar pedidos e motoboy', isExtension: true },
+                      { key: 'gerenciar_devedores', title: 'Clientes & Fiado', desc: 'Vendas a prazo e cobranças' },
+                      { key: 'alertas_validade', title: 'Alertas de Validade', desc: 'Ver produtos a vencer' },
+                      { key: 'alertas_whatsapp', title: 'Disparo WhatsApp / E-mail', desc: 'Enviar resumos de validade' },
+                    ],
+                  },
+                  {
+                    id: 'relatorios_gestao',
+                    titulo: 'Relatórios & Administração',
+                    icone: <BarChart3 size={14} />,
+                    itens: [
+                      { key: 'ver_relatorios', title: 'Faturamento & Vendas', desc: 'Histórico e lucro das vendas' },
+                      { key: 'ver_graficos', title: 'Gráficos & Analytics', desc: 'Indicadores e curva de vendas' },
+                      { key: 'inteligencia_estoque', title: 'Inteligência de Estoque', desc: 'Sugestões e giro parado' },
+                      { key: 'exportar_relatorios', title: 'Exportar CSV / PDF', desc: 'Baixar planilhas de vendas' },
+                      { key: 'gerenciar_equipe', title: 'Gerenciar Equipe & Caixas', desc: 'Criar e editar operadores' },
+                      { key: 'ver_manual_usuario', title: 'Manual do Aplicativo', desc: 'Consultar guia de uso' },
+                    ],
+                  },
+                ];
+
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(225px, 1fr))', gap: '10px' }}>
+                    {categoriasPermissoes.map((cat) => {
+                      const qtdAtivaCat = cat.itens.filter((it) => {
+                        const bloq = it.isExtension && !lojaTemDelivery;
+                        return !bloq && !!regOpPermissoes[it.key];
+                      }).length;
+
+                      return (
+                        <div
+                          key={cat.id}
+                          style={{
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '10px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '5px',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '5px', borderBottom: '1px solid #e2e8f0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0f172a', fontWeight: 800, fontSize: '0.78rem' }}>
+                              <span style={{ color: '#0284c7', display: 'inline-flex' }}>{cat.icone}</span>
+                              <span>{cat.titulo}</span>
+                            </div>
+                            <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#0369a1', background: '#e0f2fe', padding: '1px 6px', borderRadius: '999px' }}>
+                              {qtdAtivaCat}/{cat.itens.length}
+                            </span>
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                            {cat.itens.map((item) => {
+                              const bloqueadoPeloPlano = !!item.isExtension && !lojaTemDelivery;
+                              const marcado = bloqueadoPeloPlano ? false : !!regOpPermissoes[item.key];
+
+                              return (
+                                <div
+                                  key={item.key}
+                                  onClick={() => {
+                                    if (bloqueadoPeloPlano) {
+                                      alert('A Extensão de Delivery não está ativa no plano desta loja.');
+                                      return;
+                                    }
+                                    alternarPermissaoOperador(item.key);
+                                  }}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: '7px',
+                                    padding: '6px 8px',
+                                    borderRadius: '7px',
+                                    background: bloqueadoPeloPlano ? '#f1f5f9' : marcado ? '#f0f9ff' : '#ffffff',
+                                    border: bloqueadoPeloPlano
+                                      ? '1px dashed #cbd5e1'
+                                      : marcado
+                                      ? '1px solid #7dd3fc'
+                                      : '1px solid #e2e8f0',
+                                    opacity: bloqueadoPeloPlano ? 0.65 : 1,
+                                    cursor: bloqueadoPeloPlano ? 'not-allowed' : 'pointer',
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={marcado}
+                                    disabled={bloqueadoPeloPlano}
+                                    onChange={() => {}}
+                                    style={{ marginTop: '2px', width: '14px', height: '14px', accentColor: '#0284c7', cursor: bloqueadoPeloPlano ? 'not-allowed' : 'pointer', flexShrink: 0 }}
+                                  />
+                                  <div style={{ minWidth: 0, flex: 1 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+                                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+                                        {item.title}
+                                      </span>
+                                      {item.isExtension && (
+                                        <span
+                                          style={{
+                                            fontSize: '0.58rem',
+                                            background: bloqueadoPeloPlano ? '#cbd5e1' : '#0284c7',
+                                            color: bloqueadoPeloPlano ? '#334155' : '#ffffff',
+                                            padding: '0 5px',
+                                            borderRadius: '999px',
+                                            fontWeight: 700,
+                                          }}
+                                        >
+                                          {bloqueadoPeloPlano ? 'Sem Extensão' : 'Extensão'}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div style={{ fontSize: '0.67rem', color: '#64748b', marginTop: '1px', lineHeight: 1.2 }}>
+                                      {item.desc}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
 
-            {/* PERMISSÕES ORGANIZADAS EM 4 CATEGORIAS CLARAS */}
-            {(() => {
-              const lojaTemDelivery = temPermissaoLoja('delivery');
-              const categoriasPermissoes: {
-                id: string;
-                titulo: string;
-                icone: React.ReactNode;
-                itens: { key: keyof PermissoesOperador; title: string; desc: string; isExtension?: boolean }[];
-              }[] = [
-                {
-                  id: 'pdv_caixa',
-                  titulo: 'Frente de Caixa & Vendas',
-                  icone: <Wallet size={15} />,
-                  itens: [
-                    { key: 'vender', title: 'Realizar Vendas', desc: 'Registrar vendas no PDV e finalizar compras' },
-                    { key: 'gestao_caixa', title: 'Gestão de Caixa / Turno', desc: 'Abrir, fechar caixa e registrar sangrias' },
-                    { key: 'dar_desconto', title: 'Aplicar Desconto', desc: 'Conceder desconto no fechamento da venda' },
-                    { key: 'alterar_preco', title: 'Alterar Preço Unitário', desc: 'Editar preço de venda no carrinho' },
-                    { key: 'estornar_venda', title: 'Estornar / Cancelar Venda', desc: 'Cancelar venda e devolver ao estoque' },
-                    { key: 'reimprimir_cupom', title: 'Reimprimir Cupom (2ª Via)', desc: 'Emitir segunda via de comprovantes' },
-                  ],
-                },
-                {
-                  id: 'estoque_catalogo',
-                  titulo: 'Estoque & Produtos',
-                  icone: <Package size={15} />,
-                  itens: [
-                    { key: 'cadastrar_produtos', title: 'Cadastrar & Editar Produtos', desc: 'Criar itens, preços e lotes no estoque' },
-                    { key: 'excluir_produtos', title: 'Excluir Produtos', desc: 'Remover produtos e lotes do estoque' },
-                    { key: 'baixa_estoque', title: 'Baixa Manual / Descarte', desc: 'Registrar perdas, avarias ou vencidos' },
-                    { key: 'catalogo_global', title: 'Catálogo Global Master', desc: 'Importar itens da base compartilhada' },
-                    { key: 'imprimir_etiquetas', title: 'Imprimir Etiquetas', desc: 'Gerar etiquetas térmicas de gôndola' },
-                    { key: 'configurar_balanca', title: 'Configurar Balança', desc: 'Ajustar padrão de leitura EAN-13' },
-                    { key: 'usar_ocr_ia', title: 'Leitor Inteligente (OCR)', desc: 'Ler embalagens e notas pela câmera' },
-                  ],
-                },
-                {
-                  id: 'delivery_clientes',
-                  titulo: 'Delivery, Fiado & Alertas',
-                  icone: <Bike size={15} />,
-                  itens: [
-                    { key: 'gerenciar_delivery', title: 'Pedidos & Delivery', desc: 'Aceitar pedidos, despachar motoboy e cardápio', isExtension: true },
-                    { key: 'gerenciar_devedores', title: 'Clientes & Fiado', desc: 'Registrar vendas a prazo e recebimentos' },
-                    { key: 'alertas_validade', title: 'Alertas de Validade', desc: 'Consultar itens vencidos ou a vencer' },
-                    { key: 'alertas_whatsapp', title: 'Disparo WhatsApp / E-mail', desc: 'Enviar resumos de alerta por mensagem' },
-                  ],
-                },
-                {
-                  id: 'relatorios_gestao',
-                  titulo: 'Relatórios & Administração',
-                  icone: <BarChart3 size={15} />,
-                  itens: [
-                    { key: 'ver_relatorios', title: 'Faturamento & Vendas', desc: 'Acessar histórico e lucro das vendas' },
-                    { key: 'ver_graficos', title: 'Gráficos & Analytics', desc: 'Visualizar indicadores e curva de vendas' },
-                    { key: 'inteligencia_estoque', title: 'Inteligência de Estoque', desc: 'Sugestões de compra e giro parado' },
-                    { key: 'exportar_relatorios', title: 'Exportar CSV / PDF', desc: 'Baixar planilhas e relatórios' },
-                    { key: 'gerenciar_equipe', title: 'Gerenciar Equipe & Caixas', desc: 'Criar operadores e editar permissões' },
-                    { key: 'ver_manual_usuario', title: 'Manual do Aplicativo', desc: 'Consultar guia rápido de uso' },
-                  ],
-                },
-              ];
+            {/* ==================== COLUNA 3 (DIREITA): FUNCIONÁRIOS & FUNÇÕES CADASTRADAS ==================== */}
+            <div
+              style={{
+                flex: '1.1 1 335px',
+                minWidth: 'min(100%, 305px)',
+                background: '#ffffff',
+                borderRadius: '14px',
+                padding: '18px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderBottom: '1px solid #f1f5f9',
+                  paddingBottom: '10px',
+                  marginBottom: '12px',
+                  gap: '8px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: '#e0f2fe',
+                      color: '#0284c7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Users size={16} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                      3. Equipe Cadastrada ({listaOperadores.length})
+                    </h3>
+                    <p style={{ fontSize: '0.72rem', color: '#64748b', margin: '1px 0 0 0' }}>
+                      Funcionários e funções ativas em {nomeSupermercadoAtivo}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-              return (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(285px, 1fr))', gap: '14px' }}>
-                  {categoriasPermissoes.map((cat) => {
-                    const qtdAtivaCat = cat.itens.filter((it) => {
-                      const bloq = it.isExtension && !lojaTemDelivery;
-                      return !bloq && !!regOpPermissoes[it.key];
-                    }).length;
+              {listaOperadores.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '28px 14px', color: '#64748b', background: '#f8fafc', borderRadius: '10px', border: '1px dashed #cbd5e1', fontSize: '0.82rem' }}>
+                  Nenhum funcionário cadastrado ainda. Preencha os dados à esquerda, marque as permissões no centro e clique em <b>Cadastrar Operador</b>.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '72vh', overflowY: 'auto', paddingRight: '2px' }}>
+                  {listaOperadores.map((op) => {
+                    const editandoEste = opEditandoId === op.id;
+                    const iniciais = (op.nome || 'OP')
+                      .trim()
+                      .split(/\s+/)
+                      .slice(0, 2)
+                      .map((p) => p[0]?.toUpperCase() || '')
+                      .join('');
+
+                    const etiquetasPermissao: string[] = [];
+                    if (op.permissoes?.vender) etiquetasPermissao.push('Vendas');
+                    if (op.permissoes?.gestao_caixa) etiquetasPermissao.push('Caixa');
+                    if (op.permissoes?.gerenciar_delivery) etiquetasPermissao.push('Delivery');
+                    if (op.permissoes?.gerenciar_devedores) etiquetasPermissao.push('Fiado');
+                    if (op.permissoes?.dar_desconto) etiquetasPermissao.push('Desconto');
+                    if (op.permissoes?.alterar_preco) etiquetasPermissao.push('Preço');
+                    if (op.permissoes?.estornar_venda) etiquetasPermissao.push('Estorno');
+                    if (op.permissoes?.cadastrar_produtos) etiquetasPermissao.push('Produtos');
+                    if (op.permissoes?.excluir_produtos) etiquetasPermissao.push('Excluir');
+                    if (op.permissoes?.baixa_estoque) etiquetasPermissao.push('Baixa');
+                    if (op.permissoes?.ver_relatorios) etiquetasPermissao.push('Relatórios');
+                    if (op.permissoes?.ver_graficos) etiquetasPermissao.push('Gráficos');
+                    if (op.permissoes?.inteligencia_estoque) etiquetasPermissao.push('Inteligência');
+                    if (op.permissoes?.gerenciar_equipe) etiquetasPermissao.push('Equipe');
+                    if (op.permissoes?.imprimir_etiquetas) etiquetasPermissao.push('Etiquetas');
 
                     return (
                       <div
-                        key={cat.id}
+                        key={op.id}
                         style={{
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '12px',
+                          background: editandoEste ? '#f0f9ff' : op.ativo ? '#ffffff' : '#f8fafc',
+                          opacity: op.ativo ? 1 : 0.75,
+                          border: editandoEste ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+                          borderRadius: '11px',
                           padding: '12px',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '8px',
+                          gap: '9px',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #e2e8f0' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#0f172a', fontWeight: 800, fontSize: '0.82rem' }}>
-                            <span style={{ color: '#0284c7', display: 'inline-flex' }}>{cat.icone}</span>
-                            <span>{cat.titulo}</span>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                          <div
+                            style={{
+                              width: '34px',
+                              height: '34px',
+                              borderRadius: '9px',
+                              background: op.ativo ? '#e0f2fe' : '#e2e8f0',
+                              color: op.ativo ? '#0369a1' : '#64748b',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 800,
+                              fontSize: '0.78rem',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {iniciais}
                           </div>
-                          <span style={{ fontSize: '0.69rem', fontWeight: 700, color: '#0369a1', background: '#e0f2fe', padding: '1px 7px', borderRadius: '999px' }}>
-                            {qtdAtivaCat}/{cat.itens.length}
-                          </span>
-                        </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          {cat.itens.map((item) => {
-                            const bloqueadoPeloPlano = !!item.isExtension && !lojaTemDelivery;
-                            const marcado = bloqueadoPeloPlano ? false : !!regOpPermissoes[item.key];
-
-                            return (
-                              <div
-                                key={item.key}
-                                onClick={() => {
-                                  if (bloqueadoPeloPlano) {
-                                    alert('A Extensão de Delivery não está ativa no plano desta loja.');
-                                    return;
-                                  }
-                                  alternarPermissaoOperador(item.key);
-                                }}
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a' }}>{op.nome}</span>
+                              <span
                                 style={{
-                                  display: 'flex',
-                                  alignItems: 'flex-start',
-                                  gap: '9px',
-                                  padding: '8px 10px',
-                                  borderRadius: '8px',
-                                  background: bloqueadoPeloPlano ? '#f1f5f9' : marcado ? '#f0f9ff' : '#ffffff',
-                                  border: bloqueadoPeloPlano
-                                    ? '1px dashed #cbd5e1'
-                                    : marcado
-                                    ? '1px solid #7dd3fc'
-                                    : '1px solid #e2e8f0',
-                                  opacity: bloqueadoPeloPlano ? 0.65 : 1,
-                                  cursor: bloqueadoPeloPlano ? 'not-allowed' : 'pointer',
-                                  transition: 'all 0.12s ease',
+                                  background: op.ativo ? '#f0fdf4' : '#f1f5f9',
+                                  color: op.ativo ? '#15803d' : '#64748b',
+                                  border: `1px solid ${op.ativo ? '#bbf7d0' : '#cbd5e1'}`,
+                                  fontSize: '0.65rem',
+                                  padding: '0 7px',
+                                  borderRadius: '999px',
+                                  fontWeight: 700,
                                 }}
                               >
-                                <input
-                                  type="checkbox"
-                                  checked={marcado}
-                                  disabled={bloqueadoPeloPlano}
-                                  onChange={() => {}}
-                                  style={{ marginTop: '2px', width: '15px', height: '15px', accentColor: '#0284c7', cursor: bloqueadoPeloPlano ? 'not-allowed' : 'pointer', flexShrink: 0 }}
-                                />
-                                <div style={{ minWidth: 0, flex: 1 }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.25 }}>
-                                      {item.title}
-                                    </span>
-                                    {item.isExtension && (
-                                      <span
-                                        style={{
-                                          fontSize: '0.6rem',
-                                          background: bloqueadoPeloPlano ? '#cbd5e1' : '#0284c7',
-                                          color: bloqueadoPeloPlano ? '#334155' : '#ffffff',
-                                          padding: '1px 6px',
-                                          borderRadius: '999px',
-                                          fontWeight: 700,
-                                        }}
-                                      >
-                                        {bloqueadoPeloPlano ? 'Sem Extensão' : 'Extensão'}
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>
-                                    {item.desc}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
+                                {op.ativo ? 'Ativo' : 'Inativo'}
+                              </span>
+                              <span
+                                style={{
+                                  background: '#f1f5f9',
+                                  color: '#334155',
+                                  border: '1px solid #e2e8f0',
+                                  fontSize: '0.65rem',
+                                  padding: '0 7px',
+                                  borderRadius: '999px',
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {op.cargo}
+                              </span>
+                            </div>
+
+                            <div style={{ fontSize: '0.73rem', color: '#64748b', marginTop: '2px' }}>
+                              Login: <b style={{ color: '#334155' }}>{op.cpfOuUsuario}</b>
+                            </div>
+                          </div>
+                        </div>
+
+                        {etiquetasPermissao.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            {etiquetasPermissao.map((tag) => (
+                              <span
+                                key={tag}
+                                style={{
+                                  fontSize: '0.65rem',
+                                  background: '#f8fafc',
+                                  color: '#475569',
+                                  border: '1px solid #e2e8f0',
+                                  padding: '1px 6px',
+                                  borderRadius: '5px',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* AÇÕES DO FUNCIONÁRIO */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', paddingTop: '7px', borderTop: '1px solid #f1f5f9' }}>
+                          <button
+                            type="button"
+                            style={{
+                              background: '#f0f9ff',
+                              color: '#0369a1',
+                              border: '1px solid #bae6fd',
+                              borderRadius: '6px',
+                              padding: '5px 9px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                            onClick={() => prepararEdicaoOperador(op)}
+                          >
+                            <Pencil size={12} />
+                            <span>Editar</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            style={{
+                              background: '#ffffff',
+                              color: '#334155',
+                              border: '1px solid #cbd5e1',
+                              borderRadius: '6px',
+                              padding: '5px 9px',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                            onClick={() => {
+                              setOperadorAlterandoSenha(op);
+                              setNovaSenhaOpModal('');
+                              setConfirmarSenhaOpModal('');
+                              setErroSenhaOpModal('');
+                            }}
+                          >
+                            <KeyRound size={12} style={{ color: '#64748b' }} />
+                            <span>Senha</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            style={{
+                              background: '#ffffff',
+                              color: op.ativo ? '#b45309' : '#15803d',
+                              border: `1px solid ${op.ativo ? '#fde68a' : '#bbf7d0'}`,
+                              borderRadius: '6px',
+                              padding: '5px 9px',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => alternarStatusOperador(op.id)}
+                          >
+                            {op.ativo ? 'Desativar' : 'Ativar'}
+                          </button>
+
+                          <button
+                            type="button"
+                            style={{
+                              background: '#ffffff',
+                              color: '#dc2626',
+                              border: '1px solid #fecaca',
+                              borderRadius: '6px',
+                              padding: '5px 9px',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              marginLeft: 'auto',
+                            }}
+                            onClick={() => excluirOperador(op.id)}
+                          >
+                            <Trash2 size={12} />
+                            <span>Excluir</span>
+                          </button>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-              );
-            })()}
-
-            {/* BOTÕES DE AÇÃO DO FORMULÁRIO */}
-            <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="btn btn-salvar"
-                style={{
-                  flex: 1,
-                  minWidth: '220px',
-                  padding: '11px 18px',
-                  borderRadius: '9px',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  background: '#0284c7',
-                  color: '#ffffff',
-                  border: '1px solid #0369a1',
-                  cursor: 'pointer',
-                }}
-                onClick={salvarOperador}
-              >
-                {opEditandoId ? 'Salvar Alterações do Operador' : 'Cadastrar Operador de Caixa'}
-              </button>
-              {opEditandoId && (
-                <button
-                  type="button"
-                  className="btn btn-cancelar"
-                  style={{
-                    padding: '11px 18px',
-                    borderRadius: '9px',
-                    fontWeight: 600,
-                    fontSize: '0.84rem',
-                    background: '#f1f5f9',
-                    color: '#475569',
-                    border: '1px solid #cbd5e1',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    setOpEditandoId(null);
-                    setRegOpNome('');
-                    setRegOpCpf('');
-                    setRegOpSenha('');
-                    setRegOpCargo('Operador de Caixa');
-                    setRegOpPermissoes(PERMISSOES_CAIXA_PADRAO);
-                    setMsgRegOp('');
-                  }}
-                >
-                  Cancelar Edição
-                </button>
               )}
             </div>
-            <div className="msg">{msgRegOp}</div>
-          </div>
-
-          {/* LISTA DE OPERADORES CADASTRADOS NA LOJA */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '14px',
-              padding: '20px',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
-              <div>
-                <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                  Equipe Cadastrada em {nomeSupermercadoAtivo} ({listaOperadores.length})
-                </h3>
-                <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                  Operadores ativos, cargos atribuídos e resumo de acessos liberados
-                </p>
-              </div>
-            </div>
-
-            {listaOperadores.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '32px 16px', color: '#64748b', background: '#f8fafc', borderRadius: '10px', border: '1px dashed #cbd5e1', fontSize: '0.85rem' }}>
-                Nenhum operador cadastrado nesta loja ainda. Utilize o formulário acima para adicionar sua equipe.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {listaOperadores.map((op) => {
-                  const iniciais = (op.nome || 'OP')
-                    .trim()
-                    .split(/\s+/)
-                    .slice(0, 2)
-                    .map((p) => p[0]?.toUpperCase() || '')
-                    .join('');
-
-                  const etiquetasPermissao: string[] = [];
-                  if (op.permissoes?.vender) etiquetasPermissao.push('PDV / Vendas');
-                  if (op.permissoes?.gestao_caixa) etiquetasPermissao.push('Turno de Caixa');
-                  if (op.permissoes?.gerenciar_delivery) etiquetasPermissao.push('Delivery');
-                  if (op.permissoes?.gerenciar_devedores) etiquetasPermissao.push('Fiado');
-                  if (op.permissoes?.dar_desconto) etiquetasPermissao.push('Desconto');
-                  if (op.permissoes?.alterar_preco) etiquetasPermissao.push('Alterar Preço');
-                  if (op.permissoes?.estornar_venda) etiquetasPermissao.push('Estorno');
-                  if (op.permissoes?.cadastrar_produtos) etiquetasPermissao.push('Cad. Produtos');
-                  if (op.permissoes?.excluir_produtos) etiquetasPermissao.push('Excluir Produtos');
-                  if (op.permissoes?.baixa_estoque) etiquetasPermissao.push('Baixa Manual');
-                  if (op.permissoes?.ver_relatorios) etiquetasPermissao.push('Relatórios');
-                  if (op.permissoes?.ver_graficos) etiquetasPermissao.push('Gráficos');
-                  if (op.permissoes?.inteligencia_estoque) etiquetasPermissao.push('Inteligência');
-                  if (op.permissoes?.gerenciar_equipe) etiquetasPermissao.push('Gerir Equipe');
-                  if (op.permissoes?.imprimir_etiquetas) etiquetasPermissao.push('Etiquetas');
-
-                  return (
-                    <div
-                      key={op.id}
-                      style={{
-                        background: op.ativo ? '#ffffff' : '#f8fafc',
-                        opacity: op.ativo ? 1 : 0.75,
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '12px',
-                        padding: '14px 16px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '12px',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: '1 1 300px', minWidth: 0 }}>
-                        <div
-                          style={{
-                            width: '38px',
-                            height: '38px',
-                            borderRadius: '10px',
-                            background: op.ativo ? '#e0f2fe' : '#e2e8f0',
-                            color: op.ativo ? '#0369a1' : '#64748b',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontWeight: 800,
-                            fontSize: '0.82rem',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {iniciais}
-                        </div>
-
-                        <div style={{ minWidth: 0, flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0f172a' }}>{op.nome}</span>
-                            <span
-                              style={{
-                                background: op.ativo ? '#f0fdf4' : '#f1f5f9',
-                                color: op.ativo ? '#15803d' : '#64748b',
-                                border: `1px solid ${op.ativo ? '#bbf7d0' : '#cbd5e1'}`,
-                                fontSize: '0.68rem',
-                                padding: '1px 8px',
-                                borderRadius: '999px',
-                                fontWeight: 700,
-                              }}
-                            >
-                              {op.ativo ? 'Ativo' : 'Inativo'}
-                            </span>
-                            <span
-                              style={{
-                                background: '#f1f5f9',
-                                color: '#334155',
-                                border: '1px solid #e2e8f0',
-                                fontSize: '0.68rem',
-                                padding: '1px 8px',
-                                borderRadius: '999px',
-                                fontWeight: 700,
-                              }}
-                            >
-                              {op.cargo}
-                            </span>
-                          </div>
-
-                          <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '3px' }}>
-                            Login / CPF: <b style={{ color: '#334155' }}>{op.cpfOuUsuario}</b> • Cadastrado em: {op.dataCadastro || 'N/A'}
-                          </div>
-
-                          {/* TAGS PADRONIZADAS E LIMPAS (SEM ARCO-ÍRIS) */}
-                          {etiquetasPermissao.length > 0 && (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '8px' }}>
-                              {etiquetasPermissao.map((tag) => (
-                                <span
-                                  key={tag}
-                                  style={{
-                                    fontSize: '0.68rem',
-                                    background: '#f8fafc',
-                                    color: '#475569',
-                                    border: '1px solid #e2e8f0',
-                                    padding: '2px 7px',
-                                    borderRadius: '6px',
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* AÇÕES PADRONIZADAS */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <button
-                          type="button"
-                          style={{
-                            background: '#ffffff',
-                            color: '#334155',
-                            border: '1px solid #cbd5e1',
-                            borderRadius: '7px',
-                            padding: '6px 10px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                          }}
-                          onClick={() => {
-                            setOperadorAlterandoSenha(op);
-                            setNovaSenhaOpModal('');
-                            setConfirmarSenhaOpModal('');
-                            setErroSenhaOpModal('');
-                          }}
-                        >
-                          <KeyRound size={13} style={{ color: '#64748b' }} />
-                          <span>Senha</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          style={{
-                            background: '#f0f9ff',
-                            color: '#0369a1',
-                            border: '1px solid #bae6fd',
-                            borderRadius: '7px',
-                            padding: '6px 10px',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                          }}
-                          onClick={() => prepararEdicaoOperador(op)}
-                        >
-                          <Pencil size={13} />
-                          <span>Editar</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          style={{
-                            background: '#ffffff',
-                            color: op.ativo ? '#b45309' : '#15803d',
-                            border: `1px solid ${op.ativo ? '#fde68a' : '#bbf7d0'}`,
-                            borderRadius: '7px',
-                            padding: '6px 10px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => alternarStatusOperador(op.id)}
-                        >
-                          {op.ativo ? 'Desativar' : 'Ativar'}
-                        </button>
-
-                        <button
-                          type="button"
-                          style={{
-                            background: '#ffffff',
-                            color: '#dc2626',
-                            border: '1px solid #fecaca',
-                            borderRadius: '7px',
-                            padding: '6px 10px',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                          }}
-                          onClick={() => excluirOperador(op.id)}
-                        >
-                          <Trash2 size={13} />
-                          <span>Excluir</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </div>
       </div>
