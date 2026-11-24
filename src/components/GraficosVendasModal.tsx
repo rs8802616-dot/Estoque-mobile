@@ -1548,7 +1548,7 @@ ${top3 || '- Nenhum produto vendido'}
     <div
       ref={modalRef}
       className="tela-relatorio-cheia"
-      style={{ display: 'flex', zIndex: 9999, background: '#FAF7F2' }}
+      style={{ display: 'flex', zIndex: 9999, background: '#f8fafc' }}
     >
       {/* CABEÇALHO FIXO */}
       <div className="cabecalho-relatorio">
@@ -1720,7 +1720,7 @@ ${top3 || '- Nenhum produto vendido'}
             <div
               style={{
                 background: '#E4E3E0',
-                border: '2px solid #292524',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
                 padding: '14px 18px',
                 display: 'flex',
@@ -1728,7 +1728,7 @@ ${top3 || '- Nenhum produto vendido'}
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '12px',
-                boxShadow: '3px 3px 0px #292524',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
               }}
             >
               <div>
@@ -1746,16 +1746,17 @@ ${top3 || '- Nenhum produto vendido'}
                 >
                   <span
                     style={{
-                      background: '#111827',
-                      color: '#ffffff',
-                      borderRadius: '4px',
-                      padding: '2px 5px',
-                      fontSize: '0.85rem',
+                      background: '#e0f2fe',
+                      color: '#0284c7',
+                      borderRadius: '6px',
+                      padding: '2px 7px',
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
                       display: 'inline-flex',
                       alignItems: 'center',
                     }}
                   >
-                    📊
+                    BI
                   </span>
                   PAINEL DE INTELIGÊNCIA & GRÁFICOS DE VENDAS
                 </h1>
@@ -1772,7 +1773,7 @@ ${top3 || '- Nenhum produto vendido'}
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '6px',
-                    border: '2px solid #292524',
+                    border: '1px solid #e2e8f0',
                     borderRadius: '6px',
                     padding: '3px 8px',
                     background: '#ffffff',
@@ -1816,7 +1817,7 @@ ${top3 || '- Nenhum produto vendido'}
                 </div>
 
                 {/* Períodos Rápidos */}
-                <div style={{ display: 'inline-flex', border: '2px solid #292524', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ display: 'inline-flex', border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
                   {[
                     { id: 'hoje', label: 'Hoje' },
                     { id: '7dias', label: '7 Dias' },
@@ -1830,12 +1831,12 @@ ${top3 || '- Nenhum produto vendido'}
                         style={{
                           padding: '5px 12px',
                           border: 'none',
-                          borderRight: '1px solid #292524',
+                          borderRight: '1px solid #cbd5e1',
                           fontSize: '0.76rem',
                           fontWeight: 800,
                           cursor: 'pointer',
-                          background: ativo ? '#141414' : '#ffffff',
-                          color: ativo ? '#ffffff' : '#141414',
+                          background: ativo ? '#0284c7' : '#ffffff',
+                          color: ativo ? '#ffffff' : '#334155',
                           transition: 'all 0.15s ease',
                         }}
                         onClick={() => {
@@ -1858,11 +1859,11 @@ ${top3 || '- Nenhum produto vendido'}
                 {/* Copiar Resumo */}
                 <button
                   style={{
-                    background: copiadoFeedback ? '#059669' : '#141414',
+                    background: copiadoFeedback ? '#059669' : '#0284c7',
                     color: '#ffffff',
-                    border: '2px solid #292524',
+                    border: '1px solid #e2e8f0',
                     borderRadius: '6px',
-                    boxShadow: '2px 2px 0px #292524',
+                    boxShadow: '0 1px 2px rgba(15, 23, 42, 0.05)',
                     padding: '6px 14px',
                     fontSize: '0.76rem',
                     fontWeight: 800,
@@ -2039,12 +2040,12 @@ ${top3 || '- Nenhum produto vendido'}
                         style={{
                           padding: '4px 12px',
                           border: 'none',
-                          borderRight: tipo !== 'linha' ? '1px solid #292524' : 'none',
+                          borderRight: tipo !== 'linha' ? '1px solid #cbd5e1' : 'none',
                           fontSize: '0.74rem',
                           fontWeight: 800,
                           cursor: 'pointer',
-                          background: ativo ? '#141414' : '#ffffff',
-                          color: ativo ? '#ffffff' : '#141414',
+                          background: ativo ? '#0284c7' : '#ffffff',
+                          color: ativo ? '#ffffff' : '#334155',
                           transition: 'all 0.15s ease',
                         }}
                         onClick={() => setTipoVisualizacaoCurva(tipo)}
@@ -2068,18 +2069,18 @@ ${top3 || '- Nenhum produto vendido'}
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis dataKey="label" stroke="#141414" fontSize={11} tickLine={false} tick={{ fill: '#141414', fontFamily: 'monospace' }} />
+                      <XAxis dataKey="label" stroke="#64748b" fontSize={11} tickLine={false} tick={{ fill: '#64748b', fontFamily: 'monospace' }} />
                       <YAxis
-                        stroke="#141414"
+                        stroke="#64748b"
                         fontSize={11}
                         tickLine={false}
-                        tick={{ fill: '#141414', fontFamily: 'monospace' }}
+                        tick={{ fill: '#64748b', fontFamily: 'monospace' }}
                         tickFormatter={(val) => `R$ ${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
                       />
                       <Tooltip
                         formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
                         labelFormatter={(lbl) => `Período: ${lbl}`}
-                        contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '6px', border: '2px solid #292524', boxShadow: '3px 3px 0px #292524', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
+                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
                       />
                       <Area
                         type="monotone"
@@ -2095,34 +2096,34 @@ ${top3 || '- Nenhum produto vendido'}
                   ) : tipoVisualizacaoCurva === 'barras' ? (
                     <BarChart data={dadosCurvaVendas} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis dataKey="label" stroke="#141414" fontSize={11} tickLine={false} tick={{ fill: '#141414', fontFamily: 'monospace' }} />
+                      <XAxis dataKey="label" stroke="#64748b" fontSize={11} tickLine={false} tick={{ fill: '#64748b', fontFamily: 'monospace' }} />
                       <YAxis
-                        stroke="#141414"
+                        stroke="#64748b"
                         fontSize={11}
                         tickLine={false}
-                        tick={{ fill: '#141414', fontFamily: 'monospace' }}
+                        tick={{ fill: '#64748b', fontFamily: 'monospace' }}
                         tickFormatter={(val) => `R$ ${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
                       />
                       <Tooltip
                         formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
-                        contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '6px', border: '2px solid #292524', boxShadow: '3px 3px 0px #292524', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
+                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
                       />
                       <Bar dataKey="faturamento" fill="#ef4444" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   ) : (
                     <LineChart data={dadosCurvaVendas} margin={{ top: 15, right: 15, left: 10, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                      <XAxis dataKey="label" stroke="#141414" fontSize={11} tickLine={false} tick={{ fill: '#141414', fontFamily: 'monospace' }} />
+                      <XAxis dataKey="label" stroke="#64748b" fontSize={11} tickLine={false} tick={{ fill: '#64748b', fontFamily: 'monospace' }} />
                       <YAxis
-                        stroke="#141414"
+                        stroke="#64748b"
                         fontSize={11}
                         tickLine={false}
-                        tick={{ fill: '#141414', fontFamily: 'monospace' }}
+                        tick={{ fill: '#64748b', fontFamily: 'monospace' }}
                         tickFormatter={(val) => `R$ ${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
                       />
                       <Tooltip
                         formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
-                        contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '6px', border: '2px solid #292524', boxShadow: '3px 3px 0px #292524', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
+                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
                       />
                       <Line type="monotone" dataKey="faturamento" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, fill: '#ef4444' }} />
                     </LineChart>
@@ -2196,7 +2197,7 @@ ${top3 || '- Nenhum produto vendido'}
                       style={{
                         padding: '5px 10px',
                         border: 'none',
-                        borderLeft: '1.5px solid #292524',
+                        borderLeft: '1px solid #cbd5e1',
                         fontSize: '0.74rem',
                         fontWeight: 800,
                         cursor: 'pointer',
@@ -2351,7 +2352,7 @@ ${top3 || '- Nenhum produto vendido'}
                                 zIndex: 100,
                                 background: '#141414',
                                 color: '#ffffff',
-                                border: '1.5px solid #292524',
+                                border: '1px solid #cbd5e1',
                                 borderRadius: '8px',
                                 padding: '10px 14px',
                                 boxShadow: '0 10px 25px -5px rgba(0,0,0,0.5)',
@@ -2437,7 +2438,7 @@ ${top3 || '- Nenhum produto vendido'}
                           <Tooltip
                             formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
                             wrapperStyle={{ zIndex: 50, pointerEvents: 'none' }}
-                            contentStyle={{ background: '#141414', color: '#ffffff', borderRadius: '8px', border: '1px solid #334155', fontSize: '0.78rem' }}
+                            contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '8px', border: '1px solid #334155', fontSize: '0.78rem' }}
                             itemStyle={{ color: '#ffffff', fontWeight: 700 }}
                             labelStyle={{ color: '#93c5fd', fontWeight: 700 }}
                           />
@@ -2566,13 +2567,13 @@ ${top3 || '- Nenhum produto vendido'}
                     style={{
                       background: '#DC2626',
                       color: '#FFFFFF',
-                      border: '1.5px solid #292524',
+                      border: '1px solid #cbd5e1',
                       padding: '4px 10px',
                       borderRadius: '6px',
                       fontSize: '0.74rem',
                       fontWeight: 900,
                       whiteSpace: 'nowrap',
-                      boxShadow: '2px 2px 0px #292524',
+                      boxShadow: '0 1px 2px rgba(15, 23, 42, 0.05)',
                     }}
                   >
                     🔥 Pico {dadosHorariosPico.faixaPico}
@@ -2594,7 +2595,7 @@ ${top3 || '- Nenhum produto vendido'}
                   </div>
 
                   {/* Gráfico de Barras por Faixa Horária */}
-                  <div style={{ width: '100%', height: 210, background: '#FAF7F2', borderRadius: '8px', border: '1px solid #E2E8F0', padding: '6px 4px 0 0' }}>
+                  <div style={{ width: '100%', height: 210, background: '#f8fafc', borderRadius: '8px', border: '1px solid #E2E8F0', padding: '6px 4px 0 0' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={dadosHorariosPico.faixas} margin={{ top: 15, right: 15, left: -10, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#CBD5E1" />
@@ -2606,7 +2607,7 @@ ${top3 || '- Nenhum produto vendido'}
                             background: '#141414',
                             color: '#FBBF24',
                             borderRadius: '8px',
-                            border: '1.5px solid #292524',
+                            border: '1px solid #cbd5e1',
                             fontSize: '0.8rem',
                             fontWeight: 700,
                           }}
@@ -2621,7 +2622,7 @@ ${top3 || '- Nenhum produto vendido'}
                             } else if (entry.pedidos === 0) {
                               cor = '#CBD5E1';
                             }
-                            return <Cell key={`bar-${index}`} fill={cor} stroke="#292524" strokeWidth={1.5} />;
+                            return <Cell key={`bar-${index}`} fill={cor} stroke="#ffffff" strokeWidth={1.5} />;
                           })}
                         </Bar>
                       </BarChart>
@@ -2634,10 +2635,10 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '10px',
                   padding: '0',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
@@ -2747,7 +2748,7 @@ ${top3 || '- Nenhum produto vendido'}
                             </span>
                           </div>
                         </div>
-                        <div style={{ width: '100%', height: '12px', background: '#FFFFFF', borderRadius: '6px', border: '1.5px solid #292524', overflow: 'hidden' }}>
+                        <div style={{ width: '100%', height: '12px', background: '#FFFFFF', borderRadius: '6px', border: '1px solid #cbd5e1', overflow: 'hidden' }}>
                           <div
                             style={{
                               width: `${Math.min(100, Math.max(forma.porcentagem, 3))}%`,
@@ -2773,7 +2774,7 @@ ${top3 || '- Nenhum produto vendido'}
             <div
               style={{
                 background: '#ffffff',
-                border: '1px solid #111827',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
                 padding: '16px',
                 display: 'flex',
@@ -2830,10 +2831,10 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
 
               {/* Tabela Formatada Estilo Imagem 5 */}
-              <div style={{ overflowX: 'auto', border: '2px solid #292524', borderRadius: '6px' }}>
+              <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '6px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.8rem' }}>
                   <thead>
-                    <tr style={{ background: '#141414', color: '#ffffff', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <tr style={{ background: '#f1f5f9', color: '#334155', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       <th style={{ padding: '10px 12px', width: '60px' }}>RANK</th>
                       <th style={{ padding: '10px 12px' }}>PRODUTO / SABOR</th>
                       <th style={{ padding: '10px 12px', textAlign: 'center' }}>CATEGORIA</th>
@@ -2938,12 +2939,12 @@ ${top3 || '- Nenhum produto vendido'}
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             
             {/* SELETOR DE PERÍODO ESPECÍFICO DE FORMAS DE PAGAMENTO */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#111827', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span>📅</span> Filtrar Período de Pagamento:
                 </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827', background: '#f8fafc', padding: '3px 8px', borderRadius: '6px', border: '1px solid #111827' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827', background: '#f8fafc', padding: '3px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                   Período Atual: <b>{dadosFormasPagamento.labelPeriodo}</b>
                 </span>
               </div>
@@ -2963,7 +2964,7 @@ ${top3 || '- Nenhum produto vendido'}
                     style={{
                       padding: '7px 8px',
                       borderRadius: '6px',
-                      border: '1px solid #111827',
+                      border: '1px solid #e2e8f0',
                       fontSize: '0.78rem',
                       fontWeight: 700,
                       cursor: 'pointer',
@@ -2983,7 +2984,7 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* BANNER PRINCIPAL COM MÉTRICAS DO PERÍODO */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span>💳</span> Formas de Pagamento & Faturamento ({dadosFormasPagamento.labelPeriodo})
@@ -2993,13 +2994,13 @@ ${top3 || '- Nenhum produto vendido'}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', textAlign: 'right' }}>
                   <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700 }}>Total Faturado</div>
                   <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827' }}>
                     R$ {dadosFormasPagamento.totalGeral.toFixed(2).replace('.', ',')}
                   </div>
                 </div>
-                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+                <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', textAlign: 'right' }}>
                   <div style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700 }}>Ticket Médio</div>
                   <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827' }}>
                     R$ {dadosFormasPagamento.ticketMedioGeral.toFixed(2).replace('.', ',')}
@@ -3015,7 +3016,7 @@ ${top3 || '- Nenhum produto vendido'}
                   key={item.chave}
                   style={{
                     background: '#ffffff',
-                    border: '1px solid #111827',
+                    border: '1px solid #e2e8f0',
                     padding: '12px',
                     borderRadius: '8px',
                   }}
@@ -3036,7 +3037,7 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* PAINEL DE INTELIGÊNCIA & DIAGNÓSTICO FINANCEIRO */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '1.1rem' }}>🧠</span>
                 <div>
@@ -3051,7 +3052,7 @@ ${top3 || '- Nenhum produto vendido'}
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px' }}>
                 {/* INSIGHT 1: MÉTODO CAMPEÃO */}
-                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     🏆 Mais Utilizado pelos Clientes
                   </div>
@@ -3066,7 +3067,7 @@ ${top3 || '- Nenhum produto vendido'}
                 </div>
 
                 {/* INSIGHT 2: LIQUIDEZ IMEDIATA */}
-                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     ⚡ Liquidez Imediata (PIX + Dinheiro)
                   </div>
@@ -3079,7 +3080,7 @@ ${top3 || '- Nenhum produto vendido'}
                 </div>
 
                 {/* INSIGHT 3: TICKET MÉDIO POR CANAL */}
-                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     🎫 Maior Ticket Médio
                   </div>
@@ -3093,7 +3094,7 @@ ${top3 || '- Nenhum produto vendido'}
                 </div>
 
                 {/* INSIGHT 4: VENDAS A PRAZO / FIADO */}
-                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #111827' }}>
+                <div style={{ background: '#ffffff', padding: '12px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                   <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#111827', marginBottom: '4px' }}>
                     📝 Vendas a Prazo / Fiado
                   </div>
@@ -3116,7 +3117,7 @@ ${top3 || '- Nenhum produto vendido'}
             {/* SEÇÃO DE GRÁFICOS: PIZZA (DISTRIBUIÇÃO) E BARRAS (FATURAMENTO) */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
               {/* GRÁFICO 1: PIZZA DE DISTRIBUIÇÃO */}
-              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '280px', minWidth: 0 }}>
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', minHeight: '280px', minWidth: 0 }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   🥧 Distribuição Percentual das Formas de Pgto
                 </h4>
@@ -3152,7 +3153,7 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
 
               {/* GRÁFICO 2: BARRAS DE FATURAMENTO TOTAL */}
-              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '280px', minWidth: 0 }}>
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', minHeight: '280px', minWidth: 0 }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   📊 Volume Financeiro por Método (R$)
                 </h4>
@@ -3181,14 +3182,14 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* TABELA DE MÉTRICAS COMPLETAS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 📋 Tabela Detalhada por Meio de Pagamento ({dadosFormasPagamento.labelPeriodo})
               </h4>
               <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '460px' }}>
                   <thead>
-                    <tr style={{ background: '#111827', color: '#ffffff', textAlign: 'left' }}>
+                    <tr style={{ background: '#f1f5f9', color: '#334155', textAlign: 'left' }}>
                       <th style={{ padding: '9px 12px', borderRadius: '4px 0 0 0' }}>Método</th>
                       <th style={{ padding: '9px 12px', textAlign: 'right' }}>Qtd Vendas</th>
                       <th style={{ padding: '9px 12px', textAlign: 'right' }}>Total (R$)</th>
@@ -3229,7 +3230,7 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 2: GRÁFICO DE DEVOLUÇÕES & ESTORNOS */}
         {abaAtiva === 'devolucoes' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0 }}>
                   🔄 Devoluções & Vendas Estornadas
@@ -3238,7 +3239,7 @@ ${top3 || '- Nenhum produto vendido'}
                   Acompanhe os valores devolvidos aos clientes ao longo do tempo.
                 </p>
               </div>
-              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', textAlign: 'right' }}>
                 <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700 }}>Total Devolvido</div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>
                   R$ {totalEstornosGeral.toFixed(2).replace('.', ',')}
@@ -3247,7 +3248,7 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* SELEÇÃO DE PERÍODO PARA DEVOLUÇÕES */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #111827' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.8rem', color: '#111827', fontWeight: 800 }}>Agrupar por:</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', flex: 1 }}>
                 {(['dia', 'semana', 'mes', 'ano'] as const).map((p) => (
@@ -3256,14 +3257,14 @@ ${top3 || '- Nenhum produto vendido'}
                     style={{
                       padding: '6px 8px',
                       borderRadius: '6px',
-                      border: '1px solid #111827',
+                      border: '1px solid #e2e8f0',
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       textAlign: 'center',
                       whiteSpace: 'nowrap',
-                      background: periodoGrafico === p ? '#111827' : '#ffffff',
-                      color: periodoGrafico === p ? '#ffffff' : '#111827',
+                      background: periodoGrafico === p ? '#0284c7' : '#ffffff',
+                      color: periodoGrafico === p ? '#ffffff' : '#334155',
                       transition: 'all 0.15s ease',
                     }}
                     onClick={() => setPeriodoGrafico(p)}
@@ -3275,7 +3276,7 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* GRÁFICO RECHARTS DE DEVOLUÇÕES */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '280px', minWidth: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', minHeight: '280px', minWidth: 0 }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 Evolução do Valor Estornado (R$) — Por {periodoGrafico.toUpperCase()}
               </h4>
@@ -3288,7 +3289,7 @@ ${top3 || '- Nenhum produto vendido'}
                     <Tooltip
                       formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Valor Estornado']}
                       labelFormatter={(lbl) => `Período: ${lbl}`}
-                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #111827', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
+                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
                     />
                     <Bar dataKey="estornado" fill="#dc2626" radius={[4, 4, 0, 0]} name="Valor Estornado (R$)" />
                   </BarChart>
@@ -3297,7 +3298,7 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* LISTA DE DEVOLUÇÕES RECENTES */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 📋 Histórico de Transações Estornadas / Canceladas
               </h4>
@@ -3314,7 +3315,7 @@ ${top3 || '- Nenhum produto vendido'}
                         padding: '10px 12px',
                         background: '#ffffff',
                         borderRadius: '6px',
-                        border: '1px solid #111827',
+                        border: '1px solid #e2e8f0',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
@@ -3347,7 +3348,7 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 3: GRÁFICO DE PERDAS & VENCIDOS */}
         {abaAtiva === 'perdas' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111827', marginBottom: '2px', margin: 0 }}>
                   🛑 Perdas & Riscos por Validade do Estoque
@@ -3356,7 +3357,7 @@ ${top3 || '- Nenhum produto vendido'}
                   Mapeia produtos com validade vencida ou prestes a vencer.
                 </p>
               </div>
-              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #111827', textAlign: 'right' }}>
+              <div style={{ background: '#ffffff', padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', textAlign: 'right' }}>
                 <div style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 700 }}>Perda em Vencidos</div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#dc2626' }}>
                   R$ {dadosPerdas.totalVencidosValor.toFixed(2).replace('.', ',')}
@@ -3366,7 +3367,7 @@ ${top3 || '- Nenhum produto vendido'}
 
             {/* RESUMO CARD DE PERDAS */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                 <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>❌ Já Vencidos</span>
                 <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#dc2626', marginTop: '2px' }}>
                   R$ {dadosPerdas.totalVencidosValor.toFixed(2)}
@@ -3374,7 +3375,7 @@ ${top3 || '- Nenhum produto vendido'}
                 <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: 600 }}>{dadosPerdas.totalVencidosQtd} un</div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                 <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>⚠️ Até 7 dias</span>
                 <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
                   R$ {dadosPerdas.totalAVencer7DiasValor.toFixed(2)}
@@ -3382,7 +3383,7 @@ ${top3 || '- Nenhum produto vendido'}
                 <div style={{ fontSize: '0.72rem', color: '#4b5563', fontWeight: 600 }}>{dadosPerdas.totalAVencer7DiasQtd} un</div>
               </div>
 
-              <div style={{ background: '#ffffff', border: '1px solid #111827', padding: '12px', borderRadius: '8px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px', borderRadius: '8px' }}>
                 <span style={{ fontSize: '0.72rem', color: '#6b7280', fontWeight: 800 }}>📅 Até 30 dias</span>
                 <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#2563eb', marginTop: '2px' }}>
                   R$ {dadosPerdas.totalAVencer30DiasValor.toFixed(2)}
@@ -3392,7 +3393,7 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* GRÁFICO RECHARTS DE RISCO DE PERDA */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minHeight: '260px', minWidth: 0 }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', minHeight: '260px', minWidth: 0 }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 Distribuição Financeira de Perdas e Vencimentos (R$)
               </h4>
@@ -3404,7 +3405,7 @@ ${top3 || '- Nenhum produto vendido'}
                     <YAxis stroke="#6b7280" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                     <Tooltip
                       formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Valor em Risco']}
-                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #111827', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
+                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
                     />
                     <Bar dataKey="valorR$" radius={[4, 4, 0, 0]} name="Valor em R$ (Perda / Risco)">
                       {dadosPerdas.graficoRisco.map((entry, index) => (
@@ -3420,19 +3421,19 @@ ${top3 || '- Nenhum produto vendido'}
             </div>
 
             {/* TABELA DE PRODUTOS CRÍTICOS / VENCIDOS */}
-            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827' }}>
+            <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                 📋 Detalhamento dos Lotes em Risco
               </h4>
               {dadosPerdas.listaVencidos.length === 0 ? (
-                <div style={{ color: '#16a34a', fontSize: '0.85rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #111827' }}>
+                <div style={{ color: '#16a34a', fontSize: '0.85rem', padding: '12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                   🎉 Excelente! Não há lotes vencidos ou a vencer nos próximos 30 dias.
                 </div>
               ) : (
                 <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', minWidth: '460px' }}>
                     <thead>
-                      <tr style={{ background: '#111827', color: '#ffffff', textAlign: 'left' }}>
+                      <tr style={{ background: '#f1f5f9', color: '#334155', textAlign: 'left' }}>
                         <th style={{ padding: '8px 10px', borderRadius: '4px 0 0 0' }}>Status</th>
                         <th style={{ padding: '8px 10px' }}>Produto</th>
                         <th style={{ padding: '8px 10px' }}>Lote</th>
@@ -3451,9 +3452,9 @@ ${top3 || '- Nenhum produto vendido'}
                                 borderRadius: '4px',
                                 fontWeight: 800,
                                 fontSize: '0.7rem',
-                                border: '1px solid #111827',
-                                background: item.status === 'Vencido' ? '#111827' : '#ffffff',
-                                color: item.status === 'Vencido' ? '#ffffff' : '#111827',
+                                border: '1px solid #e2e8f0',
+                                background: item.status === 'Vencido' ? '#dc2626' : '#ffffff',
+                                color: item.status === 'Vencido' ? '#ffffff' : '#334155',
                               }}
                             >
                               {item.status}
@@ -3577,7 +3578,7 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#ffffff',
-                  border: '1px solid #111827',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '8px',
                   padding: '14px',
                   display: 'flex',
@@ -3588,7 +3589,7 @@ ${top3 || '- Nenhum produto vendido'}
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                  <div style={{ fontSize: '1.4rem', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px', border: '1px solid #111827' }}>
+                  <div style={{ fontSize: '1.4rem', background: '#f8fafc', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                     🍢
                   </div>
                   <div>
@@ -3609,7 +3610,7 @@ ${top3 || '- Nenhum produto vendido'}
                     background: '#ffffff',
                     padding: '8px 12px',
                     borderRadius: '6px',
-                    border: '1px solid #111827',
+                    border: '1px solid #e2e8f0',
                     flexWrap: 'wrap',
                   }}
                 >
@@ -3621,7 +3622,7 @@ ${top3 || '- Nenhum produto vendido'}
                       R$ {dadosEstoqueGrafico.totalFaturadoBalcao.toFixed(2).replace('.', ',')}
                     </b>
                   </div>
-                  <div style={{ borderLeft: '1px solid #111827', paddingLeft: '8px' }}>
+                  <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
                     <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       (-) Custo Balcão:
                     </span>
@@ -3629,7 +3630,7 @@ ${top3 || '- Nenhum produto vendido'}
                       - R$ {dadosEstoqueGrafico.totalCustoBalcao.toFixed(2).replace('.', ',')}
                     </b>
                   </div>
-                  <div style={{ borderLeft: '1px solid #111827', paddingLeft: '8px' }}>
+                  <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
                     <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       (=) Só Lucro Balcão:
                     </span>
@@ -3637,7 +3638,7 @@ ${top3 || '- Nenhum produto vendido'}
                       R$ {dadosEstoqueGrafico.totalLucroBalcao.toFixed(2).replace('.', ',')}
                     </b>
                   </div>
-                  <div style={{ borderLeft: '1px solid #111827', paddingLeft: '8px' }}>
+                  <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
                     <span style={{ fontSize: '0.7rem', color: '#6b7280', fontWeight: 700, display: 'block' }}>
                       Vendas:
                     </span>
@@ -3652,7 +3653,7 @@ ${top3 || '- Nenhum produto vendido'}
             {/* GRÁFICOS DE ESTOQUE */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
               {/* TOP 10 MAIOR VALOR FINANCEIRO EM ESTOQUE */}
-              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minWidth: 0 }}>
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   💰 Top 10 Produtos por Valor Total em Estoque Físico (R$)
                 </h4>
@@ -3670,7 +3671,7 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
 
               {/* TOP 10 MAIOR QUANTIDADE DE UNIDADES */}
-              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #111827', minWidth: 0 }}>
+              <div style={{ background: '#ffffff', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', minWidth: 0 }}>
                 <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111827', marginBottom: '10px', margin: 0 }}>
                   📦 Top 10 Produtos por Quantidade em Estoque Físico
                 </h4>
@@ -3694,7 +3695,7 @@ ${top3 || '- Nenhum produto vendido'}
         {abaAtiva === 'ranking' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
             {/* SELEÇÃO DE PERÍODO PARA O RANKING */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #111827' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
               <span style={{ fontSize: '0.8rem', color: '#111827', fontWeight: 800 }}>Período do Ranking:</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', flex: 1 }}>
                 {(['dia', 'semana', 'mes', 'ano'] as const).map((p) => (
@@ -3703,14 +3704,14 @@ ${top3 || '- Nenhum produto vendido'}
                     style={{
                       padding: '6px 8px',
                       borderRadius: '6px',
-                      border: '1px solid #111827',
+                      border: '1px solid #e2e8f0',
                       fontSize: '0.75rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       textAlign: 'center',
                       whiteSpace: 'nowrap',
-                      background: periodoGrafico === p ? '#111827' : '#ffffff',
-                      color: periodoGrafico === p ? '#ffffff' : '#111827',
+                      background: periodoGrafico === p ? '#0284c7' : '#ffffff',
+                      color: periodoGrafico === p ? '#ffffff' : '#334155',
                       transition: 'all 0.15s ease',
                     }}
                     onClick={() => setPeriodoGrafico(p)}
