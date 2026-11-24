@@ -38,6 +38,20 @@ import {
   PanelRightOpen,
   PanelRightClose,
   UtensilsCrossed,
+  ArrowLeft,
+  ShieldCheck,
+  Copy,
+  RefreshCw,
+  Lock,
+  Unlock,
+  Pencil,
+  Trash2,
+  Search,
+  Eye,
+  EyeOff,
+  UserPlus,
+  Ban,
+  UploadCloud,
 } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import {
@@ -10885,15 +10899,15 @@ export default function App() {
       <div
         className="tela-relatorio-cheia"
         id="modalSupermercado"
-        style={{ display: perfilAtivo === 'dona_app' && modalSupermercadoVisivel ? 'flex' : 'none', background: '#f1f5f9' }}
+        style={{ display: perfilAtivo === 'dona_app' && modalSupermercadoVisivel ? 'flex' : 'none', background: '#f8fafc' }}
       >
-        {/* CABEÇALHO EXECUTIVO DA DONA DO APLICATIVO */}
+        {/* CABEÇALHO NO PADRÃO DO PDV */}
         <div
           className="cabecalho-relatorio"
           style={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)',
-            padding: '14px 20px',
-            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            background: '#0284c7',
+            padding: '12px 20px',
+            borderBottom: '1px solid #0369a1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -10904,489 +10918,706 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.16)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.25rem',
-                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)',
+                color: '#ffffff',
+                flexShrink: 0,
               }}
             >
-              👑
+              <ShieldCheck size={20} strokeWidth={2.2} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
+              <h2 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
                 Painel Administrativo da Dona do Aplicativo
               </h2>
-              <span style={{ fontSize: '0.75rem', color: '#93c5fd', fontWeight: 500 }}>
-                Gestão centralizada de licenças, planos, extensão de Delivery e banco master
+              <span style={{ fontSize: '0.75rem', color: '#e0f2fe', fontWeight: 500 }}>
+                Gestão centralizada de lojas clientes, licenças, planos e catálogo global
               </span>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <button
               type="button"
               onClick={() => setModalCredenciaisDonoVisivel(true)}
               style={{
-                background: '#0284c7',
+                background: 'rgba(255, 255, 255, 0.14)',
                 color: '#ffffff',
-                border: '1px solid #0369a1',
-                padding: '8px 14px',
-                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.28)',
+                padding: '7px 13px',
+                borderRadius: '8px',
                 fontWeight: 700,
-                fontSize: '0.82rem',
+                fontSize: '0.8rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 2px 8px rgba(147, 51, 234, 0.35)',
               }}
               title="Alterar seu usuário e senha Master da Dona do Aplicativo"
             >
               <KeyRound size={15} />
-              <span>🔑 Meu Login & Senha (Dono)</span>
+              <span>Meu Login & Senha</span>
             </button>
 
             <button
+              type="button"
               className="btn-voltar-rel"
               style={{
-                background: 'rgba(255,255,255,0.12)',
-                color: '#ffffff',
-                border: '1px solid rgba(255,255,255,0.2)',
-                padding: '8px 16px',
-                borderRadius: '10px',
+                background: '#ffffff',
+                color: '#0369a1',
+                border: '1px solid #ffffff',
+                padding: '7px 14px',
+                borderRadius: '8px',
                 fontWeight: 700,
+                fontSize: '0.8rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
               }}
               onClick={() => fecharAbaDefinitivo('master')}
             >
-              ← Voltar ao PDV
+              <ArrowLeft size={15} />
+              <span>Voltar ao PDV</span>
             </button>
           </div>
         </div>
 
-        <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px' }}>
-          {/* BARRA DE NAVEGAÇÃO E CREDENCIAL MASTER */}
+        <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px 20px 64px' }}>
+          {/* BARRA DE ABAS E FERRAMENTAS MASTER */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '10px',
-              marginBottom: '20px',
+              marginBottom: '18px',
               background: '#ffffff',
-              padding: '10px 14px',
-              borderRadius: '16px',
+              padding: '8px 12px',
+              borderRadius: '12px',
               border: '1px solid #e2e8f0',
-              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
               flexWrap: 'wrap',
             }}
           >
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 style={{
-                  padding: '10px 18px',
-                  borderRadius: '12px',
-                  fontWeight: 800,
-                  fontSize: '0.86rem',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '0.83rem',
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '7px',
                   border: abaDonaApp === 'supermercados' ? '1px solid #0284c7' : '1px solid transparent',
-                  background: abaDonaApp === 'supermercados' ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : '#f1f5f9',
+                  background: abaDonaApp === 'supermercados' ? '#0284c7' : '#f8fafc',
                   color: abaDonaApp === 'supermercados' ? '#ffffff' : '#475569',
-                  boxShadow: abaDonaApp === 'supermercados' ? '0 4px 10px rgba(2, 132, 199, 0.25)' : 'none',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.15s ease',
                 }}
                 onClick={() => setAbaDonaApp('supermercados')}
               >
-                🏢 Supermercados, Planos & Extensões
+                <Building2 size={15} />
+                <span>Lojas, Planos & Extensões</span>
               </button>
               <button
                 type="button"
                 style={{
-                  padding: '10px 18px',
-                  borderRadius: '12px',
-                  fontWeight: 800,
-                  fontSize: '0.86rem',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '0.83rem',
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '7px',
                   border: abaDonaApp === 'banco_dados' ? '1px solid #0284c7' : '1px solid transparent',
-                  background: abaDonaApp === 'banco_dados' ? 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' : '#f1f5f9',
+                  background: abaDonaApp === 'banco_dados' ? '#0284c7' : '#f8fafc',
                   color: abaDonaApp === 'banco_dados' ? '#ffffff' : '#475569',
-                  boxShadow: abaDonaApp === 'banco_dados' ? '0 4px 10px rgba(2, 132, 199, 0.25)' : 'none',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.15s ease',
                 }}
                 onClick={() => {
                   setAbaDonaApp('banco_dados');
                   setBuscaMasterBd('');
                 }}
               >
-                🗄️ Banco de Dados Master (Catálogo Global)
+                <Database size={15} />
+                <span>Catálogo Global Master</span>
               </button>
             </div>
 
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                flexWrap: 'wrap',
-              }}
-            >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={() => copiarLinkComFeedback('portal_master', obterLinkPortalMaster())}
                 style={{
-                  background: linkCopiadoFeedback === 'portal_master' ? '#ecfdf5' : '#f8fafc',
-                  color: linkCopiadoFeedback === 'portal_master' ? '#047857' : '#334155',
-                  border: `1px solid ${linkCopiadoFeedback === 'portal_master' ? '#6ee7b7' : '#cbd5e1'}`,
-                  padding: '7px 12px',
-                  borderRadius: '10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
+                  background: linkCopiadoFeedback === 'portal_master' ? '#e0f2fe' : '#ffffff',
+                  color: linkCopiadoFeedback === 'portal_master' ? '#0369a1' : '#334155',
+                  border: `1px solid ${linkCopiadoFeedback === 'portal_master' ? '#7dd3fc' : '#cbd5e1'}`,
+                  padding: '6px 11px',
+                  borderRadius: '8px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
                 }}
                 title={`Copiar seu Link Secreto Master: ${obterLinkPortalMaster()}`}
               >
-                {linkCopiadoFeedback === 'portal_master'
-                  ? '✓ Link Master Copiado'
-                  : '🔗 Copiar Link Master'}
+                {linkCopiadoFeedback === 'portal_master' ? <Check size={14} /> : <Link2 size={14} style={{ color: '#0284c7' }} />}
+                <span>{linkCopiadoFeedback === 'portal_master' ? 'Link Master Copiado' : 'Copiar Link Master'}</span>
               </button>
               <button
                 type="button"
                 onClick={revogarBloqueiosTentativasLogin}
                 style={{
-                  background: '#f8fafc',
+                  background: '#ffffff',
                   color: '#334155',
                   border: '1px solid #cbd5e1',
-                  padding: '7px 12px',
-                  borderRadius: '10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
+                  padding: '6px 11px',
+                  borderRadius: '8px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
                 }}
                 title="Revogar bloqueio temporário por 5 tentativas falhas (Lockout)"
               >
-                🔓 Revogar Lockout
+                <Unlock size={14} style={{ color: '#64748b' }} />
+                <span>Revogar Lockout</span>
               </button>
               <button
                 type="button"
                 onClick={() => setModalAuditoriaLoginVisivel(true)}
                 style={{
-                  background: '#f8fafc',
+                  background: '#ffffff',
                   color: '#334155',
                   border: '1px solid #cbd5e1',
-                  padding: '7px 12px',
-                  borderRadius: '10px',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
+                  padding: '6px 11px',
+                  borderRadius: '8px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
                   cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
                 }}
                 title="Abrir Central de Auditoria de Tentativas de Login"
               >
-                🛡️ Auditoria de Login
+                <ShieldCheck size={14} style={{ color: '#0284c7' }} />
+                <span>Auditoria de Login</span>
               </button>
             </div>
           </div>
 
           {abaDonaApp === 'supermercados' ? (
             <>
-              {/* SEÇÃO 1: FORMULÁRIO MODERNO DE CADASTRO / EDIÇÃO DE LOJA */}
+              {/* FAIXA DE RESUMO EXECUTIVO */}
               <div
                 style={{
-                  background: '#ffffff',
-                  borderRadius: '20px',
-                  padding: '22px',
-                  border: lojaEditandoId ? '2px solid #0284c7' : '1px solid #e2e8f0',
-                  marginBottom: '24px',
-                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.05)',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+                  gap: '12px',
+                  marginBottom: '18px',
                 }}
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    borderBottom: '1px solid #f1f5f9',
-                    paddingBottom: '14px',
-                    marginBottom: '18px',
-                    flexWrap: 'wrap',
-                    gap: '10px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div
-                      style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '10px',
-                        background: lojaEditandoId ? '#fef3c7' : '#e0f2fe',
-                        color: lojaEditandoId ? '#d97706' : '#0284c7',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '1.1rem',
-                        fontWeight: 800,
-                      }}
-                    >
-                      {lojaEditandoId ? '✏️' : '➕'}
-                    </div>
-                    <div>
-                      <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                        {lojaEditandoId ? 'Editar Loja / Redefinir Plano & Senha' : 'Cadastrar Novo Supermercado / Loja Cliente'}
-                      </h3>
-                      <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                        Configure os dados de acesso da loja, cota de operadores, módulos do PDV e extensões contratadas
-                      </p>
-                    </div>
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: '0.73rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Lojas Cadastradas</div>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>{listaSupermercados.length}</div>
                   </div>
-
-                  {lojaEditandoId && (
-                    <span
-                      style={{
-                        background: '#fef3c7',
-                        color: '#92400e',
-                        border: '1px solid #fde68a',
-                        padding: '4px 12px',
-                        borderRadius: '999px',
-                        fontSize: '0.76rem',
-                        fontWeight: 800,
-                      }}
-                    >
-                      Modo Edição Ativo
-                    </span>
-                  )}
-                </div>
-
-                {/* DADOS PRINCIPAIS DA LOJA */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '14px' }}>
-                  <div className="grupo-input" style={{ marginBottom: 0 }}>
-                    <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                      🏪 Nome do Supermercado / Adega
-                    </label>
-                    <input
-                      type="text"
-                      id="reg-loja-nome"
-                      className="input-modal"
-                      style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                      placeholder="Ex: Supermercado Boa Vista"
-                      value={regLojaNome}
-                      onChange={(e) => setRegLojaNome(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="grupo-input" style={{ marginBottom: 0 }}>
-                    <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                      📄 CNPJ ou Identificador
-                    </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      id="reg-loja-cnpj"
-                      className="input-modal"
-                      style={{ borderRadius: '10px', padding: '10px 12px', background: lojaEditandoId ? '#e2e8f0' : '#f8fafc' }}
-                      placeholder="00.000.000/0001-00"
-                      value={regLojaCnpj}
-                      onChange={(e) => setRegLojaCnpj(mascaraCnpj(e.target.value))}
-                      maxLength={18}
-                      disabled={!!lojaEditandoId}
-                      required
-                    />
-                  </div>
-                  <div className="grupo-input" style={{ marginBottom: 0 }}>
-                    <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                      🔐 Nova Senha da Loja (mín. {MIN_CARACTERES_SENHA} dígitos)
-                    </label>
-                    <div className="linha-input">
-                      <input
-                        type={senhaVisivel ? 'text' : 'password'}
-                        id="reg-loja-senha"
-                        className="input-modal"
-                        style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                        placeholder={lojaEditandoId ? 'Deixe em branco para manter a atual' : 'Mínimo 6 caracteres'}
-                        value={regLojaSenha}
-                        onChange={(e) => setRegLojaSenha(e.target.value)}
-                        minLength={MIN_CARACTERES_SENHA}
-                        required={!lojaEditandoId}
-                      />
-                      <button
-                        type="button"
-                        id="btnOlhoSenha"
-                        className={`btn-olho-transparente ${!senhaVisivel ? 'olho-fechado' : ''}`}
-                        onClick={() => setSenhaVisivel(!senhaVisivel)}
-                        title="Mostrar/Ocultar Senha"
-                      >
-                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="grupo-input" style={{ marginBottom: 0 }}>
-                    <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                      🔁 Confirmar Nova Senha
-                    </label>
-                    <input
-                      type={senhaVisivel ? 'text' : 'password'}
-                      className="input-modal"
-                      style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                      placeholder="Repita exatamente a senha"
-                      value={regLojaConfirmarSenha}
-                      onChange={(e) => setRegLojaConfirmarSenha(e.target.value)}
-                      minLength={MIN_CARACTERES_SENHA}
-                      required={!lojaEditandoId}
-                    />
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Store size={18} />
                   </div>
                 </div>
 
-                {/* GRID DUPLO: COTA DE USUÁRIOS + EXTENSÃO PAGA DE DELIVERY */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                    gap: '16px',
-                    marginTop: '18px',
-                  }}
-                >
-                  {/* CARD 1: LIMITES DE PLANO E COTA DE USUÁRIOS */}
-                  <div
-                    style={{
-                      padding: '16px',
-                      background: '#f8fafc',
-                      borderRadius: '16px',
-                      border: '1px solid #cbd5e1',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span>🛡️ Limites de Plano e Cota de Usuários</span>
-                      </div>
-                      <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '0 0 12px 0', lineHeight: 1.35 }}>
-                        Defina quantos operadores de caixa e supervisores este cliente pode cadastrar. (Digite <b>0</b> para ilimitado).
-                      </p>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                      <div className="grupo-input" style={{ marginBottom: 0 }}>
-                        <label className="rotulo-campo" style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
-                          🛒 Máx. Caixas:
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          className="input-modal"
-                          style={{ borderRadius: '10px', background: '#ffffff', fontWeight: 700 }}
-                          placeholder="Ex: 5"
-                          value={regLojaLimiteCaixas ?? 0}
-                          onChange={(e) => setRegLojaLimiteCaixas(parseInt(e.target.value) || 0)}
-                        />
-                      </div>
-                      <div className="grupo-input" style={{ marginBottom: 0 }}>
-                        <label className="rotulo-campo" style={{ fontSize: '0.78rem', color: '#334155', fontWeight: 700 }}>
-                          👔 Máx. Supervisores:
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          className="input-modal"
-                          style={{ borderRadius: '10px', background: '#ffffff', fontWeight: 700 }}
-                          placeholder="Ex: 2"
-                          value={regLojaLimiteSupervisores ?? 0}
-                          onChange={(e) => setRegLojaLimiteSupervisores(parseInt(e.target.value) || 0)}
-                        />
-                      </div>
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: '0.73rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Licenças Ativas</div>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#15803d', marginTop: '2px' }}>
+                      {listaSupermercados.filter((l) => l.status !== 'bloqueado').length}
                     </div>
                   </div>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#dcfce7', color: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={18} />
+                  </div>
+                </div>
 
-                  {/* CARD 2: EXTENSÃO PAGA À PARTE — MÓDULO DELIVERY & CARDÁPIO ONLINE */}
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: '0.73rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Delivery Habilitado</div>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0284c7', marginTop: '2px' }}>
+                      {listaSupermercados.filter((l) => l.permissoesLoja?.delivery !== false).length}
+                    </div>
+                  </div>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Bike size={18} />
+                  </div>
+                </div>
+
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: '0.73rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Catálogo Global</div>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                      {catalogoGlobal.length.toLocaleString('pt-BR')}
+                    </div>
+                  </div>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#f1f5f9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Database size={18} />
+                  </div>
+                </div>
+              </div>
+
+              {/* LAYOUT EM DUAS COLUNAS RESPONSIVAS: FORMULÁRIO COMPACTO À ESQUERDA + LOJAS À DIREITA */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '18px', alignItems: 'flex-start' }}>
+                {/* COLUNA ESQUERDA: CADASTRO / EDIÇÃO DE LOJA */}
+                <div
+                  style={{
+                    flex: '1 1 390px',
+                    minWidth: 'min(100%, 340px)',
+                    background: '#ffffff',
+                    borderRadius: '14px',
+                    padding: '20px',
+                    border: lojaEditandoId ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
+                  }}
+                >
                   <div
-                    onClick={() => alternarPermissaoLoja('delivery')}
                     style={{
-                      padding: '16px',
-                      borderRadius: '16px',
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      transition: 'all 0.2s ease',
-                      background:
-                        regLojaPermissoes.delivery !== false
-                          ? '#f0fdf4'
-                          : '#f8fafc',
-                      border:
-                        regLojaPermissoes.delivery !== false
-                          ? '1.5px solid #86efac'
-                          : '1.5px solid #cbd5e1',
                       display: 'flex',
-                      flexDirection: 'column',
+                      alignItems: 'center',
                       justifyContent: 'space-between',
+                      borderBottom: '1px solid #f1f5f9',
+                      paddingBottom: '12px',
+                      marginBottom: '16px',
                       gap: '10px',
                     }}
                   >
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                        <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span>🛵 Módulo Delivery & Cardápio Digital</span>
-                        </div>
-
-                        <span
-                          style={{
-                            background: regLojaPermissoes.delivery !== false ? '#dcfce7' : '#f1f5f9',
-                            color: regLojaPermissoes.delivery !== false ? '#166534' : '#475569',
-                            border: `1px solid ${regLojaPermissoes.delivery !== false ? '#86efac' : '#cbd5e1'}`,
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            padding: '2px 10px',
-                            borderRadius: '999px',
-                          }}
-                        >
-                          {regLojaPermissoes.delivery !== false ? 'Ativa' : 'Desativada'}
-                        </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div
+                        style={{
+                          width: '34px',
+                          height: '34px',
+                          borderRadius: '9px',
+                          background: '#e0f2fe',
+                          color: '#0284c7',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {lojaEditandoId ? <Pencil size={17} /> : <Plus size={18} />}
                       </div>
-
-                      <p style={{ fontSize: '0.76rem', color: '#475569', margin: '0', lineHeight: 1.4 }}>
-                        Cardápio Online com Link/QR Code, Painel de Pedidos em Tempo Real, Alerta Sonoro e Rastreio de Motoboy.
-                      </p>
+                      <div>
+                        <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                          {lojaEditandoId ? 'Editar Loja & Plano' : 'Nova Loja Cliente'}
+                        </h3>
+                        <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '2px 0 0 0' }}>
+                          Credenciais, limite de operadores e módulos liberados
+                        </p>
+                      </div>
                     </div>
 
+                    {lojaEditandoId && (
+                      <span
+                        style={{
+                          background: '#e0f2fe',
+                          color: '#0369a1',
+                          border: '1px solid #bae6fd',
+                          padding: '3px 10px',
+                          borderRadius: '999px',
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                        }}
+                      >
+                        Editando
+                      </span>
+                    )}
+                  </div>
+
+                  {/* CAMPOS DO CADASTRO */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+                      <div className="grupo-input" style={{ marginBottom: 0 }}>
+                        <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                          Nome da Loja / Adega
+                        </label>
+                        <input
+                          type="text"
+                          id="reg-loja-nome"
+                          className="input-modal"
+                          style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                          placeholder="Ex: Adega Boa Vista"
+                          value={regLojaNome}
+                          onChange={(e) => setRegLojaNome(e.target.value)}
+                          required
+                        />
+                      </div>
+
+                      <div className="grupo-input" style={{ marginBottom: 0 }}>
+                        <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                          CNPJ ou Identificador
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          id="reg-loja-cnpj"
+                          className="input-modal"
+                          style={{ borderRadius: '8px', padding: '9px 11px', background: lojaEditandoId ? '#f1f5f9' : '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                          placeholder="00.000.000/0001-00"
+                          value={regLojaCnpj}
+                          onChange={(e) => setRegLojaCnpj(mascaraCnpj(e.target.value))}
+                          maxLength={18}
+                          disabled={!!lojaEditandoId}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+                      <div className="grupo-input" style={{ marginBottom: 0 }}>
+                        <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                          Senha da Loja (mín. {MIN_CARACTERES_SENHA})
+                        </label>
+                        <div className="linha-input" style={{ position: 'relative' }}>
+                          <input
+                            type={senhaVisivel ? 'text' : 'password'}
+                            id="reg-loja-senha"
+                            className="input-modal"
+                            style={{ borderRadius: '8px', padding: '9px 34px 9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem', width: '100%' }}
+                            placeholder={lojaEditandoId ? 'Em branco p/ manter' : 'Mínimo 8 caracteres'}
+                            value={regLojaSenha}
+                            onChange={(e) => setRegLojaSenha(e.target.value)}
+                            minLength={MIN_CARACTERES_SENHA}
+                            required={!lojaEditandoId}
+                          />
+                          <button
+                            type="button"
+                            id="btnOlhoSenha"
+                            onClick={() => setSenhaVisivel(!senhaVisivel)}
+                            title="Mostrar/Ocultar Senha"
+                            style={{
+                              position: 'absolute',
+                              right: '8px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#64748b',
+                              cursor: 'pointer',
+                              padding: '2px',
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            {senhaVisivel ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grupo-input" style={{ marginBottom: 0 }}>
+                        <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                          Confirmar Senha
+                        </label>
+                        <input
+                          type={senhaVisivel ? 'text' : 'password'}
+                          className="input-modal"
+                          style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                          placeholder="Repita a senha"
+                          value={regLojaConfirmarSenha}
+                          onChange={(e) => setRegLojaConfirmarSenha(e.target.value)}
+                          minLength={MIN_CARACTERES_SENHA}
+                          required={!lojaEditandoId}
+                        />
+                      </div>
+                    </div>
+
+                    {/* COTAS DE OPERADORES */}
                     <div
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        background: '#ffffff',
-                        padding: '8px 12px',
+                        padding: '12px 14px',
+                        background: '#f8fafc',
                         borderRadius: '10px',
                         border: '1px solid #e2e8f0',
                       }}
                     >
-                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: regLojaPermissoes.delivery !== false ? '#166534' : '#475569' }}>
-                        {regLojaPermissoes.delivery !== false
-                          ? 'Habilitada para esta loja'
-                          : 'Apenas PDV & Estoque (sem Delivery)'}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>Cota de Usuários da Loja</span>
+                        <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Use 0 para ilimitado</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                          <label style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '3px' }}>
+                            Máx. Caixas
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="input-modal"
+                            style={{ borderRadius: '8px', background: '#ffffff', border: '1px solid #cbd5e1', padding: '7px 10px', fontWeight: 700, marginBottom: 0 }}
+                            value={regLojaLimiteCaixas ?? 0}
+                            onChange={(e) => setRegLojaLimiteCaixas(parseInt(e.target.value) || 0)}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '3px' }}>
+                            Máx. Supervisores
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            className="input-modal"
+                            style={{ borderRadius: '8px', background: '#ffffff', border: '1px solid #cbd5e1', padding: '7px 10px', fontWeight: 700, marginBottom: 0 }}
+                            value={regLojaLimiteSupervisores ?? 0}
+                            onChange={(e) => setRegLojaLimiteSupervisores(parseInt(e.target.value) || 0)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* EXTENSÃO DE DELIVERY */}
+                    <div
+                      onClick={() => alternarPermissaoLoja('delivery')}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        background: regLojaPermissoes.delivery !== false ? '#f0f9ff' : '#f8fafc',
+                        border: regLojaPermissoes.delivery !== false ? '1px solid #7dd3fc' : '1px solid #e2e8f0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                        <div
+                          style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '8px',
+                            background: regLojaPermissoes.delivery !== false ? '#0284c7' : '#e2e8f0',
+                            color: regLojaPermissoes.delivery !== false ? '#ffffff' : '#64748b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
+                          <Bike size={16} />
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>
+                            Módulo Delivery & Cardápio Digital
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            {regLojaPermissoes.delivery !== false ? 'Cardápio online, pedidos e link do motoboy ativos' : 'Desativado — apenas PDV e Estoque'}
+                          </div>
+                        </div>
+                      </div>
                       <input
                         type="checkbox"
                         checked={regLojaPermissoes.delivery !== false}
                         onChange={() => {}}
-                        style={{ width: '18px', height: '18px', accentColor: '#16a34a', cursor: 'pointer' }}
+                        style={{ width: '17px', height: '17px', accentColor: '#0284c7', cursor: 'pointer', flexShrink: 0 }}
                       />
+                    </div>
+
+                    {/* MÓDULOS DO PDV & ESTOQUE */}
+                    <div
+                      style={{
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '10px',
+                        padding: '10px 12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>Módulos do Sistema</span>
+                          <span
+                            style={{
+                              background: '#e0f2fe',
+                              color: '#0369a1',
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              padding: '1px 8px',
+                              borderRadius: '999px',
+                            }}
+                          >
+                            {[
+                              'caixa', 'gestao_caixa', 'estoque', 'usuarios', 'devedores', 'relatorios',
+                              'estorno', 'reimprimir_cupom', 'graficos', 'inteligencia_estoque', 'ocr_ia',
+                              'etiquetas', 'balanca', 'alertas', 'alertas_whatsapp', 'baixa_estoque',
+                              'catalogo_global', 'exportar_dados', 'manual_ajuda'
+                            ].filter((k) => regLojaPermissoes[k as keyof PermissoesLoja]).length}/19
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <button
+                            type="button"
+                            style={{ background: '#ffffff', color: '#0284c7', border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                            onClick={() => marcarTodasPermissoesLoja(true)}
+                          >
+                            Todos
+                          </button>
+                          <button
+                            type="button"
+                            style={{ background: '#ffffff', color: '#64748b', border: '1px solid #cbd5e1', padding: '4px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                            onClick={() => marcarTodasPermissoesLoja(false)}
+                          >
+                            Limpar
+                          </button>
+                          <button
+                            type="button"
+                            style={{
+                              background: modulosLojaExpandidos ? '#0284c7' : '#ffffff',
+                              color: modulosLojaExpandidos ? '#ffffff' : '#334155',
+                              border: `1px solid ${modulosLojaExpandidos ? '#0284c7' : '#cbd5e1'}`,
+                              padding: '4px 9px',
+                              borderRadius: '6px',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => setModulosLojaExpandidos(!modulosLojaExpandidos)}
+                          >
+                            {modulosLojaExpandidos ? 'Ocultar' : 'Personalizar'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {modulosLojaExpandidos && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: '6px', marginTop: '10px' }}>
+                          {[
+                            { key: 'caixa', title: 'PDV / Frente de Caixa', desc: 'Vendas e saídas no caixa' },
+                            { key: 'gestao_caixa', title: 'Gestão de Caixa', desc: 'Turno, sangria e fechamento' },
+                            { key: 'estoque', title: 'Gestão de Estoque', desc: 'Produtos, preços e lotes' },
+                            { key: 'usuarios', title: 'Equipe & Operadores', desc: 'Cadastro de funcionários' },
+                            { key: 'devedores', title: 'Clientes / Fiado', desc: 'Contas a prazo e recebimentos' },
+                            { key: 'relatorios', title: 'Relatórios de Vendas', desc: 'Histórico e faturamento' },
+                            { key: 'estorno', title: 'Estorno de Vendas', desc: 'Cancelamento e retorno' },
+                            { key: 'reimprimir_cupom', title: '2ª Via de Cupom', desc: 'Reimpressão de recibos' },
+                            { key: 'graficos', title: 'Gráficos & Analytics', desc: 'Curva de vendas e mix' },
+                            { key: 'inteligencia_estoque', title: 'Inteligência de Estoque', desc: 'Giro e sugestões' },
+                            { key: 'ocr_ia', title: 'Scanner OCR / IA', desc: 'Leitura inteligente' },
+                            { key: 'etiquetas', title: 'Etiquetas de Gôndola', desc: 'Impressão térmica' },
+                            { key: 'balanca', title: 'Balança & Pesáveis', desc: 'Integração etiquetas EAN-13' },
+                            { key: 'alertas', title: 'Alertas de Validade', desc: ' Controle de vencimentos' },
+                            { key: 'alertas_whatsapp', title: 'Alertas WhatsApp', desc: 'Envio de avisos' },
+                            { key: 'baixa_estoque', title: 'Baixa & Descarte', desc: 'Perdas e avarias' },
+                            { key: 'catalogo_global', title: 'Catálogo Global', desc: 'Base compartilhada' },
+                            { key: 'exportar_dados', title: 'Exportação CSV/PDF', desc: 'Download de relatórios' },
+                            { key: 'manual_ajuda', title: 'Manual do Aplicativo', desc: 'Guia de uso integrado' },
+                          ].map((item) => {
+                            const marcado = !!regLojaPermissoes[item.key as keyof PermissoesLoja];
+                            return (
+                              <div
+                                key={item.key}
+                                onClick={() => alternarPermissaoLoja(item.key as keyof PermissoesLoja)}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: '8px',
+                                  padding: '7px 9px',
+                                  borderRadius: '8px',
+                                  background: marcado ? '#f0f9ff' : '#ffffff',
+                                  border: marcado ? '1px solid #7dd3fc' : '1px solid #e2e8f0',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={marcado}
+                                  onChange={() => {}}
+                                  style={{ marginTop: '2px', accentColor: '#0284c7', cursor: 'pointer' }}
+                                />
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>{item.title}</div>
+                                  <div style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '1px', lineHeight: 1.2 }}>{item.desc}</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                      <button
+                        type="button"
+                        className="btn btn-salvar"
+                        style={{
+                          flex: 1,
+                          padding: '11px 14px',
+                          borderRadius: '9px',
+                          fontWeight: 700,
+                          fontSize: '0.86rem',
+                          background: '#0284c7',
+                          color: '#ffffff',
+                          border: '1px solid #0369a1',
+                          cursor: 'pointer',
+                        }}
+                        onClick={salvarNovoSupermercado}
+                      >
+                        {lojaEditandoId ? 'Salvar Alterações da Loja' : 'Cadastrar Loja Cliente'}
+                      </button>
+                      {lojaEditandoId && (
+                        <button
+                          type="button"
+                          className="btn btn-cancelar"
+                          style={{
+                            padding: '11px 14px',
+                            borderRadius: '9px',
+                            fontWeight: 600,
+                            fontSize: '0.82rem',
+                            background: '#f1f5f9',
+                            color: '#475569',
+                            border: '1px solid #cbd5e1',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            setLojaEditandoId(null);
+                            setRegLojaNome('');
+                            setRegLojaCnpj('');
+                            setRegLojaSenha('');
+                            setMsgRegLoja('');
+                          }}
+                        >
+                          Cancelar
+                        </button>
+                      )}
+                    </div>
+                    <div className="msg" id="msg-reg-loja">
+                      {msgRegLoja}
                     </div>
                   </div>
                 </div>
 
-                {/* QUADRADOS DE PERMISSÃO DOS MÓDULOS DO PDV BASE (COLAPSÁVEL PARA REDUZIR POLUIÇÃO VISUAL) */}
+                {/* COLUNA DIREITA: LISTA DE LOJAS CADASTRADAS */}
                 <div
                   style={{
-                    marginTop: '18px',
-                    marginBottom: '14px',
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
+                    flex: '1.65 1 540px',
+                    minWidth: 'min(100%, 340px)',
+                    background: '#ffffff',
                     borderRadius: '14px',
-                    padding: '12px 14px',
+                    padding: '20px',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                   }}
                 >
                   <div
@@ -11394,594 +11625,460 @@ export default function App() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      borderBottom: '1px solid #f1f5f9',
+                      paddingBottom: '12px',
+                      marginBottom: '14px',
                       flexWrap: 'wrap',
-                      gap: '8px',
+                      gap: '10px',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <label className="rotulo-campo" style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                        📦 Módulos do PDV & Estoque
-                      </label>
-                      <span
-                        style={{
-                          background: '#e0f2fe',
-                          color: '#0369a1',
-                          fontSize: '0.74rem',
-                          fontWeight: 800,
-                          padding: '2px 10px',
-                          borderRadius: '999px',
-                          border: '1px solid #bae6fd',
-                        }}
-                      >
-                        {[
-                          'caixa', 'gestao_caixa', 'estoque', 'usuarios', 'devedores', 'relatorios',
-                          'estorno', 'reimprimir_cupom', 'graficos', 'inteligencia_estoque', 'ocr_ia',
-                          'etiquetas', 'balanca', 'alertas', 'alertas_whatsapp', 'baixa_estoque',
-                          'catalogo_global', 'exportar_dados', 'manual_ajuda'
-                        ].filter((k) => regLojaPermissoes[k as keyof PermissoesLoja]).length} de 19 ativos
-                      </span>
+                    <div>
+                      <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                        Lojas & Clientes Cadastrados ({listaSupermercados.length})
+                      </h3>
+                      <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '2px 0 0 0' }}>
+                        Gerencie acessos, links exclusivos, senhas e módulos contratados
+                      </p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <button
-                        type="button"
-                        style={{
-                          background: '#ffffff',
-                          color: '#0284c7',
-                          border: '1px solid #bae6fd',
-                          padding: '5px 10px',
-                          borderRadius: '8px',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => marcarTodasPermissoesLoja(true)}
-                      >
-                        Marcar Todos
-                      </button>
-                      <button
-                        type="button"
-                        style={{
-                          background: '#ffffff',
-                          color: '#64748b',
-                          border: '1px solid #cbd5e1',
-                          padding: '5px 10px',
-                          borderRadius: '8px',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => marcarTodasPermissoesLoja(false)}
-                      >
-                        Limpar
-                      </button>
-                      <button
-                        type="button"
-                        style={{
-                          background: modulosLojaExpandidos ? '#0284c7' : '#ffffff',
-                          color: modulosLojaExpandidos ? '#ffffff' : '#0f172a',
-                          border: `1px solid ${modulosLojaExpandidos ? '#0284c7' : '#cbd5e1'}`,
-                          padding: '5px 12px',
-                          borderRadius: '8px',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => setModulosLojaExpandidos(!modulosLojaExpandidos)}
-                      >
-                        {modulosLojaExpandidos ? '▲ Ocultar Módulos' : '▼ Personalizar Módulos'}
-                      </button>
-                    </div>
-                  </div>
-
-                  {modulosLojaExpandidos && (
-                  <div className="grid-permissoes" style={{ marginTop: '12px' }}>
-                    {[
-                      { key: 'caixa', icon: '🛒', title: 'PDV / Frente de Caixa', desc: 'Permite realizar vendas e registrar saídas no caixa' },
-                      { key: 'gestao_caixa', icon: '💵', title: 'Gestão de Caixa & Sangria', desc: 'Abertura de turno, suprimento, sangria e fechamento conferido' },
-                      { key: 'estoque', icon: '📦', title: 'Gestão de Estoque', desc: 'Permite cadastrar produtos, preços, marcas e lotes' },
-                      { key: 'usuarios', icon: '👥', title: 'Gestão de Equipe & Caixas', desc: 'Permite cadastrar e gerenciar operadores de caixa' },
-                      { key: 'devedores', icon: '💳', title: 'Área de Devedores / Fiado', desc: 'Gestão de clientes com compras fiadas, limites e pagamentos' },
-                      { key: 'relatorios', icon: '📊', title: 'Relatórios de Vendas', desc: 'Acesso ao histórico de vendas e faturamento' },
-                      { key: 'estorno', icon: '↩️', title: 'Estorno & Cancelamento', desc: 'Permite estornar vendas realizadas e devolver ao estoque' },
-                      { key: 'reimprimir_cupom', icon: '🧾', title: '2ª Via de Cupom / Recibo', desc: 'Reimpressão e emissão de comprovantes de vendas anteriores' },
-                      { key: 'graficos', icon: '📈', title: 'Gráficos & Analytics', desc: 'Acesso aos gráficos e curva de faturamento' },
-                      { key: 'inteligencia_estoque', icon: '💡', title: 'Inteligência de Estoque', desc: 'Sugestões de reposição, giro de caixa e perdas' },
-                      { key: 'ocr_ia', icon: '🤖', title: 'Consulta OCR / IA', desc: 'Leitura de rótulos com câmera e inteligência artificial' },
-                      { key: 'etiquetas', icon: '🏷️', title: 'Impressão de Etiquetas', desc: 'Geração e impressão de etiquetas térmicas de gôndola' },
-                      { key: 'balanca', icon: '⚖️', title: 'Balança & Pesáveis', desc: 'Decodificação e integração com balanças Toledo/Filizola/Elgin' },
-                      { key: 'alertas', icon: '🔔', title: 'Alertas de Validade', desc: 'Notificação automática de produtos a vencer e vencidos' },
-                      { key: 'alertas_whatsapp', icon: '📱', title: 'Alertas WhatsApp / E-mail', desc: 'Envio e disparo automático de relatórios de validade' },
-                      { key: 'baixa_estoque', icon: '🗑️', title: 'Baixa & Descarte', desc: 'Ajuste manual e descarte por perda ou avaria' },
-                      { key: 'catalogo_global', icon: '🗂️', title: 'Catálogo Global Master', desc: 'Acesso e consulta aos produtos compartilhados da rede' },
-                      { key: 'exportar_dados', icon: '📥', title: 'Exportação de Dados', desc: 'Download de relatórios em Excel, CSV e PDF' },
-                      { key: 'manual_ajuda', icon: '📘', title: 'Manual de Ajuda & Guia', desc: 'Acesso ao manual completo interativo do usuário' },
-                    ].map((item) => {
-                      const marcado = regLojaPermissoes[item.key as keyof PermissoesLoja];
-                      return (
-                        <div
-                          key={item.key}
-                          className={`card-permissao ${marcado ? 'marcado' : ''}`}
-                          onClick={() => alternarPermissaoLoja(item.key as keyof PermissoesLoja)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={!!marcado}
-                            onChange={() => {}}
-                          />
-                          <div className="info-permissao">
-                            <div className="titulo-permissao">
-                              <span>{item.icon}</span>
-                              <span>{item.title}</span>
-                            </div>
-                            <div className="desc-permissao">{item.desc}</div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  )}
-                </div>
-
-                <div className="grupo-botoes" style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
-                  <button
-                    className="btn btn-salvar"
-                    style={{
-                      flex: 1,
-                      padding: '13px',
-                      borderRadius: '12px',
-                      fontWeight: 800,
-                      fontSize: '0.92rem',
-                      background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                      boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)',
-                    }}
-                    onClick={salvarNovoSupermercado}
-                  >
-                    {lojaEditandoId ? '💾 Salvar Alterações da Loja & Plano' : '✅ Cadastrar e Salvar Supermercado'}
-                  </button>
-                  {lojaEditandoId && (
-                    <button
-                      className="btn btn-cancelar"
-                      style={{ padding: '13px 20px', borderRadius: '12px', fontWeight: 700 }}
-                      onClick={() => {
-                        setLojaEditandoId(null);
-                        setRegLojaNome('');
-                        setRegLojaCnpj('');
-                        setRegLojaSenha('');
-                        setMsgRegLoja('');
-                      }}
-                    >
-                      Cancelar Edição
-                    </button>
-                  )}
-                </div>
-                <div className="msg" id="msg-reg-loja">
-                  {msgRegLoja}
-                </div>
-              </div>
-
-              {/* SEÇÃO 2: LISTA DE LOJAS CADASTRADAS */}
-              <div
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '20px',
-                  padding: '22px',
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.05)',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '16px',
-                    flexWrap: 'wrap',
-                    gap: '10px',
-                  }}
-                >
-                  <div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      🏪 Lojas & Clientes Cadastrados ({listaSupermercados.length})
-                    </h3>
-                    <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                      Gerencie o acesso, ative ou desative a Extensão de Delivery e redefina senhas das lojas
-                    </p>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <input
-                      type="search"
-                      id="busca_loja_cnpj_nome_input"
-                      name="search_query_loja_cnpj_nome"
-                      autoComplete="new-password"
-                      autoCorrect="off"
-                      autoCapitalize="none"
-                      spellCheck={false}
-                      data-form-type="other"
-                      data-lpignore="true"
-                      data-1p-ignore="true"
-                      className="input-modal"
-                      style={{ maxWidth: '240px', padding: '8px 12px', fontSize: '0.84rem', borderRadius: '10px', marginBottom: 0 }}
-                      placeholder="🔍 Buscar loja ou CNPJ..."
-                      value={buscaLoja.toLowerCase().includes('rodrigo.souza') ? '' : buscaLoja}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setBuscaLoja(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
-                      }}
-                    />
-                    {listaSupermercados.length > 0 && (
-                      <button
-                        type="button"
-                        className="btn-acao-rel"
-                        style={{
-                          background: '#fee2e2',
-                          color: '#b91c1c',
-                          border: '1px solid #fca5a5',
-                          fontWeight: 700,
-                          fontSize: '0.78rem',
-                          padding: '8px 12px',
-                          borderRadius: '10px',
-                        }}
-                        onClick={limparTodasLojasDeTeste}
-                        title="Excluir todas as lojas cadastradas para zerar o banco para produção"
-                      >
-                        🧹 Limpar Lojas de Teste
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="tabela-relatorio" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {(() => {
-                    const termo = buscaLoja.trim().toLowerCase();
-                    const filtradas = listaSupermercados.filter(
-                      (l) => l.nome.toLowerCase().includes(termo) || l.cnpj.toLowerCase().includes(termo)
-                    );
-
-                    if (filtradas.length === 0) {
-                      return (
-                        <div style={{ textAlign: 'center', color: 'var(--texto-secundario)', padding: '28px' }}>
-                          Nenhum supermercado encontrado.
-                        </div>
-                      );
-                    }
-
-                    return filtradas.map((loja) => {
-                      const isAtiva = loja.id === supermercadoAtual;
-                      const verSenha = senhasVisiveisLista[loja.id] || false;
-                      const temDelivery = loja.permissoesLoja?.delivery !== false;
-
-                      return (
-                        <div
-                          key={loja.id}
-                          className="relatorio-linha-cheia"
-                          style={{
-                            background: isAtiva ? '#f0f9ff' : '#ffffff',
-                            border: isAtiva ? '2px solid #0284c7' : '1px solid #e2e8f0',
-                            borderRadius: '16px',
-                            padding: '16px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            gap: '14px',
-                            flexWrap: 'wrap',
-                            boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)',
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                        <Search size={14} style={{ position: 'absolute', left: '10px', color: '#94a3b8', pointerEvents: 'none' }} />
+                        <input
+                          type="search"
+                          id="busca_loja_cnpj_nome_input"
+                          name="search_query_loja_cnpj_nome"
+                          autoComplete="new-password"
+                          autoCorrect="off"
+                          autoCapitalize="none"
+                          spellCheck={false}
+                          data-form-type="other"
+                          data-lpignore="true"
+                          data-1p-ignore="true"
+                          className="input-modal"
+                          style={{ width: '215px', padding: '7px 10px 7px 30px', fontSize: '0.8rem', borderRadius: '8px', marginBottom: 0, background: '#f8fafc', border: '1px solid #cbd5e1' }}
+                          placeholder="Buscar loja ou CNPJ..."
+                          value={buscaLoja.toLowerCase().includes('rodrigo.souza') ? '' : buscaLoja}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setBuscaLoja(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
                           }}
+                        />
+                      </div>
+
+                      {listaSupermercados.length > 0 && (
+                        <button
+                          type="button"
+                          style={{
+                            background: '#ffffff',
+                            color: '#dc2626',
+                            border: '1px solid #fecaca',
+                            fontWeight: 600,
+                            fontSize: '0.75rem',
+                            padding: '7px 10px',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                          }}
+                          onClick={limparTodasLojasDeTeste}
+                          title="Excluir todas as lojas cadastradas para zerar o banco para produção"
                         >
-                          <div style={{ flex: 1, minWidth: '250px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                              <b style={{ fontSize: '1rem', color: '#0f172a' }}>{loja.nome}</b>
-                              {isAtiva && (
+                          <Trash2 size={13} />
+                          <span>Limpar Testes</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {(() => {
+                      const termo = buscaLoja.trim().toLowerCase();
+                      const filtradas = listaSupermercados.filter(
+                        (l) => l.nome.toLowerCase().includes(termo) || l.cnpj.toLowerCase().includes(termo)
+                      );
+
+                      if (filtradas.length === 0) {
+                        return (
+                          <div style={{ textAlign: 'center', color: '#64748b', padding: '32px 16px', background: '#f8fafc', borderRadius: '10px', border: '1px dashed #cbd5e1', fontSize: '0.85rem' }}>
+                            Nenhuma loja encontrada com os critérios informados.
+                          </div>
+                        );
+                      }
+
+                      return filtradas.map((loja) => {
+                        const isAtiva = loja.id === supermercadoAtual;
+                        const temDelivery = loja.permissoesLoja?.delivery !== false;
+                        const linksExclusivos = obterLinksExclusivosLoja(loja);
+                        const copiadoAdmin = linkCopiadoFeedback === `${loja.id}_admin`;
+                        const copiadoCardapio = linkCopiadoFeedback === `${loja.id}_cardapio`;
+
+                        return (
+                          <div
+                            key={loja.id}
+                            style={{
+                              background: '#ffffff',
+                              border: isAtiva ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+                              borderLeft: isAtiva ? '4px solid #0284c7' : '1px solid #e2e8f0',
+                              borderRadius: '12px',
+                              padding: '14px 16px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '12px',
+                            }}
+                          >
+                            {/* LINHA 1: IDENTIFICAÇÃO + STATUS + BOTÃO ACESSAR */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', flexWrap: 'wrap' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                                <div
+                                  style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '9px',
+                                    background: isAtiva ? '#0284c7' : '#f1f5f9',
+                                    color: isAtiva ? '#ffffff' : '#475569',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  <Store size={18} />
+                                </div>
+                                <div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                    <span style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0f172a' }}>{loja.nome}</span>
+                                    {loja.status === 'bloqueado' ? (
+                                      <span style={{ background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', fontSize: '0.68rem', padding: '1px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                                        Bloqueada
+                                      </span>
+                                    ) : (
+                                      <span style={{ background: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', fontSize: '0.68rem', padding: '1px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                                        Ativa
+                                      </span>
+                                    )}
+                                    <span
+                                      style={{
+                                        background: temDelivery ? '#e0f2fe' : '#f1f5f9',
+                                        color: temDelivery ? '#0369a1' : '#64748b',
+                                        border: `1px solid ${temDelivery ? '#bae6fd' : '#e2e8f0'}`,
+                                        fontSize: '0.68rem',
+                                        padding: '1px 8px',
+                                        borderRadius: '999px',
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      {temDelivery ? 'Delivery Ativo' : 'Sem Delivery'}
+                                    </span>
+                                  </div>
+
+                                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                    <span>CNPJ: <b style={{ color: '#334155' }}>{loja.cnpj}</b></span>
+                                    <span>•</span>
+                                    <span>Caixas: <b style={{ color: '#334155' }}>{loja.limiteCaixas !== undefined ? (loja.limiteCaixas === 0 ? 'Ilimitado' : loja.limiteCaixas) : 5}</b></span>
+                                    <span>•</span>
+                                    <span>Supervisores: <b style={{ color: '#334155' }}>{loja.limiteSupervisores !== undefined ? (loja.limiteSupervisores === 0 ? 'Ilimitado' : loja.limiteSupervisores) : 2}</b></span>
+                                    <span>•</span>
+                                    <span style={{ color: loja.senha_revogada ? '#b45309' : '#64748b' }}>
+                                      {loja.senha_revogada ? 'Senha revogada' : `Cadastro: ${loja.dataCadastro || 'N/A'}`}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {isAtiva ? (
                                 <span
                                   style={{
-                                    background: '#0284c7',
-                                    color: '#fff',
-                                    fontSize: '0.7rem',
-                                    padding: '2px 9px',
-                                    borderRadius: '999px',
+                                    background: '#e0f2fe',
+                                    color: '#0369a1',
+                                    border: '1px solid #bae6fd',
+                                    fontSize: '0.74rem',
+                                    padding: '5px 11px',
+                                    borderRadius: '8px',
                                     fontWeight: 700,
                                   }}
                                 >
-                                  ✓ Loja Selecionada
-                                </span>
-                              )}
-                              {loja.status === 'bloqueado' ? (
-                                <span
-                                  style={{
-                                    background: '#fee2e2',
-                                    color: '#991b1b',
-                                    fontSize: '0.72rem',
-                                    padding: '2px 9px',
-                                    borderRadius: '999px',
-                                    fontWeight: 800,
-                                    border: '1px solid #fca5a5',
-                                  }}
-                                >
-                                  🚫 BLOQUEADO
+                                  Loja em Uso no PDV
                                 </span>
                               ) : (
-                                <span
+                                <button
+                                  type="button"
                                   style={{
-                                    background: '#dcfce7',
-                                    color: '#15803d',
-                                    fontSize: '0.72rem',
-                                    padding: '2px 9px',
-                                    borderRadius: '999px',
+                                    background: '#0284c7',
+                                    color: '#ffffff',
+                                    border: '1px solid #0369a1',
                                     fontWeight: 700,
+                                    fontSize: '0.76rem',
+                                    borderRadius: '8px',
+                                    padding: '6px 12px',
+                                    cursor: 'pointer',
                                   }}
+                                  onClick={() => alternarLojaAtiva(loja)}
                                 >
-                                  🟢 Ativo / Liberado
-                                </span>
+                                  Acessar Loja
+                                </button>
                               )}
-
-                              {/* BADGE DA EXTENSÃO DE DELIVERY */}
-                              <span
-                                style={{
-                                  background: temDelivery ? '#ecfdf5' : '#fffbeb',
-                                  color: temDelivery ? '#047857' : '#b45309',
-                                  border: temDelivery ? '1px solid #6ee7b7' : '1px solid #fde68a',
-                                  fontSize: '0.72rem',
-                                  padding: '2px 10px',
-                                  borderRadius: '999px',
-                                  fontWeight: 800,
-                                }}
-                              >
-                                {temDelivery ? '🛵 Extensão Delivery: ATIVA' : '🔒 Delivery: Não Contratado'}
-                              </span>
-                            </div>
-
-                            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-                              CNPJ: <b style={{ color: '#334155' }}>{loja.cnpj}</b> • Cadastrada em: {loja.dataCadastro || 'N/A'}
                             </div>
 
                             {loja.status === 'bloqueado' && loja.motivoBloqueio && (
-                              <div style={{ fontSize: '0.78rem', color: '#b91c1c', marginTop: '4px', background: '#fff1f2', padding: '4px 8px', borderRadius: '6px', border: '1px dashed #f87171' }}>
-                                Motivo do Bloqueio: <b>{loja.motivoBloqueio}</b>
+                              <div style={{ fontSize: '0.75rem', color: '#b91c1c', background: '#fef2f2', padding: '6px 10px', borderRadius: '8px', border: '1px solid #fecaca' }}>
+                                Motivo do bloqueio: <b>{loja.motivoBloqueio}</b>
                               </div>
                             )}
 
+                            {/* LINHA 2: LINKS DE ACESSO E AÇÕES DE GESTÃO PADRONIZADAS */}
                             <div
                               style={{
-                                fontSize: '0.8rem',
-                                color: '#475569',
-                                marginTop: '6px',
                                 display: 'flex',
+                                justifyContent: 'space-between',
                                 alignItems: 'center',
-                                gap: '8px',
                                 flexWrap: 'wrap',
+                                gap: '8px',
+                                paddingTop: '10px',
+                                borderTop: '1px solid #f1f5f9',
                               }}
                             >
-                              <span
-                                style={{
-                                  background: loja.senha_revogada ? '#fef3c7' : '#f0fdf4',
-                                  color: loja.senha_revogada ? '#b45309' : '#15803d',
-                                  border: `1px solid ${loja.senha_revogada ? '#fde68a' : '#86efac'}`,
-                                  padding: '2px 8px',
-                                  borderRadius: '6px',
-                                  fontWeight: 800,
-                                  fontSize: '0.73rem',
-                                }}
-                              >
-                                {loja.senha_revogada
-                                  ? '⚠️ Senha Revogada (Aguardando Lojista)'
-                                  : '🔐 Criptografada (SHA-256 + Salt)'}
-                              </span>
-
-                              <span style={{ background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.75rem' }}>
-                                🛒 Caixas: {loja.limiteCaixas !== undefined ? (loja.limiteCaixas === 0 ? '♾️ Ilimitado' : `${loja.limiteCaixas}`) : '5'}
-                              </span>
-                              <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '6px', fontWeight: 700, fontSize: '0.75rem' }}>
-                                👔 Supervisores: {loja.limiteSupervisores !== undefined ? (loja.limiteSupervisores === 0 ? '♾️ Ilimitado' : `${loja.limiteSupervisores}`) : '2'}
-                              </span>
-                            </div>
-
-                            {/* BARRA DE LINKS EXCLUSIVOS & TOKENS SECRETOS DA LOJA (1-CLIQUE) */}
-                            {(() => {
-                              const linksExclusivos = obterLinksExclusivosLoja(loja);
-                              return (
-                                <div
+                              {/* Grupo de Links */}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => copiarLinkComFeedback(`${loja.id}_admin`, linksExclusivos.admin)}
                                   style={{
-                                    marginTop: '10px',
-                                    padding: '10px 12px',
-                                    background: '#f8fafc',
+                                    background: copiadoAdmin ? '#0284c7' : '#f0f9ff',
+                                    color: copiadoAdmin ? '#ffffff' : '#0369a1',
+                                    border: `1px solid ${copiadoAdmin ? '#0284c7' : '#bae6fd'}`,
+                                    padding: '5px 10px',
+                                    borderRadius: '7px',
+                                    fontSize: '0.73rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                  title={linksExclusivos.admin}
+                                >
+                                  {copiadoAdmin ? <Check size={13} /> : <Copy size={13} />}
+                                  <span>{copiadoAdmin ? 'Copiado!' : 'Link da Loja'}</span>
+                                </button>
+
+                                {temDelivery && (
+                                  <button
+                                    type="button"
+                                    onClick={() => copiarLinkComFeedback(`${loja.id}_cardapio`, linksExclusivos.cardapio)}
+                                    style={{
+                                      background: copiadoCardapio ? '#0284c7' : '#f8fafc',
+                                      color: copiadoCardapio ? '#ffffff' : '#334155',
+                                      border: `1px solid ${copiadoCardapio ? '#0284c7' : '#cbd5e1'}`,
+                                      padding: '5px 10px',
+                                      borderRadius: '7px',
+                                      fontSize: '0.73rem',
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '5px',
+                                    }}
+                                    title={linksExclusivos.cardapio}
+                                  >
+                                    {copiadoCardapio ? <Check size={13} /> : <ShoppingBag size={13} style={{ color: '#0284c7' }} />}
+                                    <span>{copiadoCardapio ? 'Copiado!' : 'Cardápio'}</span>
+                                  </button>
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() => regenerarTokensExclusivosLoja(loja.id)}
+                                  style={{
+                                    background: '#ffffff',
+                                    color: '#64748b',
+                                    border: '1px solid #e2e8f0',
+                                    padding: '5px 8px',
+                                    borderRadius: '7px',
+                                    fontSize: '0.71rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                  title={`Slug: ${loja.slug || loja.id} — Gerar novo token de acesso`}
+                                >
+                                  <RefreshCw size={12} />
+                                  <span>Novo Token</span>
+                                </button>
+                              </div>
+
+                              {/* Grupo de Ações Administrativas */}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => alternarExtensaoDeliveryLoja(loja.id)}
+                                  style={{
+                                    background: '#ffffff',
+                                    color: temDelivery ? '#0369a1' : '#475569',
+                                    border: `1px solid ${temDelivery ? '#bae6fd' : '#cbd5e1'}`,
+                                    borderRadius: '7px',
+                                    padding: '5px 9px',
+                                    fontSize: '0.73rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                  title="Ativar ou desativar o módulo de Delivery para esta loja"
+                                >
+                                  <Bike size={13} />
+                                  <span>{temDelivery ? 'Desativar Delivery' : 'Ativar Delivery'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setLojaGerenciandoSenha(loja)}
+                                  style={{
+                                    background: '#ffffff',
+                                    color: '#334155',
                                     border: '1px solid #cbd5e1',
-                                    borderRadius: '12px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '6px',
+                                    borderRadius: '7px',
+                                    padding: '5px 9px',
+                                    fontSize: '0.73rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
                                   }}
                                 >
-                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-                                    <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#0f172a' }}>
-                                      🔗 Link Oficial de Acesso da Loja (Slug: <code style={{ color: '#0284c7' }}>{loja.slug || loja.id}</code>)
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={() => regenerarTokensExclusivosLoja(loja.id)}
-                                      style={{
-                                        background: '#ffffff',
-                                        color: '#475569',
-                                        border: '1px solid #cbd5e1',
-                                        padding: '2px 8px',
-                                        borderRadius: '6px',
-                                        fontSize: '0.68rem',
-                                        fontWeight: 700,
-                                        cursor: 'pointer',
-                                      }}
-                                      title="Gerar um novo token secreto para o link desta loja"
-                                    >
-                                      🔄 Regenerar Token da Loja
-                                    </button>
-                                  </div>
-                                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                    {[
-                                      { key: `${loja.id}_admin`, label: '🔑 Copiar Link da Loja (Admin & Equipe)', url: linksExclusivos.admin, bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
-                                      ...(loja.permissoesLoja?.delivery !== false
-                                        ? [{ key: `${loja.id}_cardapio`, label: '🛵 Cardápio Cliente', url: linksExclusivos.cardapio, bg: '#ecfdf5', color: '#047857', border: '#6ee7b7' }]
-                                        : []),
-                                    ].map((btn) => {
-                                      const copiado = linkCopiadoFeedback === btn.key;
-                                      return (
-                                        <button
-                                          key={btn.key}
-                                          type="button"
-                                          onClick={() => copiarLinkComFeedback(btn.key, btn.url)}
-                                          style={{
-                                            background: copiado ? '#059669' : btn.bg,
-                                            color: copiado ? '#ffffff' : btn.color,
-                                            border: `1px solid ${copiado ? '#059669' : btn.border}`,
-                                            padding: '4px 9px',
-                                            borderRadius: '8px',
-                                            fontSize: '0.72rem',
-                                            fontWeight: 800,
-                                            cursor: 'pointer',
-                                            transition: 'all 0.15s ease',
-                                          }}
-                                          title={btn.url}
-                                        >
-                                          {copiado ? '✓ Copiado!' : btn.label}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              );
-                            })()}
+                                  <KeyRound size={13} style={{ color: '#64748b' }} />
+                                  <span>Senha</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => prepararEdicaoLoja(loja)}
+                                  style={{
+                                    background: '#ffffff',
+                                    color: '#334155',
+                                    border: '1px solid #cbd5e1',
+                                    borderRadius: '7px',
+                                    padding: '5px 9px',
+                                    fontSize: '0.73rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                >
+                                  <Pencil size={13} style={{ color: '#0284c7' }} />
+                                  <span>Editar</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => alternarBloqueioSupermercado(loja.id)}
+                                  style={{
+                                    background: '#ffffff',
+                                    color: loja.status === 'bloqueado' ? '#15803d' : '#b45309',
+                                    border: `1px solid ${loja.status === 'bloqueado' ? '#bbf7d0' : '#fde68a'}`,
+                                    borderRadius: '7px',
+                                    padding: '5px 9px',
+                                    fontSize: '0.73rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                >
+                                  {loja.status === 'bloqueado' ? <Unlock size={13} /> : <Ban size={13} />}
+                                  <span>{loja.status === 'bloqueado' ? 'Desbloquear' : 'Bloquear'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => excluirSupermercado(loja.id)}
+                                  style={{
+                                    background: '#ffffff',
+                                    color: '#dc2626',
+                                    border: '1px solid #fecaca',
+                                    borderRadius: '7px',
+                                    padding: '5px 9px',
+                                    fontSize: '0.73rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '4px',
+                                  }}
+                                >
+                                  <Trash2 size={13} />
+                                  <span>Excluir</span>
+                                </button>
+                              </div>
+                            </div>
                           </div>
-
-                          <div
-                            className="acoes-relatorio"
-                            style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px' }}
-                          >
-                            {!isAtiva && (
-                              <button
-                                className="btn-acao-rel"
-                                style={{ background: '#0284c7', color: '#fff', fontWeight: 700, borderRadius: '8px', padding: '7px 12px' }}
-                                onClick={() => alternarLojaAtiva(loja)}
-                              >
-                                Acessar Loja
-                              </button>
-                            )}
-
-                            {/* BOTÃO 1-CLIQUE PARA ATIVAR/DESATIVAR EXTENSÃO DE DELIVERY */}
-                            <button
-                              type="button"
-                              className="btn-acao-rel"
-                              style={{
-                                background: temDelivery ? '#ecfdf5' : '#0284c7',
-                                color: temDelivery ? '#047857' : '#ffffff',
-                                border: temDelivery ? '1px solid #6ee7b7' : '1px solid #0369a1',
-                                fontWeight: 800,
-                                borderRadius: '8px',
-                                padding: '7px 12px',
-                              }}
-                              onClick={() => alternarExtensaoDeliveryLoja(loja.id)}
-                              title="Ativar ou Desativar a Extensão Paga de Delivery para este cliente"
-                            >
-                              {temDelivery ? '🛵 Delivery Ativo (Desativar)' : '💎 Liberar Extensão Delivery'}
-                            </button>
-
-                            <button
-                              className="btn-acao-rel"
-                              style={{
-                                background: loja.status === 'bloqueado' ? '#dcfce7' : '#fee2e2',
-                                color: loja.status === 'bloqueado' ? '#15803d' : '#991b1b',
-                                border: loja.status === 'bloqueado' ? '1px solid #86efac' : '1px solid #fca5a5',
-                                fontWeight: 700,
-                                borderRadius: '8px',
-                                padding: '7px 12px',
-                              }}
-                              onClick={() => alternarBloqueioSupermercado(loja.id)}
-                              title="Bloquear ou Desbloquear o acesso do supermercado"
-                            >
-                              {loja.status === 'bloqueado' ? '🔓 Desbloquear' : '🚫 Bloquear'}
-                            </button>
-                            <button
-                              type="button"
-                              className="btn-acao-rel"
-                              style={{
-                                background: '#eff6ff',
-                                color: '#1d4ed8',
-                                border: '1px solid #93c5fd',
-                                borderRadius: '8px',
-                                padding: '7px 12px',
-                                fontWeight: 800,
-                              }}
-                              onClick={() => setLojaGerenciandoSenha(loja)}
-                              title="Revogar tempo de bloqueio, revogar senha atual ou definir nova senha"
-                            >
-                              🔑 Gerenciar Senha
-                            </button>
-                            <button
-                              className="btn-acao-rel btn-editar-rel"
-                              style={{ borderRadius: '8px', padding: '7px 12px', fontWeight: 700 }}
-                              onClick={() => prepararEdicaoLoja(loja)}
-                            >
-                              ✏️ Editar Plano
-                            </button>
-                            <button
-                              className="btn-acao-rel btn-excluir-rel"
-                              style={{ borderRadius: '8px', padding: '7px 12px', fontWeight: 700 }}
-                              onClick={() => excluirSupermercado(loja.id)}
-                            >
-                              Excluir
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    });
-                  })()}
+                        );
+                      });
+                    })()}
+                  </div>
                 </div>
               </div>
             </>
           ) : (
-            /* SEÇÃO 2: BANCO DE DADOS MASTER - DONA DO APP */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '10px', padding: '14px', color: '#0369a1' }}>
+            /* SEÇÃO 2: BANCO DE DADOS MASTER - CATÁLOGO GLOBAL */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      👑 Acesso Exclusivo da Dona do Aplicativo - Gerenciador Geral de Banco de Dados
-                    </h3>
-                    <p style={{ fontSize: '0.84rem', margin: 0, color: '#0284c7' }}>
-                      Conectado ao Banco de Dados Dedicado: <b>adega-delivery-pdv</b> • 🌐 <b>{catalogoGlobal.length} produtos</b> no Catálogo Global
-                    </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Database size={18} />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '0.96rem', fontWeight: 800, margin: 0, color: '#0f172a' }}>
+                        Gerenciador do Catálogo Global Master
+                      </h3>
+                      <p style={{ fontSize: '0.76rem', margin: '2px 0 0 0', color: '#64748b' }}>
+                        Projeto conectado: <b style={{ color: '#334155' }}>adega-delivery-pdv</b> • <b style={{ color: '#0284c7' }}>{catalogoGlobal.length.toLocaleString('pt-BR')} produtos</b> disponíveis para todas as lojas
+                      </p>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <button
-                      className="btn-acao-rel"
+                      type="button"
                       style={{
                         background: '#0284c7',
                         color: '#ffffff',
                         padding: '8px 14px',
                         borderRadius: '8px',
                         fontWeight: 700,
-                        fontSize: '0.82rem',
-                        display: 'flex',
+                        fontSize: '0.8rem',
+                        display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
-                        border: 'none',
+                        border: '1px solid #0369a1',
                         cursor: migrandoBanco ? 'not-allowed' : 'pointer',
                       }}
                       onClick={handleMigrarParaNovoBanco}
                       disabled={migrandoBanco}
-                      title="Exporta e sincroniza todos os cadastros e dados para o banco appestoqueprodutos-bb92d"
                     >
-                      {migrandoBanco ? '⏳ Migrando Registros...' : '📤 Sincronizar/Migrar Todos os Cadastros'}
+                      <UploadCloud size={15} />
+                      <span>{migrandoBanco ? 'Sincronizando...' : 'Sincronizar / Migrar Cadastros'}</span>
                     </button>
                   </div>
                 </div>
                 {msgMigracao && (
                   <div
                     style={{
-                      marginTop: '10px',
                       padding: '8px 12px',
-                      background: msgMigracao.startsWith('✅') ? '#dcfce7' : msgMigracao.startsWith('⚠️') ? '#fef3c7' : '#eff6ff',
-                      color: msgMigracao.startsWith('✅') ? '#166534' : msgMigracao.startsWith('⚠️') ? '#92400e' : '#1e40af',
-                      borderRadius: '6px',
-                      fontSize: '0.82rem',
+                      background: '#f0f9ff',
+                      color: '#0369a1',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
                       fontWeight: 600,
-                      border: '1px solid rgba(0,0,0,0.08)',
+                      border: '1px solid #bae6fd',
                     }}
                   >
                     {msgMigracao}
@@ -11989,143 +12086,134 @@ export default function App() {
                 )}
               </div>
 
-              {/* FILTROS E BUSCA DO BANCO DE DADOS */}
-              <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', gap: '10px', flex: 1, minWidth: '280px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  <div style={{ position: 'relative', flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center' }}>
-                    <input
-                      type="search"
-                      id="busca_banco_dados_mestre_input"
-                      name="search_query_banco_dados_mestre"
-                      autoComplete="new-password"
-                      autoCorrect="off"
-                      autoCapitalize="none"
-                      spellCheck={false}
-                      data-form-type="other"
-                      data-lpignore="true"
-                      data-1p-ignore="true"
-                      className="input-modal"
-                      style={{ marginBottom: 0, width: '100%', paddingRight: buscaMasterBd ? '36px' : '10px' }}
-                      placeholder="🔍 Pesquisar no Banco de Dados (Nome, Código EAN, Lote...)"
-                      value={buscaMasterBd.toLowerCase().includes('rodrigo.souza') ? '' : buscaMasterBd}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setBuscaMasterBd(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
-                      }}
-                    />
-                    {buscaMasterBd && (
-                      <button
-                        type="button"
-                        onClick={() => setBuscaMasterBd('')}
-                        style={{
-                          position: 'absolute',
-                          right: '8px',
-                          background: '#e2e8f0',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '24px',
-                          height: '24px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#475569',
-                          fontWeight: 'bold',
-                          fontSize: '12px',
+              {/* BUSCA + FILTRO + IMPORTAÇÃO PADRONIZADA */}
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', gap: '10px', flex: 1, minWidth: '260px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div style={{ position: 'relative', flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center' }}>
+                      <Search size={15} style={{ position: 'absolute', left: '11px', color: '#94a3b8', pointerEvents: 'none' }} />
+                      <input
+                        type="search"
+                        id="busca_banco_dados_mestre_input"
+                        name="search_query_banco_dados_mestre"
+                        autoComplete="new-password"
+                        autoCorrect="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        data-form-type="other"
+                        data-lpignore="true"
+                        data-1p-ignore="true"
+                        className="input-modal"
+                        style={{ marginBottom: 0, width: '100%', padding: '8px 34px 8px 32px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.83rem' }}
+                        placeholder="Pesquisar por nome, código EAN, marca ou lote..."
+                        value={buscaMasterBd.toLowerCase().includes('rodrigo.souza') ? '' : buscaMasterBd}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setBuscaMasterBd(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
                         }}
-                        title="Limpar pesquisa"
-                      >
-                        ✕
-                      </button>
-                    )}
+                      />
+                      {buscaMasterBd && (
+                        <button
+                          type="button"
+                          onClick={() => setBuscaMasterBd('')}
+                          style={{
+                            position: 'absolute',
+                            right: '8px',
+                            background: '#e2e8f0',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '20px',
+                            height: '20px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#475569',
+                          }}
+                          title="Limpar pesquisa"
+                        >
+                          <X size={12} />
+                        </button>
+                      )}
+                    </div>
+                    <select
+                      className="input-modal"
+                      style={{ marginBottom: 0, width: 'auto', minWidth: '180px', padding: '8px 10px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: 600 }}
+                      value={filtroMasterOrigem}
+                      onChange={(e) => setFiltroMasterOrigem(e.target.value as any)}
+                    >
+                      <option value="todos">Origem: Todos os Itens</option>
+                      <option value="catalogo">Catálogo Global ({catalogoGlobal.length})</option>
+                      <option value="estoque">Estoque Local ({estoque.length})</option>
+                    </select>
                   </div>
-                  <select
-                    className="input-modal"
-                    style={{ marginBottom: 0, width: 'auto', minWidth: '160px' }}
-                    value={filtroMasterOrigem}
-                    onChange={(e) => setFiltroMasterOrigem(e.target.value as any)}
+
+                  <button
+                    type="button"
+                    style={{
+                      background: '#0284c7',
+                      color: '#ffffff',
+                      border: '1px solid #0369a1',
+                      borderRadius: '8px',
+                      padding: '8px 14px',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                    onClick={() => abrirCadastro('master')}
                   >
-                    <option value="todos">Origem: Todos os Itens</option>
-                    <option value="catalogo">🌐 Catálogo Global ({catalogoGlobal.length} produtos)</option>
-                    <option value="estoque">🏪 Estoque Local ({estoque.length})</option>
-                  </select>
+                    <Plus size={15} />
+                    <span>Cadastrar Novo Item</span>
+                  </button>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: 'var(--primario)', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={() => {
-                      abrirCadastro('master');
-                    }}
-                  >
-                    ➕ Cadastrar Novo Item
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#d97706', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarAmbev}
-                    title="Carrega todos os 173 produtos oficiais da Ambev no seu Catálogo Geral interno do app"
-                  >
-                    🍺 Catálogo Ambev (173 Itens)
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#0284c7', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarMixAdega}
-                    title="Carrega todos os produtos essenciais de adega (Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria) no seu Catálogo Geral interno do app"
-                  >
-                    🥃 Mix Adega (Whiskies, Vinhos, Salgados, Cigarros)
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#10b981', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarMixZeDelivery}
-                    title="Carrega os 80 produtos campeões de vendas do Zé Delivery (Red Bull, Monster, Baly, Coca-Cola, Destilados, Copos) no seu Catálogo Geral"
-                  >
-                    🛵 Mix Zé Delivery (80 Itens Campeões)
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#b91c1c', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarChoppBrahma}
-                    title="Carrega os 41 produtos oficiais do Chopp Brahma Express (Barris 30L/50L, Growlers, Chopeiras, Cilindros CO2, Copos e Calderetas)"
-                  >
-                    🍻 Chopp Brahma Express (41 Itens)
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#0284c7', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarRissulBebidas}
-                    title="Carrega os 465 produtos de bebidas não alcoólicas do Rissul (Refrigerantes, Sucos Integrais, Águas Minerais, Chás, Isotônicos)"
-                  >
-                    🥤 Bebidas Rissul (465 Itens)
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#e11d48', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarCocaColaFemsa}
-                    title="Carrega os 255 produtos oficiais do Portfólio Coca-Cola FEMSA Brasil (Refrigerantes, Cervejas Heineken/Eisenbahn, Sucos Del Valle, Águas Crystal, Monster)"
-                  >
-                    🔴 Coca-Cola FEMSA (255 Novos Itens)
-                  </button>
-                  <button
-                    className="btn-acao-rel"
-                    style={{ background: '#ea580c', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
-                    onClick={handleSincronizarSalgadinhosCosmos}
-                    title="Carrega os 1.059 novos salgadinhos extraídos do Cosmos Bluesoft (Doritos, Cheetos, Ruffles, Torcida, Pringles, Elma Chips, Fandangos, Yokitos)"
-                  >
-                    🍟 Salgadinhos Cosmos (1.059 Novos Itens)
-                  </button>
+                {/* BARRA SÓBRIA DE IMPORTAÇÃO DE PACKS DE PRODUTOS */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
+                  <span style={{ fontSize: '0.73rem', fontWeight: 700, color: '#64748b', marginRight: '4px' }}>Importar catálogo pronto:</span>
+                  {[
+                    { label: 'Ambev', qtd: '173', fn: handleSincronizarAmbev },
+                    { label: 'Mix Adega', qtd: 'Essenciais', fn: handleSincronizarMixAdega },
+                    { label: 'Zé Delivery', qtd: '80', fn: handleSincronizarMixZeDelivery },
+                    { label: 'Chopp Brahma', qtd: '41', fn: handleSincronizarChoppBrahma },
+                    { label: 'Bebidas Rissul', qtd: '465', fn: handleSincronizarRissulBebidas },
+                    { label: 'Coca-Cola FEMSA', qtd: '255', fn: handleSincronizarCocaColaFemsa },
+                    { label: 'Salgadinhos Cosmos', qtd: '1.059', fn: handleSincronizarSalgadinhosCosmos },
+                  ].map((pack) => (
+                    <button
+                      key={pack.label}
+                      type="button"
+                      onClick={pack.fn}
+                      style={{
+                        background: '#f8fafc',
+                        color: '#334155',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '7px',
+                        padding: '5px 10px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <span>{pack.label}</span>
+                      <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.66rem', fontWeight: 700, padding: '0 6px', borderRadius: '999px' }}>
+                        {pack.qtd}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* TABELA DE ITENS DO BANCO DE DADOS (PAGINADA PARA MÁXIMA VELOCIDADE) */}
+              {/* TABELA DE ITENS DO BANCO DE DADOS */}
               <div className="tabela-relatorio">
                 {(() => {
                   const termo = buscaMasterBd.trim().toLowerCase();
 
-                  // 1. Filter Catalogo Global
                   const catalogoFiltrado = catalogoGlobal.filter((c) => {
                     if (filtroMasterOrigem === 'estoque') return false;
                     if (!termo) return true;
@@ -12137,7 +12225,6 @@ export default function App() {
                     );
                   });
 
-                  // 2. Filter Estoque
                   const estoqueFiltrado = estoque.filter((p) => {
                     if (filtroMasterOrigem === 'catalogo') return false;
                     if (!termo) return true;
@@ -12148,7 +12235,6 @@ export default function App() {
                     );
                   });
 
-                  // Lista combinada de acordo com o filtro selecionado
                   let listaFinalMaster: (
                     | { tipo: 'catalogo'; item: ProdutoCatalogo }
                     | { tipo: 'estoque'; item: ItemEstoque }
@@ -12171,7 +12257,7 @@ export default function App() {
 
                   if (totalCount === 0) {
                     return (
-                      <div style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                      <div style={{ textAlign: 'center', padding: '32px', color: '#64748b', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                         Nenhum item encontrado no banco de dados com os termos da busca.
                       </div>
                     );
@@ -12188,19 +12274,17 @@ export default function App() {
 
                   return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {/* BARRA SUPERIOR DE RESUMO DA PÁGINA */}
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '6px 10px',
-                          background: '#f8fafc',
-                          borderRadius: '8px',
+                          padding: '8px 12px',
+                          background: '#ffffff',
+                          borderRadius: '10px',
                           border: '1px solid #e2e8f0',
-                          fontSize: '0.8rem',
+                          fontSize: '0.78rem',
                           color: '#475569',
-                          marginBottom: '4px',
                         }}
                       >
                         <span>
@@ -12220,68 +12304,58 @@ export default function App() {
                             <div
                               key={`cat_cons_${cat.codigo}_${idx}`}
                               className="relatorio-linha-cheia"
-                              style={{ background: '#fafafa', borderLeft: '4px solid #0284c7' }}
+                              style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderLeft: '3px solid #0284c7', borderRadius: '10px', padding: '10px 14px' }}
                             >
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#94a3b8' }}>
                                   {(() => {
                                     const imgCat = cat.imagem || estoque.find((e) => e.codigo === cat.codigo && e.foto)?.foto || '';
                                     return imgCat ? (
                                       <img src={otimizarUrlImagem(imgCat)} alt={cat.nome} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                      <span style={{ fontSize: '1.2rem' }}>📦</span>
+                                      <Package size={18} />
                                     );
                                   })()}
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                                    <b style={{ fontSize: '0.92rem', color: '#0f172a' }}>{cat.nome}</b>
-                                    <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
-                                      🌐 Catálogo Global
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                    <b style={{ fontSize: '0.9rem', color: '#0f172a' }}>{cat.nome}</b>
+                                    <span style={{ background: '#e0f2fe', color: '#0369a1', fontSize: '0.68rem', padding: '1px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                                      Catálogo Global
                                     </span>
                                     {(isProdutoAmbev(cat.codigo) || isProdutoAmbev(cat.nome) || (cat.marca && isProdutoAmbev(cat.marca))) && (
-                                      <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700, border: '1px solid #fde68a' }}>
-                                        🍺 Ambev
+                                      <span style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.68rem', padding: '1px 8px', borderRadius: '999px', fontWeight: 600 }}>
+                                        Ambev
                                       </span>
                                     )}
                                   </div>
-                                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                                    Cód. EAN: <b>{cat.codigo}</b> | Categoria: <b>{cat.categoria || 'Geral'}</b> {cat.marca ? `| Marca: ${cat.marca}` : ''} {cat.unidade_medida ? `| Un: ${cat.unidade_medida}` : ''}
+                                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px' }}>
+                                    EAN: <b style={{ color: '#334155' }}>{cat.codigo}</b> • Categoria: <b>{cat.categoria || 'Geral'}</b> {cat.marca ? `• Marca: ${cat.marca}` : ''}
                                   </div>
-                                  {cat.descricao && (
-                                    <div style={{ fontSize: '0.73rem', color: '#475569', marginTop: '3px', lineHeight: 1.35, background: '#f8fafc', padding: '4px 8px', borderRadius: '4px', border: '1px solid #f1f5f9' }}>
-                                      📝 {cat.descricao}
-                                    </div>
-                                  )}
                                 </div>
                               </div>
 
                               <div className="acoes-relatorio" style={{ gap: '6px' }}>
                                 <button
-                                  className="btn-acao-rel"
-                                  style={{ background: '#059669', color: '#fff', fontSize: '0.78rem', padding: '6px 10px', borderRadius: '6px' }}
-                                  onClick={() => {
-                                    abrirCadastroComProdutoCatalogo(cat);
-                                  }}
-                                  title="Adicionar este produto ao Estoque da Loja/Adega"
+                                  type="button"
+                                  style={{ background: '#0284c7', color: '#ffffff', border: '1px solid #0369a1', fontSize: '0.75rem', fontWeight: 700, padding: '6px 10px', borderRadius: '7px', cursor: 'pointer' }}
+                                  onClick={() => abrirCadastroComProdutoCatalogo(cat)}
                                 >
                                   + Estoque
                                 </button>
                                 <button
-                                  className="btn-acao-rel btn-editar-rel"
-                                  onClick={() => {
-                                    editarProduto(cat.codigo, '', '', 'master');
-                                  }}
-                                  title="Editar este item no Cadastro Master"
+                                  type="button"
+                                  style={{ background: '#ffffff', color: '#334155', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 600, padding: '6px 10px', borderRadius: '7px', cursor: 'pointer' }}
+                                  onClick={() => editarProduto(cat.codigo, '', '', 'master')}
                                 >
-                                  ✏️ Editar
+                                  Editar
                                 </button>
                                 <button
-                                  className="btn-acao-rel btn-excluir-rel"
+                                  type="button"
+                                  style={{ background: '#ffffff', color: '#dc2626', border: '1px solid #fecaca', fontSize: '0.75rem', fontWeight: 600, padding: '6px 10px', borderRadius: '7px', cursor: 'pointer' }}
                                   onClick={() => excluirProdutoCatalogoMaster(cat.codigo)}
-                                  title="Excluir do Banco de Dados"
                                 >
-                                  🗑️ Excluir
+                                  Excluir
                                 </button>
                               </div>
                             </div>
@@ -12294,51 +12368,46 @@ export default function App() {
                             <div
                               key={`est_cons_${p.codigo}_${p.validade}_${p.lote}_${idx}`}
                               className="relatorio-linha-cheia"
-                              style={{ background: '#ffffff', borderLeft: '4px solid #16a34a' }}
+                              style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderLeft: '3px solid #16a34a', borderRadius: '10px', padding: '10px 14px' }}
                             >
                               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-                                <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid #e2e8f0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#94a3b8' }}>
                                   {(() => {
                                     const fotoLinha = obterFotoProduto(p.codigo, p.foto);
                                     return fotoLinha ? (
                                       <img src={fotoLinha} alt={nomeExibicao} referrerPolicy="no-referrer" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                      <span style={{ fontSize: '1.2rem' }}>🛒</span>
+                                      <ShoppingCart size={18} />
                                     );
                                   })()}
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                                    <b style={{ fontSize: '0.92rem', color: '#0f172a' }}>{nomeExibicao}</b>
-                                    <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.7rem', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
-                                      🏪 Estoque ({nomeLoja})
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                    <b style={{ fontSize: '0.9rem', color: '#0f172a' }}>{nomeExibicao}</b>
+                                    <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.68rem', padding: '1px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                                      Estoque ({nomeLoja})
                                     </span>
                                   </div>
-                                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                                    Cód: <b>{p.codigo}</b> | Qtd: <b style={{ color: '#0f172a' }}>{p.quantidade} un</b> | Venda: <b style={{ color: '#16a34a' }}>R$ {Number(p.preco_venda || 0).toFixed(2)}</b> | Custo: R$ {Number(p.preco_custo || 0).toFixed(2)}
-                                  </div>
-                                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '1px' }}>
-                                    Validade: <b>{p.validade || 'N/A'}</b> {p.lote ? `| Lote: ${p.lote}` : ''}
+                                  <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '2px' }}>
+                                    Cód: <b>{p.codigo}</b> • Qtd: <b style={{ color: '#0f172a' }}>{p.quantidade} un</b> • Venda: <b style={{ color: '#15803d' }}>R$ {Number(p.preco_venda || 0).toFixed(2)}</b> • Validade: <b>{p.validade || 'N/A'}</b>
                                   </div>
                                 </div>
                               </div>
 
                               <div className="acoes-relatorio" style={{ gap: '6px' }}>
                                 <button
-                                  className="btn-acao-rel btn-editar-rel"
-                                  onClick={() => {
-                                    editarProduto(p.codigo, p.validade, p.lote || '');
-                                  }}
-                                  title="Editar no Estoque"
+                                  type="button"
+                                  style={{ background: '#ffffff', color: '#334155', border: '1px solid #cbd5e1', fontSize: '0.75rem', fontWeight: 600, padding: '6px 10px', borderRadius: '7px', cursor: 'pointer' }}
+                                  onClick={() => editarProduto(p.codigo, p.validade, p.lote || '')}
                                 >
-                                  ✏️ Editar
+                                  Editar
                                 </button>
                                 <button
-                                  className="btn-acao-rel btn-excluir-rel"
+                                  type="button"
+                                  style={{ background: '#ffffff', color: '#dc2626', border: '1px solid #fecaca', fontSize: '0.75rem', fontWeight: 600, padding: '6px 10px', borderRadius: '7px', cursor: 'pointer' }}
                                   onClick={() => excluirItemEstoqueMaster(p.codigo, p.validade, p.lote || '', supermercadoAtual)}
-                                  title="Excluir do Banco de Dados"
                                 >
-                                  🗑️ Excluir
+                                  Excluir
                                 </button>
                               </div>
                             </div>
@@ -12346,7 +12415,6 @@ export default function App() {
                         }
                       })}
 
-                      {/* CONTROLES DE PAGINAÇÃO */}
                       {totalPaginas > 1 && (
                         <div
                           style={{
@@ -12354,50 +12422,45 @@ export default function App() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             gap: '8px',
-                            padding: '16px 8px',
+                            padding: '14px 8px',
                             flexWrap: 'wrap',
-                            marginTop: '8px',
-                            borderTop: '1px solid #e2e8f0',
+                            marginTop: '6px',
                           }}
                         >
                           <button
                             type="button"
-                            className="btn-acao-rel"
-                            style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px' }}
+                            style={{ background: '#ffffff', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
                             onClick={() => setPaginaMasterBd(1)}
                             disabled={paginaAtualClamped === 1}
                           >
-                            ⏮ Primeira
+                            Primeira
                           </button>
                           <button
                             type="button"
-                            className="btn-acao-rel"
-                            style={{ background: '#0284c7', color: '#ffffff', padding: '6px 14px', fontWeight: 600 }}
+                            style={{ background: '#0284c7', color: '#ffffff', border: '1px solid #0369a1', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
                             onClick={() => setPaginaMasterBd((prev) => Math.max(1, prev - 1))}
                             disabled={paginaAtualClamped === 1}
                           >
-                            ◀ Anterior
+                            Anterior
                           </button>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', margin: '0 8px' }}>
+                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155', margin: '0 6px' }}>
                             Página {paginaAtualClamped} de {totalPaginas}
                           </span>
                           <button
                             type="button"
-                            className="btn-acao-rel"
-                            style={{ background: '#0284c7', color: '#ffffff', padding: '6px 14px', fontWeight: 600 }}
+                            style={{ background: '#0284c7', color: '#ffffff', border: '1px solid #0369a1', padding: '6px 14px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
                             onClick={() => setPaginaMasterBd((prev) => Math.min(totalPaginas, prev + 1))}
                             disabled={paginaAtualClamped === totalPaginas}
                           >
-                            Próxima ▶
+                            Próxima
                           </button>
                           <button
                             type="button"
-                            className="btn-acao-rel"
-                            style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px' }}
+                            style={{ background: '#ffffff', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
                             onClick={() => setPaginaMasterBd(totalPaginas)}
                             disabled={paginaAtualClamped === totalPaginas}
                           >
-                            Última ⏭
+                            Última
                           </button>
                         </div>
                       )}
@@ -12414,14 +12477,15 @@ export default function App() {
       <div
         className="tela-relatorio-cheia"
         id="modalOperadores"
-        style={{ display: modalOperadoresVisivel ? 'flex' : 'none', background: '#f1f5f9' }}
+        style={{ display: modalOperadoresVisivel ? 'flex' : 'none', background: '#f8fafc' }}
       >
-        {/* CABEÇALHO EXECUTIVO DE OPERADORES & EQUIPE */}
+        {/* CABEÇALHO NO PADRÃO DO PDV */}
         <div
           className="cabecalho-relatorio"
           style={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #0369a1 100%)',
-            padding: '14px 20px',
+            background: '#0284c7',
+            padding: '12px 20px',
+            borderBottom: '1px solid #0369a1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -12432,58 +12496,67 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
-                background: 'rgba(255,255,255,0.15)',
+                width: '38px',
+                height: '38px',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.16)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '1.2rem',
+                color: '#ffffff',
+                flexShrink: 0,
               }}
             >
-              👥
+              <Users size={20} strokeWidth={2.2} />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.06rem', fontWeight: 800, color: '#ffffff' }}>
+              <h2 style={{ margin: 0, fontSize: '1.02rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
                 Gestão de Caixas, Operadores & Funcionários ({nomeSupermercadoAtivo})
               </h2>
-              <span style={{ fontSize: '0.75rem', color: '#bae6fd', fontWeight: 500 }}>
+              <span style={{ fontSize: '0.75rem', color: '#e0f2fe', fontWeight: 500 }}>
                 Controle individual de acessos, senhas de operador e permissões por função
               </span>
             </div>
           </div>
 
           <button
+            type="button"
             className="btn-voltar-rel"
             style={{
-              background: 'rgba(255,255,255,0.14)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.22)',
-              padding: '8px 16px',
-              borderRadius: '10px',
+              background: '#ffffff',
+              color: '#0369a1',
+              border: '1px solid #ffffff',
+              padding: '7px 14px',
+              borderRadius: '8px',
               fontWeight: 700,
+              fontSize: '0.8rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
             }}
             onClick={fecharModalOperadores}
           >
-            ← Voltar ao PDV
+            <ArrowLeft size={15} />
+            <span>Voltar ao PDV</span>
           </button>
         </div>
 
-        <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px' }}>
-          {/* LINK ÚNICO OFICIAL DA LOJA (ADMIN & FUNCIONÁRIOS CADASTRADOS) */}
+        <div className="corpo-relatorio-cheio" style={{ maxWidth: '1440px', margin: '0 auto', width: '100%', padding: '18px 20px 64px' }}>
+          {/* BARRA COMPACTA DO LINK OFICIAL DA LOJA */}
           {lojaAtualObj && (() => {
             const linksEquipeModal = obterLinksExclusivosLoja(lojaAtualObj, window.location.origin);
             const copiado = linkCopiadoFeedback === 'op_admin_unico';
             return (
               <div
                 style={{
-                  background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)',
-                  borderRadius: '18px',
-                  padding: '16px 20px',
-                  border: '1px solid #bfdbfe',
-                  marginBottom: '20px',
-                  boxShadow: '0 4px 14px rgba(37, 99, 235, 0.06)',
+                  background: '#ffffff',
+                  borderRadius: '12px',
+                  padding: '14px 18px',
+                  border: '1px solid #e2e8f0',
+                  marginBottom: '18px',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -12491,72 +12564,96 @@ export default function App() {
                   gap: '14px',
                 }}
               >
-                <div style={{ flex: '1 1 320px', minWidth: 0 }}>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1e3a8a' }}>
-                    🔑 Link Oficial de Acesso da Loja ({lojaAtualObj.nome})
-                  </div>
-                  <div style={{ fontSize: '0.76rem', color: '#475569', marginTop: '3px' }}>
-                    Todos os operadores e funcionários cadastrados abaixo entram usando este mesmo link da loja (informando o CPF/Login e Senha/PIN individuais).
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 320px', minWidth: 0 }}>
                   <div
                     style={{
-                      marginTop: '8px',
-                      background: '#ffffff',
-                      border: '1px solid #bfdbfe',
-                      borderRadius: '8px',
-                      padding: '6px 10px',
-                      fontSize: '0.72rem',
-                      color: '#1e293b',
-                      fontFamily: 'monospace',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '10px',
+                      background: '#e0f2fe',
+                      color: '#0284c7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
                     }}
                   >
-                    {linksEquipeModal.admin}
+                    <Link2 size={18} />
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a' }}>
+                        Link Oficial de Acesso da Equipe ({lojaAtualObj.nome})
+                      </span>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                        • Todos entram por este link informando seu Login/CPF e Senha individual
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        marginTop: '6px',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '7px',
+                        padding: '5px 10px',
+                        fontSize: '0.73rem',
+                        color: '#334155',
+                        fontFamily: 'monospace',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {linksEquipeModal.admin}
+                    </div>
                   </div>
                 </div>
+
                 <button
                   type="button"
                   onClick={() => copiarLinkComFeedback('op_admin_unico', linksEquipeModal.admin)}
                   style={{
-                    background: copiado ? '#10b981' : '#1d4ed8',
+                    background: copiado ? '#16a34a' : '#0284c7',
                     color: '#ffffff',
-                    border: 'none',
-                    borderRadius: '10px',
-                    padding: '10px 18px',
+                    border: `1px solid ${copiado ? '#15803d' : '#0369a1'}`,
+                    borderRadius: '8px',
+                    padding: '9px 16px',
                     fontSize: '0.8rem',
-                    fontWeight: 800,
+                    fontWeight: 700,
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
-                    boxShadow: '0 4px 12px rgba(29, 78, 216, 0.2)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
                   }}
                 >
-                  {copiado ? '✓ Link da Loja Copiado!' : '📋 Copiar Link da Loja'}
+                  {copiado ? <Check size={15} /> : <Copy size={15} />}
+                  <span>{copiado ? 'Link Copiado!' : 'Copiar Link da Loja'}</span>
                 </button>
               </div>
             );
           })()}
 
-          {/* FORMULÁRIO DE CADASTRO / EDIÇÃO DE OPERADOR */}
+          {/* PAINEL DE CADASTRO / EDIÇÃO DE OPERADOR COM PERMISSÕES AGRUPADAS POR ÁREA */}
           <div
             style={{
               background: '#ffffff',
-              borderRadius: '20px',
-              padding: '22px',
-              border: opEditandoId ? '2px solid #0284c7' : '1px solid #e2e8f0',
-              marginBottom: '24px',
-              boxShadow: '0 4px 20px rgba(15, 23, 42, 0.05)',
+              borderRadius: '14px',
+              padding: '20px',
+              border: opEditandoId ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+              marginBottom: '20px',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
             }}
           >
+            {/* CABEÇALHO DO CARD */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 borderBottom: '1px solid #f1f5f9',
-                paddingBottom: '14px',
-                marginBottom: '18px',
+                paddingBottom: '12px',
+                marginBottom: '16px',
                 flexWrap: 'wrap',
                 gap: '10px',
               }}
@@ -12564,40 +12661,56 @@ export default function App() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    background: opEditandoId ? '#fef3c7' : '#e0f2fe',
-                    color: opEditandoId ? '#d97706' : '#0284c7',
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '9px',
+                    background: '#e0f2fe',
+                    color: '#0284c7',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.1rem',
-                    fontWeight: 800,
+                    flexShrink: 0,
                   }}
                 >
-                  {opEditandoId ? '✏️' : '➕'}
+                  {opEditandoId ? <Pencil size={17} /> : <UserPlus size={18} />}
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                    {opEditandoId ? 'Editar Operador / Permissões de Acesso' : 'Cadastrar Novo Operador de Caixa / Funcionário'}
+                  <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    {opEditandoId ? 'Editar Operador & Permissões' : 'Novo Operador / Funcionário'}
                   </h3>
-                  <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '2px 0 0 0' }}>
-                    Defina o login, senha PIN e marque exatamente o que este funcionário pode acessar
+                  <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0 0 0' }}>
+                    Preencha os dados de acesso e escolha um perfil pronto ou personalize as funções abaixo
                   </p>
                 </div>
               </div>
+
+              {opEditandoId && (
+                <span
+                  style={{
+                    background: '#e0f2fe',
+                    color: '#0369a1',
+                    border: '1px solid #bae6fd',
+                    padding: '3px 10px',
+                    borderRadius: '999px',
+                    fontSize: '0.73rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  Editando Funcionário
+                </span>
+              )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
+            {/* LINHA DE INPUTS LIMPOS */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(195px, 1fr))', gap: '12px' }}>
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                  👤 Nome do Funcionário
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                  Nome do Funcionário
                 </label>
                 <input
                   type="text"
                   className="input-modal"
-                  style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
+                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
                   placeholder="Ex: Carlos Oliveira"
                   value={regOpNome}
                   onChange={(e) => setRegOpNome(e.target.value)}
@@ -12606,14 +12719,14 @@ export default function App() {
               </div>
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                  🪪 CPF / Login do Operador
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                  CPF ou Login do Operador
                 </label>
                 <input
                   type="text"
                   className="input-modal"
-                  style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                  placeholder="Ex: 000.000.000-00 ou caixa01"
+                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                  placeholder="000.000.000-00 ou caixa01"
                   value={regOpCpf}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -12628,14 +12741,14 @@ export default function App() {
               </div>
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                  🔑 Nova Senha (mín. {MIN_CARACTERES_SENHA} dígitos)
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                  Senha de Acesso (mín. {MIN_CARACTERES_SENHA})
                 </label>
                 <input
                   type="password"
                   className="input-modal"
-                  style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
-                  placeholder={opEditandoId ? 'Em branco p/ manter' : 'Mínimo 6 caracteres'}
+                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
+                  placeholder={opEditandoId ? 'Em branco p/ manter' : 'Mínimo 8 caracteres'}
                   value={regOpSenha}
                   onChange={(e) => setRegOpSenha(e.target.value)}
                   minLength={MIN_CARACTERES_SENHA}
@@ -12643,13 +12756,13 @@ export default function App() {
               </div>
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                  🔁 Confirmar Nova Senha
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                  Confirmar Senha
                 </label>
                 <input
                   type="password"
                   className="input-modal"
-                  style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc' }}
+                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
                   placeholder="Repita a senha"
                   value={regOpConfirmarSenha}
                   onChange={(e) => setRegOpConfirmarSenha(e.target.value)}
@@ -12658,191 +12771,317 @@ export default function App() {
               </div>
 
               <div className="grupo-input" style={{ marginBottom: 0 }}>
-                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.82rem' }}>
-                  👔 Cargo / Nível de Acesso
+                <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
+                  Cargo / Nível Base
                 </label>
                 <select
                   className="input-modal"
-                  style={{ borderRadius: '10px', padding: '10px 12px', background: '#f8fafc', fontWeight: 700 }}
+                  style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}
                   value={regOpCargo}
                   onChange={(e) => aplicarPermissoesPorCargo(e.target.value as any)}
                 >
-                  <option value="Operador de Caixa">🛒 Operador de Caixa</option>
-                  <option value="Supervisor">👔 Supervisor de Loja</option>
-                  <option value="Administrador">👑 Administrador Local</option>
+                  <option value="Operador de Caixa">Operador de Caixa</option>
+                  <option value="Supervisor">Supervisor de Loja</option>
+                  <option value="Administrador">Administrador Local</option>
                 </select>
               </div>
             </div>
 
-            {/* ATALHOS E PRESETS DE PERMISSÃO */}
-            <div style={{ marginTop: '20px', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
-                <label className="rotulo-campo" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', marginBottom: 0 }}>
-                  🔐 Permissões Individuais do Funcionário:
-                </label>
-                <span
-                  style={{
-                    background: '#e0f2fe',
-                    color: '#0369a1',
-                    fontSize: '0.76rem',
-                    fontWeight: 800,
-                    padding: '3px 11px',
-                    borderRadius: '999px',
-                    border: '1px solid #bae6fd',
-                  }}
-                >
-                  Liberadas: {Object.values(regOpPermissoes).filter(Boolean).length} de 18 funções
+            {/* BARRA DE PERFIS PRONTOS (MODELOS RÁPIDOS) */}
+            <div
+              style={{
+                marginTop: '18px',
+                marginBottom: '14px',
+                padding: '10px 14px',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '10px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginRight: '4px' }}>
+                  Modelos rápidos:
                 </span>
-              </div>
-
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <button
-                  type="button"
-                  style={{ background: '#e0f2fe', color: '#0284c7', border: '1px solid #bae6fd', padding: '6px 12px', borderRadius: '8px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => aplicarPresetPermissoes('caixa')}
-                >
-                  🛒 Perfil Caixa
-                </button>
-                <button
-                  type="button"
-                  style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', padding: '6px 12px', borderRadius: '8px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => aplicarPresetPermissoes('repositor')}
-                >
-                  📦 Perfil Estoquista
-                </button>
-                <button
-                  type="button"
-                  style={{ background: '#f3e8ff', color: '#7e22ce', border: '1px solid #e9d5ff', padding: '6px 12px', borderRadius: '8px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => aplicarPresetPermissoes('supervisor')}
-                >
-                  👔 Perfil Supervisor
-                </button>
-                <button
-                  type="button"
-                  style={{ background: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0', padding: '6px 12px', borderRadius: '8px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => aplicarPresetPermissoes('admin')}
-                >
-                  👑 Acesso Total
-                </button>
-                <button
-                  type="button"
-                  style={{ background: '#f8fafc', color: '#475569', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => marcarTodasPermissoesOperador(true)}
-                >
-                  ⚡ Marcar Todos
-                </button>
-                <button
-                  type="button"
-                  style={{ background: '#f8fafc', color: '#94a3b8', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer' }}
-                  onClick={() => marcarTodasPermissoesOperador(false)}
-                >
-                  ❌ Limpar
-                </button>
-              </div>
-            </div>
-
-            {/* QUADRADOS DE PERMISSÃO DO OPERADOR */}
-            <div className="grid-permissoes">
-              {[
-                { key: 'vender', icon: '🛒', title: 'Realizar Vendas', desc: 'Registrar saídas no caixa do PDV e finalizar compras' },
-                { key: 'gestao_caixa', icon: '💵', title: 'Gestão de Caixa / Turno', desc: 'Abrir e fechar caixa, registrar sangrias e conferir gaveta' },
-                { key: 'gerenciar_delivery', icon: '🛵', title: 'Pedidos & Delivery', desc: 'Aceitar pedidos online, despachar motoboy e abrir cardápio', isExtension: true },
-                { key: 'gerenciar_devedores', icon: '💳', title: 'Área de Devedores / Fiado', desc: 'Cadastrar devedores, registrar compras fiado e receber pagamentos' },
-                { key: 'dar_desconto', icon: '💲', title: 'Dar Desconto', desc: 'Aplicar desconto no valor total da venda' },
-                { key: 'alterar_preco', icon: '✏️', title: 'Alterar Preço', desc: 'Mudar o valor unitário de venda do produto' },
-                { key: 'estornar_venda', icon: '↩️', title: 'Estornar / Cancelar Venda', desc: 'Cancelar venda e retornar itens ao estoque' },
-                { key: 'reimprimir_cupom', icon: '🧾', title: 'Reimprimir Cupom / 2ª Via', desc: 'Reimprimir comprovante de vendas anteriores' },
-                { key: 'cadastrar_produtos', icon: '📦', title: 'Cadastrar Produtos', desc: 'Criar ou editar produtos e lotes no estoque' },
-                { key: 'excluir_produtos', icon: '❌', title: 'Excluir Produtos', desc: 'Remover produtos do cadastro e estoque da loja' },
-                { key: 'baixa_estoque', icon: '🗑️', title: 'Baixa Manual / Descarte', desc: 'Dar baixa em estoque por perda, quebra ou vencimento' },
-                { key: 'ver_relatorios', icon: '📊', title: 'Ver Faturamento & Vendas', desc: 'Visualizar relatórios e histórico de vendas' },
-                { key: 'ver_graficos', icon: '📈', title: 'Ver Gráficos & Analytics', desc: 'Acessar gráficos de desempenho de vendas' },
-                { key: 'inteligencia_estoque', icon: '💡', title: 'Inteligência de Estoque', desc: 'Ver recomendações de reposição e itens parados' },
-                { key: 'gerenciar_equipe', icon: '👥', title: 'Gerenciar Caixas', desc: 'Cadastrar e editar outros operadores e permissões' },
-                { key: 'imprimir_etiquetas', icon: '🏷️', title: 'Imprimir Etiquetas', desc: 'Gerar e imprimir etiquetas térmicas de gôndola' },
-                { key: 'alertas_validade', icon: '🔔', title: 'Alertas de Validade', desc: 'Consultar central de produtos próximos ao vencimento' },
-                { key: 'alertas_whatsapp', icon: '📱', title: 'Alerta WhatsApp / E-mail', desc: 'Enviar e disparar relatórios de validade para WhatsApp/E-mail' },
-                { key: 'catalogo_global', icon: '🗂️', title: 'Catálogo Global Master', desc: 'Consultar produtos cadastrados na rede de supermercados' },
-                { key: 'usar_ocr_ia', icon: '🤖', title: 'Usar Leitor OCR / IA', desc: 'Scanner com inteligência artificial para ler embalagens' },
-                { key: 'exportar_relatorios', icon: '📥', title: 'Exportar Relatórios', desc: 'Baixar arquivos de vendas em CSV/PDF' },
-                { key: 'ver_manual_usuario', icon: '📘', title: 'Manual do Usuário', desc: 'Acessar o guia completo e manual de instruções' },
-                { key: 'configurar_balanca', icon: '⚙️', title: 'Configurar Balança', desc: 'Definir padrão e dígitos de etiquetas de balança' },
-              ].map((item) => {
-                const lojaTemDelivery = temPermissaoLoja('delivery');
-                const bloqueadoPeloPlano = item.isExtension && !lojaTemDelivery;
-                const marcado = bloqueadoPeloPlano ? false : !!regOpPermissoes[item.key as keyof PermissoesOperador];
-
-                return (
-                  <div
-                    key={item.key}
-                    className={`card-permissao ${marcado ? 'marcado' : ''}`}
-                    style={
-                      bloqueadoPeloPlano
-                        ? { opacity: 0.6, background: '#f8fafc', borderStyle: 'dashed', cursor: 'not-allowed' }
-                        : item.isExtension && marcado
-                        ? { borderColor: '#10b981', background: 'linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%)' }
-                        : undefined
-                    }
-                    onClick={() => {
-                      if (bloqueadoPeloPlano) {
-                        alert('🔒 A Extensão de Delivery não está ativa no plano desta loja.');
-                        return;
-                      }
-                      alternarPermissaoOperador(item.key as keyof PermissoesOperador);
+                {[
+                  { label: 'Perfil Caixa', preset: 'caixa' as const },
+                  { label: 'Perfil Estoquista', preset: 'repositor' as const },
+                  { label: 'Perfil Supervisor', preset: 'supervisor' as const },
+                  { label: 'Acesso Total', preset: 'admin' as const },
+                ].map((p) => (
+                  <button
+                    key={p.preset}
+                    type="button"
+                    onClick={() => aplicarPresetPermissoes(p.preset)}
+                    style={{
+                      background: '#ffffff',
+                      color: '#0369a1',
+                      border: '1px solid #bae6fd',
+                      padding: '5px 11px',
+                      borderRadius: '7px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
                     }}
                   >
-                    <input
-                      type="checkbox"
-                      checked={marcado}
-                      disabled={bloqueadoPeloPlano}
-                      onChange={() => {}}
-                    />
-                    <div className="info-permissao">
-                      <div className="titulo-permissao" style={{ flexWrap: 'wrap' }}>
-                        <span>{item.icon}</span>
-                        <span>{item.title}</span>
-                        {item.isExtension && (
-                          <span
-                            style={{
-                              fontSize: '0.62rem',
-                              background: bloqueadoPeloPlano ? '#cbd5e1' : '#0284c7',
-                              color: bloqueadoPeloPlano ? '#334155' : '#ffffff',
-                              padding: '1px 6px',
-                              borderRadius: '999px',
-                              fontWeight: 800,
-                            }}
-                          >
-                            {bloqueadoPeloPlano ? '🔒 SEM EXTENSÃO' : 'EXTENSÃO'}
-                          </span>
-                        )}
-                      </div>
-                      <div className="desc-permissao">{item.desc}</div>
-                    </div>
-                  </div>
-                );
-              })}
+                    {p.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => marcarTodasPermissoesOperador(true)}
+                  style={{
+                    background: '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '5px 10px',
+                    borderRadius: '7px',
+                    fontSize: '0.74rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Marcar todas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => marcarTodasPermissoesOperador(false)}
+                  style={{
+                    background: '#ffffff',
+                    color: '#64748b',
+                    border: '1px solid #cbd5e1',
+                    padding: '5px 10px',
+                    borderRadius: '7px',
+                    fontSize: '0.74rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Limpar
+                </button>
+              </div>
+
+              <span
+                style={{
+                  background: '#e0f2fe',
+                  color: '#0369a1',
+                  fontSize: '0.74rem',
+                  fontWeight: 800,
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  border: '1px solid #bae6fd',
+                }}
+              >
+                {Object.values(regOpPermissoes).filter(Boolean).length} de 23 permissões ativas
+              </span>
             </div>
 
-            <div className="grupo-botoes" style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
+            {/* PERMISSÕES ORGANIZADAS EM 4 CATEGORIAS CLARAS */}
+            {(() => {
+              const lojaTemDelivery = temPermissaoLoja('delivery');
+              const categoriasPermissoes: {
+                id: string;
+                titulo: string;
+                icone: React.ReactNode;
+                itens: { key: keyof PermissoesOperador; title: string; desc: string; isExtension?: boolean }[];
+              }[] = [
+                {
+                  id: 'pdv_caixa',
+                  titulo: 'Frente de Caixa & Vendas',
+                  icone: <Wallet size={15} />,
+                  itens: [
+                    { key: 'vender', title: 'Realizar Vendas', desc: 'Registrar vendas no PDV e finalizar compras' },
+                    { key: 'gestao_caixa', title: 'Gestão de Caixa / Turno', desc: 'Abrir, fechar caixa e registrar sangrias' },
+                    { key: 'dar_desconto', title: 'Aplicar Desconto', desc: 'Conceder desconto no fechamento da venda' },
+                    { key: 'alterar_preco', title: 'Alterar Preço Unitário', desc: 'Editar preço de venda no carrinho' },
+                    { key: 'estornar_venda', title: 'Estornar / Cancelar Venda', desc: 'Cancelar venda e devolver ao estoque' },
+                    { key: 'reimprimir_cupom', title: 'Reimprimir Cupom (2ª Via)', desc: 'Emitir segunda via de comprovantes' },
+                  ],
+                },
+                {
+                  id: 'estoque_catalogo',
+                  titulo: 'Estoque & Produtos',
+                  icone: <Package size={15} />,
+                  itens: [
+                    { key: 'cadastrar_produtos', title: 'Cadastrar & Editar Produtos', desc: 'Criar itens, preços e lotes no estoque' },
+                    { key: 'excluir_produtos', title: 'Excluir Produtos', desc: 'Remover produtos e lotes do estoque' },
+                    { key: 'baixa_estoque', title: 'Baixa Manual / Descarte', desc: 'Registrar perdas, avarias ou vencidos' },
+                    { key: 'catalogo_global', title: 'Catálogo Global Master', desc: 'Importar itens da base compartilhada' },
+                    { key: 'imprimir_etiquetas', title: 'Imprimir Etiquetas', desc: 'Gerar etiquetas térmicas de gôndola' },
+                    { key: 'configurar_balanca', title: 'Configurar Balança', desc: 'Ajustar padrão de leitura EAN-13' },
+                    { key: 'usar_ocr_ia', title: 'Leitor Inteligente (OCR)', desc: 'Ler embalagens e notas pela câmera' },
+                  ],
+                },
+                {
+                  id: 'delivery_clientes',
+                  titulo: 'Delivery, Fiado & Alertas',
+                  icone: <Bike size={15} />,
+                  itens: [
+                    { key: 'gerenciar_delivery', title: 'Pedidos & Delivery', desc: 'Aceitar pedidos, despachar motoboy e cardápio', isExtension: true },
+                    { key: 'gerenciar_devedores', title: 'Clientes & Fiado', desc: 'Registrar vendas a prazo e recebimentos' },
+                    { key: 'alertas_validade', title: 'Alertas de Validade', desc: 'Consultar itens vencidos ou a vencer' },
+                    { key: 'alertas_whatsapp', title: 'Disparo WhatsApp / E-mail', desc: 'Enviar resumos de alerta por mensagem' },
+                  ],
+                },
+                {
+                  id: 'relatorios_gestao',
+                  titulo: 'Relatórios & Administração',
+                  icone: <BarChart3 size={15} />,
+                  itens: [
+                    { key: 'ver_relatorios', title: 'Faturamento & Vendas', desc: 'Acessar histórico e lucro das vendas' },
+                    { key: 'ver_graficos', title: 'Gráficos & Analytics', desc: 'Visualizar indicadores e curva de vendas' },
+                    { key: 'inteligencia_estoque', title: 'Inteligência de Estoque', desc: 'Sugestões de compra e giro parado' },
+                    { key: 'exportar_relatorios', title: 'Exportar CSV / PDF', desc: 'Baixar planilhas e relatórios' },
+                    { key: 'gerenciar_equipe', title: 'Gerenciar Equipe & Caixas', desc: 'Criar operadores e editar permissões' },
+                    { key: 'ver_manual_usuario', title: 'Manual do Aplicativo', desc: 'Consultar guia rápido de uso' },
+                  ],
+                },
+              ];
+
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(285px, 1fr))', gap: '14px' }}>
+                  {categoriasPermissoes.map((cat) => {
+                    const qtdAtivaCat = cat.itens.filter((it) => {
+                      const bloq = it.isExtension && !lojaTemDelivery;
+                      return !bloq && !!regOpPermissoes[it.key];
+                    }).length;
+
+                    return (
+                      <div
+                        key={cat.id}
+                        style={{
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '12px',
+                          padding: '12px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '8px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '6px', borderBottom: '1px solid #e2e8f0' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: '#0f172a', fontWeight: 800, fontSize: '0.82rem' }}>
+                            <span style={{ color: '#0284c7', display: 'inline-flex' }}>{cat.icone}</span>
+                            <span>{cat.titulo}</span>
+                          </div>
+                          <span style={{ fontSize: '0.69rem', fontWeight: 700, color: '#0369a1', background: '#e0f2fe', padding: '1px 7px', borderRadius: '999px' }}>
+                            {qtdAtivaCat}/{cat.itens.length}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {cat.itens.map((item) => {
+                            const bloqueadoPeloPlano = !!item.isExtension && !lojaTemDelivery;
+                            const marcado = bloqueadoPeloPlano ? false : !!regOpPermissoes[item.key];
+
+                            return (
+                              <div
+                                key={item.key}
+                                onClick={() => {
+                                  if (bloqueadoPeloPlano) {
+                                    alert('A Extensão de Delivery não está ativa no plano desta loja.');
+                                    return;
+                                  }
+                                  alternarPermissaoOperador(item.key);
+                                }}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  gap: '9px',
+                                  padding: '8px 10px',
+                                  borderRadius: '8px',
+                                  background: bloqueadoPeloPlano ? '#f1f5f9' : marcado ? '#f0f9ff' : '#ffffff',
+                                  border: bloqueadoPeloPlano
+                                    ? '1px dashed #cbd5e1'
+                                    : marcado
+                                    ? '1px solid #7dd3fc'
+                                    : '1px solid #e2e8f0',
+                                  opacity: bloqueadoPeloPlano ? 0.65 : 1,
+                                  cursor: bloqueadoPeloPlano ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.12s ease',
+                                }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={marcado}
+                                  disabled={bloqueadoPeloPlano}
+                                  onChange={() => {}}
+                                  style={{ marginTop: '2px', width: '15px', height: '15px', accentColor: '#0284c7', cursor: bloqueadoPeloPlano ? 'not-allowed' : 'pointer', flexShrink: 0 }}
+                                />
+                                <div style={{ minWidth: 0, flex: 1 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.25 }}>
+                                      {item.title}
+                                    </span>
+                                    {item.isExtension && (
+                                      <span
+                                        style={{
+                                          fontSize: '0.6rem',
+                                          background: bloqueadoPeloPlano ? '#cbd5e1' : '#0284c7',
+                                          color: bloqueadoPeloPlano ? '#334155' : '#ffffff',
+                                          padding: '1px 6px',
+                                          borderRadius: '999px',
+                                          fontWeight: 700,
+                                        }}
+                                      >
+                                        {bloqueadoPeloPlano ? 'Sem Extensão' : 'Extensão'}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px', lineHeight: 1.3 }}>
+                                    {item.desc}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+
+            {/* BOTÕES DE AÇÃO DO FORMULÁRIO */}
+            <div style={{ marginTop: '16px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <button
+                type="button"
                 className="btn btn-salvar"
                 style={{
                   flex: 1,
-                  padding: '13px',
-                  borderRadius: '12px',
-                  fontWeight: 800,
-                  fontSize: '0.92rem',
-                  background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
-                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.25)',
+                  minWidth: '220px',
+                  padding: '11px 18px',
+                  borderRadius: '9px',
+                  fontWeight: 700,
+                  fontSize: '0.88rem',
+                  background: '#0284c7',
+                  color: '#ffffff',
+                  border: '1px solid #0369a1',
+                  cursor: 'pointer',
                 }}
                 onClick={salvarOperador}
               >
-                {opEditandoId ? '💾 Atualizar Operador & Permissões' : '✅ Salvar Operador de Caixa'}
+                {opEditandoId ? 'Salvar Alterações do Operador' : 'Cadastrar Operador de Caixa'}
               </button>
               {opEditandoId && (
                 <button
+                  type="button"
                   className="btn btn-cancelar"
-                  style={{ padding: '13px 20px', borderRadius: '12px', fontWeight: 700 }}
+                  style={{
+                    padding: '11px 18px',
+                    borderRadius: '9px',
+                    fontWeight: 600,
+                    fontSize: '0.84rem',
+                    background: '#f1f5f9',
+                    color: '#475569',
+                    border: '1px solid #cbd5e1',
+                    cursor: 'pointer',
+                  }}
                   onClick={() => {
                     setOpEditandoId(null);
                     setRegOpNome('');
@@ -12864,132 +13103,238 @@ export default function App() {
           <div
             style={{
               background: '#ffffff',
-              borderRadius: '20px',
-              padding: '22px',
+              borderRadius: '14px',
+              padding: '20px',
               border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 20px rgba(15, 23, 42, 0.05)',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
             }}
           >
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginBottom: '14px' }}>
-              👥 Operadores & Caixas Cadastrados em {nomeSupermercadoAtivo} ({listaOperadores.length})
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  Equipe Cadastrada em {nomeSupermercadoAtivo} ({listaOperadores.length})
+                </h3>
+                <p style={{ fontSize: '0.74rem', color: '#64748b', margin: '2px 0 0 0' }}>
+                  Operadores ativos, cargos atribuídos e resumo de acessos liberados
+                </p>
+              </div>
+            </div>
 
             {listaOperadores.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '28px', color: 'var(--texto-secundario)' }}>
-                Nenhum operador de caixa cadastrado nesta loja. Use o formulário acima para adicionar um funcionário.
+              <div style={{ textAlign: 'center', padding: '32px 16px', color: '#64748b', background: '#f8fafc', borderRadius: '10px', border: '1px dashed #cbd5e1', fontSize: '0.85rem' }}>
+                Nenhum operador cadastrado nesta loja ainda. Utilize o formulário acima para adicionar sua equipe.
               </div>
             ) : (
-              <div className="tabela-relatorio" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {listaOperadores.map((op) => (
-                  <div
-                    key={op.id}
-                    className="relatorio-linha-cheia"
-                    style={{
-                      background: op.ativo ? '#ffffff' : '#f8fafc',
-                      opacity: op.ativo ? 1 : 0.72,
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '14px',
-                      padding: '14px 16px',
-                    }}
-                  >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <b style={{ fontSize: '0.96rem', color: '#0f172a' }}>{op.nome}</b>
-                        <span
-                          className={`badge-permissao-status ${op.ativo ? 'badge-ativa' : 'badge-inativa'}`}
-                        >
-                          {op.ativo ? '🟢 Ativo' : '🔴 Inativo'}
-                        </span>
-                        <span
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {listaOperadores.map((op) => {
+                  const iniciais = (op.nome || 'OP')
+                    .trim()
+                    .split(/\s+/)
+                    .slice(0, 2)
+                    .map((p) => p[0]?.toUpperCase() || '')
+                    .join('');
+
+                  const etiquetasPermissao: string[] = [];
+                  if (op.permissoes?.vender) etiquetasPermissao.push('PDV / Vendas');
+                  if (op.permissoes?.gestao_caixa) etiquetasPermissao.push('Turno de Caixa');
+                  if (op.permissoes?.gerenciar_delivery) etiquetasPermissao.push('Delivery');
+                  if (op.permissoes?.gerenciar_devedores) etiquetasPermissao.push('Fiado');
+                  if (op.permissoes?.dar_desconto) etiquetasPermissao.push('Desconto');
+                  if (op.permissoes?.alterar_preco) etiquetasPermissao.push('Alterar Preço');
+                  if (op.permissoes?.estornar_venda) etiquetasPermissao.push('Estorno');
+                  if (op.permissoes?.cadastrar_produtos) etiquetasPermissao.push('Cad. Produtos');
+                  if (op.permissoes?.excluir_produtos) etiquetasPermissao.push('Excluir Produtos');
+                  if (op.permissoes?.baixa_estoque) etiquetasPermissao.push('Baixa Manual');
+                  if (op.permissoes?.ver_relatorios) etiquetasPermissao.push('Relatórios');
+                  if (op.permissoes?.ver_graficos) etiquetasPermissao.push('Gráficos');
+                  if (op.permissoes?.inteligencia_estoque) etiquetasPermissao.push('Inteligência');
+                  if (op.permissoes?.gerenciar_equipe) etiquetasPermissao.push('Gerir Equipe');
+                  if (op.permissoes?.imprimir_etiquetas) etiquetasPermissao.push('Etiquetas');
+
+                  return (
+                    <div
+                      key={op.id}
+                      style={{
+                        background: op.ativo ? '#ffffff' : '#f8fafc',
+                        opacity: op.ativo ? 1 : 0.75,
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '12px',
+                        padding: '14px 16px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', flex: '1 1 300px', minWidth: 0 }}>
+                        <div
                           style={{
-                            background: '#f1f5f9',
-                            color: '#334155',
-                            fontSize: '0.72rem',
-                            padding: '2px 9px',
-                            borderRadius: '999px',
-                            fontWeight: 700,
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '10px',
+                            background: op.ativo ? '#e0f2fe' : '#e2e8f0',
+                            color: op.ativo ? '#0369a1' : '#64748b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 800,
+                            fontSize: '0.82rem',
+                            flexShrink: 0,
                           }}
                         >
-                          {op.cargo}
-                        </span>
+                          {iniciais}
+                        </div>
+
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0f172a' }}>{op.nome}</span>
+                            <span
+                              style={{
+                                background: op.ativo ? '#f0fdf4' : '#f1f5f9',
+                                color: op.ativo ? '#15803d' : '#64748b',
+                                border: `1px solid ${op.ativo ? '#bbf7d0' : '#cbd5e1'}`,
+                                fontSize: '0.68rem',
+                                padding: '1px 8px',
+                                borderRadius: '999px',
+                                fontWeight: 700,
+                              }}
+                            >
+                              {op.ativo ? 'Ativo' : 'Inativo'}
+                            </span>
+                            <span
+                              style={{
+                                background: '#f1f5f9',
+                                color: '#334155',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '0.68rem',
+                                padding: '1px 8px',
+                                borderRadius: '999px',
+                                fontWeight: 700,
+                              }}
+                            >
+                              {op.cargo}
+                            </span>
+                          </div>
+
+                          <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '3px' }}>
+                            Login / CPF: <b style={{ color: '#334155' }}>{op.cpfOuUsuario}</b> • Cadastrado em: {op.dataCadastro || 'N/A'}
+                          </div>
+
+                          {/* TAGS PADRONIZADAS E LIMPAS (SEM ARCO-ÍRIS) */}
+                          {etiquetasPermissao.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '8px' }}>
+                              {etiquetasPermissao.map((tag) => (
+                                <span
+                                  key={tag}
+                                  style={{
+                                    fontSize: '0.68rem',
+                                    background: '#f8fafc',
+                                    color: '#475569',
+                                    border: '1px solid #e2e8f0',
+                                    padding: '2px 7px',
+                                    borderRadius: '6px',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '3px' }}>
-                        Login/CPF: <b style={{ color: '#334155' }}>{op.cpfOuUsuario}</b> • Cadastrado em: {op.dataCadastro || 'N/A'}
-                      </div>
+                      {/* AÇÕES PADRONIZADAS */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          style={{
+                            background: '#ffffff',
+                            color: '#334155',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '7px',
+                            padding: '6px 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                          }}
+                          onClick={() => {
+                            setOperadorAlterandoSenha(op);
+                            setNovaSenhaOpModal('');
+                            setConfirmarSenhaOpModal('');
+                            setErroSenhaOpModal('');
+                          }}
+                        >
+                          <KeyRound size={13} style={{ color: '#64748b' }} />
+                          <span>Senha</span>
+                        </button>
 
-                      {/* BADGES DE PERMISSÕES ATIVAS */}
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '8px' }}>
-                        {op.permissoes?.vender && <span style={{ fontSize: '0.68rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>🛒 Vendas</span>}
-                        {op.permissoes?.gerenciar_delivery && <span style={{ fontSize: '0.68rem', background: '#ecfdf5', color: '#047857', border: '1px solid #6ee7b7', padding: '2px 7px', borderRadius: '6px', fontWeight: 800 }}>🛵 Delivery</span>}
-                        {op.permissoes?.dar_desconto && <span style={{ fontSize: '0.68rem', background: '#dcfce7', color: '#15803d', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>💲 Desconto</span>}
-                        {op.permissoes?.alterar_preco && <span style={{ fontSize: '0.68rem', background: '#fef3c7', color: '#b45309', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>✏️ Alterar Preço</span>}
-                        {op.permissoes?.estornar_venda && <span style={{ fontSize: '0.68rem', background: '#fee2e2', color: '#991b1b', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>↩️ Estorno</span>}
-                        {op.permissoes?.cadastrar_produtos && <span style={{ fontSize: '0.68rem', background: '#f3e8ff', color: '#6b21a8', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>📦 Cad. Produtos</span>}
-                        {op.permissoes?.excluir_produtos && <span style={{ fontSize: '0.68rem', background: '#ffedd5', color: '#9a3412', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>❌ Excluir Produtos</span>}
-                        {op.permissoes?.baixa_estoque && <span style={{ fontSize: '0.68rem', background: '#fee2e2', color: '#b91c1c', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>🗑️ Baixa Manual</span>}
-                        {op.permissoes?.ver_relatorios && <span style={{ fontSize: '0.68rem', background: '#e0e7ff', color: '#3730a3', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>📊 Relatórios</span>}
-                        {op.permissoes?.ver_graficos && <span style={{ fontSize: '0.68rem', background: '#ccfbf1', color: '#0f766e', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>📈 Gráficos</span>}
-                        {op.permissoes?.inteligencia_estoque && <span style={{ fontSize: '0.68rem', background: '#fef9c3', color: '#854d0e', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>💡 Inteligência</span>}
-                        {op.permissoes?.gerenciar_equipe && <span style={{ fontSize: '0.68rem', background: '#fae8ff', color: '#86198f', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>👥 Gerir Equipe</span>}
-                        {op.permissoes?.imprimir_etiquetas && <span style={{ fontSize: '0.68rem', background: '#f1f5f9', color: '#334155', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>🏷️ Etiquetas</span>}
-                        {op.permissoes?.usar_ocr_ia && <span style={{ fontSize: '0.68rem', background: '#e0f2fe', color: '#0284c7', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>🤖 OCR / IA</span>}
-                        {op.permissoes?.exportar_relatorios && <span style={{ fontSize: '0.68rem', background: '#ecfdf5', color: '#047857', padding: '2px 7px', borderRadius: '6px', fontWeight: 700 }}>📥 Exportar</span>}
+                        <button
+                          type="button"
+                          style={{
+                            background: '#f0f9ff',
+                            color: '#0369a1',
+                            border: '1px solid #bae6fd',
+                            borderRadius: '7px',
+                            padding: '6px 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                          }}
+                          onClick={() => prepararEdicaoOperador(op)}
+                        >
+                          <Pencil size={13} />
+                          <span>Editar</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          style={{
+                            background: '#ffffff',
+                            color: op.ativo ? '#b45309' : '#15803d',
+                            border: `1px solid ${op.ativo ? '#fde68a' : '#bbf7d0'}`,
+                            borderRadius: '7px',
+                            padding: '6px 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => alternarStatusOperador(op.id)}
+                        >
+                          {op.ativo ? 'Desativar' : 'Ativar'}
+                        </button>
+
+                        <button
+                          type="button"
+                          style={{
+                            background: '#ffffff',
+                            color: '#dc2626',
+                            border: '1px solid #fecaca',
+                            borderRadius: '7px',
+                            padding: '6px 10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                          onClick={() => excluirOperador(op.id)}
+                        >
+                          <Trash2 size={13} />
+                          <span>Excluir</span>
+                        </button>
                       </div>
                     </div>
-
-                    <div className="acoes-relatorio acoes-operador" style={{ gap: '6px' }}>
-                      <button
-                        type="button"
-                        className="btn-acao-rel"
-                        style={{
-                          background: '#eff6ff',
-                          color: '#1d4ed8',
-                          border: '1px solid #93c5fd',
-                          borderRadius: '8px',
-                          padding: '7px 12px',
-                          fontWeight: 800,
-                        }}
-                        onClick={() => {
-                          setOperadorAlterandoSenha(op);
-                          setNovaSenhaOpModal('');
-                          setConfirmarSenhaOpModal('');
-                          setErroSenhaOpModal('');
-                        }}
-                        title="Definir uma nova senha criptografada (mínimo 6 caracteres) para este funcionário"
-                      >
-                        🔑 Alterar Senha
-                      </button>
-                      <button
-                        className="btn-acao-rel btn-editar-rel"
-                        style={{ borderRadius: '8px', padding: '7px 12px', fontWeight: 700 }}
-                        onClick={() => prepararEdicaoOperador(op)}
-                      >
-                        ✏️ Editar Permissões
-                      </button>
-                      <button
-                        className="btn-acao-rel"
-                        style={{
-                          background: op.ativo ? '#fef3c7' : '#dcfce7',
-                          color: op.ativo ? '#b45309' : '#15803d',
-                          borderRadius: '8px',
-                          padding: '7px 12px',
-                          fontWeight: 700,
-                        }}
-                        onClick={() => alternarStatusOperador(op.id)}
-                      >
-                        {op.ativo ? '⏸ Desativar' : '▶ Ativar'}
-                      </button>
-                      <button
-                        className="btn-acao-rel btn-excluir-rel"
-                        style={{ borderRadius: '8px', padding: '7px 12px', fontWeight: 700 }}
-                        onClick={() => excluirOperador(op.id)}
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
