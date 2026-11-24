@@ -14948,25 +14948,25 @@ export default function App() {
                                               ? 'fiscal'
                                               : 'inicio';
 
-        const metaAbas: Record<AbaSecundariaSistema, { icone: string; label: string }> = {
-          cadastro: { icone: '➕', label: 'Cadastro' },
-          caixa: { icone: '💰', label: 'Caixa' },
-          relatorios: { icone: '📊', label: 'Relatórios' },
-          delivery: { icone: '🛵', label: 'Delivery' },
-          devedores: { icone: '📒', label: 'Fiado' },
-          master: { icone: '👑', label: 'Master' },
-          estoque: { icone: '📦', label: 'Estoque' },
-          graficos: { icone: '📈', label: 'Gráficos' },
-          historico_vendas: { icone: '🧾', label: 'Vendas' },
-          equipe: { icone: '👥', label: 'Equipe' },
-          etiquetas: { icone: '🏷️', label: 'Etiquetas' },
-          xml: { icone: '📄', label: 'XML' },
-          manual: { icone: '📘', label: 'Tutorial' },
-          notificacoes: { icone: '🔔', label: 'Alertas' },
-          whatsapp: { icone: '📱', label: 'WhatsApp' },
-          catalogo: { icone: '🗂️', label: 'Catálogo' },
-          comandas: { icone: '🧾', label: 'Comandas' },
-          fiscal: { icone: '🏛️', label: 'Fiscal' },
+        const metaAbas: Record<AbaSecundariaSistema, { label: string }> = {
+          cadastro: { label: 'Cadastro' },
+          caixa: { label: 'Caixa' },
+          relatorios: { label: 'Relatórios' },
+          delivery: { label: 'Delivery' },
+          devedores: { label: 'Fiado' },
+          master: { label: 'Master' },
+          estoque: { label: 'Estoque' },
+          graficos: { label: 'Gráficos' },
+          historico_vendas: { label: 'Vendas' },
+          equipe: { label: 'Equipe' },
+          etiquetas: { label: 'Etiquetas' },
+          xml: { label: 'XML' },
+          manual: { label: 'Tutorial' },
+          notificacoes: { label: 'Alertas' },
+          whatsapp: { label: 'WhatsApp' },
+          catalogo: { label: 'Catálogo' },
+          comandas: { label: 'Comandas' },
+          fiscal: { label: 'Fiscal' },
         };
 
         // Só exibe as abas abertas (ou enquanto houver pelo menos 1 aba aberta além do Início)
@@ -14977,20 +14977,20 @@ export default function App() {
             aria-label="Abas abertas"
             style={{
               position: 'fixed',
-              bottom: '3px',
-              right: '10px',
-              zIndex: 900,
-              background: 'rgba(15, 23, 42, 0.92)',
+              bottom: '8px',
+              left: '12px',
+              zIndex: 1000005,
+              background: 'rgba(255, 255, 255, 0.96)',
               backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(148, 163, 184, 0.3)',
+              border: '1px solid #cbd5e1',
               borderRadius: '999px',
               display: 'flex',
               alignItems: 'center',
-              padding: '2px 5px',
-              gap: '3px',
-              maxWidth: 'calc(100vw - 20px)',
+              padding: '3px 6px',
+              gap: '4px',
+              maxWidth: 'calc(100vw - 24px)',
               overflowX: 'auto',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.28)',
+              boxShadow: '0 4px 16px rgba(15, 23, 42, 0.14)',
             }}
           >
             {/* Aba fixa de Início */}
@@ -15001,21 +15001,20 @@ export default function App() {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '3px',
-                padding: '2px 7px',
+                gap: '4px',
+                padding: '4px 10px',
                 borderRadius: '999px',
-                border: 'none',
-                background: abaAtualSistema === 'inicio' ? '#0284c7' : 'rgba(255,255,255,0.08)',
-                color: '#ffffff',
+                border: abaAtualSistema === 'inicio' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+                background: abaAtualSistema === 'inicio' ? '#0284c7' : '#f8fafc',
+                color: abaAtualSistema === 'inicio' ? '#ffffff' : '#334155',
                 cursor: 'pointer',
-                fontSize: '0.67rem',
+                fontSize: '0.72rem',
                 lineHeight: 1.25,
-                fontWeight: abaAtualSistema === 'inicio' ? 800 : 600,
+                fontWeight: 700,
                 whiteSpace: 'nowrap',
               }}
             >
-              <span>🏠</span>
-              <span>Início</span>
+              <span>Início (PDV)</span>
             </button>
 
             {/* Abas abertas que ainda não foram fechadas no X */}
@@ -15030,8 +15029,8 @@ export default function App() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     borderRadius: '999px',
-                    background: ativa ? '#0284c7' : 'rgba(255,255,255,0.1)',
-                    border: ativa ? '1px solid rgba(56, 189, 248, 0.7)' : '1px solid transparent',
+                    background: ativa ? '#0284c7' : '#f1f5f9',
+                    border: ativa ? '1px solid #0284c7' : '1px solid #e2e8f0',
                     overflow: 'hidden',
                     flexShrink: 0,
                   }}
@@ -15042,19 +15041,18 @@ export default function App() {
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '3px',
-                      padding: '2px 5px 2px 7px',
+                      gap: '4px',
+                      padding: '4px 6px 4px 10px',
                       border: 'none',
                       background: 'transparent',
-                      color: '#ffffff',
+                      color: ativa ? '#ffffff' : '#334155',
                       cursor: 'pointer',
-                      fontSize: '0.67rem',
+                      fontSize: '0.72rem',
                       lineHeight: 1.25,
-                      fontWeight: ativa ? 800 : 600,
+                      fontWeight: 700,
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <span>{info.icone}</span>
                     <span>{info.label}</span>
                   </button>
                   <button
@@ -15067,10 +15065,10 @@ export default function App() {
                     style={{
                       border: 'none',
                       background: 'transparent',
-                      color: '#cbd5e1',
+                      color: ativa ? 'rgba(255,255,255,0.85)' : '#64748b',
                       cursor: 'pointer',
                       padding: '4px 8px 4px 4px',
-                      fontSize: '0.82rem',
+                      fontSize: '0.85rem',
                       fontWeight: 800,
                       lineHeight: 1,
                       display: 'inline-flex',
