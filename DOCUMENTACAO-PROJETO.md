@@ -165,6 +165,15 @@ O **Estoque Mobile Multi-Supermercado** é uma aplicação web progressiva (PWA/
 
 ## 5. Histórico de Alterações (Changelog)
 
+### [2026-11-23 - Versão 173 - Ajustes Finais (Motoboy em Aparelho Externo, Comandas Divididas e Limpeza Segura no PDV)]
+- **Rota do Motoboy em Dispositivo Externo (`src/lib/firestoreSync.ts`, `src/App.tsx`):**
+  - Adicionada função `buscarPedidoDeliveryPorTokenFirestore` e estado `pedidoMotoboyRemoto` para carregar pedidos de entrega diretamente do Firestore no celular do entregador (sem depender de `localStorage` local).
+- **Comandas com Pagamento Dividido (`src/App.tsx`):**
+  - `handleFecharComandaComVenda` agora gera registros de venda separados por forma de pagamento quando uma comanda é quitada com múltiplas modalidades (ex.: PIX + Dinheiro), garantindo fechamento de caixa exato.
+- **PDV Lateral (`src/components/CaixaPdvLateralPanel.tsx`, `src/App.tsx`):**
+  - `finalizarVendaCarrinho` retorna `boolean` e `CaixaPdvLateralPanel` preserva os campos de troco/CPF caso a venda seja cancelada ou bloqueada por falta de estoque/fiado.
+- **PWA:** Cache atualizado para `estoque-mobile-pwa-v173` (`public/sw.js` e `src/main.tsx`).
+
 ### [2026-11-22 - Versão 172 - Correção Completa dos Achados da Auditoria de 4 Agentes pós-v171]
 - **Roteamento F5, Auth & APIs (`src/App.tsx`, `api/auth.js`, `api/nfce.js`, `api/si5.js`, `server.ts`, `src/lib/focusNfeService.ts`, `src/lib/bomJawaKitApi.ts`):**
   - Corrigido F5 na rota do motoboy (`?motoboy=1`) preservando o token em `sessionStorage` e corrigido `isModoCliente` para não ser bloqueado por token de painel salvo na mesma aba.

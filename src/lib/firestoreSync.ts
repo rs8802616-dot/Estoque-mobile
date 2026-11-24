@@ -1089,6 +1089,27 @@ export async function salvarPedidoDeliveryFirestore(pedido: PedidoDelivery) {
   }
 }
 
+export async function buscarPedidoDeliveryPorTokenFirestore(
+  numeroPedido: string,
+  motoboyToken: string
+): Promise<PedidoDelivery | null> {
+  if (!numeroPedido || !motoboyToken) return null;
+  try {
+    const q = query(
+      collection(db, 'pedidos_delivery'),
+      where('motoboyToken', '==', motoboyToken.trim()),
+      limit(1)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) return null;
+    const ped = snap.docs[0].data() as PedidoDelivery;
+    if (String(ped.numeroPedido) !== String(numeroPedido).trim()) return null;
+    return ped;
+  } catch {
+    return null;
+  }
+}
+
 export function subscribePedidosDelivery(lojaId: string, callback: (pedidos: PedidoDelivery[]) => void) {
   if (!lojaId) return () => {};
 

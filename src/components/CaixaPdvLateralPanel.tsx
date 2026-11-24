@@ -12,7 +12,7 @@ interface CaixaPdvLateralPanelProps {
     formaPagamento: FormaPagamentoPdv,
     clienteFiadoId?: string,
     opcoesFiscais?: { emitirNfce?: boolean; cpfNaNota?: string; valorRecebido?: number; troco?: number }
-  ) => void;
+  ) => Promise<boolean | void> | boolean | void;
   clientesDevedores: ClienteDevedor[];
   onAbrirCadastroCliente: () => void;
   sessaoCaixaAberta: boolean;
@@ -102,7 +102,7 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
     carrinho.length > 0 &&
     (formaPagamento !== 'fiado' || Boolean(clienteFiadoId));
 
-  const handleFinalizar = () => {
+  const handleFinalizar = async () => {
     if (!sessaoCaixaAberta) {
       onAbrirCaixaModal();
       return;
@@ -122,7 +122,7 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
       formaPagamento === 'dinheiro' && trocoCalculado > 0
         ? Number(trocoCalculado.toFixed(2))
         : 0;
-    onFinalizarVenda(
+    const resultado = await onFinalizarVenda(
       formaPagamento,
       formaPagamento === 'fiado' ? clienteFiadoId : undefined,
       {
@@ -130,8 +130,10 @@ export const CaixaPdvLateralPanel: React.FC<CaixaPdvLateralPanelProps> = ({
         ...(valorRecebidoFinal !== undefined ? { valorRecebido: valorRecebidoFinal, troco: trocoFinal } : {}),
       }
     );
-    setValorRecebidoDinheiro('');
-    setCpfNaNota('');
+    if (resultado !== false) {
+      setValorRecebidoDinheiro('');
+      setCpfNaNota('');
+    }
   };
 
   return (

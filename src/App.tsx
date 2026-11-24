@@ -223,6 +223,7 @@ import {
   subscribeLogsAuditoria,
   salvarPedidoDeliveryFirestore,
   subscribePedidosDelivery,
+  buscarPedidoDeliveryPorTokenFirestore,
   salvarConfigDeliveryFirestore,
   subscribeConfigDelivery,
   sanitizarItemEstoque,
@@ -459,6 +460,30 @@ export default function App() {
   // C. Link Exclusivo do Entregador/Motoboy (?motoboy=1&pedido=1042&token=mto_...)
   const isMotoboyRoute = isMotoboyUrlFlag;
   const motoboyTokenParam = tokenParamAtivo;
+  const [pedidoMotoboyRemoto, setPedidoMotoboyRemoto] = useState<PedidoDelivery | null>(null);
+  const [buscandoPedidoMotoboy, setBuscandoPedidoMotoboy] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isMotoboyRoute || !motoboyPedidoParam || !motoboyTokenParam) return;
+    let ativo = true;
+    setBuscandoPedidoMotoboy(true);
+    buscarPedidoDeliveryPorTokenFirestore(motoboyPedidoParam, motoboyTokenParam)
+      .then((ped) => {
+        if (ativo && ped) {
+          setPedidoMotoboyRemoto(ped);
+          try {
+            localStorage.setItem(`motoboy_pedido_${ped.numeroPedido}`, JSON.stringify(ped));
+          } catch {}
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (ativo) setBuscandoPedidoMotoboy(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [isMotoboyRoute, motoboyPedidoParam, motoboyTokenParam]);
 
   // Resolução determinística do ID e Nome da loja por slug a partir dos dados locais
   const resolverIdLojaPorSlug = (slugOuId: string | null): string | null => {
@@ -6808,44 +6833,75 @@ export default function App() {
     const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
     const nomeOperador = opAtivo ? opAtivo.nome : 'Administrador do Supermercado';
 
-    const novaVenda: Venda = {
-      id: 'ven_' + Date.now(),
-      lojaId: supermercadoAtual,
-      data: agora.toISOString().slice(0, 10),
-      hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      timestamp: agora.getTime(),
-      operadorId: operadorAtivoId || 'admin',
-      operadorNome: nomeOperador,
-      itens: comandaQuitada.itens.map((it) => ({
-        codigo: it.codigo,
-        nome: it.nome,
-        quantidade: it.quantidade,
-        preco_unitario: it.preco_unitario,
-        preco_custo: it.preco_custo,
-        subtotal: it.subtotal,
-        lote: it.lote,
-        validade: it.validade,
-        tipoCadastro: it.tipoCadastro,
-        estoqueIlimitado: it.estoqueIlimitado,
-      })),
-      valorTotal: comandaQuitada.valorTotal,
-      formaPagamento: formaPagamentoFinal,
-      status: 'concluida',
-      origem: 'balcao',
-      cpfNaNota: opcoesFiscais?.cpfNaNota,
-    };
+    const itensVendaCmd = comandaQuitada.itens.map((it) => ({
+      codigo: it.codigo,
+      nome: it.nome,
+      quantidade: it.quantidade,
+      preco_unitario: it.preco_unitario,
+      preco_custo: it.preco_custo,
+      subtotal: it.subtotal,
+      lote: it.lote,
+      validade: it.validade,
+      tipoCadastro: it.tipoCadastro,
+      estoqueIlimitado: it.estoqueIlimitado,
+    }));
 
-    const novasVendas = [novaVenda, ...vendas];
+    const pagamentosComanda = Array.isArray(comandaQuitada.pagamentos) && comandaQuitada.pagamentos.length > 0
+      ? comandaQuitada.pagamentos
+      : null;
+    const formasDistintas = pagamentosComanda
+      ? new Set(pagamentosComanda.map((pg) => pg.formaPagamento))
+      : null;
+
+    const vendasGeradas: Venda[] =
+      pagamentosComanda && formasDistintas && formasDistintas.size > 1
+        ? pagamentosComanda.map((pg, idx) => ({
+            id: `ven_${Date.now()}_${idx}`,
+            lojaId: supermercadoAtual,
+            data: agora.toISOString().slice(0, 10),
+            hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            timestamp: agora.getTime(),
+            operadorId: operadorAtivoId || 'admin',
+            operadorNome: nomeOperador,
+            itens: idx === 0 ? itensVendaCmd : [],
+            valorTotal: Number(pg.valor || 0),
+            formaPagamento: pg.formaPagamento,
+            status: 'concluida',
+            origem: 'balcao',
+            cpfNaNota: idx === 0 ? opcoesFiscais?.cpfNaNota : undefined,
+          }))
+        : [
+            {
+              id: 'ven_' + Date.now(),
+              lojaId: supermercadoAtual,
+              data: agora.toISOString().slice(0, 10),
+              hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+              timestamp: agora.getTime(),
+              operadorId: operadorAtivoId || 'admin',
+              operadorNome: nomeOperador,
+              itens: itensVendaCmd,
+              valorTotal: comandaQuitada.valorTotal,
+              formaPagamento: formaPagamentoFinal,
+              status: 'concluida',
+              origem: 'balcao',
+              cpfNaNota: opcoesFiscais?.cpfNaNota,
+            },
+          ];
+
+    const novaVenda = vendasGeradas[0];
+    const novasVendas = [...vendasGeradas, ...vendas];
     setVendas(novasVendas);
     safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(novasVendas));
-    if (!navigator.onLine) {
-      adicionarVendaFilaOffline(novaVenda);
-      setVendasPendentesCount(obterVendasPendentesOffline().length);
-    } else {
-      salvarVendaFirestore(novaVenda).catch(() => {
-        adicionarVendaFilaOffline(novaVenda);
+    for (const vGerada of vendasGeradas) {
+      if (!navigator.onLine) {
+        adicionarVendaFilaOffline(vGerada);
         setVendasPendentesCount(obterVendasPendentesOffline().length);
-      });
+      } else {
+        salvarVendaFirestore(vGerada).catch(() => {
+          adicionarVendaFilaOffline(vGerada);
+          setVendasPendentesCount(obterVendasPendentesOffline().length);
+        });
+      }
     }
 
     const comandaFechada: ComandaLocal = {
@@ -6873,6 +6929,7 @@ export default function App() {
     if (opcoesFiscais?.emitirNfce) {
       handleEmitirNfceParaVenda(novaVenda, opcoesFiscais.cpfNaNota);
     }
+    return true;
   };
 
   // FINALIZAR VENDA COMPLETA DO CARRINHO (MÚLTIPLOS PRODUTOS DE UMA VEZ)
@@ -6904,7 +6961,7 @@ export default function App() {
         alert(
           `⚠️ Estoque insuficiente para o produto "${itemCar.nome}"!\nDisponível: ${itemEst ? itemEst.quantidade : 0} un | No carrinho: ${itemCar.quantidade} un.`
         );
-        return;
+        return false;
       }
     }
 
@@ -6915,12 +6972,12 @@ export default function App() {
     if (formaPagamentoVenda === 'fiado') {
       if (!clienteFiadoIdEscolhido) {
         alert('Selecione um cliente cadastrado para registrar a compra em fiado.');
-        return;
+        return false;
       }
       clienteFiadoEncontrado = clientesDevedores.find((c) => c.id === clienteFiadoIdEscolhido);
       if (!clienteFiadoEncontrado) {
         alert('Cliente fiado não encontrado!');
-        return;
+        return false;
       }
       if (clienteFiadoEncontrado.limiteFiado && clienteFiadoEncontrado.limiteFiado > 0) {
         const novoSaldo = Number(((clienteFiadoEncontrado.saldoDevedorTotal || 0) + valorTotalCarrinho).toFixed(2));
@@ -6928,7 +6985,7 @@ export default function App() {
           const prosseguir = window.confirm(
             `⚠️ Limite de Fiado Excedido!\n\nCliente: ${clienteFiadoEncontrado.nome}\nSaldo Atual: R$ ${(clienteFiadoEncontrado.saldoDevedorTotal || 0).toFixed(2)}\nCompra: R$ ${valorTotalCarrinho.toFixed(2)}\nNovo Saldo: R$ ${novoSaldo.toFixed(2)}\nLimite: R$ ${clienteFiadoEncontrado.limiteFiado.toFixed(2)}\n\nDeseja liberar esta venda mesmo assim?`
           );
-          if (!prosseguir) return;
+          if (!prosseguir) return false;
         }
       }
     }
@@ -7066,6 +7123,7 @@ export default function App() {
     if (opcoesFiscais?.emitirNfce) {
       handleEmitirNfceParaVenda(novaVenda, opcoesFiscais.cpfNaNota);
     }
+    return true;
   };
 
   // Sales Reversal (Estorno) Handler
@@ -7830,11 +7888,13 @@ export default function App() {
       return <UnrecognizedLinkView />;
     }
 
-    let pedidoMotoboy = pedidosDelivery.find(
-      (p) =>
-        String(p.numeroPedido) === String(motoboyPedidoParam) ||
-        p.motoboyToken === motoboyTokenParam
-    );
+    let pedidoMotoboy =
+      pedidoMotoboyRemoto ||
+      pedidosDelivery.find(
+        (p) =>
+          String(p.numeroPedido) === String(motoboyPedidoParam) ||
+          p.motoboyToken === motoboyTokenParam
+      );
 
     if (!pedidoMotoboy && typeof window !== 'undefined') {
       try {
@@ -7844,6 +7904,13 @@ export default function App() {
     }
 
     if (!pedidoMotoboy) {
+      if (buscandoPedidoMotoboy) {
+        return (
+          <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6 text-sm font-semibold">
+            Carregando dados da entrega...
+          </div>
+        );
+      }
       return <UnrecognizedLinkView />;
     }
 
