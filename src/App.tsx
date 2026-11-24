@@ -872,7 +872,7 @@ export default function App() {
   const [limiteRelatorioCatalogo, setLimiteRelatorioCatalogo] = useState<number>(50);
 
   // Carregamento progressivo sob demanda na rolagem (Lazy Load / Infinite Scroll) do PDV
-  const [limiteVisivelPdv, setLimiteVisivelPdv] = useState<number>(24);
+  const [limiteVisivelPdv, setLimiteVisivelPdv] = useState<number>(60);
   const sentinelaScrollPdvRef = useRef<HTMLDivElement | null>(null);
 
   const [regLojaNome, setRegLojaNome] = useState<string>('');
@@ -1926,24 +1926,25 @@ export default function App() {
 
   // Reseta limite de exibição do PDV ao pesquisar, filtrar ou alternar de supermercado
   useEffect(() => {
-    setLimiteVisivelPdv(24);
+    setLimiteVisivelPdv(60);
   }, [busca, filtroTipoProduto, supermercadoAtual]);
 
-  // Observer de rolagem infinita do PDV (carrega mais itens automaticamente conforme o usuário rola)
+  // Observer de rolagem infinita do PDV (observa dentro do container rolável .coluna-produtos-principal)
   useEffect(() => {
     const sentinela = sentinelaScrollPdvRef.current;
     if (!sentinela) return;
+    const containerRolagem = sentinela.closest('.coluna-produtos-principal');
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          setLimiteVisivelPdv((prev) => prev + 24);
+        if (entries[0]?.isIntersecting) {
+          setLimiteVisivelPdv((prev) => prev + 60);
         }
       },
-      { rootMargin: '350px' }
+      { root: containerRolagem || null, rootMargin: '500px' }
     );
     observer.observe(sentinela);
     return () => observer.disconnect();
-  }, [estoque.length, busca, filtroTipoProduto, supermercadoAtual, limiteVisivelPdv]);
+  }, [estoque.length, listaSupermercados.length, telaLoginVisivel, perfilAtivo, busca, filtroTipoProduto, supermercadoAtual, limiteVisivelPdv]);
 
   // Sync Cash Shift Session on Store or Operator Change
   useEffect(() => {
@@ -9811,7 +9812,17 @@ export default function App() {
                 alignItems: 'start',
               }}
             >
-              <div className="coluna-produtos-principal" style={{ minWidth: 0 }}>
+              <div
+                className="coluna-produtos-principal"
+                style={{ minWidth: 0 }}
+                onScroll={(e) => {
+                  if (limiteVisivelPdv >= totalItensPdv) return;
+                  const el = e.currentTarget;
+                  if (el.scrollHeight - el.scrollTop - el.clientHeight < 500) {
+                    setLimiteVisivelPdv((prev) => Math.min(totalItensPdv, prev + 60));
+                  }
+                }}
+              >
                 {/* Quick Filter Pill Buttons */}
                 <div
                   className="barra-filtros-produtos-fixa"
@@ -10160,28 +10171,28 @@ export default function App() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
-                    padding: '20px 10px',
-                    color: '#64748b',
-                    fontSize: '0.84rem',
-                    fontWeight: 600,
+                    padding: '16px 10px',
                   }}
                 >
-                  <span
+                  <button
+                    type="button"
+                    onClick={() => setLimiteVisivelPdv((prev) => Math.min(totalItensPdv, prev + 60))}
                     style={{
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid #cbd5e1',
-                      borderTopColor: '#0284c7',
-                      borderRadius: '50%',
-                      display: 'inline-block',
-                      animation: 'spin 0.8s linear infinite',
+                      background: '#ffffff',
+                      color: '#0284c7',
+                      border: '1px solid #bae6fd',
+                      borderRadius: '8px',
+                      padding: '8px 16px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
                     }}
-                  />
-                  Carregando mais produtos... ({Math.min(limiteVisivelPdv, totalItensPdv)} de {totalItensPdv})
+                  >
+                    Mostrar mais produtos ({Math.min(limiteVisivelPdv, totalItensPdv)} de {totalItensPdv})
+                  </button>
                 </div>
               )}
-              {limiteVisivelPdv >= totalItensPdv && totalItensPdv > 24 && (
+              {limiteVisivelPdv >= totalItensPdv && totalItensPdv > 60 && (
                 <div
                   style={{
                     gridColumn: '1 / -1',
