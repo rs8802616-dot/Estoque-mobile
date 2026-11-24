@@ -592,15 +592,15 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 {/* 4. BALCÃO VS DELIVERY */}
                 <div className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-bold text-purple-800">
+                    <span className="text-xs uppercase tracking-wider font-bold text-sky-800">
                       🛵 Delivery vs 🍢 Balcão
                     </span>
-                    <Bike className="w-4 h-4 text-purple-400" />
+                    <Bike className="w-4 h-4 text-sky-500" />
                   </div>
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between items-center text-slate-800">
                       <span className="text-xs text-slate-400">🛵 Delivery ({metricasGerais.qtdDelivery}):</span>
-                      <span className="font-bold font-mono text-purple-700">
+                      <span className="font-bold font-mono text-sky-700">
                         R$ {metricasGerais.faturamentoDelivery.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -823,7 +823,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                           venda.status === 'estornada'
                             ? 'bg-rose-50 border-rose-200 opacity-90'
                             : isDelivery
-                            ? 'bg-purple-50/40 border-purple-200 shadow-sm'
+                            ? 'bg-sky-50/40 border-sky-200 shadow-sm'
                             : 'bg-white border-slate-200 shadow-sm'
                         }`}
                       >
@@ -839,7 +839,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                                   {isDelivery ? 'Delivery' : 'Balcão'} #{venda.id.slice(-6)}
                                 </span>
                                 {isDelivery && (
-                                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 border border-purple-200">
+                                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 border border-sky-200">
                                     Zé Delivery
                                   </span>
                                 )}
@@ -1092,7 +1092,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   <button
                     onClick={() => setFiltroEstoqueValidade('baixo')}
                     className={`px-3 py-1.5 rounded-lg font-semibold transition ${
-                      filtroEstoqueValidade === 'baixo' ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200'
+                      filtroEstoqueValidade === 'baixo' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200'
                     }`}
                   >
                     Estoque Baixo ({metricasEstoque.estoqueBaixo})
@@ -1192,17 +1192,17 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               
               {/* CARDS MASTER DE DELIVERY */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100/60 border border-purple-300 p-4 rounded-2xl shadow-sm">
+                <div className="bg-gradient-to-br from-sky-50 to-sky-100/60 border border-sky-200 p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs uppercase tracking-wider font-semibold text-purple-700">
+                    <span className="text-xs uppercase tracking-wider font-semibold text-sky-700">
                       🛵 Faturamento Delivery
                     </span>
-                    <Bike className="w-5 h-5 text-purple-400" />
+                    <Bike className="w-5 h-5 text-sky-500" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-purple-800">
+                  <div className="text-2xl sm:text-3xl font-extrabold text-sky-800">
                     R$ {metricasDelivery.faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
-                  <p className="text-xs text-purple-700/80 mt-1">
+                  <p className="text-xs text-sky-700/80 mt-1">
                     {metricasDelivery.entregues} pedidos entregues com sucesso
                   </p>
                 </div>
@@ -1275,12 +1275,12 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                       {metricasDelivery.topBairros.map((b, i) => (
                         <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                           <span className="font-semibold text-slate-800 flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-700 flex items-center justify-center font-bold text-[10px]">
+                            <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-700 flex items-center justify-center font-bold text-[10px]">
                               {i + 1}
                             </span>
                             {b.bairro}
                           </span>
-                          <span className="font-bold text-purple-400">
+                          <span className="font-bold text-sky-500">
                             {b.total} {b.total === 1 ? 'entrega' : 'entregas'}
                           </span>
                         </div>

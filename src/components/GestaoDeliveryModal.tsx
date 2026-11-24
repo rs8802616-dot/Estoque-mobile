@@ -595,7 +595,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
         {/* CABEÇALHO DO PAINEL DE DELIVERY EM MODO CLARO */}
         <div className="p-3 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-md shadow-purple-500/20 text-white">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-700 flex items-center justify-center shadow-md shadow-sky-500/20 text-white">
               <Bike className="w-6 h-6" />
             </div>
             <div>
@@ -633,7 +633,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl font-bold text-xs shadow-2xs transition cursor-pointer border ${
                 copiedLink
                   ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'bg-white hover:bg-slate-50 text-purple-700 border-purple-200'
+                  : 'bg-white hover:bg-slate-50 text-sky-700 border-sky-200'
               }`}
               title="Copiar link para enviar aos clientes no WhatsApp"
             >
@@ -766,11 +766,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               onClick={() => setPedidosFilterStatus('a_caminho')}
               className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
                 pedidosFilterStatus === 'a_caminho'
-                  ? 'bg-purple-600 text-white border border-purple-600'
-                  : 'bg-white text-purple-600 border border-slate-200 hover:bg-purple-50/50'
+                  ? 'bg-sky-600 text-white border border-sky-600'
+                  : 'bg-white text-sky-600 border border-slate-200 hover:bg-sky-50/50'
               }`}
             >
-              <Bike className="w-3.5 h-3.5 text-purple-600" />
+              <Bike className="w-3.5 h-3.5 text-sky-600" />
               A CAMINHO ({countACaminho})
             </button>
 
@@ -1214,7 +1214,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             {/* Header Fixo em Tela Toda */}
             <div className="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-sky-100 border border-sky-200 flex items-center justify-center text-sky-700 shrink-0">
                   <Settings className="w-5 h-5" />
                 </div>
                 <div>
@@ -1241,7 +1241,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     onSalvarConfig(formConfig);
                     setModalConfigAberta(false);
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-black shadow-sm transition cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-black shadow-sm transition cursor-pointer flex items-center gap-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>Salvar Configurações</span>
@@ -1473,13 +1473,13 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   </div>
 
                   {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-purple-50/80 border border-purple-200 shadow-xs space-y-3">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-sky-50/80 border border-sky-200 shadow-xs space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-black text-xs sm:text-sm text-purple-950 flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-purple-600" />
+                      <span className="font-black text-xs sm:text-sm text-sky-950 flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-sky-600" />
                         <span>Horário de Funcionamento do Delivery:</span>
                       </span>
-                      <span className="text-[11px] bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full font-bold">
+                      <span className="text-[11px] bg-sky-100 text-sky-700 px-2.5 py-0.5 rounded-full font-bold">
                         Bloqueio Automático
                       </span>
                     </div>
@@ -1493,7 +1493,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           type="time"
                           value={formConfig.horarioAbertura || '08:00'}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioAbertura: e.target.value }))}
-                          className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
+                          className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-sky-500 shadow-2xs"
                         />
                       </div>
 
@@ -1505,12 +1505,12 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           type="time"
                           value={formConfig.horarioFechamento || '23:00'}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioFechamento: e.target.value }))}
-                          className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-purple-500 shadow-2xs"
+                          className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-sky-500 shadow-2xs"
                         />
                       </div>
                     </div>
 
-                    <p className="text-xs text-purple-800/80 leading-relaxed">
+                    <p className="text-xs text-sky-800/80 leading-relaxed">
                       💡 Fora deste horário, o cliente não conseguirá enviar pedidos pelo cardápio online e verá o aviso de loja fechada.
                     </p>
                   </div>
@@ -1537,7 +1537,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           step="0.50"
                           value={formConfig.taxaEntregaFixa}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, taxaEntregaFixa: Number(e.target.value) }))}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
 
@@ -1547,7 +1547,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           type="number"
                           value={formConfig.raioMaximoKm}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, raioMaximoKm: Number(e.target.value) }))}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
                     </div>
@@ -1560,7 +1560,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           type="number"
                           value={formConfig.tempoMinimoMinutos}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMinimoMinutos: Number(e.target.value) }))}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
 
@@ -1570,7 +1570,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           type="number"
                           value={formConfig.tempoMaximoMinutos}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMaximoMinutos: Number(e.target.value) }))}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
 
@@ -1580,7 +1580,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           type="number"
                           value={formConfig.valorMinimoPedido}
                           onChange={(e) => setFormConfig((prev) => ({ ...prev, valorMinimoPedido: Number(e.target.value) }))}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-purple-500"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
                     </div>
@@ -1593,7 +1593,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                         value={formConfig.chavePix || ''}
                         onChange={(e) => setFormConfig((prev) => ({ ...prev, chavePix: e.target.value }))}
                         placeholder="CNPJ, E-mail, Celular ou Chave Aleatória"
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-sky-500"
                       />
                     </div>
 
@@ -1607,7 +1607,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                         onChange={(e) => setFormConfig((prev) => ({ ...prev, telefoneContatoLoja: mascaraTelefone(e.target.value) }))}
                         placeholder="(00) 90000-0000"
                         maxLength={15}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-sky-500"
                       />
                     </div>
                   </div>
@@ -1636,10 +1636,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                       <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3.5">
                         <div className="flex items-center justify-between">
                           <span className="font-black text-slate-900 text-sm flex items-center gap-2">
-                            <KeyRound className="w-4 h-4 text-purple-600" />
+                            <KeyRound className="w-4 h-4 text-sky-600" />
                             <span>Links da Loja & Cardápio</span>
                           </span>
-                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800">
+                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800">
                             Token Protegido
                           </span>
                         </div>
@@ -1707,7 +1707,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   onSalvarConfig(formConfig);
                   setModalConfigAberta(false);
                 }}
-                className="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-sm cursor-pointer transition flex items-center gap-2"
+                className="px-6 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs sm:text-sm rounded-xl shadow-sm cursor-pointer transition flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 <span>Salvar Configurações</span>
@@ -1726,7 +1726,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               {/* Header do Modal */}
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center border border-purple-200 shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center border border-sky-200 shrink-0">
                     <Bike className="w-5 h-5" />
                   </div>
                   <div>
@@ -1755,19 +1755,19 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 </p>
                 <ul className="space-y-1.5 pl-1 text-[11px] text-slate-700">
                   <li className="flex items-start gap-1.5">
-                    <span className="text-purple-600 font-bold">•</span>
+                    <span className="text-sky-600 font-bold">•</span>
                     <span>Endereço do cliente com GPS (Google Maps e Waze)</span>
                   </li>
                   <li className="flex items-start gap-1.5">
-                    <span className="text-purple-600 font-bold">•</span>
+                    <span className="text-sky-600 font-bold">•</span>
                     <span>Telefone do cliente com botão para ligar ou abrir WhatsApp</span>
                   </li>
                   <li className="flex items-start gap-1.5">
-                    <span className="text-purple-600 font-bold">•</span>
+                    <span className="text-sky-600 font-bold">•</span>
                     <span>Valor total a cobrar e troco exato a devolver</span>
                   </li>
                   <li className="flex items-start gap-1.5">
-                    <span className="text-purple-600 font-bold">•</span>
+                    <span className="text-sky-600 font-bold">•</span>
                     <span>Botão &quot;Finalizar Entrega&quot; para atualizar no sistema</span>
                   </li>
                   <li className="flex items-start gap-1.5 text-emerald-700 font-semibold pt-0.5">
