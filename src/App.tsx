@@ -30,6 +30,13 @@ import {
   LogOut,
   X,
   Database,
+  Plus,
+  ScanBarcode,
+  Bell,
+  ShoppingCart,
+  Camera,
+  PanelRightOpen,
+  PanelRightClose,
 } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import {
@@ -8079,7 +8086,7 @@ export default function App() {
                   }}
                   title="Cadastrar Produto com Código de Barras"
                 >
-                  <span style={{ fontSize: '0.95rem' }}>➕</span>
+                  <ScanBarcode size={16} strokeWidth={2.2} />
                   <span className="texto-btn-header">Com Código</span>
                 </button>
 
@@ -8106,8 +8113,8 @@ export default function App() {
                   }}
                   title="Cadastrar Produto sem Código de Barras (Balcão)"
                 >
-                  <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>🍢</span>
-                  <span className="texto-btn-header">+ Balcão</span>
+                  <Plus size={16} strokeWidth={2.4} />
+                  <span className="texto-btn-header">Balcão</span>
                 </button>
               </>
             )}
@@ -8117,8 +8124,14 @@ export default function App() {
                 className="btn btn-notif"
                 onClick={() => abrirNotificacoes(produtosEstoqueBaixoCount > 0 ? 'estoque_baixo' : 'validade')}
                 title={`Notificações & Alertas (${totalNotificacoes})`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#b45309',
+                }}
               >
-                🔔
+                <Bell size={18} strokeWidth={2.2} />
                 <span
                   className="badge-notif"
                   id="badgeNotif"
@@ -8152,7 +8165,7 @@ export default function App() {
                   transition: 'all 0.2s ease',
                 }}
               >
-                <span style={{ fontSize: '1rem' }}>🛒</span>
+                <ShoppingCart size={16} strokeWidth={2.2} />
                 <span className="texto-carrinho-header">
                   Carrinho
                 </span>
@@ -8198,7 +8211,7 @@ export default function App() {
                     boxShadow: pedidosDelivery.some((p) => p.status === 'pendente') ? '0 0 10px rgba(245, 158, 11, 0.5)' : 'none',
                   }}
                 >
-                  <span style={{ fontSize: '1rem' }}>🛵</span>
+                  <Bike size={16} strokeWidth={2.2} />
                   <span className="texto-delivery-header" style={{ display: 'inline' }}>
                     Delivery
                   </span>
@@ -8244,15 +8257,28 @@ export default function App() {
                     gap: '4px',
                   }}
                 >
-                  <span>🛵</span>
+                  {colunaDeliveryFixaVisivel ? (
+                    <PanelRightOpen size={16} strokeWidth={2.2} />
+                  ) : (
+                    <PanelRightClose size={16} strokeWidth={2.2} />
+                  )}
                   <span>{colunaDeliveryFixaVisivel ? 'Painel Aberto' : 'Painel Lateral'}</span>
                 </button>
               </>
             )}
 
             {(perfilAtivo === 'dona_app' || temPermissaoLoja('ocr_ia') || temPermissaoLoja('caixa') || temPermissaoLoja('estoque')) && (
-              <button className="btn btn-cam" onClick={abrirLeitorGeral} title="Escanear Código">
-                📷
+              <button
+                className="btn btn-cam"
+                onClick={abrirLeitorGeral}
+                title="Escanear Código"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Camera size={18} strokeWidth={2.2} />
               </button>
             )}
           </div>
