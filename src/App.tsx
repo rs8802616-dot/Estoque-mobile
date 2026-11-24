@@ -9266,13 +9266,13 @@ export default function App() {
             <div
               style={{
                 flexShrink: 0,
-                border: grupoMenuAberto === 'relatorios' ? '1px solid #ddd6fe' : '1px solid #e2e8f0',
+                border: grupoMenuAberto === 'relatorios' ? '1px solid #bae6fd' : '1px solid #e2e8f0',
                 borderRadius: '14px',
                 overflow: 'hidden',
                 background: '#ffffff',
                 boxShadow:
                   grupoMenuAberto === 'relatorios'
-                    ? '0 4px 14px -2px rgba(124, 58, 237, 0.08)'
+                    ? '0 4px 14px -2px rgba(2, 132, 199, 0.08)'
                     : '0 1px 2px rgba(15, 23, 42, 0.03)',
                 transition: 'all 0.2s ease',
               }}
@@ -9297,8 +9297,8 @@ export default function App() {
                       width: '34px',
                       height: '34px',
                       borderRadius: '10px',
-                      background: grupoMenuAberto === 'relatorios' ? '#7c3aed' : '#f5f3ff',
-                      color: grupoMenuAberto === 'relatorios' ? '#ffffff' : '#7c3aed',
+                      background: grupoMenuAberto === 'relatorios' ? '#0284c7' : '#e0f2fe',
+                      color: grupoMenuAberto === 'relatorios' ? '#ffffff' : '#0284c7',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -9327,7 +9327,7 @@ export default function App() {
                   style={{
                     padding: '8px 10px 10px 10px',
                     background: '#f8fafc',
-                    borderTop: '1px solid #ddd6fe',
+                    borderTop: '1px solid #bae6fd',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '6px',
@@ -9470,14 +9470,13 @@ export default function App() {
                 {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja') && (
                   <div
                     className="sidebar-item"
-                    style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
                     onClick={() => {
                       setModalConfigFiscalVisivel(true);
                       fecharMenu();
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                      <Receipt size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
                       <span>Configuração Fiscal (NFC-e / Focus)</span>
                     </span>
                   </div>
@@ -9518,14 +9517,13 @@ export default function App() {
                 {temPermissaoOperador('ver_manual_usuario', 'manual_ajuda') && (
                   <div
                     className="sidebar-item"
-                    style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
                     onClick={() => {
                       setModalManualVisivel(true);
                       fecharMenu();
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <BookOpen size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
+                      <BookOpen size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
                       <span>Tutorial & Manual do Aplicativo</span>
                     </span>
                   </div>
