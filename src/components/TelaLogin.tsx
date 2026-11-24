@@ -332,6 +332,41 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       }
 
       const masterUserEsperado = (credenciaisMaster.usuario || '').trim().toLowerCase();
+      const possuiCredencialLocal = Boolean(credenciaisMaster.senhaHash || credenciaisMaster.senha);
+
+      // Primeiro acesso no navegador quando MASTER_ADMIN_USER/PASS ainda não foram configuradas na Vercel:
+      // como o acesso ao Portal Master já foi validado pelo servidor (cookie HttpOnly), permite definir a senha na hora.
+      if (!possuiCredencialLocal) {
+        const pol = validarPoliticaSenha(passDigitada);
+        if (!pol.valida) {
+          setCarregando(false);
+          setErro(
+            `Defina seu usuário e uma senha forte (mín. ${MIN_CARACTERES_SENHA} caracteres) para este primeiro acesso — ou configure MASTER_ADMIN_USER e MASTER_ADMIN_PASS na Vercel.`
+          );
+          return;
+        }
+        const { senhaHash, senhaSalt } = await criarHashComSalt(passDigitada);
+        const novaCred: CredenciaisDonoApp = {
+          usuario: userDigitado,
+          senha: '',
+          senhaHash,
+          senhaSalt,
+          nomeExibicao: 'Dono do App (Master)',
+        };
+        try {
+          localStorage.setItem('credenciais_dono_app', JSON.stringify(novaCred));
+        } catch {}
+        registrarAuditoriaLogin({
+          usuario: userDigitado,
+          portal: 'master',
+          sucesso: true,
+          motivo: 'Credencial Master definida no primeiro acesso local',
+        });
+        setCarregando(false);
+        onLoginSucesso({ tipo: 'dona_app' });
+        return;
+      }
+
       const isMasterUser =
         (masterUserEsperado !== '' && userDigitadoLower === masterUserEsperado) ||
         userDigitadoLower === 'dono';
