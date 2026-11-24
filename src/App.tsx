@@ -8066,19 +8066,20 @@ export default function App() {
                 <button
                   className="btn btn-com-codigo-header"
                   style={{
-                    background: '#16a34a',
-                    color: '#fff',
+                    background: '#ffffff',
+                    color: '#0369a1',
                     fontWeight: 700,
                     fontSize: '0.82rem',
-                    padding: '7px 10px',
+                    height: '36px',
+                    padding: '0 12px',
                     whiteSpace: 'nowrap',
-                    gap: '4px',
+                    gap: '6px',
                     borderRadius: '8px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     flexShrink: 0,
-                    border: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
                     cursor: 'pointer',
                   }}
                   onClick={() => {
@@ -8093,19 +8094,19 @@ export default function App() {
                 <button
                   className="btn btn-sem-codigo-header"
                   style={{
-                    background: '#0284c7',
-                    color: '#fff',
-                    fontWeight: 700,
+                    background: 'rgba(255, 255, 255, 0.14)',
+                    color: '#ffffff',
+                    fontWeight: 600,
                     fontSize: '0.82rem',
-                    padding: '7px 10px',
+                    height: '36px',
+                    padding: '0 12px',
                     whiteSpace: 'nowrap',
                     gap: '6px',
                     borderRadius: '8px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     flexShrink: 0,
-                    border: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.24)',
                     cursor: 'pointer',
                   }}
                   onClick={() => {
@@ -8113,7 +8114,7 @@ export default function App() {
                   }}
                   title="Cadastrar Produto sem Código de Barras (Balcão)"
                 >
-                  <Plus size={16} strokeWidth={2.4} />
+                  <Plus size={16} strokeWidth={2.2} />
                   <span className="texto-btn-header">Balcão</span>
                 </button>
               </>
@@ -8128,10 +8129,17 @@ export default function App() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#b45309',
+                  width: '36px',
+                  height: '36px',
+                  padding: 0,
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.14)',
+                  border: '1px solid rgba(255, 255, 255, 0.24)',
+                  color: '#ffffff',
+                  flexShrink: 0,
                 }}
               >
-                <Bell size={18} strokeWidth={2.2} />
+                <Bell size={17} strokeWidth={2.1} />
                 <span
                   className="badge-notif"
                   id="badgeNotif"
@@ -8150,19 +8158,21 @@ export default function App() {
                 onClick={() => setModalCarrinhoVisivel(true)}
                 title={`Ver Carrinho de Compras (${carrinho.reduce((a, b) => a + b.quantidade, 0)} itens)`}
                 style={{
-                  background: carrinho.length > 0 ? '#0f766e' : 'rgba(255, 255, 255, 0.18)',
+                  background: carrinho.length > 0 ? 'rgba(255, 255, 255, 0.26)' : 'rgba(255, 255, 255, 0.14)',
                   color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  padding: '7px 12px',
+                  fontWeight: 600,
+                  fontSize: '0.82rem',
+                  height: '36px',
+                  padding: '0 12px',
                   borderRadius: '8px',
-                  border: carrinho.length > 0 ? '1.5px solid #2dd4bf' : '1px solid rgba(255, 255, 255, 0.3)',
+                  border: carrinho.length > 0 ? '1px solid rgba(255, 255, 255, 0.6)' : '1px solid rgba(255, 255, 255, 0.24)',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
                   position: 'relative',
                   transition: 'all 0.2s ease',
+                  flexShrink: 0,
                 }}
               >
                 <ShoppingCart size={16} strokeWidth={2.2} />
@@ -8196,19 +8206,21 @@ export default function App() {
                   onClick={abrirGestaoDelivery}
                   title={`Painel de Delivery (${pedidosDelivery.filter((p) => p.status === 'pendente').length} pedidos pendentes)`}
                   style={{
-                    background: pedidosDelivery.some((p) => p.status === 'pendente') ? '#d97706' : '#78350f',
+                    background: pedidosDelivery.some((p) => p.status === 'pendente') ? '#d97706' : 'rgba(255, 255, 255, 0.14)',
                     color: '#ffffff',
-                    fontWeight: 800,
+                    fontWeight: 600,
                     fontSize: '0.82rem',
-                    padding: '7px 11px',
+                    height: '36px',
+                    padding: '0 12px',
                     borderRadius: '8px',
-                    border: '1.5px solid #f59e0b',
+                    border: pedidosDelivery.some((p) => p.status === 'pendente') ? '1px solid #fbbf24' : '1px solid rgba(255, 255, 255, 0.24)',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '5px',
+                    gap: '6px',
                     position: 'relative',
-                    boxShadow: pedidosDelivery.some((p) => p.status === 'pendente') ? '0 0 10px rgba(245, 158, 11, 0.5)' : 'none',
+                    flexShrink: 0,
+                    boxShadow: pedidosDelivery.some((p) => p.status === 'pendente') ? '0 0 10px rgba(245, 158, 11, 0.45)' : 'none',
                   }}
                 >
                   <Bike size={16} strokeWidth={2.2} />
@@ -8244,17 +8256,19 @@ export default function App() {
                   }}
                   title="Fixar/Ocultar coluna de Delivery no Caixa (AtendeJá)"
                   style={{
-                    background: colunaDeliveryFixaVisivel ? '#7c3aed' : '#312e81',
+                    background: colunaDeliveryFixaVisivel ? 'rgba(255, 255, 255, 0.26)' : 'rgba(255, 255, 255, 0.14)',
                     color: '#ffffff',
-                    fontWeight: 700,
-                    fontSize: '0.80rem',
-                    padding: '7px 10px',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    height: '36px',
+                    padding: '0 12px',
                     borderRadius: '8px',
-                    border: '1.5px solid #a855f7',
+                    border: colunaDeliveryFixaVisivel ? '1px solid rgba(255, 255, 255, 0.6)' : '1px solid rgba(255, 255, 255, 0.24)',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '6px',
+                    flexShrink: 0,
                   }}
                 >
                   {colunaDeliveryFixaVisivel ? (
@@ -8276,9 +8290,17 @@ export default function App() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  width: '36px',
+                  height: '36px',
+                  padding: 0,
+                  borderRadius: '8px',
+                  background: 'rgba(255, 255, 255, 0.14)',
+                  border: '1px solid rgba(255, 255, 255, 0.24)',
+                  color: '#ffffff',
+                  flexShrink: 0,
                 }}
               >
-                <Camera size={18} strokeWidth={2.2} />
+                <Camera size={17} strokeWidth={2.1} />
               </button>
             )}
           </div>
