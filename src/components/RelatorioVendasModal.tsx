@@ -286,9 +286,9 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
         return (
           <span
             style={{
-              background: '#f3e8ff',
-              color: '#6b21a8',
-              border: '1px solid #e9d5ff',
+              background: '#e0f2fe',
+              color: '#0369a1',
+              border: '1px solid #bae6fd',
               padding: '3px 8px',
               borderRadius: '12px',
               fontSize: '0.75rem',
@@ -298,7 +298,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
               gap: '4px',
             }}
           >
-            💵 Dinheiro
+            Dinheiro
           </span>
         );
       case 'fiado':
@@ -410,11 +410,11 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
           {/* 4. O QUE O LOJISTA REALMENTE FATUROU (LUCRO REAL / GANHO LÍQUIDO) - CARD EM DESTAQUE */}
           <div
             style={{
-              background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+              background: '#ffffff',
               padding: '12px 14px',
-              borderRadius: '10px',
-              border: '2px solid #86efac',
-              boxShadow: '0 2px 6px rgba(22, 163, 74, 0.12)',
+              borderRadius: '12px',
+              border: '1px solid #bbf7d0',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -527,9 +527,9 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
             style={{
               padding: '5px 10px',
               borderRadius: '20px',
-              border: formaPagamentoFiltro === 'dinheiro' ? '1px solid #9333ea' : '1px solid #f3e8ff',
-              background: formaPagamentoFiltro === 'dinheiro' ? '#9333ea' : '#faf5ff',
-              color: formaPagamentoFiltro === 'dinheiro' ? '#ffffff' : '#6b21a8',
+              border: formaPagamentoFiltro === 'dinheiro' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+              background: formaPagamentoFiltro === 'dinheiro' ? '#0284c7' : '#ffffff',
+              color: formaPagamentoFiltro === 'dinheiro' ? '#ffffff' : '#334155',
               fontSize: '0.76rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -540,7 +540,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
               setPaginaAtual(1);
             }}
           >
-            💵 Dinheiro (R$ {totalDinheiro.toFixed(2)})
+            Dinheiro (R$ {totalDinheiro.toFixed(2)})
           </button>
 
           <button

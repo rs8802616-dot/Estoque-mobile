@@ -8998,7 +8998,7 @@ export default function App() {
                       }}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <FileCheck2 size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
+                        <FileCheck2 size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
                         <span>Entrada de Nota (XML / NF-e)</span>
                       </span>
                     </div>
@@ -9343,7 +9343,7 @@ export default function App() {
                       }}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <PieChart size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
+                        <PieChart size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
                         <span>Central de Relatórios & Lucro</span>
                       </span>
                       <span
@@ -9352,8 +9352,8 @@ export default function App() {
                           fontWeight: 800,
                           padding: '2px 6px',
                           borderRadius: '6px',
-                          background: '#ede9fe',
-                          color: '#6d28d9',
+                          background: '#e0f2fe',
+                          color: '#0369a1',
                           whiteSpace: 'nowrap',
                         }}
                       >
@@ -9371,7 +9371,7 @@ export default function App() {
                       }}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <TrendingUp size={15} style={{ color: '#7c3aed', flexShrink: 0 }} />
+                        <TrendingUp size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
                         <span>Gráficos de Faturamento</span>
                       </span>
                     </div>
@@ -10320,7 +10320,7 @@ export default function App() {
 
                   <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                     <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>Balcão / Sob Demanda</div>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#8b5cf6' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0284c7' }}>
                       {itensBalcao.length} <small style={{ fontSize: '0.75rem' }}>cadastrados</small>
                     </div>
                   </div>
@@ -10932,9 +10932,9 @@ export default function App() {
               type="button"
               onClick={() => setModalCredenciaisDonoVisivel(true)}
               style={{
-                background: 'linear-gradient(135deg, #9333ea 0%, #7e22ce 100%)',
+                background: '#0284c7',
                 color: '#ffffff',
-                border: '1px solid #c084fc',
+                border: '1px solid #0369a1',
                 padding: '8px 14px',
                 borderRadius: '10px',
                 fontWeight: 700,
@@ -11868,9 +11868,9 @@ export default function App() {
                               type="button"
                               className="btn-acao-rel"
                               style={{
-                                background: temDelivery ? '#ecfdf5' : '#7c3aed',
+                                background: temDelivery ? '#ecfdf5' : '#0284c7',
                                 color: temDelivery ? '#047857' : '#ffffff',
-                                border: temDelivery ? '1px solid #6ee7b7' : '1px solid #6d28d9',
+                                border: temDelivery ? '1px solid #6ee7b7' : '1px solid #0369a1',
                                 fontWeight: 800,
                                 borderRadius: '8px',
                                 padding: '7px 12px',
@@ -12071,7 +12071,7 @@ export default function App() {
                   </button>
                   <button
                     className="btn-acao-rel"
-                    style={{ background: '#7c3aed', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
+                    style={{ background: '#0284c7', color: '#fff', padding: '10px 16px', fontWeight: 600, fontSize: '0.88rem' }}
                     onClick={handleSincronizarMixAdega}
                     title="Carrega todos os produtos essenciais de adega (Whiskies, Vinhos, Salgadinhos, Bomboniere e Tabacaria) no seu Catálogo Geral interno do app"
                   >
@@ -12805,7 +12805,7 @@ export default function App() {
                           <span
                             style={{
                               fontSize: '0.62rem',
-                              background: bloqueadoPeloPlano ? '#cbd5e1' : '#7c3aed',
+                              background: bloqueadoPeloPlano ? '#cbd5e1' : '#0284c7',
                               color: bloqueadoPeloPlano ? '#334155' : '#ffffff',
                               padding: '1px 6px',
                               borderRadius: '999px',

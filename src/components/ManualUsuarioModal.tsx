@@ -111,11 +111,11 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f5f3ff', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #7c3aed' }}>
-              <span style={{ background: '#7c3aed', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>5</span>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: '#f0f9ff', padding: '12px', borderRadius: '10px', borderLeft: '4px solid #0284c7' }}>
+              <span style={{ background: '#0284c7', color: '#fff', width: '26px', height: '26px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0 }}>5</span>
               <div>
-                <div style={{ fontWeight: 800, color: '#5b21b6', fontSize: '0.9rem' }}>Fechar o Caixa e Conferir o Lucro Líquido Real (Menu ☰ → Relatórios)</div>
-                <div style={{ fontSize: '0.84rem', color: '#4c1d95', marginTop: '3px', lineHeight: 1.5 }}>
+                <div style={{ fontWeight: 800, color: '#0369a1', fontSize: '0.9rem' }}>Fechar o Caixa e Conferir o Lucro Líquido Real (Menu ☰ → Relatórios)</div>
+                <div style={{ fontSize: '0.84rem', color: '#0c4a6e', marginTop: '3px', lineHeight: 1.5 }}>
                   Ao fim do expediente, faça a conferência de fechamento da gaveta e acesse a <strong>Central de Relatórios & Lucro</strong> para ver exatamente quanto vendeu, qual foi o custo dos produtos vendidos e quanto sobrou de <strong>Lucro Líquido Real no bolso</strong>.
                 </div>
               </div>
@@ -207,7 +207,7 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
                 <strong>🖨️ Imprimir Comanda:</strong> Clique no ícone da impressora (<code>🖨️</code>) no rodapé do pedido para imprimir a comanda de separação e entrega na impressora térmica.
               </li>
               <li style={{ marginBottom: '8px' }}>
-                <strong>🛵 Link Motoboy (WhatsApp + Google Maps):</strong> Clique no botão roxo <strong style={{ color: '#9333ea' }}>🛵 Link Motoboy</strong>. O sistema abre o WhatsApp com os dados do pedido, valor a cobrar/troco, telefone do cliente e o <strong>link direto da rota no Google Maps</strong> para o entregador abrir no celular com 1 toque.
+                <strong>🛵 Link Motoboy (WhatsApp + Google Maps):</strong> Clique no botão <strong style={{ color: '#0284c7' }}>🛵 Link Motoboy</strong>. O sistema abre o WhatsApp com os dados do pedido, valor a cobrar/troco, telefone do cliente e o <strong>link direto da rota no Google Maps</strong> para o entregador abrir no celular com 1 toque.
               </li>
               <li>
                 <strong>🔐 Confirmar Entrega com PIN de 4 Dígitos:</strong> Ao entregar o pedido, o cliente informa o código PIN de 4 dígitos gerado no celular dele. Digite o PIN para concluir a entrega com 100% de segurança.

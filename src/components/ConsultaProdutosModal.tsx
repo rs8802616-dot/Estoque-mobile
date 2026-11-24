@@ -173,7 +173,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
         <div
           style={{
             padding: '14px 20px',
-            background: 'linear-gradient(135deg, #4f46e5 0%, #0284c7 100%)',
+            background: '#0284c7',
             color: '#ffffff',
             display: 'flex',
             alignItems: 'center',
@@ -397,12 +397,12 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                   dispararBusca(sug, 1, categoriaSelecionada, somenteComImagem);
                 }}
                 style={{
-                  background: termoLocal.toLowerCase() === sug.toLowerCase() ? '#e0e7ff' : '#ffffff',
-                  border: termoLocal.toLowerCase() === sug.toLowerCase() ? '1px solid #6366f1' : '1px solid #e2e8f0',
+                  background: termoLocal.toLowerCase() === sug.toLowerCase() ? '#e0f2fe' : '#ffffff',
+                  border: termoLocal.toLowerCase() === sug.toLowerCase() ? '1px solid #0284c7' : '1px solid #e2e8f0',
                   borderRadius: '14px',
                   padding: '3px 10px',
                   fontSize: '0.74rem',
-                  color: '#4338ca',
+                  color: '#0369a1',
                   cursor: 'pointer',
                   fontWeight: 600,
                 }}

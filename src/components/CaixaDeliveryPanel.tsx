@@ -369,8 +369,8 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
           onClick={() => setDeliveryFilter('a_caminho')}
           className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
             deliveryFilter === 'a_caminho'
-              ? 'bg-[#9333ea] text-white shadow-xs'
-              : 'bg-white border border-[#a7f3d0] text-[#047857] hover:bg-emerald-50/60'
+              ? 'bg-[#0284c7] text-white shadow-xs'
+              : 'bg-white border border-[#bae6fd] text-[#0369a1] hover:bg-sky-50/60'
           }`}
         >
           <span>A Caminho 🛵</span>
@@ -460,7 +460,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             const borderCardClass = isCancelado
               ? 'border border-red-200 opacity-80'
               : isACaminho
-              ? 'border-2 border-[#a855f7]'
+              ? 'border-2 border-[#0284c7]'
               : isNovo
               ? 'border-2 border-red-500 ring-2 ring-red-500/10'
               : isPreparo
@@ -658,12 +658,12 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
 
                   {/* Linha 2: Botões de Ação que ocupam 100% da largura sem nunca saltar fora do card */}
                   <div className="flex items-center gap-1.5 w-full">
-                    {/* Botão Roxo: Link Motoboy (Aparece somente após o pedido ser aceito) */}
+                    {/* Botão Azul PDV: Link Motoboy (Aparece somente após o pedido ser aceito) */}
                     {order.status !== 'pendente' && order.status !== 'entregue' && order.status !== 'cancelado' && (
                       <button
                         type="button"
                         onClick={() => setPedidoLinkMotoboy(order)}
-                        className="flex-1 py-2 px-2 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
+                        className="flex-1 py-2 px-2 rounded-xl bg-[#0284c7] hover:bg-[#0369a1] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
                         title="Abrir link exclusivo do motoboy com rota e dados da entrega"
                       >
                         <Bike className="w-3.5 h-3.5 shrink-0" />
@@ -969,7 +969,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             {/* Header do Modal */}
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center border border-purple-200 shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center border border-sky-200 shrink-0">
                   <Bike className="w-5 h-5" />
                 </div>
                 <div>
@@ -990,27 +990,27 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
               </button>
             </div>
 
-            {/* Box Roxo Informativo (Idêntico à Imagem) */}
-            <div className="bg-[#faf5ff] border border-[#f3e8ff] rounded-2xl p-4 text-xs text-[#581c87] space-y-2">
-              <p className="font-extrabold flex items-center gap-1.5 text-[#6b21a8]">
+            {/* Box Informativo */}
+            <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl p-4 text-xs text-[#0c4a6e] space-y-2">
+              <p className="font-extrabold flex items-center gap-1.5 text-[#0369a1]">
                 <span>📱</span>
                 <span>Esta página leve abre no celular do motoboy com:</span>
               </p>
               <ul className="space-y-1.5 pl-1 text-[11px] text-slate-700">
                 <li className="flex items-start gap-1.5">
-                  <span className="text-purple-600 font-bold">•</span>
+                  <span className="text-sky-600 font-bold">•</span>
                   <span>Endereço do cliente com GPS (Google Maps e Waze)</span>
                 </li>
                 <li className="flex items-start gap-1.5">
-                  <span className="text-purple-600 font-bold">•</span>
+                  <span className="text-sky-600 font-bold">•</span>
                   <span>Telefone do cliente com botão para ligar ou abrir WhatsApp</span>
                 </li>
                 <li className="flex items-start gap-1.5">
-                  <span className="text-purple-600 font-bold">•</span>
+                  <span className="text-sky-600 font-bold">•</span>
                   <span>Valor total a cobrar e troco exato a devolver</span>
                 </li>
                 <li className="flex items-start gap-1.5">
-                  <span className="text-purple-600 font-bold">•</span>
+                  <span className="text-sky-600 font-bold">•</span>
                   <span>Botão &quot;Finalizar Entrega&quot; para atualizar no sistema</span>
                 </li>
                 <li className="flex items-start gap-1.5 text-emerald-700 font-semibold pt-0.5">

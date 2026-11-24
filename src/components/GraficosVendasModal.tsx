@@ -1195,44 +1195,44 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     '#2563EB', // Azul Royal
     '#16A34A', // Verde Esmeralda
     '#D97706', // Âmbar Caramelo
-    '#9333EA', // Roxo Ametista
+    '#0284C7', // Azul PDV
     '#0891B2', // Ciano Turquesa
     '#EA580C', // Laranja Vibrante
     '#DB2777', // Rosa Gourmet
-    '#4F46E5', // Índigo Real
+    '#0369A1', // Azul Profundo
   ];
 
   const mapaCoresCategorias: Record<string, string> = {
-    'Pizzas': '#DC2626',                   // 🍕 Vermelho Napolitano (Red 600)
-    'Bebidas': '#2563EB',                  // 🥤 Azul Royal (Blue 600)
-    'Bebidas Alcoólicas': '#EA580C',       // 🍺 Laranja Malte (Orange 600)
-    'Cervejas': '#EA580C',                 // 🍺 Laranja Malte
-    'Destilados & Whiskies': '#D97706',    // 🥃 Âmbar Ouro (Amber 600)
-    'Sobremesas': '#DB2777',               // 🍰 Rosa Gourmet (Pink 600)
-    'Porções & Entradas': '#16A34A',       // 🍟 Verde Esmeralda (Green 600)
-    'Porções & Snacks': '#16A34A',         // 🍟 Verde Esmeralda
-    'Porções': '#16A34A',                  // 🍟 Verde Esmeralda
-    'Mercearia': '#10B981',                // 🛒 Esmeralda Vivo
-    'Lanches': '#9333EA',                  // 🍔 Roxo Ametista (Purple 600)
-    'Tabacaria & Conveniência': '#9333EA', // 🔥 Roxo Ametista
-    'Cafés': '#B45309',                    // ☕ Marrom Café Quente
-    'Cafés & Matinais': '#0891B2',         // ☕ Ciano Turquesa
-    'Adega': '#2563EB',                    // 🍷 Azul Royal
-    'Balcão': '#E11D48',                   // 🍢 Vermelho Rubi
-    'Outros': '#6366F1',                   // 🏷️ Índigo Vibrante
-    'Geral': '#0D9488',                    // 📦 Verde-Água Vibrante
-    'Diversos': '#8B5CF6',                 // ✨ Violeta
+    'Pizzas': '#DC2626',                   // Vermelho Napolitano
+    'Bebidas': '#0284C7',                  // Azul PDV
+    'Bebidas Alcoólicas': '#EA580C',       // Laranja Malte
+    'Cervejas': '#EA580C',                 // Laranja Malte
+    'Destilados & Whiskies': '#D97706',    // Âmbar Ouro
+    'Sobremesas': '#DB2777',               // Rosa Gourmet
+    'Porções & Entradas': '#16A34A',       // Verde Esmeralda
+    'Porções & Snacks': '#16A34A',         // Verde Esmeralda
+    'Porções': '#16A34A',                  // Verde Esmeralda
+    'Mercearia': '#10B981',                // Esmeralda Vivo
+    'Lanches': '#0284C7',                  // Azul PDV
+    'Tabacaria & Conveniência': '#D97706', // Âmbar
+    'Cafés': '#B45309',                    // Marrom Café
+    'Cafés & Matinais': '#0891B2',         // Ciano Turquesa
+    'Adega': '#0369A1',                    // Azul Profundo
+    'Balcão': '#E11D48',                   // Vermelho Rubi
+    'Outros': '#64748B',                   // Slate Neutro
+    'Geral': '#0D9488',                    // Verde-Água
+    'Diversos': '#0EA5E9',                 // Sky
   };
 
   const obterCorVivaCategoria = (nomeCategoria: string, indexFallback: number = 0): string => {
     if (mapaCoresCategorias[nomeCategoria]) return mapaCoresCategorias[nomeCategoria];
     const norm = (nomeCategoria || '').toLowerCase();
     if (norm.includes('pizza')) return '#DC2626';
-    if (norm.includes('bebida') || norm.includes('refrig') || norm.includes('suco') || norm.includes('agua')) return '#2563EB';
+    if (norm.includes('bebida') || norm.includes('refrig') || norm.includes('suco') || norm.includes('agua')) return '#0284C7';
     if (norm.includes('cervej') || norm.includes('chopp') || norm.includes('alcool')) return '#EA580C';
     if (norm.includes('destilad') || norm.includes('whisk') || norm.includes('vinho') || norm.includes('vodka')) return '#D97706';
     if (norm.includes('mercear') || norm.includes('alimento') || norm.includes('porc') || norm.includes('snack')) return '#16A34A';
-    if (norm.includes('tabacar') || norm.includes('conveni') || norm.includes('lanche')) return '#9333EA';
+    if (norm.includes('tabacar') || norm.includes('conveni') || norm.includes('lanche')) return '#0284C7';
     if (norm.includes('cafe') || norm.includes('matina') || norm.includes('latic')) return '#0891B2';
     if (norm.includes('doce') || norm.includes('sobremesa') || norm.includes('bombon')) return '#DB2777';
     return PALETA_VIBRANTE_CATEGORIAS[indexFallback % PALETA_VIBRANTE_CATEGORIAS.length];
@@ -1586,129 +1586,122 @@ ${top3 || '- Nenhum produto vendido'}
                 <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'grafico' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'grafico' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'grafico' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'grafico' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'grafico' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'grafico' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('grafico')}
         >
-          📊 Painel de Inteligência & Gráficos
+          Painel de Inteligência & Gráficos
         </button>
 
         <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'formas_pgto' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'formas_pgto' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'formas_pgto' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'formas_pgto' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'formas_pgto' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'formas_pgto' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('formas_pgto')}
         >
-          💳 Formas de Pagamento
+          Formas de Pagamento
         </button>
 
         <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'devolucoes' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'devolucoes' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'devolucoes' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'devolucoes' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'devolucoes' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'devolucoes' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('devolucoes')}
         >
-          🔄 Devoluções & Estornos ({vendasEstornadas.length})
+          Devoluções & Estornos ({vendasEstornadas.length})
         </button>
 
         <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'perdas' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'perdas' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'perdas' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'perdas' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'perdas' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'perdas' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('perdas')}
         >
-          🛑 Perdas & Vencidos
+          Perdas & Vencidos
         </button>
 
         <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'estoque_chart' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'estoque_chart' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'estoque_chart' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'estoque_chart' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'estoque_chart' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'estoque_chart' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('estoque_chart')}
         >
-          📦 Visão Geral do Estoque
+          Visão Geral do Estoque
         </button>
 
         <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'ranking' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'ranking' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'ranking' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'ranking' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'ranking' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'ranking' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('ranking')}
         >
-          🏆 Ranking de Vendas
+          Ranking de Vendas
         </button>
 
         <button
           style={{
             padding: '7px 14px',
-            borderRadius: '6px',
-            border: '2px solid #292524',
-            fontWeight: 800,
+            borderRadius: '8px',
+            border: abaAtiva === 'inteligencia' ? '1px solid #0284c7' : '1px solid #e2e8f0',
+            fontWeight: 700,
             fontSize: '0.8rem',
             cursor: 'pointer',
             flexShrink: 0,
-            background: abaAtiva === 'inteligencia' ? '#141414' : '#ffffff',
-            color: abaAtiva === 'inteligencia' ? '#ffffff' : '#141414',
-            boxShadow: abaAtiva === 'inteligencia' ? '2px 2px 0px #292524' : '1px 1px 0px #292524',
+            background: abaAtiva === 'inteligencia' ? '#0284c7' : '#ffffff',
+            color: abaAtiva === 'inteligencia' ? '#ffffff' : '#334155',
             transition: 'all 0.15s ease',
           }}
           onClick={() => setAbaAtiva('inteligencia')}
@@ -1898,25 +1891,24 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '14px 16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#292524', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     FATURAMENTO TOTAL
                   </span>
-                  <span style={{ color: '#059669', fontWeight: 900, fontSize: '1.1rem' }}>💰</span>
                 </div>
-                <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#141414', fontFamily: 'monospace', margin: '6px 0 2px 0' }}>
+                <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', fontFamily: 'monospace', margin: '6px 0 2px 0' }}>
                   R$ {faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#047857' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: variacaoPercentual >= 0 ? '#15803d' : '#dc2626' }}>
                   {variacaoPercentual >= 0 ? '↗ +' : '↘ '}{variacaoPercentual.toFixed(1)}% vs período anterior
                 </div>
               </div>
@@ -1925,25 +1917,24 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '14px 16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#292524', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     VOLUME DE PEDIDOS
                   </span>
-                  <span style={{ color: '#2563EB', fontWeight: 900, fontSize: '1.1rem' }}>📅</span>
                 </div>
-                <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#141414', fontFamily: 'monospace', margin: '6px 0 2px 0' }}>
-                  {volumePedidos} <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4B5563' }}>pedidos</span>
+                <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', fontFamily: 'monospace', margin: '6px 0 2px 0' }}>
+                  {volumePedidos} <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>pedidos</span>
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#1D4ED8', fontWeight: 800 }}>
+                <div style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: 700 }}>
                   100% comanda eletrônica
                 </div>
               </div>
@@ -1952,25 +1943,24 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '14px 16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#292524', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     TICKET MÉDIO
                   </span>
-                  <span style={{ color: '#D97706', fontWeight: 900, fontSize: '1.1rem' }}>🎫</span>
                 </div>
-                <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#141414', fontFamily: 'monospace', margin: '6px 0 2px 0' }}>
+                <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', fontFamily: 'monospace', margin: '6px 0 2px 0' }}>
                   R$ {ticketMedio.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#B45309', fontWeight: 800 }}>
+                <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 700 }}>
                   {ticketMedio >= 50 ? 'Meta superada (> R$ 50,00)' : 'Média por comanda'}
                 </div>
               </div>
@@ -1979,26 +1969,25 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '14px 16px',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#292524', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     ITEM CAMPEÃO
                   </span>
-                  <span style={{ color: '#DC2626', fontWeight: 900, fontSize: '1.1rem' }}>🏆</span>
                 </div>
                 <div
                   style={{
                     fontSize: '1rem',
-                    fontWeight: 900,
-                    color: '#141414',
+                    fontWeight: 800,
+                    color: '#0f172a',
                     margin: '6px 0 2px 0',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -2008,7 +1997,7 @@ ${top3 || '- Nenhum produto vendido'}
                 >
                   {itemMaisVendido ? itemMaisVendido.nome : 'Nenhum item'}
                 </div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#B91C1C', fontFamily: 'monospace' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#0284c7', fontFamily: 'monospace' }}>
                   {itemMaisVendido
                     ? `${itemMaisVendido.qtdVendida} un (R$ ${itemMaisVendido.faturamentoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`
                     : 'Sem vendas'}
@@ -2016,23 +2005,23 @@ ${top3 || '- Nenhum produto vendido'}
               </div>
             </div>
 
-            {/* CONTAINER 3: CURVA DE VENDAS POR PERÍODO (PRD NEO-BRUTALISTA) */}
+            {/* CONTAINER 3: CURVA DE VENDAS POR PERÍODO */}
             <div
               style={{
                 background: '#FFFFFF',
-                border: '2px solid #292524',
-                borderRadius: '8px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '12px',
                 padding: '16px 20px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
-                boxShadow: '3px 3px 0px #292524',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 900, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ color: '#DC2626' }}>📈</span> CURVA DE VENDAS POR PERÍODO
+                  <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    CURVA DE VENDAS POR PERÍODO
                   </h3>
                   <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: '#64748b' }}>
                     Faturamento consolidado ({periodoLabel}).
@@ -2040,7 +2029,7 @@ ${top3 || '- Nenhum produto vendido'}
                 </div>
 
                 {/* Toggle: Área / Barras / Linha */}
-                <div style={{ display: 'inline-flex', border: '2px solid #292524', borderRadius: '6px', overflow: 'hidden' }}>
+                <div style={{ display: 'inline-flex', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden' }}>
                   {(['area', 'barras', 'linha'] as const).map((tipo) => {
                     const ativo = tipoVisualizacaoCurva === tipo;
                     const label = tipo === 'area' ? 'Área' : tipo === 'barras' ? 'Barras' : 'Linha';
@@ -2159,10 +2148,10 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '0',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
@@ -2175,20 +2164,20 @@ ${top3 || '- Nenhum produto vendido'}
                     alignItems: 'center',
                     flexWrap: 'wrap',
                     gap: '8px',
-                    background: 'linear-gradient(135deg, #FEF2F2 0%, #FFFBEB 100%)',
-                    borderBottom: '2px solid #292524',
+                    background: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
                     padding: '12px 16px',
                   }}
                 >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#991B1B', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>🏆</span> TOP PRODUTOS MAIS VENDIDOS
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      TOP PRODUTOS MAIS VENDIDOS
                     </h3>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#78350F', fontWeight: 600 }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
                       Classificação por volume de vendas e faturamento gerado.
                     </p>
                   </div>
-                  <div style={{ display: 'inline-flex', border: '1.5px solid #292524', borderRadius: '6px', overflow: 'hidden', background: '#FFFFFF' }}>
+                  <div style={{ display: 'inline-flex', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden', background: '#FFFFFF' }}>
                     <button
                       style={{
                         padding: '5px 10px',
@@ -2403,10 +2392,10 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '0',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
@@ -2414,15 +2403,15 @@ ${top3 || '- Nenhum produto vendido'}
               >
                 <div
                   style={{
-                    background: 'linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%)',
-                    borderBottom: '2px solid #292524',
+                    background: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
                     padding: '12px 16px',
                   }}
                 >
-                  <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#1E40AF', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>🍩</span> VENDAS POR CATEGORIA
+                  <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    VENDAS POR CATEGORIA
                   </h3>
-                  <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#4338CA', fontWeight: 600 }}>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
                     Participação de cada categoria no faturamento total.
                   </p>
                 </div>
@@ -2544,10 +2533,10 @@ ${top3 || '- Nenhum produto vendido'}
               <div
                 style={{
                   background: '#FFFFFF',
-                  border: '2px solid #292524',
-                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
                   padding: '0',
-                  boxShadow: '3px 3px 0px #292524',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
                   display: 'flex',
                   flexDirection: 'column',
                   overflow: 'hidden',
@@ -2560,16 +2549,16 @@ ${top3 || '- Nenhum produto vendido'}
                     alignItems: 'center',
                     flexWrap: 'wrap',
                     gap: '8px',
-                    background: 'linear-gradient(135deg, #F5F3FF 0%, #FDF2F8 100%)',
-                    borderBottom: '2px solid #292524',
+                    background: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
                     padding: '12px 16px',
                   }}
                 >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#6B21A8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>🕒</span> HORÁRIOS DE PICO DA COZINHA & SALÃO
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      HORÁRIOS DE PICO DA COZINHA & SALÃO
                     </h3>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#86198F', fontWeight: 600 }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
                       Distribuição de pedidos por faixa horária para planejamento de equipe.
                     </p>
                   </div>
@@ -2661,37 +2650,36 @@ ${top3 || '- Nenhum produto vendido'}
                     alignItems: 'center',
                     flexWrap: 'wrap',
                     gap: '8px',
-                    background: 'linear-gradient(135deg, #ECFDF5 0%, #EFF6FF 100%)',
-                    borderBottom: '2px solid #292524',
+                    background: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
                     padding: '12px 16px',
                   }}
                 >
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 900, color: '#065F46', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>💳</span> VENDAS POR FORMA DE PAGAMENTO
+                    <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      VENDAS POR FORMA DE PAGAMENTO
                     </h3>
-                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#047857', fontWeight: 600 }}>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '0.74rem', color: '#64748b', fontWeight: 500 }}>
                       Reconciliação dos pagamentos registrados nas comandas e faturamento bruto.
                     </p>
                   </div>
                   <span
                     style={{
-                      background: '#10B981',
+                      background: '#16a34a',
                       color: '#FFFFFF',
-                      border: '1.5px solid #292524',
+                      border: '1px solid #15803d',
                       padding: '4px 10px',
-                      borderRadius: '6px',
+                      borderRadius: '8px',
                       fontSize: '0.74rem',
-                      fontWeight: 900,
+                      fontWeight: 700,
                       whiteSpace: 'nowrap',
-                      boxShadow: '2px 2px 0px #292524',
                     }}
                   >
-                    🏆 {dadosFormasPagamentoPainel.lider.label.split(' ')[0]} Lidera ({dadosFormasPagamentoPainel.lider.porcentagem}%)
+                    {dadosFormasPagamentoPainel.lider.label.split(' ')[0]} Lidera ({dadosFormasPagamentoPainel.lider.porcentagem}%)
                   </span>
                 </div>
 
-                {/* Cards de Formas de Pagamento com Cores Pastel Vivas */}
+                {/* Cards de Formas de Pagamento */}
                 <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {dadosFormasPagamentoPainel.lista.map((forma, idx) => {
                     const bgPastel =
@@ -2701,7 +2689,7 @@ ${top3 || '- Nenhum produto vendido'}
                         ? '#EFF6FF'
                         : forma.cor === '#D97706'
                         ? '#FFFBEB'
-                        : '#F5F3FF';
+                        : '#E0F2FE';
                     const borderPastel =
                       forma.cor === '#10B981'
                         ? '#A7F3D0'
@@ -2709,7 +2697,7 @@ ${top3 || '- Nenhum produto vendido'}
                         ? '#BFDBFE'
                         : forma.cor === '#D97706'
                         ? '#FDE68A'
-                        : '#DDD6FE';
+                        : '#BAE6FD';
                     return (
                       <div
                         key={idx}
@@ -3491,50 +3479,50 @@ ${top3 || '- Nenhum produto vendido'}
         {/* ABA 4: VISÃO GERAL DO ESTOQUE */}
         {abaAtiva === 'estoque_chart' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            {/* CARDS RESUMO DO ESTOQUE (VIBRANTES E COM VIDA) */}
+            {/* CARDS RESUMO DO ESTOQUE */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px' }}>
-              <div style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', border: '1px solid #93C5FD', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(37, 99, 235, 0.08)' }}>
-                <span style={{ fontSize: '0.74rem', color: '#1E40AF', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>📦</span> Peças em Estoque Físico
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px 14px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Peças em Estoque Físico
                 </span>
-                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1D4ED8', fontFamily: 'monospace', marginTop: '3px' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0284c7', fontFamily: 'monospace', marginTop: '3px' }}>
                   {dadosEstoqueGrafico.totalPecasEstoque} un
                 </div>
               </div>
 
-              <div style={{ background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)', border: '1px solid #86EFAC', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(22, 163, 74, 0.08)' }}>
-                <span style={{ fontSize: '0.74rem', color: '#166534', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>💵</span> Valor Venda (Físico)
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px 14px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Valor Venda (Físico)
                 </span>
-                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#15803D', fontFamily: 'monospace', marginTop: '3px' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#15803d', fontFamily: 'monospace', marginTop: '3px' }}>
                   R$ {dadosEstoqueGrafico.totalValorVendaEstoque.toFixed(2).replace('.', ',')}
                 </div>
               </div>
 
-              <div style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)', border: '1px solid #A5B4FC', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(79, 70, 229, 0.08)' }}>
-                <span style={{ fontSize: '0.74rem', color: '#3730A3', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>🏷️</span> Custo Total (Físico)
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px 14px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Custo Total (Físico)
                 </span>
-                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#4338CA', fontFamily: 'monospace', marginTop: '3px' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', fontFamily: 'monospace', marginTop: '3px' }}>
                   R$ {dadosEstoqueGrafico.totalValorCustoEstoque.toFixed(2).replace('.', ',')}
                 </div>
               </div>
 
-              <div style={{ background: 'linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%)', border: '1px solid #5EEAD4', padding: '12px 14px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(13, 148, 136, 0.08)' }}>
-                <span style={{ fontSize: '0.74rem', color: '#115E59', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span>✨</span> Margem Bruta Projetada
+              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', padding: '12px 14px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Margem Bruta Projetada
                 </span>
-                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F766E', fontFamily: 'monospace', marginTop: '3px' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0284c7', fontFamily: 'monospace', marginTop: '3px' }}>
                   R$ {dadosEstoqueGrafico.lucroBrutoProjetado.toFixed(2).replace('.', ',')}
                 </div>
               </div>
             </div>
 
-            {/* CARD MASTER: VENDAS REALIZADAS RETIRANDO O CUSTO (MANTENDO SÓ COM O LUCRO - VIBRANTE) */}
+            {/* CARD MASTER: VENDAS REALIZADAS RETIRANDO O CUSTO */}
             <div
               style={{
-                background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
-                border: '2px solid #6EE7B7',
+                background: '#ffffff',
+                border: '1px solid #bbf7d0',
                 borderRadius: '12px',
                 padding: '14px 18px',
                 display: 'flex',
@@ -3542,7 +3530,7 @@ ${top3 || '- Nenhum produto vendido'}
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: '12px',
-                boxShadow: '0 4px 10px rgba(16, 185, 129, 0.12)',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
               }}
             >
               <div>

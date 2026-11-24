@@ -57,7 +57,7 @@ interface CentralRelatoriosModalProps {
   abaInicial?: 'faturamento' | 'vendas' | 'estoque' | 'delivery';
 }
 
-const CORES_PIE = ['#10B981', '#2563EB', '#D97706', '#6B7280', '#9333EA', '#DC2626'];
+const CORES_PIE = ['#10B981', '#0284C7', '#D97706', '#64748B', '#0EA5E9', '#DC2626'];
 
 export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   visivel,
