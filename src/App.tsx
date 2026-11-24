@@ -37,6 +37,7 @@ import {
   Camera,
   PanelRightOpen,
   PanelRightClose,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import {
@@ -8319,8 +8320,9 @@ export default function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             {perfilAtivo === 'dona_app' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                <span style={{ background: '#f3e8ff', color: '#7e22ce', padding: '4px 10px', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 800, border: '1px solid #d8b4fe' }}>
-                  👑 Dona do App (Master)
+                <span style={{ background: '#f8fafc', color: '#0f172a', padding: '4px 10px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 700, border: '1px solid #cbd5e1', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                  <Crown size={14} strokeWidth={2.2} color="#0284c7" />
+                  Dona do App (Master)
                 </span>
                 <select
                   className="select-perfil-header"
@@ -8428,7 +8430,10 @@ export default function App() {
                       boxShadow: abaAtiva === 'caixa' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
                     }}
                   >
-                    <span>🛒 Caixa / Venda</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                      <ShoppingCart size={14} strokeWidth={2.2} color={abaAtiva === 'caixa' ? '#0284c7' : '#64748b'} />
+                      <span>Caixa / Venda</span>
+                    </span>
                     {qtdItensCarrinho > 0 && (
                       <span
                         style={{
@@ -8467,7 +8472,10 @@ export default function App() {
                       boxShadow: abaAtiva === 'comandas' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
                     }}
                   >
-                    <span>🍽️ Comandas</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                      <UtensilsCrossed size={14} strokeWidth={2.2} color={abaAtiva === 'comandas' ? '#0284c7' : '#64748b'} />
+                      <span>Comandas</span>
+                    </span>
                     {qtdComandasAbertas > 0 && (
                       <span
                         style={{
@@ -8506,7 +8514,10 @@ export default function App() {
                       boxShadow: abaAtiva === 'delivery' ? '0 1px 4px rgba(15, 23, 42, 0.1)' : 'none',
                     }}
                   >
-                    <span>🛵 Delivery</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                      <Bike size={14} strokeWidth={2.2} color={abaAtiva === 'delivery' ? '#0284c7' : '#64748b'} />
+                      <span>Delivery</span>
+                    </span>
                     {qtdPendentesDelivery > 0 && (
                       <span
                         style={{
@@ -9814,19 +9825,23 @@ export default function App() {
                 onClick={() => setFiltroTipoProduto('todos')}
                 style={{
                   padding: '6px 12px',
-                  borderRadius: '20px',
+                  borderRadius: '8px',
                   fontSize: '0.82rem',
-                  fontWeight: 700,
-                  border: 'none',
+                  fontWeight: 600,
+                  border: filtroTipoProduto === 'todos' ? '1px solid #0284c7' : '1px solid #e2e8f0',
                   cursor: 'pointer',
-                  background: filtroTipoProduto === 'todos' ? '#0f172a' : '#f1f5f9',
+                  background: filtroTipoProduto === 'todos' ? '#0284c7' : '#ffffff',
                   color: filtroTipoProduto === 'todos' ? '#ffffff' : '#475569',
                   whiteSpace: 'nowrap',
-                  boxShadow: filtroTipoProduto === 'todos' ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: filtroTipoProduto === 'todos' ? '0 1px 3px rgba(2,132,199,0.25)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
-                📦 Todos ({estoque.length})
+                <Package size={14} strokeWidth={2.2} />
+                <span>Todos ({estoque.length})</span>
               </button>
 
               <button
@@ -9834,20 +9849,23 @@ export default function App() {
                 onClick={() => setFiltroTipoProduto('interno')}
                 style={{
                   padding: '6px 12px',
-                  borderRadius: '20px',
+                  borderRadius: '8px',
                   fontSize: '0.82rem',
-                  fontWeight: 700,
-                  border: 'none',
+                  fontWeight: 600,
+                  border: filtroTipoProduto === 'interno' ? '1px solid #0284c7' : '1px solid #e2e8f0',
                   cursor: 'pointer',
-                  background: filtroTipoProduto === 'interno' ? '#d97706' : '#fef3c7',
-                  color: filtroTipoProduto === 'interno' ? '#ffffff' : '#92400e',
+                  background: filtroTipoProduto === 'interno' ? '#0284c7' : '#ffffff',
+                  color: filtroTipoProduto === 'interno' ? '#ffffff' : '#475569',
                   whiteSpace: 'nowrap',
-                  boxShadow: filtroTipoProduto === 'interno' ? '0 2px 4px rgba(217,119,6,0.3)' : 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: filtroTipoProduto === 'interno' ? '0 1px 3px rgba(2,132,199,0.25)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <span style={{ fontSize: '0.95rem', marginRight: '5px' }}>🍢</span>
-                Balcão & Adega ({countInternos})
+                <Tag size={14} strokeWidth={2.2} />
+                <span>Balcão & Adega ({countInternos})</span>
               </button>
 
               <button
@@ -9855,19 +9873,23 @@ export default function App() {
                 onClick={() => setFiltroTipoProduto('padrao')}
                 style={{
                   padding: '6px 12px',
-                  borderRadius: '20px',
+                  borderRadius: '8px',
                   fontSize: '0.82rem',
-                  fontWeight: 700,
-                  border: 'none',
+                  fontWeight: 600,
+                  border: filtroTipoProduto === 'padrao' ? '1px solid #0284c7' : '1px solid #e2e8f0',
                   cursor: 'pointer',
-                  background: filtroTipoProduto === 'padrao' ? '#0284c7' : '#e0f2fe',
-                  color: filtroTipoProduto === 'padrao' ? '#ffffff' : '#0369a1',
+                  background: filtroTipoProduto === 'padrao' ? '#0284c7' : '#ffffff',
+                  color: filtroTipoProduto === 'padrao' ? '#ffffff' : '#475569',
                   whiteSpace: 'nowrap',
-                  boxShadow: filtroTipoProduto === 'padrao' ? '0 2px 4px rgba(2,132,199,0.3)' : 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: filtroTipoProduto === 'padrao' ? '0 1px 3px rgba(2,132,199,0.25)' : 'none',
                   transition: 'all 0.15s ease',
                 }}
               >
-                🏷️ Industrial / EAN ({countPadrao})
+                <ScanBarcode size={14} strokeWidth={2.2} />
+                <span>Industrial / EAN ({countPadrao})</span>
               </button>
             </div>
 
