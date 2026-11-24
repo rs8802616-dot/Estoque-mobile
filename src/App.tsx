@@ -9800,13 +9800,6 @@ export default function App() {
           </div>
         ) : (
           <>
-            <div className="painel-alertas" id="painel-alertas">
-              {vencidosOuHoje.length > 0 && (
-                <div className="alerta alerta-erro" onClick={() => abrirNotificacoes('validade')}>
-                  ❌ {vencidosOuHoje.length} produto(s) vencido(s) ou a vencer hoje. Toque para ver.
-                </div>
-              )}
-            </div>
 
             {/* CONTAINER PRINCIPAL CAIXA PDV & COLUNA DELIVERY (ESTILO ATENDEJÁ) */}
             <div
@@ -9903,6 +9896,56 @@ export default function App() {
                 <ScanBarcode size={14} strokeWidth={2.2} />
                 <span>Industrial / EAN ({countPadrao})</span>
               </button>
+
+              {vencidosOuHoje.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => abrirNotificacoes('validade')}
+                  title="Ver produtos vencidos ou que vencem hoje"
+                  style={{
+                    marginLeft: 'auto',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    border: '1px solid #fecaca',
+                    background: '#ffffff',
+                    color: '#b91c1c',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      background: '#ef4444',
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span>
+                    {vencidosOuHoje.length} {vencidosOuHoje.length === 1 ? 'item vencido / hoje' : 'itens vencidos / hoje'}
+                  </span>
+                  <span
+                    style={{
+                      background: '#fef2f2',
+                      color: '#dc2626',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      padding: '1px 7px',
+                      borderRadius: '6px',
+                    }}
+                  >
+                    Ver
+                  </span>
+                </button>
+              )}
             </div>
 
             <div className="grid-produtos" id="grid-produtos">
