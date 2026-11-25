@@ -2080,7 +2080,7 @@ ${top3 || '- Nenhum produto vendido'}
                       <Tooltip
                         formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
                         labelFormatter={(lbl) => `Período: ${lbl}`}
-                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
+                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#0369a1', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#0f172a', fontWeight: 800 }}
                       />
                       <Area
                         type="monotone"
@@ -2106,7 +2106,7 @@ ${top3 || '- Nenhum produto vendido'}
                       />
                       <Tooltip
                         formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
-                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
+                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#0369a1', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#0f172a', fontWeight: 800 }}
                       />
                       <Bar dataKey="faturamento" fill="#ef4444" radius={[4, 4, 0, 0]} />
                     </BarChart>
@@ -2123,7 +2123,7 @@ ${top3 || '- Nenhum produto vendido'}
                       />
                       <Tooltip
                         formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Faturamento']}
-                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#34D399', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#FBBF24', fontWeight: 800 }}
+                        contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '6px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)', fontSize: '0.8rem', padding: '8px 12px' }} itemStyle={{ color: '#0369a1', fontFamily: 'monospace', fontWeight: 800 }} labelStyle={{ color: '#0f172a', fontWeight: 800 }}
                       />
                       <Line type="monotone" dataKey="faturamento" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, fill: '#ef4444' }} />
                     </LineChart>
@@ -2438,9 +2438,9 @@ ${top3 || '- Nenhum produto vendido'}
                           <Tooltip
                             formatter={(v: any) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Faturamento']}
                             wrapperStyle={{ zIndex: 50, pointerEvents: 'none' }}
-                            contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '8px', border: '1px solid #334155', fontSize: '0.78rem' }}
-                            itemStyle={{ color: '#ffffff', fontWeight: 700 }}
-                            labelStyle={{ color: '#93c5fd', fontWeight: 700 }}
+                            contentStyle={{ background: '#f1f5f9', color: '#334155', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.78rem' }}
+                            itemStyle={{ color: '#0f172a', fontWeight: 700 }}
+                            labelStyle={{ color: '#0369a1', fontWeight: 700 }}
                           />
                         </PieChart>
                       </ResponsiveContainer>
