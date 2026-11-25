@@ -146,6 +146,65 @@ export function subscribeSupermercados(callback: (lojas: Supermercado[]) => void
   );
 }
 
+export function subscribeSupermercadoUnico(
+  lojaId: string,
+  callback: (loja: Supermercado | null) => void
+) {
+  const safeId = sanitizarIdDoc(lojaId);
+  if (!safeId) return () => {};
+  const docRef = doc(db, 'supermercados', safeId);
+
+  const lerFallbackLocal = () => {
+    try {
+      const salvo = localStorage.getItem('lista_supermercados_app');
+      if (salvo) {
+        const parsed = JSON.parse(salvo);
+        if (Array.isArray(parsed)) {
+          const encontrada = parsed.find((l: Supermercado) => l.id === lojaId || l.id === safeId);
+          if (encontrada) {
+            callback(encontrada);
+            return;
+          }
+        }
+      }
+    } catch {}
+    callback(null);
+  };
+
+  return onSnapshot(
+    docRef,
+    (docSnap) => {
+      if (!docSnap.exists()) {
+        lerFallbackLocal();
+        return;
+      }
+      const remota = { id: docSnap.id, ...docSnap.data() } as Supermercado;
+      try {
+        const salvo = localStorage.getItem('lista_supermercados_app');
+        if (salvo) {
+          const locais: Supermercado[] = JSON.parse(salvo);
+          const local = locais.find((l) => l.id === remota.id);
+          if (local) {
+            if (!remota.permissoesLoja && local.permissoesLoja) {
+              remota.permissoesLoja = local.permissoesLoja;
+            } else if (remota.permissoesLoja && local.permissoesLoja) {
+              remota.permissoesLoja = { ...local.permissoesLoja, ...remota.permissoesLoja };
+            }
+            if (!remota.token_admin && local.token_admin) remota.token_admin = local.token_admin;
+            if (!remota.token_caixa && local.token_caixa) remota.token_caixa = local.token_caixa;
+            if (!remota.token_garcom && local.token_garcom) remota.token_garcom = local.token_garcom;
+            if (!remota.token_cozinha && local.token_cozinha) remota.token_cozinha = local.token_cozinha;
+          }
+        }
+      } catch {}
+      callback(remota);
+    },
+    () => {
+      lerFallbackLocal();
+    }
+  );
+}
+
 export function sanitizarItemEstoque(item: ItemEstoque): ItemEstoque {
   return {
     ...item,

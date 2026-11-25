@@ -1,5 +1,6 @@
 import { signInWithCustomToken, signOut } from 'firebase/auth';
 import { auth } from './firebase';
+import type { OperadorCaixa, Supermercado } from '../types';
 
 export interface ParametrosAuthServidor {
   papel: 'master' | 'admin_loja' | 'caixa' | 'gerente' | 'garcom' | 'cozinha';
@@ -8,32 +9,59 @@ export interface ParametrosAuthServidor {
 }
 
 /**
- * Solicita ao backend (/api/auth) um Custom Token do Firebase Auth com Custom Claims
- * (role, lojaId, sessaoId, is_master) e autentica a sessão no SDK do Firebase.
- * Se o servidor ainda não tiver FIREBASE_SERVICE_ACCOUNT_JSON configurado (HTTP 503),
- * retorna false silenciosamente sem interromper a operação atual.
+ * @deprecated Emissão direta de Custom Token sem validação de credencial foi desativada por segurança.
+ * Os fluxos autenticados (`autenticarMasterServidor`, `autenticarLojaServidor`,
+ * `autenticarOperadorServidor`, `redefinirSenhaRevogadaServidor`) já emitem o Custom Token diretamente.
  */
-export async function autenticarSessaoServidor(params: ParametrosAuthServidor): Promise<boolean> {
-  if (typeof window === 'undefined' || !auth) return false;
+export async function autenticarSessaoServidor(_params: ParametrosAuthServidor): Promise<boolean> {
+  return false;
+}
+
+export async function validarPainelLojaServidor(
+  lojaSlug: string,
+  tokenUrl?: string | null
+): Promise<{
+  fallbackLocal?: boolean;
+  validado: boolean;
+  loja?: Supermercado;
+  papelPermitido?: string;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { fallbackLocal: true, validado: false };
+  const slugLimpo = String(lojaSlug || '').trim();
+  if (!slugLimpo) return { fallbackLocal: false, validado: false };
+
   try {
+    const tokenLimpo = tokenUrl ? String(tokenUrl).trim() : '';
     const resp = await fetch('/api/auth', {
       method: 'POST',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        papel: params.papel,
-        lojaId: params.lojaId || null,
-        usuarioId: params.usuarioId || 'usuario',
-      }),
+      body: JSON.stringify(
+        tokenLimpo
+          ? { acao: 'validar_painel_token', lojaSlug: slugLimpo, token: tokenLimpo }
+          : { acao: 'checar_sessao_painel', lojaSlug: slugLimpo }
+      ),
     });
-    if (!resp.ok) return false;
-    const data = await resp.json();
-    if (data?.configurado && typeof data?.customToken === 'string' && data.customToken.length > 20) {
-      await signInWithCustomToken(auth, data.customToken);
-      return true;
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true, validado: false };
     }
-    return false;
+    if (resp.ok && data?.validado && data?.loja) {
+      return {
+        fallbackLocal: false,
+        validado: true,
+        loja: data.loja as Supermercado,
+        papelPermitido: String(data.papelPermitido || 'admin'),
+      };
+    }
+    return {
+      fallbackLocal: false,
+      validado: false,
+      erro: data?.erro || 'Link de acesso inválido.',
+    };
   } catch {
-    return false;
+    return { fallbackLocal: true, validado: false };
   }
 }
 
@@ -44,6 +72,7 @@ export async function autenticarLojaServidor(
   fallbackLocal?: boolean;
   autenticado?: boolean;
   deveTrocarSenha?: boolean;
+  senhaRevogada?: boolean;
   bloqueado?: boolean;
   erro?: string;
 }> {
@@ -51,6 +80,7 @@ export async function autenticarLojaServidor(
   try {
     const resp = await fetch('/api/auth', {
       method: 'POST',
+      credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ acao: 'autenticar_loja', lojaId, senha }),
     });
@@ -62,6 +92,7 @@ export async function autenticarLojaServidor(
       return {
         fallbackLocal: false,
         autenticado: false,
+        senhaRevogada: Boolean(data?.senhaRevogada),
         bloqueado: Boolean(data?.bloqueado || resp.status === 429),
         erro: data?.erro || 'Credenciais inválidas.',
       };
@@ -73,6 +104,99 @@ export async function autenticarLojaServidor(
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
       deveTrocarSenha: Boolean(data?.deveTrocarSenha),
+    };
+  } catch {
+    return { fallbackLocal: true };
+  }
+}
+
+export async function autenticarOperadorServidor(
+  lojaId: string,
+  usuario: string,
+  senha: string
+): Promise<{
+  fallbackLocal?: boolean;
+  autenticado?: boolean;
+  bloqueado?: boolean;
+  erro?: string;
+  operador?: OperadorCaixa;
+}> {
+  if (typeof window === 'undefined') return { fallbackLocal: true };
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'autenticar_operador', lojaId, usuario, senha }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true };
+    }
+    if (!resp.ok) {
+      return {
+        fallbackLocal: false,
+        autenticado: false,
+        bloqueado: Boolean(data?.bloqueado || resp.status === 429),
+        erro: data?.erro || 'Usuário ou senha inválidos.',
+      };
+    }
+    if (data?.autenticado && data?.customToken && auth) {
+      await signInWithCustomToken(auth, data.customToken);
+    }
+    return {
+      fallbackLocal: false,
+      autenticado: Boolean(data?.autenticado),
+      operador: data?.operador as OperadorCaixa | undefined,
+    };
+  } catch {
+    return { fallbackLocal: true };
+  }
+}
+
+export async function redefinirSenhaRevogadaServidor(
+  lojaId: string,
+  novaSenha: string,
+  senhaHash: string,
+  senhaSalt: string,
+  senhaAtual?: string
+): Promise<{
+  fallbackLocal?: boolean;
+  autenticado?: boolean;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { fallbackLocal: true };
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        acao: 'redefinir_senha_revogada',
+        lojaId,
+        novaSenha,
+        senhaHash,
+        senhaSalt,
+        senhaAtual: senhaAtual || '',
+      }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true };
+    }
+    if (!resp.ok) {
+      return {
+        fallbackLocal: false,
+        autenticado: false,
+        erro: data?.erro || 'Erro ao salvar nova senha no servidor.',
+      };
+    }
+    if (data?.autenticado && data?.customToken && auth) {
+      await signInWithCustomToken(auth, data.customToken);
+    }
+    return {
+      fallbackLocal: false,
+      autenticado: Boolean(data?.autenticado),
     };
   } catch {
     return { fallbackLocal: true };

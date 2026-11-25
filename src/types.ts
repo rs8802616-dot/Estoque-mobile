@@ -121,6 +121,10 @@ export interface OperadorCaixa {
   pinSenha: string;
   senhaHash?: string;
   senhaSalt?: string;
+  senhaAlgo?: string;
+  senhaHashPbkdf2?: string;
+  senhaSaltPbkdf2?: string;
+  senhaPbkdf2RefSalt?: string;
   permissoes: PermissoesOperador;
   ativo: boolean;
   dataCadastro?: string;
@@ -187,6 +191,10 @@ export interface Supermercado {
   senhaAdmin?: string;
   senhaHash?: string;
   senhaSalt?: string;
+  senhaAlgo?: string;
+  senhaHashPbkdf2?: string;
+  senhaSaltPbkdf2?: string;
+  senhaPbkdf2RefSalt?: string;
   senha_revogada?: boolean;
   endereco?: string;
   cidade?: string;
@@ -214,6 +222,7 @@ export interface SessaoUsuario {
   operadorId?: string;
   operadorNome?: string;
   operadorCargo?: string;
+  operadorDados?: OperadorCaixa;
   sessaoToken?: string;
   userKey?: string;
 }

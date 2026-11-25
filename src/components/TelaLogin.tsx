@@ -11,7 +11,12 @@ import {
   registrarAuditoriaLogin,
   obterChavesLockout,
 } from '../utils/security';
-import { autenticarLojaServidor, autenticarMasterServidor } from '../lib/authClient';
+import {
+  autenticarLojaServidor,
+  autenticarMasterServidor,
+  autenticarOperadorServidor,
+  redefinirSenhaRevogadaServidor,
+} from '../lib/authClient';
 
 interface TelaLoginProps {
   visivel: boolean;
@@ -22,7 +27,12 @@ interface TelaLoginProps {
   modoPortal?: 'master' | 'loja';
   lojaAlvo?: Supermercado | null;
   painelAlvo?: string | null;
-  onRedefinirSenhaLojaRevogada?: (lojaId: string, senhaHash: string, senhaSalt: string) => void;
+  onRedefinirSenhaLojaRevogada?: (
+    lojaId: string,
+    senhaHash: string,
+    senhaSalt: string,
+    jaPersistidoNoServidor?: boolean
+  ) => void;
 }
 
 export const TelaLogin: React.FC<TelaLoginProps> = ({
@@ -32,9 +42,11 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   senhaMasterPadrao = '',
   modoPortal = 'loja',
   lojaAlvo = null,
+  painelAlvo = null,
   onRedefinirSenhaLojaRevogada,
 }) => {
   const isMasterMode = modoPortal === 'master';
+  const isPainelRestritoEquipe = Boolean(painelAlvo && painelAlvo !== 'admin');
   const escopoLockout = lojaAlvo?.id || 'global';
   const chavesLockout = obterChavesLockout(escopoLockout);
 
@@ -48,6 +60,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   const [novaSenhaRevogada, setNovaSenhaRevogada] = useState<string>('');
   const [confirmarSenhaRevogada, setConfirmarSenhaRevogada] = useState<string>('');
   const [forcarTelaRedefinicao, setForcarTelaRedefinicao] = useState<boolean>(false);
+  const [senhaAtualParaReset, setSenhaAtualParaReset] = useState<string>('');
 
   // Estados de proteção contra força bruta (Imunidade total para o Dono em isMasterMode)
   const [tentativasFalhas, setTentativasFalhas] = useState<number>(() => {
@@ -67,7 +80,8 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   const [segundosRestantes, setSegundosRestantes] = useState<number>(0);
 
   // Detecta se a loja atual está com senha_revogada: true
-  const lojaComSenhaRevogada = !isMasterMode && Boolean(lojaAlvo?.senha_revogada || forcarTelaRedefinicao);
+  const lojaComSenhaRevogada =
+    !isMasterMode && !isPainelRestritoEquipe && Boolean(lojaAlvo?.senha_revogada || forcarTelaRedefinicao);
 
   // Efeito para checar e atualizar o bloqueio ativo com cronômetro em tempo real
   React.useEffect(() => {
@@ -105,6 +119,8 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       setSenhaOuPin('');
       setNovaSenhaRevogada('');
       setConfirmarSenhaRevogada('');
+      setSenhaAtualParaReset('');
+      setForcarTelaRedefinicao(false);
       setSenhaVisivel(false);
       setCarregando(false);
       setErro('');
@@ -218,9 +234,21 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     setCarregando(true);
     try {
       const { senhaHash, senhaSalt } = await criarHashComSalt(novaSenhaRevogada.trim());
+      const resReset = await redefinirSenhaRevogadaServidor(
+        lojaAlvo.id,
+        novaSenhaRevogada.trim(),
+        senhaHash,
+        senhaSalt,
+        senhaAtualParaReset
+      );
+      if (!resReset.fallbackLocal && !resReset.autenticado) {
+        setCarregando(false);
+        setErro(resReset.erro || 'Erro ao salvar a nova senha no servidor.');
+        return;
+      }
 
       if (onRedefinirSenhaLojaRevogada) {
-        onRedefinirSenhaLojaRevogada(lojaAlvo.id, senhaHash, senhaSalt);
+        onRedefinirSenhaLojaRevogada(lojaAlvo.id, senhaHash, senhaSalt, !resReset.fallbackLocal);
       }
 
       registrarAuditoriaLogin({
@@ -229,10 +257,13 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         lojaNome: lojaAlvo.nome,
         portal: 'loja',
         sucesso: true,
-        motivo: 'Lojista cadastrou nova senha criptografada (SHA-256 + Salt) após revogação pelo Dono',
+        motivo: !resReset.fallbackLocal
+          ? 'Lojista cadastrou nova senha no servidor (PBKDF2 + Custom Token) após revogação/troca obrigatória'
+          : 'Lojista cadastrou nova senha criptografada (SHA-256 + Salt) após revogação pelo Dono',
       });
 
       setForcarTelaRedefinicao(false);
+      setSenhaAtualParaReset('');
       limparFalhasLogin();
       setCarregando(false);
 
@@ -417,6 +448,22 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         (cnpjNumeros.length >= 8 && userNumeros === cnpjNumeros);
 
       if (isStoreAdminUser) {
+        if (isPainelRestritoEquipe) {
+          registrarAuditoriaLogin({
+            usuario: userDigitado,
+            lojaId: loja.id,
+            lojaNome: loja.nome,
+            portal: 'loja',
+            sucesso: false,
+            motivo: `Tentativa de login Admin bloqueada em link restrito (${painelAlvo})`,
+          });
+          setCarregando(false);
+          setErro(
+            'Este link é restrito à equipe operacional. Utilize o Link Oficial da Loja (Admin) para acessar como administrador.'
+          );
+          return;
+        }
+
         if (loja.status === 'bloqueado') {
           setCarregando(false);
           registrarAuditoriaLogin({
@@ -446,6 +493,11 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         const resSrv = await autenticarLojaServidor(loja.id, passDigitada);
         if (!resSrv.fallbackLocal) {
           if (!resSrv.autenticado) {
+            if (resSrv.senhaRevogada) {
+              setCarregando(false);
+              setForcarTelaRedefinicao(true);
+              return;
+            }
             registrarAuditoriaLogin({
               usuario: userDigitado,
               lojaId: loja.id,
@@ -460,6 +512,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
           }
           limparFalhasLogin();
           if (resSrv.deveTrocarSenha) {
+            setSenhaAtualParaReset(passDigitada);
             setCarregando(false);
             setForcarTelaRedefinicao(true);
             return;
@@ -510,8 +563,55 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     }
 
     // =========================================================================
-    // 3. FUNCIONÁRIOS / OPERADORES CADASTRADOS NA LOJA (SHA-256 + Salt, sem senhas coringa)
+    // 3. FUNCIONÁRIOS / OPERADORES CADASTRADOS NA LOJA (Servidor PBKDF2 + Fallback local)
     // =========================================================================
+    if (lojaAlvo) {
+      if (lojaAlvo.status === 'bloqueado') {
+        setCarregando(false);
+        setErro(`🛑 ACESSO SUSPENSO: O estabelecimento "${lojaAlvo.nome}" está temporariamente bloqueado.`);
+        return;
+      }
+
+      const resOpSrv = await autenticarOperadorServidor(lojaAlvo.id, userDigitado, passDigitada);
+      if (!resOpSrv.fallbackLocal) {
+        if (!resOpSrv.autenticado || !resOpSrv.operador) {
+          registrarAuditoriaLogin({
+            usuario: userDigitado,
+            lojaId: lojaAlvo.id,
+            lojaNome: lojaAlvo.nome,
+            portal: 'loja',
+            sucesso: false,
+            motivo: resOpSrv.erro || 'Credenciais de operador inválidas no servidor',
+          });
+          setCarregando(false);
+          setErro(resOpSrv.erro || 'Usuário ou senha inválidos.');
+          return;
+        }
+
+        const opSrv = resOpSrv.operador;
+        limparFalhasLogin();
+        registrarAuditoriaLogin({
+          usuario: `${opSrv.nome} (${opSrv.cpfOuUsuario || userDigitado})`,
+          lojaId: lojaAlvo.id,
+          lojaNome: lojaAlvo.nome,
+          portal: 'loja',
+          sucesso: true,
+          motivo: `Login de funcionário (${opSrv.cargo || 'Operador'}) autenticado no servidor com PBKDF2 + Custom Token`,
+        });
+        setCarregando(false);
+        onLoginSucesso({
+          tipo: 'caixa',
+          lojaId: lojaAlvo.id,
+          lojaNome: lojaAlvo.nome,
+          operadorId: opSrv.id,
+          operadorNome: opSrv.nome,
+          operadorCargo: opSrv.cargo || 'Operador de Caixa',
+          operadorDados: opSrv,
+        });
+        return;
+      }
+    }
+
     const mapaOperadores = new Map<string, { op: OperadorCaixa; loja: Supermercado }>();
 
     for (const loja of lojasParaChecar) {
@@ -576,6 +676,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
             operadorId: op.id,
             operadorNome: op.nome,
             operadorCargo: op.cargo || 'Operador de Caixa',
+            operadorDados: op,
           });
           return;
         }
@@ -589,7 +690,14 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     registrarFalhaLogin(userDigitado, 'Senha ou usuário inválido');
   };
 
-  const nomePainelLabel = 'Acesso Oficial da Loja (Admin & Equipe)';
+  const nomePainelLabel =
+    painelAlvo === 'caixa'
+      ? 'Acesso Operacional — Frente de Caixa'
+      : painelAlvo === 'garcom'
+        ? 'Acesso Operacional — Garçom / Salão'
+        : painelAlvo === 'cozinha'
+          ? 'Acesso Operacional — Cozinha (KDS)'
+          : 'Acesso Oficial da Loja (Admin & Equipe)';
 
   return (
     <div

@@ -1,6 +1,7 @@
 // Vercel Serverless Function / Express Handler: /api/auth
-// - Emite Firebase Custom Token (JWT RS256) com Custom Claims (role, lojaId, sessaoId, is_master)
-// - Valida credenciais no servidor com PBKDF2-SHA256 (210k iterações + pepper) e migra SHA-256 legado
+// - Emite Firebase Custom Token (JWT RS256) com Custom Claims (role, lojaId, operadorId, sessaoId, is_master)
+// - Valida tokens de painel (adm_, cx_, gar_, coz_) e link Master no servidor com cookies HttpOnly assinados
+// - Valida credenciais de loja e operadores/caixas no servidor com PBKDF2-SHA256 (210k iterações + pepper)
 // - Controla lockout de tentativas (5 falhas / 15 min) no Firestore via Service Account
 
 import crypto from 'node:crypto';
@@ -10,7 +11,22 @@ const RATE_MAX = 25;
 const MAX_TENTATIVAS_LOCKOUT = 5;
 const BLOQUEIO_MS = 15 * 60 * 1000;
 const PBKDF2_ITERACOES = 210000;
-const SENHAS_PADRAO_FRACAS = new Set(['123', '1234', '123456', '12345678', 'mudar@123', 'mudar123', 'senha123']);
+const SENHAS_PADRAO_FRACAS = new Set([
+  '123',
+  '1234',
+  '123456',
+  '12345678',
+  '123456789',
+  '1234567890',
+  '00000000',
+  'mudar@123',
+  'mudar123',
+  'senha123',
+  'senha@123',
+  'admin123',
+  'qwerty123',
+  'abc12345',
+]);
 const tentativasIp = new Map();
 
 function getClientIp(req) {
@@ -126,19 +142,64 @@ function extrairValorFirestore(v) {
   if ('doubleValue' in v) return Number(v.doubleValue);
   if ('booleanValue' in v) return Boolean(v.booleanValue);
   if ('nullValue' in v) return null;
+  if ('timestampValue' in v) return v.timestampValue;
+  if ('mapValue' in v) {
+    const out = {};
+    for (const [mk, mv] of Object.entries(v.mapValue?.fields || {})) {
+      const val = extrairValorFirestore(mv);
+      if (val !== undefined) out[mk] = val;
+    }
+    return out;
+  }
+  if ('arrayValue' in v) {
+    const vals = Array.isArray(v.arrayValue?.values) ? v.arrayValue.values : [];
+    return vals.map((item) => extrairValorFirestore(item)).filter((item) => item !== undefined);
+  }
+  return undefined;
+}
+
+function extrairDocFirestore(docObj) {
+  if (!docObj || typeof docObj !== 'object') return null;
+  const docId = docObj.name ? decodeURIComponent(String(docObj.name).split('/').pop() || '') : '';
+  const out = {};
+  if (docId) {
+    out.id = docId;
+    out._docId = docId;
+  }
+  for (const [k, v] of Object.entries(docObj.fields || {})) {
+    const val = extrairValorFirestore(v);
+    if (val !== undefined) out[k] = val;
+  }
+  if (!out.id && docId) out.id = docId;
+  return out;
+}
+
+function converterValorParaFirestore(v) {
+  if (v === undefined) return undefined;
+  if (v === null) return { nullValue: null };
+  if (typeof v === 'string') return { stringValue: v };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (typeof v === 'number') {
+    return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+  }
+  if (Array.isArray(v)) {
+    return {
+      arrayValue: {
+        values: v.map((item) => converterValorParaFirestore(item)).filter((x) => x !== undefined),
+      },
+    };
+  }
+  if (typeof v === 'object') {
+    return { mapValue: { fields: converterParaFirestoreFields(v) } };
+  }
   return undefined;
 }
 
 function converterParaFirestoreFields(obj) {
   const fields = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v === undefined) continue;
-    if (v === null) fields[k] = { nullValue: null };
-    else if (typeof v === 'string') fields[k] = { stringValue: v };
-    else if (typeof v === 'boolean') fields[k] = { booleanValue: v };
-    else if (typeof v === 'number') {
-      fields[k] = Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
-    }
+  for (const [k, v] of Object.entries(obj || {})) {
+    const converted = converterValorParaFirestore(v);
+    if (converted !== undefined) fields[k] = converted;
   }
   return fields;
 }
@@ -149,11 +210,7 @@ async function lerDocFirestoreAdmin(projectId, accessToken, caminho) {
   if (resp.status === 404) return null;
   if (!resp.ok) throw new Error(`Firestore GET ${resp.status}`);
   const data = await resp.json();
-  const out = {};
-  for (const [k, v] of Object.entries(data.fields || {})) {
-    out[k] = extrairValorFirestore(v);
-  }
-  return out;
+  return extrairDocFirestore(data);
 }
 
 async function gravarDocFirestoreAdmin(projectId, accessToken, caminho, payloadObj) {
@@ -171,6 +228,190 @@ async function gravarDocFirestoreAdmin(projectId, accessToken, caminho, payloadO
   if (!resp.ok) throw new Error(`Firestore PATCH ${resp.status}`);
 }
 
+async function consultarColecaoPorCampoAdmin(projectId, accessToken, colecao, campo, valor) {
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      structuredQuery: {
+        from: [{ collectionId: colecao }],
+        where: {
+          fieldFilter: {
+            field: { fieldPath: campo },
+            op: 'EQUAL',
+            value: { stringValue: String(valor) },
+          },
+        },
+      },
+    }),
+  });
+  if (!resp.ok) throw new Error(`Firestore runQuery ${resp.status}`);
+  const rows = await resp.json();
+  if (!Array.isArray(rows)) return [];
+  const docs = [];
+  for (const row of rows) {
+    if (row?.document) {
+      const parsed = extrairDocFirestore(row.document);
+      if (parsed) docs.push(parsed);
+    }
+  }
+  return docs;
+}
+
+async function listarColecaoFirestoreAdmin(projectId, accessToken, colecao, pageSize = 200) {
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${encodeURIComponent(colecao)}?pageSize=${pageSize}`;
+  const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (resp.status === 404) return [];
+  if (!resp.ok) throw new Error(`Firestore LIST ${resp.status}`);
+  const data = await resp.json();
+  return Array.isArray(data?.documents) ? data.documents.map(extrairDocFirestore).filter(Boolean) : [];
+}
+
+function normalizarSlugLojaServer(nomeOuId) {
+  const limpo = String(nomeOuId || 'loja-centro')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return limpo || 'loja-centro';
+}
+
+function lojaCorrespondeSlug(lojaDoc, slugOuId) {
+  if (!lojaDoc || !slugOuId) return false;
+  const slugLimpo = String(slugOuId).trim().toLowerCase();
+  const idLower = String(lojaDoc.id || lojaDoc._docId || '').toLowerCase();
+  const slugField = String(lojaDoc.slug || '').toLowerCase();
+  return (
+    idLower === slugLimpo ||
+    (slugField && slugField === slugLimpo) ||
+    normalizarSlugLojaServer(lojaDoc.nome || idLower) === slugLimpo ||
+    (slugLimpo === 'loja-centro' && idLower === 'loja_matriz_01')
+  );
+}
+
+async function localizarLojaFirestoreAdmin(projectId, accessToken, slugOuId) {
+  const raw = String(slugOuId || '').trim();
+  if (!raw) return null;
+  const slugLimpo = raw.toLowerCase();
+
+  const direta = await lerDocFirestoreAdmin(
+    projectId,
+    accessToken,
+    `supermercados/${encodeURIComponent(raw)}`
+  );
+  if (direta) return direta;
+
+  if (slugLimpo === 'loja-centro') {
+    const matriz = await lerDocFirestoreAdmin(projectId, accessToken, 'supermercados/loja_matriz_01');
+    if (matriz) return matriz;
+  }
+
+  const porSlug = await consultarColecaoPorCampoAdmin(
+    projectId,
+    accessToken,
+    'supermercados',
+    'slug',
+    slugLimpo
+  );
+  if (porSlug.length > 0) return porSlug[0];
+
+  if (raw !== slugLimpo) {
+    const porSlugRaw = await consultarColecaoPorCampoAdmin(
+      projectId,
+      accessToken,
+      'supermercados',
+      'slug',
+      raw
+    );
+    if (porSlugRaw.length > 0) return porSlugRaw[0];
+  }
+
+  const todas = await listarColecaoFirestoreAdmin(projectId, accessToken, 'supermercados', 200);
+  return todas.find((l) => lojaCorrespondeSlug(l, slugLimpo)) || null;
+}
+
+function sanitizarLojaParaPainel(lojaDoc) {
+  if (!lojaDoc) return null;
+  const id = String(lojaDoc.id || lojaDoc._docId || '');
+  return {
+    id,
+    nome: String(lojaDoc.nome || 'Supermercado'),
+    slug: String(lojaDoc.slug || normalizarSlugLojaServer(lojaDoc.nome || id)),
+    cnpj: String(lojaDoc.cnpj || ''),
+    senha: '',
+    senhaAdmin: '',
+    status: lojaDoc.status === 'bloqueado' ? 'bloqueado' : 'ativo',
+    motivoBloqueio: String(lojaDoc.motivoBloqueio || ''),
+    senha_revogada: Boolean(lojaDoc.senha_revogada),
+    limiteCaixas: lojaDoc.limiteCaixas,
+    limiteSupervisores: lojaDoc.limiteSupervisores,
+    permissoesLoja: lojaDoc.permissoesLoja,
+    endereco: lojaDoc.endereco,
+    cidade: lojaDoc.cidade,
+    telefone: lojaDoc.telefone,
+    taxa_entrega: lojaDoc.taxa_entrega,
+    tempo_estimado_entrega: lojaDoc.tempo_estimado_entrega,
+  };
+}
+
+function sanitizarOperadorParaCliente(opDoc) {
+  if (!opDoc) return null;
+  return {
+    id: String(opDoc.id || opDoc._docId || ''),
+    lojaId: String(opDoc.lojaId || ''),
+    nome: String(opDoc.nome || 'Operador'),
+    cargo: String(opDoc.cargo || 'Operador de Caixa'),
+    cpfOuUsuario: String(opDoc.cpfOuUsuario || ''),
+    pinSenha: '',
+    permissoes: opDoc.permissoes || {},
+    ativo: opDoc.ativo !== false,
+    dataCadastro: opDoc.dataCadastro,
+  };
+}
+
+function verificarSenhaDocumento(docObj, senhaDigitada, pepper, senhaLegadaTexto = '') {
+  if (!docObj || typeof senhaDigitada !== 'string' || !senhaDigitada) {
+    return { ok: false, precisaMigrarPbkdf2: false };
+  }
+
+  const saltPbkdf2Atual = docObj.senhaSaltPbkdf2 || docObj.senhaSalt;
+  const pbkdf2AtualValido =
+    docObj.senhaAlgo === 'pbkdf2' &&
+    Boolean(docObj.senhaHashPbkdf2) &&
+    Boolean(saltPbkdf2Atual) &&
+    (!docObj.senhaSalt ||
+      !docObj.senhaPbkdf2RefSalt ||
+      docObj.senhaSalt === docObj.senhaPbkdf2RefSalt);
+
+  if (pbkdf2AtualValido) {
+    const ok = compararTempoConstante(
+      derivarPbkdf2(senhaDigitada, saltPbkdf2Atual, pepper),
+      String(docObj.senhaHashPbkdf2)
+    );
+    return { ok, precisaMigrarPbkdf2: false };
+  }
+
+  if (docObj.senhaHash && docObj.senhaSalt) {
+    const ok = compararTempoConstante(
+      sha256Legado(senhaDigitada, docObj.senhaSalt),
+      String(docObj.senhaHash)
+    );
+    return { ok, precisaMigrarPbkdf2: ok };
+  }
+
+  if (senhaLegadaTexto && String(senhaLegadaTexto).trim().length > 0) {
+    const ok = compararTempoConstante(senhaDigitada, String(senhaLegadaTexto));
+    return { ok, precisaMigrarPbkdf2: ok };
+  }
+
+  return { ok: false, precisaMigrarPbkdf2: false };
+}
+
 function parseCookies(req) {
   const raw = String(req.headers?.cookie || '');
   const out = {};
@@ -179,33 +420,56 @@ function parseCookies(req) {
     if (idx > 0) {
       const k = part.slice(0, idx).trim();
       const v = part.slice(idx + 1).trim();
-      out[k] = decodeURIComponent(v);
+      try {
+        out[k] = decodeURIComponent(v);
+      } catch {
+        out[k] = v;
+      }
     }
   });
   return out;
 }
 
-function criarCookieMasterAssinado(secretHmac) {
-  const payload = base64Url(JSON.stringify({ role: 'master', exp: Date.now() + 12 * 60 * 60 * 1000 }));
+function criarCookieAssinado(payloadObj, secretHmac) {
+  const payload = base64Url(JSON.stringify(payloadObj));
   const sig = crypto.createHmac('sha256', secretHmac).update(payload).digest('base64url');
   return `${payload}.${sig}`;
 }
 
-function verificarCookieMasterAssinado(cookieVal, secretHmac) {
-  if (!cookieVal || typeof cookieVal !== 'string' || !cookieVal.includes('.')) return false;
+function verificarCookieAssinado(cookieVal, secretHmac) {
+  if (!cookieVal || typeof cookieVal !== 'string' || !cookieVal.includes('.')) return null;
   const [payload, sig] = cookieVal.split('.');
-  if (!payload || !sig) return false;
+  if (!payload || !sig) return null;
   const esperado = crypto.createHmac('sha256', secretHmac).update(payload).digest('base64url');
-  if (!compararTempoConstante(sig, esperado)) return false;
+  if (!compararTempoConstante(sig, esperado)) return null;
   try {
     const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
-    return parsed?.role === 'master' && Number(parsed?.exp || 0) > Date.now();
+    if (!parsed || Number(parsed?.exp || 0) <= Date.now()) return null;
+    return parsed;
   } catch {
-    return false;
+    return null;
   }
 }
 
+function criarCookieMasterAssinado(secretHmac) {
+  return criarCookieAssinado({ role: 'master', exp: Date.now() + 12 * 60 * 60 * 1000 }, secretHmac);
+}
+
+function verificarCookieMasterAssinado(cookieVal, secretHmac) {
+  const parsed = verificarCookieAssinado(cookieVal, secretHmac);
+  return parsed?.role === 'master';
+}
+
+function definirCookieHttpOnly(req, res, nome, valor, maxAgeSec = 43200) {
+  const isHttps =
+    String(req.headers['x-forwarded-proto'] || '').includes('https') ||
+    Boolean(process.env.VERCEL);
+  const flags = `HttpOnly; Path=/; Max-Age=${maxAgeSec}; SameSite=Strict${isHttps ? '; Secure' : ''}`;
+  res.setHeader('Set-Cookie', `${nome}=${encodeURIComponent(valor)}; ${flags}`);
+}
+
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -221,7 +485,7 @@ export default async function handler(req, res) {
   }
 
   const body = req.body || {};
-  const acao = String(body.acao || 'emitir_sessao').trim();
+  const acao = String(body.acao || '').trim();
   const masterSecret = String(
     process.env.MASTER_PORTAL_TOKEN || process.env.VITE_MASTER_PORTAL_TOKEN || ''
   ).trim();
@@ -235,11 +499,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ validado: false, erro: 'Token master inválido.' });
     }
     const cookieVal = criarCookieMasterAssinado(hmacSecret);
-    const isHttps =
-      String(req.headers['x-forwarded-proto'] || '').includes('https') ||
-      Boolean(process.env.VERCEL);
-    const flags = `HttpOnly; Path=/; Max-Age=43200; SameSite=Strict${isHttps ? '; Secure' : ''}`;
-    res.setHeader('Set-Cookie', `em_master_sessao=${encodeURIComponent(cookieVal)}; ${flags}`);
+    definirCookieHttpOnly(req, res, 'em_master_sessao', cookieVal);
     return res.status(200).json({ validado: true });
   }
 
@@ -303,7 +563,115 @@ export default async function handler(req, res) {
 
   const pepper = String(process.env.SENHA_PEPPER || 'estoque_mobile_pepper_v1');
 
-  // Fluxo completo com verificação de senha + lockout no servidor (para login de loja)
+  // ---------------------------------------------------------------------------
+  // A. Validação server-side dos links exclusivos da loja (adm_/cx_/gar_/coz_)
+  // ---------------------------------------------------------------------------
+  if (acao === 'validar_painel_token') {
+    const lojaSlug = String(body.lojaSlug || '').trim();
+    const tokenRecebido = String(body.token || '').trim();
+    if (!lojaSlug || !tokenRecebido) {
+      return res.status(400).json({ configurado: true, validado: false, erro: 'Parâmetros de link incompletos.' });
+    }
+
+    try {
+      const accessToken = await obterAccessTokenAdmin(serviceAccount);
+      const projectId = serviceAccount.project_id;
+      const lojaDoc = await localizarLojaFirestoreAdmin(projectId, accessToken, lojaSlug);
+      if (!lojaDoc) {
+        return res.status(404).json({ configurado: true, validado: false, erro: 'Link não reconhecido.' });
+      }
+
+      let papelPermitido = null;
+      if (lojaDoc.token_admin && compararTempoConstante(tokenRecebido, String(lojaDoc.token_admin))) {
+        papelPermitido = 'admin';
+      } else if (lojaDoc.token_caixa && compararTempoConstante(tokenRecebido, String(lojaDoc.token_caixa))) {
+        papelPermitido = 'caixa';
+      } else if (lojaDoc.token_garcom && compararTempoConstante(tokenRecebido, String(lojaDoc.token_garcom))) {
+        papelPermitido = 'garcom';
+      } else if (lojaDoc.token_cozinha && compararTempoConstante(tokenRecebido, String(lojaDoc.token_cozinha))) {
+        papelPermitido = 'cozinha';
+      }
+
+      if (!papelPermitido) {
+        return res.status(401).json({ configurado: true, validado: false, erro: 'Token de acesso inválido.' });
+      }
+
+      const lojaSanitizada = sanitizarLojaParaPainel(lojaDoc);
+      const cookieVal = criarCookieAssinado(
+        {
+          type: 'painel',
+          lojaId: lojaSanitizada.id,
+          lojaSlug: lojaSanitizada.slug || normalizarSlugLojaServer(lojaSlug),
+          papelPermitido,
+          exp: Date.now() + 12 * 60 * 60 * 1000,
+        },
+        hmacSecret
+      );
+      definirCookieHttpOnly(req, res, 'em_painel_sessao', cookieVal);
+
+      return res.status(200).json({
+        configurado: true,
+        validado: true,
+        papelPermitido,
+        loja: lojaSanitizada,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        configurado: true,
+        validado: false,
+        erro: err?.message || 'Erro interno ao validar link do painel.',
+      });
+    }
+  }
+
+  if (acao === 'checar_sessao_painel') {
+    const lojaSlug = String(body.lojaSlug || '').trim();
+    const cookies = parseCookies(req);
+    const sessaoPainel = verificarCookieAssinado(cookies.em_painel_sessao, hmacSecret);
+    if (!sessaoPainel || sessaoPainel.type !== 'painel' || !sessaoPainel.lojaId) {
+      return res.status(401).json({ configurado: true, validado: false, erro: 'Sessão de painel ausente ou expirada.' });
+    }
+
+    try {
+      const accessToken = await obterAccessTokenAdmin(serviceAccount);
+      const projectId = serviceAccount.project_id;
+      const lojaDoc = await lerDocFirestoreAdmin(
+        projectId,
+        accessToken,
+        `supermercados/${encodeURIComponent(String(sessaoPainel.lojaId))}`
+      );
+      if (!lojaDoc) {
+        return res.status(404).json({ configurado: true, validado: false, erro: 'Loja não encontrada.' });
+      }
+
+      const slugLimpo = lojaSlug.toLowerCase();
+      const correspondeSlug =
+        !lojaSlug ||
+        lojaCorrespondeSlug(lojaDoc, lojaSlug) ||
+        String(sessaoPainel.lojaSlug || '').toLowerCase() === slugLimpo;
+
+      if (!correspondeSlug) {
+        return res.status(403).json({ configurado: true, validado: false, erro: 'Sessão não corresponde a esta loja.' });
+      }
+
+      return res.status(200).json({
+        configurado: true,
+        validado: true,
+        papelPermitido: String(sessaoPainel.papelPermitido || 'admin'),
+        loja: sanitizarLojaParaPainel(lojaDoc),
+      });
+    } catch (err) {
+      return res.status(500).json({
+        configurado: true,
+        validado: false,
+        erro: err?.message || 'Erro ao verificar sessão do painel.',
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // B. Login de Administrador da Loja com PBKDF2 + lockout + Custom Token
+  // ---------------------------------------------------------------------------
   if (acao === 'autenticar_loja') {
     const lojaId = String(body.lojaId || '').trim();
     const senha = String(body.senha || '');
@@ -311,11 +679,31 @@ export default async function handler(req, res) {
       return res.status(400).json({ configurado: true, erro: 'Informe lojaId e senha.' });
     }
 
+    const cookies = parseCookies(req);
+    const sessaoPainel = verificarCookieAssinado(cookies.em_painel_sessao, hmacSecret);
+    if (sessaoPainel?.type === 'painel') {
+      if (String(sessaoPainel.lojaId || '') !== lojaId) {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          erro: 'Link de acesso não corresponde a esta loja.',
+        });
+      }
+      if (sessaoPainel.papelPermitido && sessaoPainel.papelPermitido !== 'admin') {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          erro: 'Este link é restrito à equipe operacional. Utilize o Link Oficial da Loja (Admin) para acessar como administrador.',
+        });
+      }
+    }
+
     try {
       const accessToken = await obterAccessTokenAdmin(serviceAccount);
       const projectId = serviceAccount.project_id;
       const ip = getClientIp(req).replace(/[^a-zA-Z0-9._-]/g, '_');
-      const lockoutPath = `controle_login/${lojaId}__${ip}`;
+      const safeLojaLock = lojaId.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const lockoutPath = `controle_login/${safeLojaLock}__${ip}`;
       const lockDoc = (await lerDocFirestoreAdmin(projectId, accessToken, lockoutPath)) || {
         tentativas: 0,
         bloqueadoAte: 0,
@@ -326,33 +714,43 @@ export default async function handler(req, res) {
         const seg = Math.ceil((Number(lockDoc.bloqueadoAte) - agora) / 1000);
         return res.status(429).json({
           configurado: true,
+          autenticado: false,
           bloqueado: true,
           segundosRestantes: seg,
           erro: `Acesso bloqueado por segurança. Tente novamente em ${Math.ceil(seg / 60)} min.`,
         });
       }
 
-      const lojaDoc = await lerDocFirestoreAdmin(projectId, accessToken, `supermercados/${lojaId}`);
+      const lojaDoc = await lerDocFirestoreAdmin(
+        projectId,
+        accessToken,
+        `supermercados/${encodeURIComponent(lojaId)}`
+      );
       if (!lojaDoc) {
-        return res.status(404).json({ configurado: true, erro: 'Loja não encontrada.' });
+        return res.status(404).json({ configurado: true, autenticado: false, erro: 'Loja não encontrada.' });
+      }
+      if (lojaDoc.status === 'bloqueado') {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          erro: `Acesso suspenso: estabelecimento "${lojaDoc.nome || lojaId}" bloqueado pela administração.`,
+        });
+      }
+      if (lojaDoc.senha_revogada === true) {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          senhaRevogada: true,
+          erro: 'Senha revogada pela administração. Cadastre uma nova senha para continuar.',
+        });
       }
 
-      let senhaOk = false;
-      let precisaMigrarPbkdf2 = false;
-
-      const saltPbkdf2Atual = lojaDoc.senhaSaltPbkdf2 || lojaDoc.senhaSalt;
-      if (lojaDoc.senhaAlgo === 'pbkdf2' && lojaDoc.senhaHashPbkdf2 && saltPbkdf2Atual) {
-        senhaOk = compararTempoConstante(
-          derivarPbkdf2(senha, saltPbkdf2Atual, pepper),
-          lojaDoc.senhaHashPbkdf2
-        );
-      } else if (lojaDoc.senhaHash && lojaDoc.senhaSalt) {
-        senhaOk = compararTempoConstante(sha256Legado(senha, lojaDoc.senhaSalt), lojaDoc.senhaHash);
-        if (senhaOk) precisaMigrarPbkdf2 = true;
-      } else if (lojaDoc.senha || lojaDoc.senhaAdmin) {
-        senhaOk = compararTempoConstante(senha, String(lojaDoc.senha || lojaDoc.senhaAdmin));
-        if (senhaOk) precisaMigrarPbkdf2 = true;
-      }
+      const { ok: senhaOk, precisaMigrarPbkdf2 } = verificarSenhaDocumento(
+        lojaDoc,
+        senha,
+        pepper,
+        lojaDoc.senha || lojaDoc.senhaAdmin || ''
+      );
 
       if (!senhaOk) {
         const novasTentativas = Number(lockDoc.tentativas || 0) + 1;
@@ -363,8 +761,9 @@ export default async function handler(req, res) {
           bloqueadoAte,
           atualizadoEm: Date.now(),
         });
-        return res.status(401).json({
+        return res.status(bloqueadoAte > 0 ? 429 : 401).json({
           configurado: true,
+          autenticado: false,
           tentativas: novasTentativas,
           bloqueado: bloqueadoAte > 0,
           erro:
@@ -374,20 +773,28 @@ export default async function handler(req, res) {
         });
       }
 
-      // Login válido: limpa lockout e migra hash legado para PBKDF2
       await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
         tentativas: 0,
         bloqueadoAte: 0,
         atualizadoEm: Date.now(),
       });
 
+      const lojaDocId = String(lojaDoc._docId || lojaId);
       if (precisaMigrarPbkdf2) {
         const novoSalt = crypto.randomBytes(16).toString('hex');
-        await gravarDocFirestoreAdmin(projectId, accessToken, `supermercados/${lojaId}`, {
-          senhaAlgo: 'pbkdf2',
-          senhaSaltPbkdf2: novoSalt,
-          senhaHashPbkdf2: derivarPbkdf2(senha, novoSalt, pepper),
-        });
+        await gravarDocFirestoreAdmin(
+          projectId,
+          accessToken,
+          `supermercados/${encodeURIComponent(lojaDocId)}`,
+          {
+            senha: '',
+            senhaAdmin: '',
+            senhaAlgo: 'pbkdf2',
+            senhaSaltPbkdf2: novoSalt,
+            senhaHashPbkdf2: derivarPbkdf2(senha, novoSalt, pepper),
+            senhaPbkdf2RefSalt: lojaDoc.senhaSalt || '',
+          }
+        );
       }
 
       const sessaoId = crypto.randomUUID();
@@ -408,57 +815,307 @@ export default async function handler(req, res) {
     } catch (err) {
       return res.status(500).json({
         configurado: true,
+        autenticado: false,
         erro: err?.message || 'Erro interno ao autenticar loja.',
       });
     }
   }
 
-  // Emissão padrão de Custom Token após autenticação
-  const papel = String(body.papel || '').trim();
-  const lojaId = body.lojaId ? String(body.lojaId).trim() : null;
-  const usuarioId = String(body.usuarioId || 'operador').trim().slice(0, 80);
+  // ---------------------------------------------------------------------------
+  // C. Redefinição server-side de senha revogada (ou senha fraca obrigatória)
+  // ---------------------------------------------------------------------------
+  if (acao === 'redefinir_senha_revogada') {
+    const lojaId = String(body.lojaId || '').trim();
+    const novaSenha = String(body.novaSenha || '').trim();
+    const senhaAtual = String(body.senhaAtual || '');
+    const senhaHashCliente = String(body.senhaHash || '').trim();
+    const senhaSaltCliente = String(body.senhaSalt || '').trim();
 
-  const papeisPermitidos = new Set(['master', 'admin_loja', 'caixa', 'gerente', 'garcom', 'cozinha']);
-  if (!papeisPermitidos.has(papel)) {
-    return res.status(400).json({ configurado: true, erro: 'Papel de sessão inválido.' });
-  }
-  if (papel !== 'master' && !lojaId) {
-    return res.status(400).json({ configurado: true, erro: 'lojaId obrigatório para usuário de loja.' });
-  }
+    if (!lojaId || !novaSenha) {
+      return res.status(400).json({ configurado: true, autenticado: false, erro: 'Dados incompletos para redefinir senha.' });
+    }
 
-  if (papel === 'master' && process.env.VITE_MASTER_PORTAL_TOKEN) {
-    const tokenMaster = String(body.masterToken || '').trim();
-    if (tokenMaster && tokenMaster !== process.env.VITE_MASTER_PORTAL_TOKEN) {
-      return res.status(401).json({ configurado: true, erro: 'Token master inválido.' });
+    const cookies = parseCookies(req);
+    const sessaoPainel = verificarCookieAssinado(cookies.em_painel_sessao, hmacSecret);
+    if (!sessaoPainel || sessaoPainel.type !== 'painel' || String(sessaoPainel.lojaId || '') !== lojaId || sessaoPainel.papelPermitido !== 'admin') {
+      return res.status(401).json({
+        configurado: true,
+        autenticado: false,
+        erro: 'Link de administrador não validado para redefinir a senha desta loja.',
+      });
+    }
+
+    if (novaSenha.length < 8 || SENHAS_PADRAO_FRACAS.has(novaSenha.toLowerCase())) {
+      return res.status(400).json({
+        configurado: true,
+        autenticado: false,
+        erro: 'A nova senha deve ter no mínimo 8 caracteres e não pode ser comum ou padrão.',
+      });
+    }
+
+    try {
+      const accessToken = await obterAccessTokenAdmin(serviceAccount);
+      const projectId = serviceAccount.project_id;
+      const lojaDoc = await lerDocFirestoreAdmin(
+        projectId,
+        accessToken,
+        `supermercados/${encodeURIComponent(lojaId)}`
+      );
+      if (!lojaDoc) {
+        return res.status(404).json({ configurado: true, autenticado: false, erro: 'Loja não encontrada.' });
+      }
+      if (lojaDoc.status === 'bloqueado') {
+        return res.status(403).json({ configurado: true, autenticado: false, erro: 'Estabelecimento bloqueado pela administração.' });
+      }
+
+      const podeRedefinir =
+        lojaDoc.senha_revogada === true ||
+        (senhaAtual.length > 0 &&
+          verificarSenhaDocumento(
+            lojaDoc,
+            senhaAtual,
+            pepper,
+            lojaDoc.senha || lojaDoc.senhaAdmin || ''
+          ).ok);
+
+      if (!podeRedefinir) {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          erro: 'A redefinição não está liberada ou a senha atual não confere.',
+        });
+      }
+
+      const saltShaFinal = senhaSaltCliente.length >= 16 ? senhaSaltCliente : crypto.randomBytes(16).toString('hex');
+      const hashShaFinal = /^[a-f0-9]{64}$/i.test(senhaHashCliente) && senhaSaltCliente === saltShaFinal
+        ? senhaHashCliente
+        : sha256Legado(novaSenha, saltShaFinal);
+      const novoSaltPbkdf2 = crypto.randomBytes(16).toString('hex');
+      const novoHashPbkdf2 = derivarPbkdf2(novaSenha, novoSaltPbkdf2, pepper);
+
+      const lojaDocId = String(lojaDoc._docId || lojaId);
+      await gravarDocFirestoreAdmin(
+        projectId,
+        accessToken,
+        `supermercados/${encodeURIComponent(lojaDocId)}`,
+        {
+          senha: '',
+          senhaAdmin: '',
+          senhaHash: hashShaFinal,
+          senhaSalt: saltShaFinal,
+          senhaAlgo: 'pbkdf2',
+          senhaSaltPbkdf2: novoSaltPbkdf2,
+          senhaHashPbkdf2: novoHashPbkdf2,
+          senhaPbkdf2RefSalt: saltShaFinal,
+          senha_revogada: false,
+        }
+      );
+
+      const ip = getClientIp(req).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const safeLojaLock = lojaId.replace(/[^a-zA-Z0-9._-]/g, '_');
+      await gravarDocFirestoreAdmin(projectId, accessToken, `controle_login/${safeLojaLock}__${ip}`, {
+        tentativas: 0,
+        bloqueadoAte: 0,
+        atualizadoEm: Date.now(),
+      });
+
+      const sessaoId = crypto.randomUUID();
+      const customToken = criarCustomTokenFirebase(serviceAccount, `${lojaId}_admin`, {
+        role: 'admin_loja',
+        is_master: false,
+        lojaId,
+        sessaoId,
+      });
+
+      return res.status(200).json({
+        configurado: true,
+        autenticado: true,
+        customToken,
+        sessaoId,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        configurado: true,
+        autenticado: false,
+        erro: err?.message || 'Erro interno ao salvar nova senha.',
+      });
     }
   }
 
-  const sessaoId = crypto.randomUUID();
-  const uid =
-    papel === 'master'
-      ? `master_${usuarioId}`
-      : `${lojaId}_${usuarioId}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+  // ---------------------------------------------------------------------------
+  // D. Login de Operadores / Caixas / Supervisores no servidor (PBKDF2 + lockout)
+  // ---------------------------------------------------------------------------
+  if (acao === 'autenticar_operador') {
+    const lojaId = String(body.lojaId || '').trim();
+    const usuario = String(body.usuario || '').trim();
+    const senha = String(body.senha || '').trim();
+    if (!lojaId || !usuario || !senha) {
+      return res.status(400).json({
+        configurado: true,
+        autenticado: false,
+        erro: 'Informe lojaId, usuário e senha.',
+      });
+    }
 
-  const claims = {
-    role: papel,
-    is_master: papel === 'master',
-    ...(lojaId ? { lojaId } : {}),
-    sessaoId,
-  };
+    const cookies = parseCookies(req);
+    const sessaoPainel = verificarCookieAssinado(cookies.em_painel_sessao, hmacSecret);
+    if (sessaoPainel?.type === 'painel' && String(sessaoPainel.lojaId || '') !== lojaId) {
+      return res.status(403).json({
+        configurado: true,
+        autenticado: false,
+        erro: 'Link de acesso não corresponde a esta loja.',
+      });
+    }
 
-  try {
-    const customToken = criarCustomTokenFirebase(serviceAccount, uid, claims);
-    return res.status(200).json({
-      configurado: true,
-      customToken,
-      sessaoId,
-      papel,
-      lojaId,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      configurado: true,
-      erro: err?.message || 'Falha ao assinar Custom Token.',
-    });
+    try {
+      const accessToken = await obterAccessTokenAdmin(serviceAccount);
+      const projectId = serviceAccount.project_id;
+      const ip = getClientIp(req).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const safeLojaLock = lojaId.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const lockoutPath = `controle_login/${safeLojaLock}__op__${ip}`;
+      const lockDoc = (await lerDocFirestoreAdmin(projectId, accessToken, lockoutPath)) || {
+        tentativas: 0,
+        bloqueadoAte: 0,
+      };
+
+      const agora = Date.now();
+      if (lockDoc.bloqueadoAte && Number(lockDoc.bloqueadoAte) > agora) {
+        const seg = Math.ceil((Number(lockDoc.bloqueadoAte) - agora) / 1000);
+        return res.status(429).json({
+          configurado: true,
+          autenticado: false,
+          bloqueado: true,
+          segundosRestantes: seg,
+          erro: `Acesso bloqueado por segurança. Tente novamente em ${Math.ceil(seg / 60)} min.`,
+        });
+      }
+
+      const lojaDoc = await lerDocFirestoreAdmin(
+        projectId,
+        accessToken,
+        `supermercados/${encodeURIComponent(lojaId)}`
+      );
+      if (!lojaDoc) {
+        return res.status(404).json({ configurado: true, autenticado: false, erro: 'Loja não encontrada.' });
+      }
+      if (lojaDoc.status === 'bloqueado') {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          erro: `Acesso suspenso: o estabelecimento "${lojaDoc.nome || lojaId}" está temporariamente bloqueado.`,
+        });
+      }
+
+      const opsLoja = await consultarColecaoPorCampoAdmin(
+        projectId,
+        accessToken,
+        'operadores',
+        'lojaId',
+        lojaId
+      );
+
+      const userLower = usuario.toLowerCase();
+      const userDigitos = usuario.replace(/\D/g, '');
+      const opEncontrado = opsLoja.find((op) => {
+        const opCpf = String(op.cpfOuUsuario || '').trim().toLowerCase();
+        const opNome = String(op.nome || '').trim().toLowerCase();
+        const opDigitos = String(op.cpfOuUsuario || '').replace(/\D/g, '');
+        return (
+          opCpf === userLower ||
+          opNome === userLower ||
+          (userDigitos.length >= 6 && opDigitos === userDigitos)
+        );
+      });
+
+      if (opEncontrado && opEncontrado.ativo === false) {
+        return res.status(403).json({
+          configurado: true,
+          autenticado: false,
+          erro: `Acesso bloqueado: o funcionário "${opEncontrado.nome || usuario}" está inativo no cadastro da loja.`,
+        });
+      }
+
+      const resSenha = opEncontrado
+        ? verificarSenhaDocumento(opEncontrado, senha, pepper, opEncontrado.pinSenha || '')
+        : { ok: false, precisaMigrarPbkdf2: false };
+
+      if (!resSenha.ok) {
+        const novasTentativas = Number(lockDoc.tentativas || 0) + 1;
+        const bloqueadoAte =
+          novasTentativas >= MAX_TENTATIVAS_LOCKOUT ? Date.now() + BLOQUEIO_MS : 0;
+        await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
+          tentativas: novasTentativas,
+          bloqueadoAte,
+          atualizadoEm: Date.now(),
+        });
+        return res.status(bloqueadoAte > 0 ? 429 : 401).json({
+          configurado: true,
+          autenticado: false,
+          tentativas: novasTentativas,
+          bloqueado: bloqueadoAte > 0,
+          erro:
+            bloqueadoAte > 0
+              ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
+              : `Usuário ou senha inválidos (${novasTentativas}/${MAX_TENTATIVAS_LOCKOUT}).`,
+        });
+      }
+
+      await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
+        tentativas: 0,
+        bloqueadoAte: 0,
+        atualizadoEm: Date.now(),
+      });
+
+      const opDocId = String(opEncontrado._docId || opEncontrado.id);
+      if (resSenha.precisaMigrarPbkdf2) {
+        const novoSalt = crypto.randomBytes(16).toString('hex');
+        await gravarDocFirestoreAdmin(
+          projectId,
+          accessToken,
+          `operadores/${encodeURIComponent(opDocId)}`,
+          {
+            pinSenha: '',
+            senhaAlgo: 'pbkdf2',
+            senhaSaltPbkdf2: novoSalt,
+            senhaHashPbkdf2: derivarPbkdf2(senha, novoSalt, pepper),
+            senhaPbkdf2RefSalt: opEncontrado.senhaSalt || '',
+          }
+        );
+      }
+
+      const opId = String(opEncontrado.id || opDocId);
+      const cargo = String(opEncontrado.cargo || 'Operador de Caixa');
+      const role =
+        cargo === 'Administrador' || cargo === 'Supervisor' ? 'gerente' : 'caixa';
+      const sessaoId = crypto.randomUUID();
+      const uid = `${lojaId}_op_${opId}`.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 128);
+
+      const customToken = criarCustomTokenFirebase(serviceAccount, uid, {
+        role,
+        is_master: false,
+        lojaId,
+        operadorId: opId,
+        sessaoId,
+      });
+
+      return res.status(200).json({
+        configurado: true,
+        autenticado: true,
+        customToken,
+        sessaoId,
+        operador: sanitizarOperadorParaCliente(opEncontrado),
+      });
+    } catch (err) {
+      return res.status(500).json({
+        configurado: true,
+        autenticado: false,
+        erro: err?.message || 'Erro interno ao autenticar operador.',
+      });
+    }
   }
+
+  return res.status(403).json({
+    configurado: true,
+    erro: 'Ação de autenticação não autorizada. Utilize o login autenticado.',
+  });
 }

@@ -60,6 +60,10 @@ export const GerenciarSenhaLojaModal: React.FC<GerenciarSenhaLojaModalProps> = (
       senhaAdmin: '',
       senhaHash: '',
       senhaSalt: '',
+      senhaAlgo: 'sha256',
+      senhaHashPbkdf2: '',
+      senhaSaltPbkdf2: '',
+      senhaPbkdf2RefSalt: '',
       senha_revogada: true,
     };
     revogarLockoutLoja(loja.id);
@@ -99,6 +103,10 @@ export const GerenciarSenhaLojaModal: React.FC<GerenciarSenhaLojaModalProps> = (
         senhaAdmin: '',
         senhaHash,
         senhaSalt,
+        senhaAlgo: 'sha256',
+        senhaHashPbkdf2: '',
+        senhaSaltPbkdf2: '',
+        senhaPbkdf2RefSalt: '',
         senha_revogada: false,
       };
       revogarLockoutLoja(loja.id);
