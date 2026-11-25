@@ -137,7 +137,7 @@ export const GerenciarSenhaLojaModal: React.FC<GerenciarSenhaLojaModalProps> = (
         inset: 0,
         background: 'rgba(15, 23, 42, 0.85)',
         backdropFilter: 'blur(6px)',
-        zIndex: 1000000,
+        zIndex: 1000010,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

@@ -17,6 +17,7 @@ import {
   Pie,
 } from 'recharts';
 import { Venda, ItemEstoque, ProdutoCatalogo } from '../types';
+import { obterDataLocalISO } from '../lib/dateUtils';
 
 interface GraficosVendasModalProps {
   visivel: boolean;
@@ -334,7 +335,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         for (let i = 9; i >= 0; i--) {
           const d = new Date();
           d.setDate(hoje.getDate() - i);
-          const isoKey = d.toISOString().slice(0, 10);
+          const isoKey = obterDataLocalISO(d);
           const parts = isoKey.split('-');
           const label = `${parts[2]}/${parts[1]}`;
           porDia[isoKey] = { isoKey, label, faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 };
@@ -342,7 +343,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
         vendasValidas.forEach((v) => {
           const dt = parseDataVenda(v);
-          const isoKey = dt.toISOString().slice(0, 10);
+          const isoKey = obterDataLocalISO(dt);
           const m = calcularMetricasVenda(v);
 
           if (porDia[isoKey]) {
@@ -467,7 +468,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         for (let i = 9; i >= 0; i--) {
           const d = new Date();
           d.setDate(hoje.getDate() - i);
-          const isoKey = d.toISOString().slice(0, 10);
+          const isoKey = obterDataLocalISO(d);
           const parts = isoKey.split('-');
           const label = `${parts[2]}/${parts[1]}`;
           porDia[isoKey] = { isoKey, label, estornado: 0, qtdEstornos: 0 };
@@ -475,7 +476,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
         vendasEstornadas.forEach((v) => {
           const dt = parseDataVenda(v);
-          const isoKey = dt.toISOString().slice(0, 10);
+          const isoKey = obterDataLocalISO(dt);
           const valor = Number(v.valorTotal) || 0;
 
           if (porDia[isoKey]) {
@@ -592,7 +593,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     try {
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
-      const hojeIso = hoje.toISOString().slice(0, 10);
+      const hojeIso = obterDataLocalISO(hoje);
 
       let totalVencidosQtd = 0;
       let totalVencidosValor = 0;
@@ -992,11 +993,11 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
   // Datas padrão para filtro
   const hojeObj = useMemo(() => new Date(), []);
-  const hojeIsoStr = useMemo(() => hojeObj.toISOString().slice(0, 10), [hojeObj]);
+  const hojeIsoStr = useMemo(() => obterDataLocalISO(hojeObj), [hojeObj]);
   const seteDiasAtrasIsoStr = useMemo(() => {
     const d = new Date(hojeObj);
     d.setDate(d.getDate() - 6);
-    return d.toISOString().slice(0, 10);
+    return obterDataLocalISO(d);
   }, [hojeObj]);
 
   const [dataInicioCustom, setDataInicioCustom] = useState<string>(seteDiasAtrasIsoStr);
@@ -1292,14 +1293,14 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       for (let i = 0; i < 7; i++) {
         const cur = new Date(inicio);
         cur.setDate(inicio.getDate() + i);
-        const isoDia = cur.toISOString().slice(0, 10);
+        const isoDia = obterDataLocalISO(cur);
         const diaNome = diasSemana[cur.getDay()];
 
         let fat = 0;
         let ped = 0;
         vendasPainel.forEach((v) => {
           const dt = parseDataVenda(v);
-          if (dt.toISOString().slice(0, 10) === isoDia) {
+          if (obterDataLocalISO(dt) === isoDia) {
             fat += Number(v.valorTotal) || 0;
             ped += 1;
           }
@@ -1351,7 +1352,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
     for (let i = 0; i < numDias; i++) {
       const d = new Date(tIni + i * diaMs);
-      const iso = d.toISOString().slice(0, 10);
+      const iso = obterDataLocalISO(d);
       const parts = iso.split('-');
       const label = `${parts[2]}/${parts[1]}`;
       mapaDias[iso] = { label, faturamento: 0, pedidos: 0 };
@@ -1359,7 +1360,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
     vendasPainel.forEach((v) => {
       const dt = parseDataVenda(v);
-      const iso = dt.toISOString().slice(0, 10);
+      const iso = obterDataLocalISO(dt);
       if (mapaDias[iso]) {
         mapaDias[iso].faturamento += Number(v.valorTotal) || 0;
         mapaDias[iso].pedidos += 1;

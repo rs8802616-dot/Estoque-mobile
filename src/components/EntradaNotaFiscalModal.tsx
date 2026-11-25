@@ -10,6 +10,7 @@ import {
   alternarLanternaCamera,
 } from '../lib/barcodeScanner';
 import { tocarBeepCaixa } from '../lib/soundUtils';
+import { obterDataLocalISO } from '../lib/dateUtils';
 import {
   decodificarChaveNotaFiscal,
   extrairTextoDePDFArrayBuffer,
@@ -240,10 +241,15 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
         throw new Error('O texto fornecido não é um XML válido ou está corrompido.');
       }
 
-      const ide = xmlDoc.getElementsByTagName('ide')[0];
-      const emit = xmlDoc.getElementsByTagName('emit')[0];
-      const total = xmlDoc.getElementsByTagName('total')[0];
-      const infNFe = xmlDoc.getElementsByTagName('infNFe')[0];
+      const getElementsLocal = (parent: Document | Element, tagName: string): Element[] => {
+        const ns = Array.from(parent.getElementsByTagNameNS('*', tagName));
+        return ns.length > 0 ? ns : Array.from(parent.getElementsByTagName(tagName));
+      };
+
+      const ide = getElementsLocal(xmlDoc, 'ide')[0];
+      const emit = getElementsLocal(xmlDoc, 'emit')[0];
+      const total = getElementsLocal(xmlDoc, 'total')[0];
+      const infNFe = getElementsLocal(xmlDoc, 'infNFe')[0];
 
       if (!ide || !emit) {
         throw new Error('Este arquivo XML não possui a estrutura padrão de NF-e (Nota Fiscal Eletrônica).');
@@ -251,14 +257,14 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
 
       const getTagTexto = (parent: Element | null, tagName: string): string => {
         if (!parent) return '';
-        const el = parent.getElementsByTagName(tagName)[0];
+        const el = getElementsLocal(parent, tagName)[0];
         return el ? el.textContent?.trim() || '' : '';
       };
 
       const numeroNF = getTagTexto(ide, 'nNF');
       const serie = getTagTexto(ide, 'serie');
       const dhEmiRaw = getTagTexto(ide, 'dhEmi') || getTagTexto(ide, 'dEmi');
-      const dataEmissao = dhEmiRaw ? dhEmiRaw.slice(0, 10) : new Date().toISOString().slice(0, 10);
+      const dataEmissao = dhEmiRaw ? dhEmiRaw.slice(0, 10) : obterDataLocalISO();
       const chaveAcesso = (infNFe?.getAttribute('Id') || getTagTexto(xmlDoc.documentElement, 'chNFe') || '').replace(/\D/g, '');
 
       const fornecedorNome = getTagTexto(emit, 'xNome') || getTagTexto(emit, 'xFant') || 'Fornecedor Desconhecido';
@@ -268,15 +274,16 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
       const valorTotalNF = parseFloat(getTagTexto(total, 'vNF')) || 0;
       const valorProdutos = parseFloat(getTagTexto(total, 'vProd')) || 0;
 
-      const detList = Array.from(xmlDoc.getElementsByTagName('det'));
+      const detList = getElementsLocal(xmlDoc, 'det');
       if (detList.length === 0) {
         throw new Error('Nenhum produto foi encontrado no corpo deste XML.');
       }
 
       const itensProcessados: ItemNotaProcessado[] = detList.map((det, index) => {
-        const prod = det.getElementsByTagName('prod')[0];
+        const prod = getElementsLocal(det, 'prod')[0];
         const cProd = getTagTexto(prod, 'cProd');
         const cEANRaw = getTagTexto(prod, 'cEAN');
+        const cEANTribRaw = getTagTexto(prod, 'cEANTrib');
         const xProd = getTagTexto(prod, 'xProd');
         const ncm = getTagTexto(prod, 'NCM');
         const uCom = getTagTexto(prod, 'uCom') || 'UN';
@@ -284,9 +291,9 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
         const vUnCom = parseFloat(getTagTexto(prod, 'vUnCom')) || 0;
         const vProd = parseFloat(getTagTexto(prod, 'vProd')) || (qCom * vUnCom);
 
-        const cEANLimpo = (cEANRaw && cEANRaw !== 'SEM GTIN' && cEANRaw !== 'SEM_GTIN' && /^\d+$/.test(cEANRaw))
-          ? cEANRaw
-          : '';
+        const limparGtin = (raw: string) =>
+          raw && raw !== 'SEM GTIN' && raw !== 'SEM_GTIN' && /^\d+$/.test(raw) ? raw : '';
+        const cEANLimpo = limparGtin(cEANRaw) || limparGtin(cEANTribRaw);
 
         const produtoExistente = estoque.find((e) => {
           const codE = String(e.codigo || '').trim();

@@ -1,4 +1,5 @@
 import { auth } from './firebase';
+import { obterDataLocalISO } from './dateUtils';
 
 async function headersSi5ComAuth(): Promise<Record<string, string>> {
   const headers: Record<string, string> = { Accept: 'application/json' };
@@ -82,7 +83,7 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
   }
 
   const tokensServidor = obterTokensSI5Servidor();
-  const dataHoje = new Date().toISOString().slice(0, 10);
+  const dataHoje = obterDataLocalISO();
 
   for (let i = 0; i < tokensServidor.length; i++) {
     if (isSI5TokenEsgotado(i, dataHoje)) {
@@ -183,7 +184,7 @@ export async function pesquisarSI5GlobalPorNome(
   }
 
   const tokensServidor = obterTokensSI5Servidor();
-  const dataHoje = new Date().toISOString().slice(0, 10);
+  const dataHoje = obterDataLocalISO();
 
   for (let i = 0; i < tokensServidor.length; i++) {
     if (isSI5TokenEsgotado(i, dataHoje)) {

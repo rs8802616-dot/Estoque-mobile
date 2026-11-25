@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ItemEstoque, Supermercado } from '../types';
+import { obterDataLocalISO } from '../lib/dateUtils';
 
 interface AlertasWhatsAppModalProps {
   visivel: boolean;
@@ -20,7 +21,7 @@ export const AlertasWhatsAppModal: React.FC<AlertasWhatsAppModalProps> = ({
   if (!visivel) return null;
 
   const hoje = new Date();
-  const hojeIso = hoje.toISOString().split('T')[0];
+  const hojeIso = obterDataLocalISO(hoje);
 
   // Filtra produtos vencendo nos próximos X dias ou já vencidos
   const produtosAvisar = estoque.filter((item) => {

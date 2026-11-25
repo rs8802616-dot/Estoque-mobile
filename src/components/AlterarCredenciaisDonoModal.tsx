@@ -176,7 +176,7 @@ export const AlterarCredenciaisDonoModal: React.FC<AlterarCredenciaisDonoModalPr
         bottom: 0,
         background: 'rgba(15, 23, 42, 0.85)',
         backdropFilter: 'blur(6px)',
-        zIndex: 999999,
+        zIndex: 1000010,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

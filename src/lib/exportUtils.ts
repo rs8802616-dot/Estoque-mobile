@@ -1,4 +1,8 @@
 import { Venda, ItemEstoque } from '../types';
+import { obterDataLocalISO } from './dateUtils';
+
+const csvCell = (val: unknown) =>
+  `"${String(val ?? '').replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
 
 // Helper to trigger file download
 function baixarArquivo(conteudo: string, nomeArquivo: string, mimeType: string) {
@@ -65,24 +69,24 @@ export function exportarVendasCSV(vendas: Venda[], nomeLoja: string, estoque?: I
     const margem = valorVenda > 0 ? (lucroVenda / valorVenda) * 100 : 0;
 
     return [
-      `"${v.id}"`,
-      `"${v.data}"`,
-      `"${v.hora}"`,
-      `"${v.operadorNome}"`,
-      `"${v.formaPagamento.toUpperCase()}"`,
-      `"${v.status.toUpperCase()}"`,
+      csvCell(v.id),
+      csvCell(v.data),
+      csvCell(v.hora),
+      csvCell(v.operadorNome),
+      csvCell(v.formaPagamento.toUpperCase()),
+      csvCell(v.status.toUpperCase()),
       qtdItens,
       valorVenda.toFixed(2).replace('.', ','),
       custoVenda.toFixed(2).replace('.', ','),
       lucroVenda.toFixed(2).replace('.', ','),
       margem.toFixed(1).replace('.', ',') + '%',
-      `"${descItens}"`,
-      `"${v.motivoEstorno || ''}"`,
+      csvCell(descItens),
+      csvCell(v.motivoEstorno || ''),
     ].join(';');
   });
 
   const conteudo = [cabecalho, ...linhas].join('\n');
-  const dataHoje = new Date().toISOString().split('T')[0];
+  const dataHoje = obterDataLocalISO();
   baixarArquivo(conteudo, `Vendas_${nomeLoja.replace(/\s+/g, '_')}_${dataHoje}.csv`, 'text/csv;charset=utf-8;');
 }
 
@@ -100,7 +104,7 @@ export function exportarEstoqueCSV(estoque: ItemEstoque[], nomeLoja: string) {
     'Status Validade',
   ].join(';');
 
-  const hoje = new Date().toISOString().split('T')[0];
+  const hoje = obterDataLocalISO();
 
   const linhas = estoque.map((item) => {
     let statusValidade = 'OK';
@@ -124,19 +128,19 @@ export function exportarEstoqueCSV(estoque: ItemEstoque[], nomeLoja: string) {
       : ((Number(item.quantidade) || 0) * (Number(item.preco_venda) || 0)).toFixed(2).replace('.', ',');
 
     return [
-      `"${item.codigo}"`,
-      `"${item.nome}"`,
+      csvCell(item.codigo),
+      csvCell(item.nome),
       qtdExibir,
       (item.preco_custo || 0).toFixed(2).replace('.', ','),
       item.preco_venda.toFixed(2).replace('.', ','),
       valorTotalEstoque,
-      `"${item.lote || ''}"`,
-      `"${item.validade || ''}"`,
-      `"${statusValidade}"`,
+      csvCell(item.lote || ''),
+      csvCell(item.validade || ''),
+      csvCell(statusValidade),
     ].join(';');
   });
 
   const conteudo = [cabecalho, ...linhas].join('\n');
-  const dataHoje = new Date().toISOString().split('T')[0];
+  const dataHoje = obterDataLocalISO();
   baixarArquivo(conteudo, `Estoque_${nomeLoja.replace(/\s+/g, '_')}_${dataHoje}.csv`, 'text/csv;charset=utf-8;');
 }

@@ -168,13 +168,21 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
 
   // 2. ANÁLISE DE VALIDADE
   const vencidos = estoque.filter((p) => {
+    if (p.estoqueIlimitado || p.tipoCadastro === 'interno') return false;
+    if ((Number(p.quantidade) || 0) <= 0) return false;
+    if (!p.validade) return false;
     const dataVal = new Date(p.validade + 'T00:00:00');
+    if (isNaN(dataVal.getTime())) return false;
     const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
     return dias <= 0;
   });
 
   const proximoVencimento = estoque.filter((p) => {
+    if (p.estoqueIlimitado || p.tipoCadastro === 'interno') return false;
+    if ((Number(p.quantidade) || 0) <= 0) return false;
+    if (!p.validade) return false;
     const dataVal = new Date(p.validade + 'T00:00:00');
+    if (isNaN(dataVal.getTime())) return false;
     const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
     return dias <= 10;
   });

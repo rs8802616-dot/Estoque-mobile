@@ -22,6 +22,7 @@ import {
   PedidoDelivery,
 } from '../types';
 import { exportarVendasCSV, exportarEstoqueCSV } from '../lib/exportUtils';
+import { obterDataLocalISO } from '../lib/dateUtils';
 import {
   X,
   TrendingUp,
@@ -144,9 +145,9 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
   // Filtragem de vendas por período
   const agora = new Date();
-  const hojeStr = agora.toISOString().slice(0, 10);
-  const data7DiasAtras = new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  const data30DiasAtras = new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const hojeStr = obterDataLocalISO(agora);
+  const data7DiasAtras = obterDataLocalISO(new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000));
+  const data30DiasAtras = obterDataLocalISO(new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000));
   const mesAtualStr = hojeStr.slice(0, 7); // YYYY-MM
 
   const vendasFiltradasPorPeriodo = vendas.filter((v) => {

@@ -9,6 +9,7 @@ import {
 } from '../types';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import { mascaraTelefone } from '../lib/mascaras';
+import { obterDataLocalISO } from '../lib/dateUtils';
 import { subscribePedidoIndividual } from '../lib/firestoreSync';
 import {
   X,
@@ -327,7 +328,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
   const estoqueAgrupado = useMemo(() => {
     const mapaPorCodigo = new Map<string, ItemEstoque>();
     const mapaNomeParaChave = new Map<string, string>();
-    const hojeIso = new Date().toISOString().slice(0, 10);
+    const hojeIso = obterDataLocalISO();
 
     // Soma quantidades já reservadas em pedidos pendentes (aguardando aceite do caixa) para impedir venda dupla da última unidade
     const reservadoPendentePorCodigo = new Map<string, number>();
@@ -657,7 +658,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
       id: `del_${Date.now()}`,
       numeroPedido,
       lojaId: loja?.id || 'loja_matriz_01',
-      data: agora.toISOString().slice(0, 10),
+      data: obterDataLocalISO(agora),
       hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: agora.getTime(),
       cliente: {

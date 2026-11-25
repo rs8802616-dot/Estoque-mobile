@@ -9,6 +9,7 @@ import {
   alternarLanternaCamera,
 } from '../lib/barcodeScanner';
 import { tocarBeepCaixa } from '../lib/soundUtils';
+import { obterDataLocalISO } from '../lib/dateUtils';
 import {
   ClienteDevedor,
   CompraFiado,
@@ -96,7 +97,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
   const [modalNovaCompra, setModalNovaCompra] = useState(false);
   const [valorNovaCompra, setValorNovaCompra] = useState('');
   const [descricaoNovaCompra, setDescricaoNovaCompra] = useState('');
-  const [dataNovaCompra, setDataNovaCompra] = useState(new Date().toISOString().split('T')[0]);
+  const [dataNovaCompra, setDataNovaCompra] = useState(obterDataLocalISO());
   const [obsNovaCompra, setObsNovaCompra] = useState('');
   const [erroNovaCompra, setErroNovaCompra] = useState('');
 
@@ -208,7 +209,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
       return;
     }
 
-    const hoje = new Date().toISOString().split('T')[0];
+    const hoje = obterDataLocalISO();
     const limiteNum = formLimite ? parseFloat(formLimite.replace(',', '.')) || 0 : 0;
 
     const clienteNovoOuEditado: ClienteDevedor = {
@@ -565,7 +566,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     setValorNovaCompra('');
     setDescricaoNovaCompra('');
     setObsNovaCompra('');
-    setDataNovaCompra(new Date().toISOString().split('T')[0]);
+    setDataNovaCompra(obterDataLocalISO());
     setErroNovaCompra('');
     setModalNovaCompra(true);
   };
@@ -583,7 +584,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
 
     const agora = new Date();
     const horaAtual = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const dataEscolhida = dataNovaCompra || agora.toISOString().split('T')[0];
+    const dataEscolhida = dataNovaCompra || obterDataLocalISO(agora);
 
     // Se tiver itens bipados, utiliza os itens exatos com código, quantidade e preço
     const itensFinal: CompraFiadoItem[] =

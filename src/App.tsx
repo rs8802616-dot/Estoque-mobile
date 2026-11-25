@@ -213,6 +213,7 @@ import {
   subscreverCacheImagens,
 } from './lib/imageIndexedDB';
 import { comprimirImagemParaArmazenamento, calcularTamanhoImagemKB, otimizarUrlImagem } from './lib/imageCompressor';
+import { obterDataLocalISO, formatarDataIsoParaBr } from './lib/dateUtils';
 import { screenWakeLockManager } from './lib/screenWakeLock';
 import {
   subscribeSupermercados,
@@ -1305,7 +1306,7 @@ export default function App() {
   const pedidosPendentesConhecidosRef = useRef<Set<string>>(new Set());
   const configDeliveryRef = useRef<ConfiguracaoDelivery>(configDelivery);
   const handleAtualizarStatusPedidoDeliveryRef = useRef<
-    (pedidoId: string, novoStatus: StatusPedidoDelivery, motivo?: string) => void
+    (pedidoId: string, novoStatus: StatusPedidoDelivery, motivo?: string, pedidoOverride?: PedidoDelivery) => void
   >(() => {});
 
   useEffect(() => {
@@ -1601,7 +1602,7 @@ export default function App() {
           if (cfg?.aceitarAutomatico) {
             novosPedidosPendentesChegados.forEach((pedRecente) => {
               try {
-                handleAtualizarStatusPedidoDeliveryRef.current(pedRecente.id, 'em_separacao');
+                handleAtualizarStatusPedidoDeliveryRef.current(pedRecente.id, 'em_separacao', undefined, pedRecente);
               } catch (err) {
                 console.warn('Erro ao aceitar pedido automaticamente:', err);
               }
@@ -3313,6 +3314,26 @@ export default function App() {
   };
 
   const alternarStatusOperador = (idOp: string) => {
+    const alvo = listaOperadores.find((o) => o.id === idOp);
+    if (!alvo) return;
+
+    if (!alvo.ativo) {
+      const lojaAtual = listaSupermercados.find((l) => l.id === supermercadoAtual);
+      const maxCaixas = lojaAtual?.limiteCaixas !== undefined ? lojaAtual.limiteCaixas : 5;
+      const maxSupervisores = lojaAtual?.limiteSupervisores !== undefined ? lojaAtual.limiteSupervisores : 2;
+      const caixasExistentes = listaOperadores.filter((o) => o.cargo === 'Operador de Caixa' && o.ativo && o.id !== idOp).length;
+      const supervisoresExistentes = listaOperadores.filter((o) => (o.cargo === 'Supervisor' || o.cargo === 'Administrador') && o.ativo && o.id !== idOp).length;
+
+      if (alvo.cargo === 'Operador de Caixa' && maxCaixas > 0 && caixasExistentes >= maxCaixas) {
+        alert(`🚫 Limite de Operadores de Caixa atingido (${caixasExistentes}/${maxCaixas})! Não é possível reativar sem ajustar o plano da loja.`);
+        return;
+      }
+      if ((alvo.cargo === 'Supervisor' || alvo.cargo === 'Administrador') && maxSupervisores > 0 && supervisoresExistentes >= maxSupervisores) {
+        alert(`🚫 Limite de Supervisores atingido (${supervisoresExistentes}/${maxSupervisores})! Não é possível reativar sem ajustar o plano da loja.`);
+        return;
+      }
+    }
+
     let opAtualizado: OperadorCaixa | null = null;
     const novaLista = listaOperadores.map((op) => {
       if (op.id === idOp) {
@@ -5241,7 +5262,7 @@ export default function App() {
     setCadLote('');
     const d = new Date();
     d.setMonth(d.getMonth() + 6);
-    setCadVal(d.toISOString().slice(0, 10));
+    setCadVal(obterDataLocalISO(d));
     setCadCusto(cat.preco_custo !== undefined && cat.preco_custo !== null ? String(cat.preco_custo) : '');
     setCadPreco(cat.preco_venda !== undefined && cat.preco_venda !== null ? String(cat.preco_venda) : '');
     setMsgCad('');
@@ -5295,11 +5316,25 @@ export default function App() {
   };
 
   const excluirProduto = async (cod: string, val: string, lote: string) => {
-    const item = estoque.find((p) => p.codigo === cod && p.validade === val && p.lote === lote) || estoque.find((p) => p.codigo === cod);
+    const codNorm = String(cod || '').trim();
+    const valNorm = String(val || '').trim();
+    const loteNorm = String(lote || '').trim();
+    const item =
+      estoque.find(
+        (p) =>
+          String(p.codigo || '').trim() === codNorm &&
+          String(p.validade || '').trim() === valNorm &&
+          String(p.lote || '').trim() === loteNorm
+      ) || estoque.find((p) => String(p.codigo || '').trim() === codNorm);
     const nomeItem = item?.nome || cod;
     if (confirm(`Deseja realmente excluir o produto "${nomeItem}" (Cód: ${cod}) do estoque da loja/adega atual?`)) {
       const novoEstoque = estoque.filter(
-        (p) => !(p.codigo === cod && p.validade === val && p.lote === lote)
+        (p) =>
+          !(
+            String(p.codigo || '').trim() === codNorm &&
+            String(p.validade || '').trim() === valNorm &&
+            String(p.lote || '').trim() === loteNorm
+          )
       );
       setEstoque(novoEstoque);
       safeLocalStorageSet(`estoque_${supermercadoAtual}`, JSON.stringify(novoEstoque));
@@ -5398,12 +5433,21 @@ export default function App() {
           return atualizado;
         });
 
-        const itensCorrespondentes = estoque.filter((p) => p.codigo?.trim() === codigoDigitado);
+        const itensCorrespondentes = estoque.filter((p) => {
+          const pCod = String(p.codigo || '').trim();
+          return pCod === codDigitado || (codOriginal && pCod === codOriginal);
+        });
         if (itensCorrespondentes.length > 0) {
           const promisesSalvar: Promise<any>[] = [];
           itensCorrespondentes.forEach((p) => {
+            const pCodOriginal = String(p.codigo || '').trim();
+            if (codOriginal && codOriginal !== codDigitado && pCodOriginal === codOriginal && supermercadoAtual) {
+              promisesSalvar.push(excluirItemEstoqueFirestore(codOriginal, p.validade, p.lote, supermercadoAtual).catch(() => {}));
+            }
             const itemAtualizado: ItemEstoque = {
               ...p,
+              codigo: codDigitado,
+              codigo_barras: codDigitado,
               nome: nomeDigitado,
               marca: marcaDigitada || p.marca,
               categoria: categoriaDigitada || p.categoria,
@@ -5914,7 +5958,7 @@ export default function App() {
           quantidade: item.quantidadeEntrada,
           preco_custo: item.precoCusto,
           preco_venda: item.precoVenda,
-          validade: new Date(Date.now() + 180 * 24 * 3600 * 1000).toISOString().slice(0, 10), // +6 meses padrão
+          validade: obterDataLocalISO(new Date(Date.now() + 180 * 24 * 3600 * 1000)), // +6 meses padrão
           lote: `NF-${dadosNF.numeroNF || 'ENTRADA'}`,
           categoria: 'Geral',
           tipoCadastro: 'padrao',
@@ -6138,7 +6182,7 @@ export default function App() {
     const novaVenda: Venda = {
       id: novaCompra.vendaId || `ven_fiado_${Date.now()}`,
       lojaId: supermercadoAtual,
-      data: novaCompra.data || new Date().toISOString().slice(0, 10),
+      data: novaCompra.data || obterDataLocalISO(),
       hora: novaCompra.hora || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: novaCompra.timestamp || Date.now(),
       operadorId: operadorAtivoId || 'admin',
@@ -6166,9 +6210,14 @@ export default function App() {
     setVendas(novasVendas);
     safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(novasVendas));
     if (navigator.onLine) {
-      salvarVendaFirestore(novaVenda).catch((e) => console.warn('Erro ao salvar venda fiado:', e));
+      salvarVendaFirestore(novaVenda).catch((e) => {
+        console.warn('Erro ao salvar venda fiado, enfileirando offline:', e);
+        adicionarVendaFilaOffline(novaVenda);
+        setVendasPendentesCount(obterVendasPendentesOffline().length);
+      });
     } else {
       adicionarVendaFilaOffline(novaVenda);
+      setVendasPendentesCount(obterVendasPendentesOffline().length);
     }
 
     // 3. Atualizar cliente com a nova compra e novo saldo
@@ -6283,7 +6332,7 @@ export default function App() {
     const novaVenda: Venda = {
       id: 'ven_' + Date.now(),
       lojaId: supermercadoAtual,
-      data: new Date().toISOString().slice(0, 10),
+      data: obterDataLocalISO(),
       hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: Date.now(),
       operadorId: operadorAtivoId || 'admin',
@@ -6424,13 +6473,18 @@ export default function App() {
           .filter((c) => c.codigo === itemAlvo.codigo)
           .reduce((acc, c) => acc + c.quantidade, 0);
 
-        const outrosLotes = estoque.filter(
-          (e) => e.codigo === itemAlvo.codigo && `${e.validade}_${e.lote}` !== `${itemAlvo.validade}_${itemAlvo.lote}` && e.quantidade > 0
-        );
+        const outrosLotes = estoque
+          .filter(
+            (e) =>
+              e.codigo === itemAlvo.codigo &&
+              `${e.validade}_${e.lote}` !== `${itemAlvo.validade}_${itemAlvo.lote}` &&
+              e.quantidade > 0
+          )
+          .sort((a, b) => (a.validade || '9999-12-31').localeCompare(b.validade || '9999-12-31'));
 
         if (outrosLotes.length > 0 && totalJaNoCarrinho + quantidade <= estoqueTotalProduto) {
           const qtdCabivelNeste = Math.max(0, itemAlvo.quantidade - itemAtual.quantidade);
-          const qtdSobra = parseFloat((quantidade - qtdCabivelNeste).toFixed(3));
+          let qtdRestante = parseFloat((quantidade - qtdCabivelNeste).toFixed(3));
 
           if (qtdCabivelNeste > 0) {
             novoCarrinho[itemExistenteIndex] = {
@@ -6440,31 +6494,37 @@ export default function App() {
             };
           }
 
-          if (qtdSobra > 0) {
-            const proxLote = outrosLotes[0];
+          for (const proxLote of outrosLotes) {
+            if (qtdRestante <= 0) break;
             const proxItemId = `${proxLote.codigo}_${proxLote.validade}_${proxLote.lote}`;
             const proxIdx = novoCarrinho.findIndex((c) => c.id === proxItemId);
-            const catRel = catalogoGlobal.find((c) => c.codigo === proxLote.codigo);
+            const jaNoCarrinhoProx = proxIdx >= 0 ? novoCarrinho[proxIdx].quantidade : 0;
+            const livreProx = Math.max(0, parseFloat((proxLote.quantidade - jaNoCarrinhoProx).toFixed(3)));
+            if (livreProx <= 0) continue;
+
+            const alocar = Math.min(livreProx, qtdRestante);
+            qtdRestante = parseFloat((qtdRestante - alocar).toFixed(3));
 
             if (proxIdx >= 0) {
               const itemProx = novoCarrinho[proxIdx];
-              const novaQtdProx = parseFloat((itemProx.quantidade + qtdSobra).toFixed(3));
+              const novaQtdProx = parseFloat((itemProx.quantidade + alocar).toFixed(3));
               novoCarrinho[proxIdx] = {
                 ...itemProx,
                 quantidade: novaQtdProx,
                 subtotal: parseFloat((novaQtdProx * itemProx.preco_unitario).toFixed(2)),
               };
             } else {
+              const catRel = catalogoGlobal.find((c) => c.codigo === proxLote.codigo);
               novoCarrinho.push({
                 id: proxItemId,
                 codigo: proxLote.codigo,
                 nome: obterNomeProduto(proxLote.codigo, proxLote.nome),
                 marca: catRel?.marca || proxLote.marca,
                 categoria: catRel?.categoria || proxLote.categoria,
-                quantidade: qtdSobra,
+                quantidade: alocar,
                 preco_unitario: proxLote.preco_venda,
                 preco_custo: proxLote.preco_custo,
-                subtotal: parseFloat((qtdSobra * proxLote.preco_venda).toFixed(2)),
+                subtotal: parseFloat((alocar * proxLote.preco_venda).toFixed(2)),
                 lote: proxLote.lote,
                 validade: proxLote.validade,
                 foto: obterFotoProduto(proxLote.codigo, proxLote.foto),
@@ -6475,9 +6535,11 @@ export default function App() {
             }
           }
 
-          salvarCarrinho(novoCarrinho);
-          tocarBeepCaixa();
-          return;
+          if (qtdRestante <= 0) {
+            salvarCarrinho(novoCarrinho);
+            tocarBeepCaixa();
+            return;
+          }
         }
 
         alert(
@@ -6538,7 +6600,7 @@ export default function App() {
         return {
           ...c,
           quantidade: qtdAjustada,
-          subtotal: qtdAjustada * c.preco_unitario,
+          subtotal: Number((qtdAjustada * c.preco_unitario).toFixed(2)),
         };
       }
       return c;
@@ -6745,6 +6807,10 @@ export default function App() {
       preco_unitario: item.preco_unitario,
       preco_custo: item.preco_custo,
       subtotal: Number((item.preco_unitario * item.quantidade).toFixed(2)),
+      lote: item.lote,
+      validade: item.validade,
+      tipoCadastro: item.tipoCadastro,
+      estoqueIlimitado: item.estoqueIlimitado,
       adicionadoEm: agoraHora,
     }));
     const valorTotal = Number(itensComanda.reduce((acc, it) => acc + it.subtotal, 0).toFixed(2));
@@ -6763,7 +6829,7 @@ export default function App() {
       operadorAbertura: opAtivo?.nome || 'Administrador',
     };
     persistirComandas([nova, ...comandasLocais], nova);
-    setCarrinho([]);
+    limparCarrinho();
     setComandaLateralSelecionadaId(nova.id);
     setComandaLateralAbertaNaTela(true);
     setAbaPainelLateral('comandas');
@@ -6787,6 +6853,23 @@ export default function App() {
       if (!nome || !nome.trim()) return;
       alvo = handleCriarComandaLocal({ nomeCliente: nome.trim() });
       setComandaLateralSelecionadaId(alvo.id);
+    }
+
+    const isIlimitado = Boolean(prod.estoqueIlimitado || prod.tipoCadastro === 'interno');
+    if (!isIlimitado) {
+      const codAlvo = String(prod.codigo || '').trim();
+      const estoqueTotalProd = estoque
+        .filter((e) => String(e.codigo || '').trim() === codAlvo)
+        .reduce((acc, e) => acc + Math.max(0, Number(e.quantidade) || 0), 0);
+      const qtdJaNaComanda = alvo.itens
+        .filter((it) => String(it.codigo || '').trim() === codAlvo)
+        .reduce((acc, it) => acc + (Number(it.quantidade) || 0), 0);
+      if (qtdJaNaComanda + qtd > estoqueTotalProd) {
+        alert(
+          `⚠️ Estoque insuficiente para "${prod.nome}"!\nDisponível: ${estoqueTotalProd} un | Já na comanda: ${qtdJaNaComanda} un.`
+        );
+        return;
+      }
     }
 
     const agoraHora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -6816,6 +6899,10 @@ export default function App() {
               preco_unitario: precoUnit,
               preco_custo: Number(prod.preco_custo || 0),
               subtotal: Number((precoUnit * qtd).toFixed(2)),
+              lote: prod.lote,
+              validade: prod.validade,
+              tipoCadastro: prod.tipoCadastro,
+              estoqueIlimitado: prod.estoqueIlimitado,
               adicionadoEm: agoraHora,
             },
           ];
@@ -6856,28 +6943,55 @@ export default function App() {
       return;
     }
 
-    // Baixa no estoque dos itens consumidos na comanda
+    // Baixa FEFO multi-lote no estoque dos itens consumidos na comanda
     let novoEstoque = [...estoque];
     for (const itemCmd of comandaQuitada.itens) {
       if (itemCmd.estoqueIlimitado || itemCmd.tipoCadastro === 'interno') continue;
-      let idx = novoEstoque.findIndex(
-        (p) =>
-          String(p.codigo || '').trim() === String(itemCmd.codigo || '').trim() &&
-          (!itemCmd.lote || String(p.lote || '').trim() === String(itemCmd.lote || '').trim())
-      );
-      if (idx < 0) {
-        idx = novoEstoque.findIndex((p) => String(p.codigo || '').trim() === String(itemCmd.codigo || '').trim());
-      }
-      if (idx >= 0 && !novoEstoque[idx].estoqueIlimitado && novoEstoque[idx].tipoCadastro !== 'interno') {
-        const novaQtd = Math.max(0, Number((novoEstoque[idx].quantidade - itemCmd.quantidade).toFixed(3)));
-        novoEstoque[idx] = { ...novoEstoque[idx], quantidade: novaQtd };
-        if (navigator.onLine) {
+      const codAlvo = String(itemCmd.codigo || '').trim();
+      let qtdRestante = Number(itemCmd.quantidade) || 0;
+      if (qtdRestante <= 0) continue;
+
+      const indicesLotes = novoEstoque
+        .map((e, idx) => ({ e, idx }))
+        .filter(({ e }) => String(e.codigo || '').trim() === codAlvo)
+        .sort((a, b) => {
+          if (itemCmd.lote) {
+            const aMatch = String(a.e.lote || '').trim() === String(itemCmd.lote).trim() ? 0 : 1;
+            const bMatch = String(b.e.lote || '').trim() === String(itemCmd.lote).trim() ? 0 : 1;
+            if (aMatch !== bMatch) return aMatch - bMatch;
+          }
+          return (a.e.validade || '9999-12-31').localeCompare(b.e.validade || '9999-12-31');
+        });
+
+      for (const { e, idx } of indicesLotes) {
+        if (qtdRestante <= 0) break;
+        if (e.estoqueIlimitado || e.tipoCadastro === 'interno') {
+          qtdRestante = 0;
+          break;
+        }
+        const disp = Math.max(0, Number(e.quantidade) || 0);
+        if (disp <= 0) continue;
+        const abater = Math.min(disp, qtdRestante);
+        const novoSaldoLote = Number((disp - abater).toFixed(3));
+        qtdRestante = Number((qtdRestante - abater).toFixed(3));
+
+        novoEstoque[idx] = { ...novoEstoque[idx], quantidade: novoSaldoLote };
+        if (novoSaldoLote <= 0) {
+          if (navigator.onLine) {
+            excluirItemEstoqueFirestore(e.codigo, e.validade, e.lote, supermercadoAtual).catch(() => {});
+          }
+        } else if (navigator.onLine) {
           salvarItemEstoqueFirestore(novoEstoque[idx], supermercadoAtual).catch(() => {});
         }
       }
     }
 
+    novoEstoque = novoEstoque.filter(
+      (e) => e.estoqueIlimitado || e.tipoCadastro === 'interno' || (Number(e.quantidade) || 0) > 0
+    );
+
     const agora = new Date();
+    const dataLocalAgora = obterDataLocalISO(agora);
     const opAtivo = listaOperadores.find((op) => op.id === operadorAtivoId);
     const nomeOperador = opAtivo ? opAtivo.nome : 'Administrador do Supermercado';
 
@@ -6906,7 +7020,7 @@ export default function App() {
         ? pagamentosComanda.map((pg, idx) => ({
             id: `ven_${Date.now()}_${idx}`,
             lojaId: supermercadoAtual,
-            data: agora.toISOString().slice(0, 10),
+            data: dataLocalAgora,
             hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
             timestamp: agora.getTime(),
             operadorId: operadorAtivoId || 'admin',
@@ -6922,7 +7036,7 @@ export default function App() {
             {
               id: 'ven_' + Date.now(),
               lojaId: supermercadoAtual,
-              data: agora.toISOString().slice(0, 10),
+              data: dataLocalAgora,
               hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
               timestamp: agora.getTime(),
               operadorId: operadorAtivoId || 'admin',
@@ -6972,7 +7086,11 @@ export default function App() {
     );
 
     setModalComandasVisivel(false);
-    setVendaCupomVer(novaVenda);
+    setVendaCupomVer(
+      vendasGeradas.length > 1
+        ? { ...novaVenda, valorTotal: comandaQuitada.valorTotal }
+        : novaVenda
+    );
 
     if (opcoesFiscais?.emitirNfce) {
       handleEmitirNfceParaVenda(novaVenda, opcoesFiscais.cpfNaNota);
@@ -7015,7 +7133,7 @@ export default function App() {
 
     // 2. Se for fiado, validar cliente
     let clienteFiadoEncontrado: ClienteDevedor | undefined = undefined;
-    const valorTotalCarrinho = carrinho.reduce((acc, it) => acc + it.subtotal, 0);
+    const valorTotalCarrinho = Number(carrinho.reduce((acc, it) => acc + it.subtotal, 0).toFixed(2));
 
     if (formaPagamentoVenda === 'fiado') {
       if (!clienteFiadoIdEscolhido) {
@@ -7092,7 +7210,7 @@ export default function App() {
     const novaVenda: Venda = {
       id: 'ven_' + Date.now(),
       lojaId: supermercadoAtual,
-      data: new Date().toISOString().slice(0, 10),
+      data: obterDataLocalISO(),
       hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       timestamp: Date.now(),
       operadorId: operadorAtivoId || 'admin',
@@ -7127,7 +7245,7 @@ export default function App() {
 
       const clienteAtualizado: ClienteDevedor = {
         ...clienteFiadoEncontrado,
-        saldoDevedorTotal: clienteFiadoEncontrado.saldoDevedorTotal + valorTotalCarrinho,
+        saldoDevedorTotal: Number((clienteFiadoEncontrado.saldoDevedorTotal + valorTotalCarrinho).toFixed(2)),
         compras: [novaCompraFiado, ...(clienteFiadoEncontrado.compras || [])],
       };
 
@@ -7225,7 +7343,7 @@ export default function App() {
           nome: itemVenda.nome,
           quantidade: itemVenda.quantidade,
           lote: itemVenda.lote || 'LOTE_ESTORNO',
-          validade: itemVenda.validade || new Date().toISOString().slice(0, 10),
+          validade: itemVenda.validade || obterDataLocalISO(),
           preco_custo: itemVenda.preco_custo || 0,
           preco_venda: itemVenda.preco_unitario,
           categoria: 'Geral',
@@ -7344,17 +7462,32 @@ export default function App() {
     notificarSincronizacao();
   };
 
+  const gerarTokenMotoboySeguro = () => {
+    try {
+      const bytes = new Uint8Array(12);
+      crypto.getRandomValues(bytes);
+      return 'mto_' + Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    } catch {
+      return 'mto_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
+    }
+  };
+
   const handleAtualizarStatusPedidoDelivery = (
     pedidoId: string,
     novoStatus: StatusPedidoDelivery,
-    motivo?: string
+    motivo?: string,
+    pedidoOverride?: PedidoDelivery
   ) => {
     // Interrompe imediatamente o toque do sino assim que o pedido for aceito ou movimentado
     pararAlertaNovoPedidoDelivery();
 
-    const storeId = supermercadoAtual || 'loja_matriz_01';
-    const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
+    const pedidoAlvo =
+      pedidoOverride ||
+      pedidosDelivery.find((p) => p.id === pedidoId) ||
+      (pedidoMotoboyRemoto?.id === pedidoId ? pedidoMotoboyRemoto : undefined);
     if (!pedidoAlvo) return;
+
+    const storeId = pedidoAlvo.lojaId || supermercadoAtual || 'loja_matriz_01';
 
     // Se o pedido está sendo aceito (passando de pendente para em_separacao), valida se há estoque suficiente ANTES de aceitar e baixa em ordem FEFO
     if (pedidoAlvo.status === 'pendente' && novoStatus === 'em_separacao') {
@@ -7441,9 +7574,9 @@ export default function App() {
       const opNome = opAtivo?.nome || 'Operador';
 
       const novaVenda: Venda = {
-        id: `ven_del_${pedidoAlvo.numeroPedido}`,
+        id: `ven_del_${storeId}_${pedidoAlvo.numeroPedido}`,
         lojaId: storeId,
-        data: agora.toISOString().slice(0, 10),
+        data: obterDataLocalISO(agora),
         hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         timestamp: agora.getTime(),
         operadorId: opId,
@@ -7505,7 +7638,12 @@ export default function App() {
 
     // Se o pedido foi cancelado após ter sido aceito, devolve ao estoque (sem duplicar caso já exista venda para estornar)
     if (novoStatus === 'cancelado' && (pedidoAlvo.status === 'em_separacao' || pedidoAlvo.status === 'pronto' || pedidoAlvo.status === 'saiu_para_entrega')) {
-      const vendaCorrespondente = vendas.find((v) => v.pedidoDeliveryId === pedidoAlvo.id || v.id === `ven_del_${pedidoAlvo.numeroPedido}`);
+      const vendaCorrespondente = vendas.find(
+        (v) =>
+          v.pedidoDeliveryId === pedidoAlvo.id ||
+          v.id === `ven_del_${storeId}_${pedidoAlvo.numeroPedido}` ||
+          v.id === `ven_del_${pedidoAlvo.numeroPedido}`
+      );
       if (vendaCorrespondente) {
         handleEstornarVenda(vendaCorrespondente.id, motivo || 'Cancelamento no painel de delivery', true);
       } else {
@@ -7547,40 +7685,38 @@ export default function App() {
       } catch {}
     }
 
-    let pedidoAtualizadoParaSync: PedidoDelivery | null = null;
-    const novosPedidos = pedidosDelivery.map((p) => {
-      if (p.id === pedidoId) {
-        const motoboyTokenGerado =
-          p.motoboyToken ||
-          (novoStatus === 'saiu_para_entrega'
-            ? 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6)
-            : undefined);
-        const motoboyTokenExpiraEm =
-          p.motoboyTokenExpiraEm ||
-          (novoStatus === 'saiu_para_entrega' ? Date.now() + 12 * 60 * 60 * 1000 : undefined);
-        const atualizado: PedidoDelivery = {
-          ...p,
-          lojaId: p.lojaId || storeId,
-          status: novoStatus,
-          motivoCancelamento: motivo || p.motivoCancelamento,
-          ...(motoboyTokenGerado ? { motoboyToken: motoboyTokenGerado } : {}),
-          ...(motoboyTokenExpiraEm ? { motoboyTokenExpiraEm } : {}),
-          ...(novoStatus === 'entregue' ? { entregueEmTimestamp: agoraTs } : {}),
-        };
-        pedidoAtualizadoParaSync = atualizado;
-        try {
-          localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(atualizado));
-        } catch {}
-        return atualizado;
-      }
-      return p;
-    });
+    const motoboyTokenGerado =
+      pedidoAlvo.motoboyToken ||
+      (novoStatus === 'saiu_para_entrega' ? gerarTokenMotoboySeguro() : undefined);
+    const motoboyTokenExpiraEm =
+      pedidoAlvo.motoboyTokenExpiraEm ||
+      (novoStatus === 'saiu_para_entrega' ? Date.now() + 12 * 60 * 60 * 1000 : undefined);
+
+    const pedidoAtualizadoParaSync: PedidoDelivery = {
+      ...pedidoAlvo,
+      lojaId: pedidoAlvo.lojaId || storeId,
+      status: novoStatus,
+      motivoCancelamento: motivo || pedidoAlvo.motivoCancelamento,
+      ...(motoboyTokenGerado ? { motoboyToken: motoboyTokenGerado } : {}),
+      ...(motoboyTokenExpiraEm ? { motoboyTokenExpiraEm } : {}),
+      ...(novoStatus === 'entregue' ? { entregueEmTimestamp: agoraTs } : {}),
+    };
+
+    try {
+      localStorage.setItem(`motoboy_pedido_${pedidoAlvo.numeroPedido}`, JSON.stringify(pedidoAtualizadoParaSync));
+    } catch {}
+
+    const jaExisteNaLista = pedidosDelivery.some((p) => p.id === pedidoId);
+    const novosPedidos = jaExisteNaLista
+      ? pedidosDelivery.map((p) => (p.id === pedidoId ? pedidoAtualizadoParaSync : p))
+      : [pedidoAtualizadoParaSync, ...pedidosDelivery];
 
     setPedidosDelivery(novosPedidos);
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novosPedidos));
-    if (pedidoAtualizadoParaSync) {
-      salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
+    if (pedidoMotoboyRemoto?.id === pedidoId) {
+      setPedidoMotoboyRemoto(pedidoAtualizadoParaSync);
     }
+    salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
     notificarSincronizacao();
     if (novoStatus === 'entregue') {
       tocarSomEntregaFinalizadaMotoboy();
@@ -7593,9 +7729,9 @@ export default function App() {
     indiceItem: number,
     motivo: string = 'Item indisponível no estoque físico'
   ) => {
-    const storeId = supermercadoAtual || 'loja_matriz_01';
     const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
     if (!pedidoAlvo) return;
+    const storeId = pedidoAlvo.lojaId || supermercadoAtual || 'loja_matriz_01';
 
     const itensAtuais = [...(pedidoAlvo.itens || [])];
     if (indiceItem < 0 || indiceItem >= itensAtuais.length) return;
@@ -7613,8 +7749,73 @@ export default function App() {
       return;
     }
 
-    const novoSubtotal = itensAtuais.reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0);
-    const novoValorTotal = novoSubtotal + (Number(pedidoAlvo.taxaEntrega) || 0);
+    const novoSubtotal = Number(itensAtuais.reduce((acc, cur) => acc + (Number(cur.subtotal) || 0), 0).toFixed(2));
+    const novoValorTotal = Number((novoSubtotal + (Number(pedidoAlvo.taxaEntrega) || 0)).toFixed(2));
+
+    // Se o pedido já havia sido aceito (estoque já abatido e venda criada), devolve item removido e ajusta venda
+    if (pedidoAlvo.status === 'em_separacao' || pedidoAlvo.status === 'pronto' || pedidoAlvo.status === 'saiu_para_entrega') {
+      const novoEstoque = [...estoque];
+      const idxEst = novoEstoque.findIndex(
+        (e) =>
+          String(e.codigo || '').trim() === String(itemRemovido.codigo || '').trim() &&
+          (!itemRemovido.lote || String(e.lote || '').trim() === String(itemRemovido.lote || '').trim())
+      );
+      if (idxEst !== -1) {
+        if (!novoEstoque[idxEst].estoqueIlimitado && novoEstoque[idxEst].tipoCadastro !== 'interno') {
+          novoEstoque[idxEst] = {
+            ...novoEstoque[idxEst],
+            quantidade: Number(((Number(novoEstoque[idxEst].quantidade) || 0) + (Number(itemRemovido.quantidade) || 0)).toFixed(3)),
+          };
+          salvarItemEstoqueFirestore(novoEstoque[idxEst], storeId);
+        }
+      } else {
+        const loteRestaurado: ItemEstoque = {
+          lojaId: storeId,
+          codigo: itemRemovido.codigo,
+          codigo_barras: itemRemovido.codigo,
+          nome: itemRemovido.nome,
+          quantidade: Number(itemRemovido.quantidade) || 1,
+          lote: itemRemovido.lote || 'L-DEV',
+          validade: itemRemovido.validade || '2027-12-31',
+          preco_custo: Number(itemRemovido.preco_custo) || 0,
+          preco_venda: Number(itemRemovido.preco_unitario) || 0,
+          foto: itemRemovido.foto,
+          tipoCadastro: 'padrao',
+        };
+        novoEstoque.push(loteRestaurado);
+        salvarItemEstoqueFirestore(loteRestaurado, storeId);
+      }
+      setEstoque(novoEstoque);
+      safeLocalStorageSet(`estoque_${storeId}`, JSON.stringify(novoEstoque));
+
+      const vendaCorrespondente = vendas.find(
+        (v) =>
+          v.pedidoDeliveryId === pedidoAlvo.id ||
+          v.id === `ven_del_${storeId}_${pedidoAlvo.numeroPedido}` ||
+          v.id === `ven_del_${pedidoAlvo.numeroPedido}`
+      );
+      if (vendaCorrespondente) {
+        const vendaAtualizada: Venda = {
+          ...vendaCorrespondente,
+          itens: itensAtuais.map((it) => ({
+            codigo: it.codigo,
+            nome: it.nome,
+            quantidade: it.quantidade,
+            preco_unitario: it.preco_unitario,
+            preco_custo: it.preco_custo,
+            subtotal: it.subtotal,
+            lote: it.lote,
+            validade: it.validade,
+            foto: it.foto,
+          })),
+          valorTotal: novoValorTotal,
+        };
+        const novasVendas = vendas.map((v) => (v.id === vendaAtualizada.id ? vendaAtualizada : v));
+        setVendas(novasVendas);
+        safeLocalStorageSet(`vendas_${storeId}`, JSON.stringify(novasVendas));
+        salvarVendaFirestore(vendaAtualizada);
+      }
+    }
 
     let pedidoAtualizado: PedidoDelivery | null = null;
     const novosPedidos = pedidosDelivery.map((p) => {
@@ -7625,8 +7826,8 @@ export default function App() {
           subtotal: novoSubtotal,
           valorTotal: novoValorTotal,
           observacao: p.observacao
-            ? `${p.observacao} | [Aviso Loja]: ${itemRemovido.nome} indisponível e removido em comum acordo com o cliente.`
-            : `[Aviso Loja]: ${itemRemovido.nome} indisponível e removido em comum acordo com o cliente.`,
+            ? `${p.observacao} | [Aviso Loja]: ${itemRemovido.nome} indisponível (${motivo}).`
+            : `[Aviso Loja]: ${itemRemovido.nome} indisponível (${motivo}).`,
         };
         try {
           localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(pedidoAtualizado));
@@ -7645,34 +7846,48 @@ export default function App() {
   };
 
   const handleConfirmarEntregaPin = (pedidoId: string, pinDigitado: string): boolean => {
-    const storeId = supermercadoAtual || 'loja_matriz_01';
-    const pedidoAlvo = pedidosDelivery.find((p) => p.id === pedidoId);
+    let pedidoAlvo: PedidoDelivery | undefined =
+      pedidosDelivery.find((p) => p.id === pedidoId) ||
+      (pedidoMotoboyRemoto?.id === pedidoId ? pedidoMotoboyRemoto : undefined);
+
+    if (!pedidoAlvo && motoboyPedidoParam) {
+      try {
+        const salvo = localStorage.getItem(`motoboy_pedido_${motoboyPedidoParam}`);
+        if (salvo) {
+          const parsed = JSON.parse(salvo) as PedidoDelivery;
+          if (parsed?.id === pedidoId) pedidoAlvo = parsed;
+        }
+      } catch {}
+    }
+
     if (!pedidoAlvo) return false;
     if (pedidoAlvo.pinBloqueado || (pedidoAlvo.tentativasPinEntrega || 0) >= 5) {
       return false;
     }
 
+    const storeId = pedidoAlvo.lojaId || supermercadoAtual || 'loja_matriz_01';
+
     // Confere o PIN (máx. 5 tentativas para impedir força bruta)
     if (pedidoAlvo.codigoEntregaPin.trim() !== pinDigitado.trim()) {
       const novasTentativas = (pedidoAlvo.tentativasPinEntrega || 0) + 1;
       const pinBloqueado = novasTentativas >= 5;
-      let pedidoFalhaSync: PedidoDelivery | null = null;
-      const listaAtualizada = pedidosDelivery.map((p) => {
-        if (p.id === pedidoId) {
-          pedidoFalhaSync = {
-            ...p,
-            tentativasPinEntrega: novasTentativas,
-            pinBloqueado,
-          };
-          return pedidoFalhaSync;
-        }
-        return p;
-      });
+      const pedidoFalhaSync: PedidoDelivery = {
+        ...pedidoAlvo,
+        tentativasPinEntrega: novasTentativas,
+        pinBloqueado,
+      };
+      const listaAtualizada = pedidosDelivery.some((p) => p.id === pedidoId)
+        ? pedidosDelivery.map((p) => (p.id === pedidoId ? pedidoFalhaSync : p))
+        : pedidosDelivery;
       setPedidosDelivery(listaAtualizada);
       safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(listaAtualizada));
-      if (pedidoFalhaSync) {
-        salvarPedidoDeliveryFirestore(pedidoFalhaSync);
+      if (pedidoMotoboyRemoto?.id === pedidoId) {
+        setPedidoMotoboyRemoto(pedidoFalhaSync);
       }
+      try {
+        localStorage.setItem(`motoboy_pedido_${pedidoFalhaSync.numeroPedido}`, JSON.stringify(pedidoFalhaSync));
+      } catch {}
+      salvarPedidoDeliveryFirestore(pedidoFalhaSync);
       return false;
     }
 
@@ -7682,31 +7897,29 @@ export default function App() {
       localStorage.setItem(`motoboy_entregue_ts_${pedidoAlvo.numeroPedido}`, String(agoraTs));
     } catch {}
 
-    let pedidoAtualizadoParaSync: PedidoDelivery | null = null;
-    const novosPedidos = pedidosDelivery.map((p) => {
-      if (p.id === pedidoId) {
-        const atualizado: PedidoDelivery = {
-          ...p,
-          lojaId: p.lojaId || storeId,
-          status: 'entregue' as StatusPedidoDelivery,
-          dataFinalizacao: agora.toISOString().slice(0, 10),
-          horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          entregueEmTimestamp: agoraTs,
-        };
-        pedidoAtualizadoParaSync = atualizado;
-        try {
-          localStorage.setItem(`motoboy_pedido_${p.numeroPedido}`, JSON.stringify(atualizado));
-        } catch {}
-        return atualizado;
-      }
-      return p;
-    });
+    const pedidoAtualizadoParaSync: PedidoDelivery = {
+      ...pedidoAlvo,
+      lojaId: pedidoAlvo.lojaId || storeId,
+      status: 'entregue' as StatusPedidoDelivery,
+      dataFinalizacao: obterDataLocalISO(agora),
+      horaFinalizacao: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      entregueEmTimestamp: agoraTs,
+    };
+
+    try {
+      localStorage.setItem(`motoboy_pedido_${pedidoAtualizadoParaSync.numeroPedido}`, JSON.stringify(pedidoAtualizadoParaSync));
+    } catch {}
+
+    const novosPedidos = pedidosDelivery.some((p) => p.id === pedidoId)
+      ? pedidosDelivery.map((p) => (p.id === pedidoId ? pedidoAtualizadoParaSync : p))
+      : pedidosDelivery;
 
     setPedidosDelivery(novosPedidos);
     safeLocalStorageSet(`pedidos_delivery_${storeId}`, JSON.stringify(novosPedidos));
-    if (pedidoAtualizadoParaSync) {
-      salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
+    if (pedidoMotoboyRemoto?.id === pedidoId) {
+      setPedidoMotoboyRemoto(pedidoAtualizadoParaSync);
     }
+    salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
     notificarSincronizacao();
     tocarSomEntregaFinalizadaMotoboy();
     return true;
@@ -7745,7 +7958,7 @@ export default function App() {
     if (!isModoCliente) {
       tocarAlertaNovoPedidoDelivery(configDelivery.repeticoesAlerta ?? 3);
       if (configDelivery.aceitarAutomatico) {
-        handleAtualizarStatusPedidoDelivery(pedidoFinal.id, 'em_separacao');
+        handleAtualizarStatusPedidoDelivery(pedidoFinal.id, 'em_separacao', undefined, pedidoFinal);
       }
       if (configDelivery.imprimirAutomatico) {
         const lojaAtualObj = listaSupermercados.find((l) => l.id === storeId) || null;
@@ -10340,7 +10553,7 @@ export default function App() {
         </div>
         <div className="corpo-relatorio-cheio">
           {modoRelatorioAtual === 'estoque' && (() => {
-            const hojeIso = new Date().toISOString().split('T')[0];
+            const hojeIso = obterDataLocalISO();
             const ehIlimitado = (i: ItemEstoque) => {
               if (!i) return false;
               if (i.estoqueIlimitado === true) return true;
@@ -10481,7 +10694,7 @@ export default function App() {
             {
               (() => {
                 const t = buscaRelatorio.trim().toLowerCase();
-                const hojeStr = new Date().toISOString().split('T')[0];
+                const hojeStr = obterDataLocalISO();
 
                 let lista = estoque.filter((p) => {
                   const matchBusca = p.codigo.toLowerCase().includes(t) || p.nome.toLowerCase().includes(t);
@@ -11649,6 +11862,11 @@ export default function App() {
                             setRegLojaNome('');
                             setRegLojaCnpj('');
                             setRegLojaSenha('');
+                            setRegLojaConfirmarSenha('');
+                            setRegLojaLimiteCaixas(5);
+                            setRegLojaLimiteSupervisores(2);
+                            setRegLojaPermissoes(PERMISSOES_LOJA_PADRAO);
+                            setSenhaVisivel(false);
                             setMsgRegLoja('');
                           }}
                         >
@@ -12914,6 +13132,7 @@ export default function App() {
                       setRegOpNome('');
                       setRegOpCpf('');
                       setRegOpSenha('');
+                      setRegOpConfirmarSenha('');
                       setRegOpCargo('Operador de Caixa');
                       setRegOpPermissoes(PERMISSOES_CAIXA_PADRAO);
                       setMsgRegOp('');
@@ -14905,7 +15124,7 @@ export default function App() {
           if (sessaoCaixaAtiva.timestampAbertura && v.timestamp) {
             return v.timestamp >= sessaoCaixaAtiva.timestampAbertura;
           }
-          return v.data === sessaoCaixaAtiva.dataAbertura;
+          return formatarDataIsoParaBr(v.data) === sessaoCaixaAtiva.dataAbertura;
         })}
         movimentacoes={movimentacoesCaixa.filter((m) => !sessaoCaixaAtiva || !m.sessaoId || m.sessaoId === sessaoCaixaAtiva.id)}
         onAbrirCaixa={handleAbrirCaixa}
@@ -15135,7 +15354,7 @@ export default function App() {
             inset: 0,
             background: 'rgba(15, 23, 42, 0.82)',
             backdropFilter: 'blur(5px)',
-            zIndex: 1000000,
+            zIndex: 1000010,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -15252,7 +15471,7 @@ export default function App() {
               inset: 0,
               background: 'rgba(15, 23, 42, 0.85)',
               backdropFilter: 'blur(6px)',
-              zIndex: 1000000,
+              zIndex: 1000010,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -15374,8 +15593,8 @@ export default function App() {
         );
       })()}
 
-      {/* ABAS FLUTUANTES COMPACTAS NO CANTO INFERIOR DIREITO (MANTÉM TELAS ABERTAS ATÉ CLICAR NO X) */}
-      {!telaLoginVisivel && !isModoCliente && !isMotoboyRoute && !modalCardapioClienteVisivel && (() => {
+      {/* ABAS FLUTUANTES COMPACTAS NO CANTO INFERIOR ESQUERDO (MANTÉM TELAS ABERTAS ATÉ CLICAR NO X) */}
+      {!telaLoginVisivel && !isModoCliente && !isMotoboyRoute && !modalCardapioClienteVisivel && !operadorAlterandoSenha && !lojaGerenciandoSenha && !modalCredenciaisDonoVisivel && !modalAuditoriaLoginVisivel && (() => {
         const abaAtualSistema: AbaNavegacaoSistema =
           modalSupermercadoVisivel && perfilAtivo === 'dona_app'
             ? 'master'

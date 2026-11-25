@@ -1,4 +1,5 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
+import { obterDataLocalISO } from './dateUtils';
 
 export const MAPA_UF_BRASIL: Record<string, string> = {
   '11': 'RO', '12': 'AC', '13': 'AM', '14': 'RR', '15': 'PA', '16': 'AP', '17': 'TO',
@@ -134,7 +135,7 @@ export function parseTextoNotaFiscal(textoCompleto: string): NotaFiscalExtraida 
                     texto.match(/DATA DA EMISS[ÃA]O\s*[:\s]*(\d{2}\/\d{2}\/\d{4})/i) ||
                     texto.match(/COMPET[ÊE]NCIA DA NFS-e\s*[:\s]*(\d{2}\/\d{2}\/\d{4})/i) ||
                     texto.match(/(\d{2}\/\d{2}\/\d{4})/);
-  let dataEmissao = new Date().toISOString().slice(0, 10);
+  let dataEmissao = obterDataLocalISO();
   if (dataMatch) {
     const [dia, mes, ano] = dataMatch[1].split('/');
     dataEmissao = `${ano}-${mes}-${dia}`;

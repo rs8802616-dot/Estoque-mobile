@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { ComandaLocal, ItemComanda, ItemEstoque, PagamentoComanda, Supermercado } from '../types';
 import { imprimirCupomTermico } from '../utils/impressaoTermica';
+import { obterDataLocalISO } from '../lib/dateUtils';
 
 type FormaPagamentoComanda = 'pix' | 'dinheiro' | 'cartao_credito' | 'cartao_debito';
 
@@ -282,7 +283,7 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
       pagador: nomePagador.trim() || undefined,
       valor: Number(valorAReceber.toFixed(2)),
       formaPagamento,
-      data: agora.toISOString().slice(0, 10),
+      data: obterDataLocalISO(agora),
       hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     };
 
