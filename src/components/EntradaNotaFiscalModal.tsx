@@ -17,6 +17,7 @@ import {
   parseTextoNotaFiscal,
   MAPA_UF_BRASIL,
 } from '../lib/pdfInvoiceParser';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 export interface ItemNotaProcessado {
   id: string;
@@ -699,6 +700,20 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
     onFechar();
   };
 
+  const handleVoltarOuFechar = () => {
+    if (cameraAtiva) {
+      pararCamera();
+      return;
+    }
+    if (etapa === 'revisao') {
+      setEtapa('upload');
+      return;
+    }
+    resetarModal();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
+
   if (!visivel) return null;
 
   return (
@@ -725,7 +740,7 @@ export const EntradaNotaFiscalModal: React.FC<EntradaNotaFiscalModalProps> = ({
               Loja: <b>{lojaAtual?.nome || 'Loja Principal'}</b>
             </span>
           </div>
-          <button className="btn-fechar-modal" onClick={resetarModal}>&times;</button>
+          <button className="btn-fechar-modal" onClick={handleVoltarOuFechar}>&times;</button>
         </div>
 
         {/* ETAPA 1: ESCOLHA DA FORMA DE ENTRADA */}

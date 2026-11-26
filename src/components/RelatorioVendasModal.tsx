@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Venda, ItemEstoque, OperadorCaixa, ProdutoCatalogo } from '../types';
 import { exportarVendasCSV } from '../lib/exportUtils';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface RelatorioVendasModalProps {
   visivel: boolean;
@@ -50,6 +51,20 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
 
   // Venda expandida para ver itens detalhados
   const [vendaExpandidaId, setVendaExpandidaId] = useState<string | null>(null);
+
+  const handleVoltarOuFechar = () => {
+    if (vendaEstornar) {
+      setVendaEstornar(null);
+      return;
+    }
+    if (vendaExpandidaId) {
+      setVendaExpandidaId(null);
+      return;
+    }
+    onFechar();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
 
   if (!visivel) return null;
 
@@ -359,7 +374,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
         </h2>
         <button
           className="btn-voltar-rel"
-          onClick={onFechar}
+          onClick={handleVoltarOuFechar}
           style={{ padding: '6px 12px', borderRadius: '6px', background: 'rgba(255,255,255,0.15)', whiteSpace: 'nowrap' }}
         >
           ✕ Fechar

@@ -20,6 +20,7 @@ import {
 } from '../types';
 import { mascaraTelefone, mascaraCpfCnpj } from '../lib/mascaras';
 import { imprimirCupomTermico } from '../utils/impressaoTermica';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 import {
   Search,
   Users,
@@ -37,6 +38,7 @@ import {
   Plus,
   X,
   ArrowUpDown,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface GestaoDevedoresModalProps {
@@ -820,6 +822,37 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     window.open(`https://wa.me/${numComDDI}?text=${texto}`, '_blank');
   };
 
+  const handleVoltarOuFechar = () => {
+    if (reciboVisualizar) {
+      setReciboVisualizar(null);
+      return;
+    }
+    if (modalItemManual) {
+      setModalItemManual(false);
+      return;
+    }
+    if (modalNovaCompra) {
+      pararCamera();
+      setModalNovaCompra(false);
+      return;
+    }
+    if (modalPagamento) {
+      setModalPagamento(false);
+      return;
+    }
+    if (modalNovoCliente) {
+      setModalNovoCliente(false);
+      return;
+    }
+    if (clienteSelecionado) {
+      setClienteSelecionado(null);
+      return;
+    }
+    onFechar();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
+
   if (!visivel) return null;
 
   const renderBotoesAcaoCliente = (
@@ -832,14 +865,23 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
     const tamIconeAcao = compacto ? 30 : 32;
 
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: compacto ? 'flex-end' : 'flex-start',
+          gap: '6px',
+        }}
+      >
         <button
           type="button"
           onClick={() => setClienteSelecionado(cliente)}
           style={{
             flex: compacto ? undefined : 1,
+            width: compacto ? '96px' : undefined,
+            flexShrink: compacto ? 0 : undefined,
             height: altura,
-            padding: compacto ? '0 10px' : '0 10px',
+            padding: compacto ? 0 : '0 10px',
             background: '#0284c7',
             color: '#ffffff',
             border: 'none',
@@ -858,14 +900,16 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
           Caderneta
         </button>
 
-        {emDebito && (
+        {emDebito ? (
           <button
             type="button"
             onClick={() => handleAbrirAbatimentoRapido(cliente)}
             style={{
               flex: compacto ? undefined : 1,
+              width: compacto ? '80px' : undefined,
+              flexShrink: compacto ? 0 : undefined,
               height: altura,
-              padding: compacto ? '0 10px' : '0 10px',
+              padding: compacto ? 0 : '0 10px',
               background: '#16a34a',
               color: '#ffffff',
               border: 'none',
@@ -883,9 +927,16 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
             <DollarSign size={tamIcone} strokeWidth={2.4} />
             Abater
           </button>
+        ) : (
+          compacto && (
+            <span
+              aria-hidden="true"
+              style={{ width: '80px', height: altura, flexShrink: 0 }}
+            />
+          )
         )}
 
-        {emDebito && cliente.telefone && (
+        {emDebito && cliente.telefone ? (
           <button
             type="button"
             onClick={() => handleEnviarWhatsApp(cliente)}
@@ -906,6 +957,13 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
           >
             <MessageCircle size={tamIcone} strokeWidth={2.2} />
           </button>
+        ) : (
+          compacto && (
+            <span
+              aria-hidden="true"
+              style={{ width: `${tamIconeAcao}px`, height: altura, flexShrink: 0 }}
+            />
+          )
         )}
 
         <button
@@ -971,7 +1029,7 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
           <Wallet size={17} strokeWidth={2.2} style={{ flexShrink: 0 }} />
           <h2 style={{ fontSize: '0.94rem', fontWeight: 800, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            Devedores / Caderneta
+            {clienteSelecionado ? `Caderneta • ${clienteSelecionado.nome}` : 'Devedores / Caderneta'}
           </h2>
           <span
             style={{
@@ -1026,10 +1084,19 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
               alignItems: 'center',
               gap: '5px',
             }}
-            onClick={onFechar}
+            onClick={handleVoltarOuFechar}
           >
-            <X size={15} strokeWidth={2.4} />
-            Fechar
+            {clienteSelecionado ? (
+              <>
+                <ArrowLeft size={15} strokeWidth={2.4} />
+                Voltar
+              </>
+            ) : (
+              <>
+                <X size={15} strokeWidth={2.4} />
+                Fechar
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -2054,157 +2121,164 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
               </div>
             ) : (
               /* MODO LISTA COMPACTA */
-              <div
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  border: '1px solid #e2e8f0',
-                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
-                  overflowX: 'auto',
-                }}
-              >
-                <div style={{ minWidth: '680px' }}>
+              (() => {
+                const GRID_COLUNAS_LISTA = 'minmax(210px, 1.35fr) minmax(175px, 1fr) 128px 294px';
+                return (
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'minmax(200px, 1.4fr) minmax(150px, 1fr) 130px auto',
-                      gap: '12px',
-                      padding: '9px 14px',
-                      background: '#f8fafc',
-                      borderBottom: '1px solid #e2e8f0',
-                      fontSize: '0.7rem',
-                      fontWeight: 800,
-                      color: '#475569',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.4px',
+                      background: '#ffffff',
+                      borderRadius: '12px',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
+                      overflowX: 'auto',
                     }}
                   >
-                    <span>Cliente</span>
-                    <span>Status &amp; Limite</span>
-                    <span style={{ textAlign: 'right' }}>Saldo Devedor</span>
-                    <span style={{ textAlign: 'right' }}>Ações</span>
-                  </div>
-
-                  {clientesFiltrados.map((cliente, idx) => {
-                    const v = obterDadosVisuaisCliente(cliente);
-                    return (
+                    <div style={{ minWidth: '880px' }}>
                       <div
-                        key={cliente.id}
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: 'minmax(200px, 1.4fr) minmax(150px, 1fr) 130px auto',
+                          gridTemplateColumns: GRID_COLUNAS_LISTA,
                           gap: '12px',
                           alignItems: 'center',
                           padding: '9px 14px',
-                          borderBottom: idx === clientesFiltrados.length - 1 ? 'none' : '1px solid #f1f5f9',
-                          borderLeft: `4px solid ${v.corAccent}`,
-                          background: idx % 2 === 0 ? '#ffffff' : '#fafbfc',
+                          background: '#f8fafc',
+                          borderBottom: '1px solid #e2e8f0',
+                          borderLeft: '4px solid transparent',
+                          fontSize: '0.7rem',
+                          fontWeight: 800,
+                          color: '#475569',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.4px',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+                        <span>Cliente</span>
+                        <span>Status &amp; Limite</span>
+                        <span style={{ textAlign: 'right' }}>Saldo Devedor</span>
+                        <span style={{ textAlign: 'right' }}>Ações</span>
+                      </div>
+
+                      {clientesFiltrados.map((cliente, idx) => {
+                        const v = obterDadosVisuaisCliente(cliente);
+                        return (
                           <div
+                            key={cliente.id}
                             style={{
-                              width: '30px',
-                              height: '30px',
-                              borderRadius: '50%',
-                              background: v.corAvatarBg,
-                              color: v.corAvatarText,
-                              fontWeight: 800,
-                              fontSize: '0.72rem',
-                              display: 'inline-flex',
+                              display: 'grid',
+                              gridTemplateColumns: GRID_COLUNAS_LISTA,
+                              gap: '12px',
                               alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0,
+                              padding: '9px 14px',
+                              borderBottom: idx === clientesFiltrados.length - 1 ? 'none' : '1px solid #f1f5f9',
+                              borderLeft: `4px solid ${v.corAccent}`,
+                              background: idx % 2 === 0 ? '#ffffff' : '#fafbfc',
                             }}
                           >
-                            {v.iniciais}
-                          </div>
-                          <div style={{ minWidth: 0 }}>
-                            <div
-                              title={cliente.nome}
-                              style={{
-                                fontSize: '0.84rem',
-                                fontWeight: 800,
-                                color: '#0f172a',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {cliente.nome}
-                            </div>
-                            <div style={{ fontSize: '0.71rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <Phone size={10} />
-                              <span>{v.telefoneBr || 'Sem telefone'}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                            <span
-                              style={{
-                                background: v.badgeBg,
-                                color: v.badgeText,
-                                border: `1px solid ${v.badgeBorder}`,
-                                fontSize: '0.66rem',
-                                padding: '1px 7px',
-                                borderRadius: '999px',
-                                fontWeight: 800,
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {v.labelStatus}
-                            </span>
-                            {v.limite > 0 && (
-                              <span style={{ fontSize: '0.69rem', color: '#64748b', fontFamily: 'monospace' }}>
-                                {formatarMoedaBr(v.limite)} ({v.usoPct}%)
-                              </span>
-                            )}
-                          </div>
-                          {v.limite > 0 && (
-                            <div
-                              style={{
-                                width: '100%',
-                                maxWidth: '160px',
-                                height: '4px',
-                                borderRadius: '999px',
-                                background: v.trilhoBarra,
-                                overflow: 'hidden',
-                              }}
-                            >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
                               <div
                                 style={{
-                                  width: `${v.barraUsoPct}%`,
-                                  height: '100%',
-                                  background: v.corBarra,
-                                  borderRadius: '999px',
+                                  width: '30px',
+                                  height: '30px',
+                                  borderRadius: '50%',
+                                  background: v.corAvatarBg,
+                                  color: v.corAvatarText,
+                                  fontWeight: 800,
+                                  fontSize: '0.72rem',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  flexShrink: 0,
                                 }}
-                              />
+                              >
+                                {v.iniciais}
+                              </div>
+                              <div style={{ minWidth: 0 }}>
+                                <div
+                                  title={cliente.nome}
+                                  style={{
+                                    fontSize: '0.84rem',
+                                    fontWeight: 800,
+                                    color: '#0f172a',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {cliente.nome}
+                                </div>
+                                <div style={{ fontSize: '0.71rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <Phone size={10} />
+                                  <span>{v.telefoneBr || 'Sem telefone'}</span>
+                                </div>
+                              </div>
                             </div>
-                          )}
-                        </div>
 
-                        <div
-                          style={{
-                            textAlign: 'right',
-                            fontFamily: 'monospace',
-                            fontWeight: 900,
-                            fontSize: '0.94rem',
-                            color: v.corValor,
-                          }}
-                        >
-                          {formatarMoedaBr(v.saldo)}
-                        </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span
+                                  style={{
+                                    background: v.badgeBg,
+                                    color: v.badgeText,
+                                    border: `1px solid ${v.badgeBorder}`,
+                                    fontSize: '0.66rem',
+                                    padding: '1px 7px',
+                                    borderRadius: '999px',
+                                    fontWeight: 800,
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {v.labelStatus}
+                                </span>
+                                {v.limite > 0 && (
+                                  <span style={{ fontSize: '0.69rem', color: '#64748b', fontFamily: 'monospace' }}>
+                                    {formatarMoedaBr(v.limite)} ({v.usoPct}%)
+                                  </span>
+                                )}
+                              </div>
+                              {v.limite > 0 && (
+                                <div
+                                  style={{
+                                    width: '100%',
+                                    maxWidth: '160px',
+                                    height: '4px',
+                                    borderRadius: '999px',
+                                    background: v.trilhoBarra,
+                                    overflow: 'hidden',
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: `${v.barraUsoPct}%`,
+                                      height: '100%',
+                                      background: v.corBarra,
+                                      borderRadius: '999px',
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </div>
 
-                        <div style={{ justifySelf: 'end' }}>
-                          {renderBotoesAcaoCliente(cliente, v.emDebito, true)}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+                            <div
+                              style={{
+                                textAlign: 'right',
+                                fontFamily: 'monospace',
+                                fontWeight: 900,
+                                fontSize: '0.94rem',
+                                color: v.corValor,
+                              }}
+                            >
+                              {formatarMoedaBr(v.saldo)}
+                            </div>
+
+                            <div style={{ width: '294px', justifySelf: 'end' }}>
+                              {renderBotoesAcaoCliente(cliente, v.emDebito, true)}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()
             )}
           </div>
         )}

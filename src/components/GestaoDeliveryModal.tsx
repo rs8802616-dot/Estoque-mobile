@@ -18,6 +18,7 @@ import { formatCurrency } from '../utils/formatters';
 import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios';
 import { mascaraTelefone } from '../lib/mascaras';
 import { imprimirCupomTermico } from '../utils/impressaoTermica';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 import {
   X,
   Bike,
@@ -142,6 +143,36 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     const d = String(agora.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
   }, []);
+
+  const handleVoltarOuFechar = () => {
+    if (clienteContatoModal) {
+      setClienteContatoModal(null);
+      return;
+    }
+    if (pedidoParaCancelar) {
+      setPedidoParaCancelar(null);
+      return;
+    }
+    if (pedidoLinkMotoboy) {
+      setPedidoLinkMotoboy(null);
+      return;
+    }
+    if (pedidoParaValidarPin) {
+      setPedidoParaValidarPin(null);
+      return;
+    }
+    if (comandaImpressao) {
+      setComandaImpressao(null);
+      return;
+    }
+    if (modalConfigAberta) {
+      setModalConfigAberta(false);
+      return;
+    }
+    onFechar();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
 
   if (!visivel) return null;
 
@@ -697,7 +728,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
             {/* Fechar */}
             <button
-              onClick={onFechar}
+              onClick={handleVoltarOuFechar}
               className="p-2 rounded-xl bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition border border-slate-200 shadow-2xs cursor-pointer"
             >
               <X className="w-4 h-4" />

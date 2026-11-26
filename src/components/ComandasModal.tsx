@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ComandaLocal, ItemComanda, ItemEstoque, PagamentoComanda, Supermercado } from '../types';
 import { imprimirCupomTermico } from '../utils/impressaoTermica';
 import { obterDataLocalISO } from '../lib/dateUtils';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 type FormaPagamentoComanda = 'pix' | 'dinheiro' | 'cartao_credito' | 'cartao_debito';
 
@@ -27,6 +28,7 @@ export interface ComandasPanelProps {
   visaoLateral?: 'lista' | 'detalhe';
   onChangeVisaoLateral?: (visao: 'lista' | 'detalhe') => void;
   onAbrirLeitorCamera?: () => void;
+  voltarInternoRef?: React.MutableRefObject<(() => boolean) | null>;
 }
 
 interface ComandasModalProps extends Omit<ComandasPanelProps, 'modoLateral' | 'onExpandir'> {
@@ -59,6 +61,7 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   visaoLateral: visaoLateralProp,
   onChangeVisaoLateral,
   onAbrirLeitorCamera,
+  voltarInternoRef,
 }) => {
   const [filtroStatus, setFiltroStatus] = useState<'aberta' | 'fechada'>('aberta');
   const [buscaComanda, setBuscaComanda] = useState<string>('');
@@ -94,6 +97,24 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
   // Impressão térmica
   const [larguraBobina] = useState<'80mm' | '58mm'>('80mm');
   const [mostrarPagParcial, setMostrarPagParcial] = useState<boolean>(false);
+
+  if (voltarInternoRef) {
+    voltarInternoRef.current = () => {
+      if (formNovaAberto) {
+        setFormNovaAberto(false);
+        return true;
+      }
+      if (mostrarPagParcial) {
+        setMostrarPagParcial(false);
+        return true;
+      }
+      if (modoLateral && visaoLateral === 'detalhe') {
+        setVisaoLateral('lista');
+        return true;
+      }
+      return false;
+    };
+  }
 
   const comandasFiltradas = useMemo(() => {
     const termo = buscaComanda.trim().toLowerCase();
@@ -1179,6 +1200,14 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
   onFechar,
   ...panelProps
 }) => {
+  const voltarInternoRef = useRef<(() => boolean) | null>(null);
+  const handleVoltarOuFechar = () => {
+    if (voltarInternoRef.current?.()) return;
+    onFechar();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
+
   if (!visivel) return null;
 
   const totalAbertas = panelProps.comandas.filter((c) => c.status === 'aberta').length;
@@ -1197,7 +1226,7 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
         padding: '10px 10px 44px 10px',
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onFechar();
+        if (e.target === e.currentTarget) handleVoltarOuFechar();
       }}
     >
       <div
@@ -1249,7 +1278,7 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
           </div>
           <button
             type="button"
-            onClick={onFechar}
+            onClick={handleVoltarOuFechar}
             style={{
               width: '34px',
               height: '34px',
@@ -1267,7 +1296,7 @@ export const ComandasModal: React.FC<ComandasModalProps> = ({
           </button>
         </div>
 
-        <ComandasPanel {...panelProps} modoLateral={false} />
+        <ComandasPanel {...panelProps} modoLateral={false} voltarInternoRef={voltarInternoRef} />
       </div>
     </div>
   );

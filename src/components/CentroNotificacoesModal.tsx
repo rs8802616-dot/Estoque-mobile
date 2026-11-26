@@ -18,6 +18,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { ItemEstoque, Supermercado, ProdutoCatalogo } from '../types';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 export interface ProdutoEstoqueBaixoAgrupado {
   codigo: string;
@@ -90,6 +91,16 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
       setAbaAtiva(abaInicial);
     }
   }, [visivel, abaInicial]);
+
+  const handleVoltarOuFechar = () => {
+    if (itemPerdaModal) {
+      setItemPerdaModal(null);
+      return;
+    }
+    onFechar();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
 
   if (!visivel) return null;
 
@@ -253,7 +264,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
       className="modal"
       style={{ display: 'flex', zIndex: 10050 }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onFechar();
+        if (e.target === e.currentTarget) handleVoltarOuFechar();
       }}
     >
       <div
@@ -310,7 +321,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
           </div>
           <button
             type="button"
-            onClick={onFechar}
+            onClick={handleVoltarOuFechar}
             aria-label="Fechar Central de Notificações"
             style={{
               background: 'rgba(255, 255, 255, 0.18)',
@@ -1336,7 +1347,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
           </span>
           <button
             type="button"
-            onClick={onFechar}
+            onClick={handleVoltarOuFechar}
             style={{
               padding: '7px 16px',
               borderRadius: '8px',

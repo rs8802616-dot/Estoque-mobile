@@ -18,6 +18,7 @@ import {
 } from 'recharts';
 import { Venda, ItemEstoque, ProdutoCatalogo } from '../types';
 import { obterDataLocalISO } from '../lib/dateUtils';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface GraficosVendasModalProps {
   visivel: boolean;
@@ -1716,6 +1717,8 @@ ${top3 || '- Nenhum produto vendido'}
   // --- FIM DOS CÁLCULOS DO NOVO PAINEL ---
 
   // Return null if not visible AFTER all hooks
+  useVoltarHierarquico(visivel, onFechar);
+
   if (!visivel) return null;
 
   return (

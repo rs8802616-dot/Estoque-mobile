@@ -143,6 +143,7 @@ import { AlertasWhatsAppModal } from './components/AlertasWhatsAppModal';
 import { GestaoDevedoresModal } from './components/GestaoDevedoresModal';
 import { EntradaNotaFiscalModal } from './components/EntradaNotaFiscalModal';
 import { CentroNotificacoesModal } from './components/CentroNotificacoesModal';
+import { useVoltarHierarquico } from './hooks/useVoltarHierarquico';
 import { TelaLogin } from './components/TelaLogin';
 import { TermoConcordanciaModal } from './components/TermoConcordanciaModal';
 import { AlterarCredenciaisDonoModal } from './components/AlterarCredenciaisDonoModal';
@@ -8542,6 +8543,15 @@ export default function App() {
   const fecharRelatorio = () => {
     fecharAbaDefinitivo('estoque');
   };
+
+  useVoltarHierarquico(
+    perfilAtivo === 'dona_app' && modalSupermercadoVisivel,
+    () => fecharAbaDefinitivo('master')
+  );
+  useVoltarHierarquico(modalCredenciaisDonoVisivel, () => setModalCredenciaisDonoVisivel(false));
+  useVoltarHierarquico(modalOperadoresVisivel, fecharModalOperadores);
+  useVoltarHierarquico(relatorioCheioVisivel, fecharRelatorio);
+  useVoltarHierarquico(modalCadastroVisivel, () => fecharAbaDefinitivo('cadastro'));
 
   // Calculate Expiration Alerts
   const hoje = new Date();

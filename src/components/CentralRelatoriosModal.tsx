@@ -23,6 +23,7 @@ import {
 } from '../types';
 import { exportarVendasCSV, exportarEstoqueCSV } from '../lib/exportUtils';
 import { obterDataLocalISO } from '../lib/dateUtils';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 import {
   X,
   TrendingUp,
@@ -424,6 +425,20 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
     };
   }, [pedidosDelivery]);
 
+  const handleVoltarOuFechar = () => {
+    if (vendaEstornar) {
+      setVendaEstornar(null);
+      return;
+    }
+    if (vendaExpandidaId) {
+      setVendaExpandidaId(null);
+      return;
+    }
+    onFechar();
+  };
+
+  useVoltarHierarquico(visivel, handleVoltarOuFechar);
+
   if (!visivel) return null;
 
   return (
@@ -453,7 +468,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
           </div>
 
           <button
-            onClick={onFechar}
+            onClick={handleVoltarOuFechar}
             className="p-2 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 hover:text-stone-900 transition border border-stone-300"
           >
             <X className="w-5 h-5" />
