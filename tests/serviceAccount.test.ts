@@ -89,3 +89,58 @@ test('parseServiceAccountEnv reporta campos ausentes e tamanho em entrada trunca
     }
   );
 });
+
+test('parseServiceAccountEnv recupera JSON duplicado com primeiro bloco sem { (diagnóstico real)', () => {
+  const indentado = JSON.stringify(FAKE_SA, null, 2);
+  const primeiroSemChave = indentado.replace(/^\{\s*/, '');
+  const duplicado = `${primeiroSemChave}\n${indentado}`;
+  assertServiceAccountValida(parseServiceAccountEnv(duplicado));
+});
+
+test('parseServiceAccountEnv recupera JSON duplicado com ambos os blocos sem {', () => {
+  const indentado = JSON.stringify(FAKE_SA, null, 2);
+  const semChave = indentado.replace(/^\{\s*/, '');
+  const duplicado = `${semChave}\n${semChave}`;
+  assertServiceAccountValida(parseServiceAccountEnv(duplicado));
+});
+
+test('parseServiceAccountEnv recupera JSON com aspa dupla inicial solta antes de { (simples e duplicado)', () => {
+  const indentado = JSON.stringify(FAKE_SA, null, 2);
+  const comAspaSolta = `"${indentado}`;
+  assertServiceAccountValida(parseServiceAccountEnv(comAspaSolta));
+
+  const duplicadoComAspaSolta = `"${indentado}\n${indentado}`;
+  assertServiceAccountValida(parseServiceAccountEnv(duplicadoComAspaSolta));
+});
+
+test('parseServiceAccountEnv prioriza projeto adega-delivery-pdv quando dois projetos são colados juntos', () => {
+  const outroProjeto = {
+    ...FAKE_SA,
+    project_id: 'outro-projeto-antigo',
+    client_email: 'firebase-adminsdk@outro-projeto-antigo.iam.gserviceaccount.com',
+  };
+  const ordemInvertida = `${JSON.stringify(FAKE_SA, null, 2)}\n${JSON.stringify(outroProjeto, null, 2)}`;
+  const res = parseServiceAccountEnv(ordemInvertida);
+  assertServiceAccountValida(res);
+});
+
+test('parseServiceAccountEnv recupera segundo JSON colado no meio do primeiro JSON sem misturar campos', () => {
+  const corpoPrimeiro = JSON.stringify(
+    {
+      type: 'service_account',
+      project_id: 'outro-projeto-antigo',
+      client_email: 'errado@outro-projeto-antigo.iam.gserviceaccount.com',
+      private_key: '-----BEGIN PRIVATE KEY-----\nOUTRACHAVEERRADA\n-----END PRIVATE KEY-----\n',
+    },
+    null,
+    2
+  );
+  const pontoInsercao = corpoPrimeiro.indexOf('"client_email"');
+  const contaminado =
+    corpoPrimeiro.slice(0, pontoInsercao) +
+    JSON.stringify(FAKE_SA, null, 2) +
+    '\n  ' +
+    corpoPrimeiro.slice(pontoInsercao);
+  const res = parseServiceAccountEnv(contaminado);
+  assertServiceAccountValida(res);
+});
