@@ -530,29 +530,41 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                 </button>
               </div>
 
-              <input
-                type="search"
-                name="filtro_comanda_pesquisa"
-                role="searchbox"
-                aria-autocomplete="none"
+              <form
+                role="search"
                 autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="none"
-                spellCheck={false}
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                value={buscaComanda}
-                onChange={(e) => setBuscaComanda(e.target.value)}
-                placeholder="🔍 Buscar comanda por nome ou mesa..."
-                style={{
-                  padding: '8px 10px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  fontSize: '0.82rem',
-                  background: '#f8fafc',
-                }}
-              />
+                onSubmit={(e) => e.preventDefault()}
+                style={{ margin: 0, display: 'flex', width: '100%' }}
+              >
+                <input
+                  type="search"
+                  name="filtro_comanda_pesquisa"
+                  role="searchbox"
+                  aria-autocomplete="none"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  inputMode="search"
+                  enterKeyHint="search"
+                  data-form-type="other"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  value={buscaComanda}
+                  onChange={(e) => setBuscaComanda(e.target.value)}
+                  placeholder="🔍 Buscar comanda por nome ou mesa..."
+                  style={{
+                    flex: 1,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.82rem',
+                    background: '#f8fafc',
+                  }}
+                />
+              </form>
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -751,7 +763,12 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                 {/* BUSCA LIMPA PARA ADICIONAR PRODUTO (MOSTRA RESULTADOS SÓ AO DIGITAR) */}
                 {comandaAtiva.status === 'aberta' && (
                   <div style={{ position: 'relative' }}>
-                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <form
+                      role="search"
+                      autoComplete="off"
+                      onSubmit={(e) => e.preventDefault()}
+                      style={{ display: 'flex', gap: '6px', alignItems: 'center', margin: 0 }}
+                    >
                       <input
                         type="search"
                         name="filtro_produto_comanda_pesquisa"
@@ -761,6 +778,8 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                         autoCorrect="off"
                         autoCapitalize="none"
                         spellCheck={false}
+                        inputMode="search"
+                        enterKeyHint="search"
                         data-form-type="other"
                         data-lpignore="true"
                         data-1p-ignore="true"
@@ -795,7 +814,7 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                           ✕
                         </button>
                       )}
-                    </div>
+                    </form>
 
                     {buscaProduto.trim().length > 0 && (
                       <div

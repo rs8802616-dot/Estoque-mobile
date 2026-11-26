@@ -251,6 +251,13 @@
     text-overflow: ellipsis;
 }
 
+.form-busca-desktop {
+    flex: 1 1 180px;
+    min-width: 120px;
+    display: flex;
+    margin: 0;
+}
+
 .btn { 
     border: none; 
     border-radius: 8px; 
@@ -2114,6 +2121,7 @@
     .btn-coluna-delivery,
     .btn-relatorios-header,
     .input-busca-desktop,
+    .form-busca-desktop,
     .perfil-conteudo-desktop {
         display: none !important;
     }
@@ -2197,7 +2205,8 @@
         flex-wrap: wrap;
         gap: 6px;
     }
-    .input-busca {
+    .input-busca,
+    .form-busca-desktop {
         flex: 1 1 220px;
         min-width: 180px;
     }

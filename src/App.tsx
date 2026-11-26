@@ -8670,27 +8670,36 @@ export default function App() {
           </button>
 
           <div className="barra-acoes">
-            <input
-              type="search"
-              id="busca"
-              name="search_query_estoque_pdv"
-              role="searchbox"
-              aria-autocomplete="none"
+            <form
+              role="search"
               autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="none"
-              spellCheck={false}
-              data-form-type="other"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              className="input-busca input-busca-desktop"
-              placeholder="Buscar no estoque..."
-              value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
-              onChange={(e) => {
-                const v = e.target.value;
-                setBusca(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
-              }}
-            />
+              onSubmit={(e) => e.preventDefault()}
+              className="form-busca-desktop"
+            >
+              <input
+                type="search"
+                id="busca"
+                name="q"
+                role="searchbox"
+                aria-autocomplete="none"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                inputMode="search"
+                enterKeyHint="search"
+                data-form-type="other"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                className="input-busca input-busca-desktop"
+                placeholder="Buscar no estoque..."
+                value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setBusca(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
+                }}
+              />
+            </form>
 
             {temPermissaoOperador('cadastrar_produtos', 'estoque') && (
               <>
@@ -9171,7 +9180,12 @@ export default function App() {
 
         {/* CONTEÚDO NO CELULAR: BARRA DE PESQUISA DEDICADA EM DESTAQUE NO LUGAR DO SELETOR DE PERFIL */}
         <div className="busca-container-mobile">
-          <div className="campo-busca-mobile-wrapper">
+          <form
+            role="search"
+            autoComplete="off"
+            onSubmit={(e) => e.preventDefault()}
+            className="campo-busca-mobile-wrapper"
+          >
             <span className="icone-lupa-busca-mobile">🔍</span>
             <input
               type="search"
@@ -9183,6 +9197,8 @@ export default function App() {
               autoCorrect="off"
               autoCapitalize="none"
               spellCheck={false}
+              inputMode="search"
+              enterKeyHint="search"
               data-form-type="other"
               data-lpignore="true"
               data-1p-ignore="true"
@@ -9204,7 +9220,7 @@ export default function App() {
                 ✕
               </button>
             )}
-          </div>
+          </form>
         </div>
       </div>
       </div>
@@ -11056,7 +11072,13 @@ export default function App() {
                 {/* FILTROS E AÇÕES DE ESTOQUE */}
                 <div style={{ background: '#ffffff', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <div className="linha-input" style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}>
+                    <form
+                      role="search"
+                      autoComplete="off"
+                      onSubmit={(e) => e.preventDefault()}
+                      className="linha-input"
+                      style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}
+                    >
                       <input
                         type="search"
                         id="buscaRelatorio"
@@ -11067,6 +11089,8 @@ export default function App() {
                         autoCorrect="off"
                         autoCapitalize="none"
                         spellCheck={false}
+                        inputMode="search"
+                        enterKeyHint="search"
                         data-form-type="other"
                         data-lpignore="true"
                         data-1p-ignore="true"
@@ -11079,10 +11103,10 @@ export default function App() {
                           setBuscaRelatorio(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
                         }}
                       />
-                      <button className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
+                      <button type="button" className="btn-cam-pequeno" onClick={abrirLeitorRelatorio} title="Escanear Código no Relatório">
                         📷
                       </button>
-                    </div>
+                    </form>
 
                     <select
                       className="input-modal"
@@ -11604,10 +11628,11 @@ export default function App() {
       </div>
 
       {/* SUPERMARKET REGISTRATION & MANAGEMENT FULL SCREEN */}
+      {perfilAtivo === 'dona_app' && modalSupermercadoVisivel && (
       <div
         className="tela-relatorio-cheia"
         id="modalSupermercado"
-        style={{ display: perfilAtivo === 'dona_app' && modalSupermercadoVisivel ? 'flex' : 'none', background: '#f8fafc' }}
+        style={{ display: 'flex', background: '#f8fafc' }}
       >
         {/* CABEÇALHO NO PADRÃO DO PDV */}
         <div
@@ -11956,7 +11981,7 @@ export default function App() {
                   </div>
 
                   {/* CAMPOS DO CADASTRO */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <form autoComplete="off" onSubmit={(e) => e.preventDefault()} style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: 0 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
                       <div className="grupo-input" style={{ marginBottom: 0 }}>
                         <label className="rotulo-campo" style={{ fontWeight: 700, color: '#334155', fontSize: '0.78rem', marginBottom: '4px', display: 'block' }}>
@@ -11965,6 +11990,7 @@ export default function App() {
                         <input
                           type="text"
                           id="reg-loja-nome"
+                          autoComplete="off"
                           className="input-modal"
                           style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
                           placeholder="Ex: Adega Boa Vista"
@@ -11982,6 +12008,7 @@ export default function App() {
                           type="text"
                           inputMode="numeric"
                           id="reg-loja-cnpj"
+                          autoComplete="off"
                           className="input-modal"
                           style={{ borderRadius: '8px', padding: '9px 11px', background: lojaEditandoId ? '#f1f5f9' : '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
                           placeholder="00.000.000/0001-00"
@@ -12003,6 +12030,7 @@ export default function App() {
                           <input
                             type={senhaVisivel ? 'text' : 'password'}
                             id="reg-loja-senha"
+                            autoComplete="new-password"
                             className="input-modal"
                             style={{ borderRadius: '8px', padding: '9px 34px 9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem', width: '100%' }}
                             placeholder={lojaEditandoId ? 'Em branco p/ manter' : 'Mínimo 8 caracteres'}
@@ -12041,6 +12069,7 @@ export default function App() {
                         </label>
                         <input
                           type={senhaVisivel ? 'text' : 'password'}
+                          autoComplete="new-password"
                           className="input-modal"
                           style={{ borderRadius: '8px', padding: '9px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
                           placeholder="Repita a senha"
@@ -12318,7 +12347,7 @@ export default function App() {
                     <div className="msg" id="msg-reg-loja">
                       {msgRegLoja}
                     </div>
-                  </div>
+                  </form>
                 </div>
 
                 {/* COLUNA DIREITA: LISTA DE LOJAS CADASTRADAS */}
@@ -12355,7 +12384,12 @@ export default function App() {
                     </div>
 
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                      <form
+                        role="search"
+                        autoComplete="off"
+                        onSubmit={(e) => e.preventDefault()}
+                        style={{ position: 'relative', display: 'flex', alignItems: 'center', margin: 0 }}
+                      >
                         <Search size={14} style={{ position: 'absolute', left: '10px', color: '#94a3b8', pointerEvents: 'none' }} />
                         <input
                           type="search"
@@ -12367,6 +12401,8 @@ export default function App() {
                           autoCorrect="off"
                           autoCapitalize="none"
                           spellCheck={false}
+                          inputMode="search"
+                          enterKeyHint="search"
                           data-form-type="other"
                           data-lpignore="true"
                           data-1p-ignore="true"
@@ -12379,7 +12415,7 @@ export default function App() {
                             setBuscaLoja(v.toLowerCase().includes('rodrigo.souza') ? '' : v);
                           }}
                         />
-                      </div>
+                      </form>
 
                       {listaSupermercados.length > 0 && (
                         <button
@@ -12805,7 +12841,12 @@ export default function App() {
               <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', gap: '10px', flex: 1, minWidth: '260px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center' }}>
+                    <form
+                      role="search"
+                      autoComplete="off"
+                      onSubmit={(e) => e.preventDefault()}
+                      style={{ position: 'relative', flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center', margin: 0 }}
+                    >
                       <Search size={15} style={{ position: 'absolute', left: '11px', color: '#94a3b8', pointerEvents: 'none' }} />
                       <input
                         type="search"
@@ -12817,6 +12858,8 @@ export default function App() {
                         autoCorrect="off"
                         autoCapitalize="none"
                         spellCheck={false}
+                        inputMode="search"
+                        enterKeyHint="search"
                         data-form-type="other"
                         data-lpignore="true"
                         data-1p-ignore="true"
@@ -12852,7 +12895,7 @@ export default function App() {
                           <X size={12} />
                         </button>
                       )}
-                    </div>
+                    </form>
                     <select
                       className="input-modal"
                       style={{ marginBottom: 0, width: 'auto', minWidth: '180px', padding: '8px 10px', borderRadius: '8px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: 600 }}
@@ -13189,6 +13232,7 @@ export default function App() {
           )}
         </div>
       </div>
+      )}
 
       {/* OPERATORS / CASHIERS & STAFF MANAGEMENT MODAL (FULL SCREEN) */}
       {modalOperadoresVisivel && (
@@ -13352,7 +13396,9 @@ export default function App() {
           {/* LAYOUT EM 3 COLUNAS LADO A LADO: [1. CADASTRO] | [2. PERMISSÕES] | [3. EQUIPE CADASTRADA] */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'flex-start' }}>
             {/* ==================== COLUNA 1 (ESQUERDA): CADASTRAR / EDITAR FUNCIONÁRIO ==================== */}
-            <div
+            <form
+              autoComplete="off"
+              onSubmit={(e) => e.preventDefault()}
               style={{
                 flex: '0.95 1 300px',
                 minWidth: 'min(100%, 285px)',
@@ -13364,6 +13410,7 @@ export default function App() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
+                margin: 0,
               }}
             >
               <div
@@ -13593,7 +13640,7 @@ export default function App() {
               </div>
 
               {msgRegOp && <div className="msg" style={{ margin: 0 }}>{msgRegOp}</div>}
-            </div>
+            </form>
 
             {/* ==================== COLUNA 2 (MEIO): ITENS & PERMISSÕES PARA ESCOLHER ==================== */}
             <div

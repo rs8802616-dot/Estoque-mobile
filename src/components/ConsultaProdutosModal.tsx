@@ -252,7 +252,7 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
 
         {/* Formulário de Busca, Filtros da API e Chips */}
         <div style={{ padding: '14px 20px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+          <form role="search" autoComplete="off" onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', flex: '1 1 240px' }}>
               <input
                 type="search"
@@ -264,6 +264,8 @@ export const ConsultaProdutosModal: React.FC<ConsultaProdutosModalProps> = ({
                 autoCorrect="off"
                 autoCapitalize="none"
                 spellCheck={false}
+                inputMode="search"
+                enterKeyHint="search"
                 data-form-type="other"
                 data-lpignore="true"
                 data-1p-ignore="true"
