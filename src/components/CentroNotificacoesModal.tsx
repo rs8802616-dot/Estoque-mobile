@@ -1,4 +1,22 @@
 import React, { useState } from 'react';
+import {
+  Bell,
+  Package,
+  AlertTriangle,
+  BarChart3,
+  X,
+  Search,
+  SlidersHorizontal,
+  Copy,
+  Check,
+  MessageCircle,
+  Plus,
+  Trash2,
+  ShoppingCart,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+} from 'lucide-react';
 import { ItemEstoque, Supermercado, ProdutoCatalogo } from '../types';
 
 export interface ProdutoEstoqueBaixoAgrupado {
@@ -63,12 +81,10 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
   const [motivoPerdaInput, setMotivoPerdaInput] = useState<string>('Produto Vencido');
   const [msgPerda, setMsgPerda] = useState<string>('');
 
-  // Sync limiarInput when prop changes
   React.useEffect(() => {
     setLimiarInput(String(limiarEstoqueMinimo));
   }, [limiarEstoqueMinimo]);
 
-  // Sync abaInicial when modal opens
   React.useEffect(() => {
     if (visivel) {
       setAbaAtiva(abaInicial);
@@ -125,7 +141,6 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
     }
   });
 
-  // Identifica itens com estoque menor ou igual ao limiar definido pelo usuário
   const produtosEstoqueBaixo: ProdutoEstoqueBaixoAgrupado[] = Object.values(agrupadosPorCodigo)
     .filter((prod) => prod.qtdTotal <= limiarEstoqueMinimo)
     .map((prod) => {
@@ -147,10 +162,8 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
       };
     });
 
-  // Ordena por menor quantidade primeiro (itens zerados e mais críticos no topo)
   produtosEstoqueBaixo.sort((a, b) => a.qtdTotal - b.qtdTotal);
 
-  // Filtros de busca e status para Estoque Baixo
   const termoBusca = busca.trim().toLowerCase();
   const produtosBaixosFiltrados = produtosEstoqueBaixo.filter((p) => {
     const matchBusca = p.nome.toLowerCase().includes(termoBusca) || p.codigo.toLowerCase().includes(termoBusca);
@@ -187,7 +200,6 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
     return dias <= 10;
   });
 
-  // Formatar Mensagem de WhatsApp para Pedido de Reposição
   const gerarMensagemWhatsAppReposicao = () => {
     const dataFormatada = new Date().toLocaleDateString('pt-BR');
     let msg = `📦 *PEDIDO DE REPOSIÇÃO DE ESTOQUE (ESTOQUE BAIXO)* 📦\n`;
@@ -237,67 +249,95 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
   };
 
   return (
-    <div className="modal" style={{ display: 'flex', zIndex: 10050 }}>
+    <div
+      className="modal"
+      style={{ display: 'flex', zIndex: 10050 }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onFechar();
+      }}
+    >
       <div
         className="modal-conteudo"
         style={{
-          maxWidth: '560px',
-          width: '95%',
+          maxWidth: '920px',
+          width: '96%',
           borderRadius: '16px',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          maxHeight: '92vh',
+          maxHeight: '90vh',
+          background: '#ffffff',
+          boxShadow: '0 24px 60px rgba(15, 23, 42, 0.28)',
         }}
       >
-        {/* CABEÇALHO DO MODAL */}
+        {/* CABEÇALHO COMPACTO */}
         <div
           className="cab-modal"
           style={{
             background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
             color: '#ffffff',
-            padding: '14px 18px',
+            padding: '12px 16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            borderRadius: 0,
+            textAlign: 'left',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '1.25rem' }}>🔔</span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '1rem', lineHeight: 1.2 }}>Central de Notificações & Alertas</div>
-              <div style={{ fontSize: '0.75rem', opacity: 0.9 }}>{nomeSupermercado}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '10px',
+                background: 'rgba(255, 255, 255, 0.16)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Bell size={18} strokeWidth={2.2} />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: '0.96rem', lineHeight: 1.2 }}>
+                Central de Notificações & Alertas
+              </div>
+              <div style={{ fontSize: '0.73rem', opacity: 0.9, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {nomeSupermercado}
+              </div>
             </div>
           </div>
           <button
             type="button"
             onClick={onFechar}
+            aria-label="Fechar Central de Notificações"
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
+              background: 'rgba(255, 255, 255, 0.18)',
               border: 'none',
               color: '#ffffff',
-              borderRadius: '50%',
-              width: '28px',
-              height: '28px',
-              fontSize: '1rem',
+              borderRadius: '8px',
+              width: '30px',
+              height: '30px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexShrink: 0,
             }}
           >
-            ✕
+            <X size={16} />
           </button>
         </div>
 
-        {/* ABAS DE NAVEGAÇÃO */}
+        {/* ABAS SEGMENTADAS */}
         <div
           style={{
             display: 'flex',
             background: '#f8fafc',
             borderBottom: '1px solid #e2e8f0',
-            padding: '4px 8px',
-            gap: '4px',
+            padding: '6px 12px',
+            gap: '6px',
           }}
         >
           <button
@@ -305,31 +345,31 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
             onClick={() => setAbaAtiva('estoque_baixo')}
             style={{
               flex: 1,
-              padding: '8px 10px',
-              border: 'none',
+              padding: '7px 10px',
+              border: abaAtiva === 'estoque_baixo' ? '1px solid #cbd5e1' : '1px solid transparent',
               background: abaAtiva === 'estoque_baixo' ? '#ffffff' : 'transparent',
               color: abaAtiva === 'estoque_baixo' ? '#0369a1' : '#64748b',
-              fontWeight: abaAtiva === 'estoque_baixo' ? 700 : 500,
-              fontSize: '0.82rem',
+              fontWeight: abaAtiva === 'estoque_baixo' ? 700 : 600,
+              fontSize: '0.8rem',
               borderRadius: '8px',
               cursor: 'pointer',
-              boxShadow: abaAtiva === 'estoque_baixo' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              boxShadow: abaAtiva === 'estoque_baixo' ? '0 1px 2px rgba(15,23,42,0.06)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
             }}
           >
-            <span>📦</span>
+            <Package size={15} />
             <span>Estoque Baixo</span>
             <span
               style={{
                 background: produtosEstoqueBaixo.length > 0 ? '#ef4444' : '#e2e8f0',
                 color: produtosEstoqueBaixo.length > 0 ? '#ffffff' : '#64748b',
-                fontSize: '0.7rem',
+                fontSize: '0.68rem',
                 fontWeight: 700,
                 padding: '1px 6px',
-                borderRadius: '10px',
+                borderRadius: '999px',
               }}
             >
               {produtosEstoqueBaixo.length}
@@ -341,31 +381,31 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
             onClick={() => setAbaAtiva('validade')}
             style={{
               flex: 1,
-              padding: '8px 10px',
-              border: 'none',
+              padding: '7px 10px',
+              border: abaAtiva === 'validade' ? '1px solid #cbd5e1' : '1px solid transparent',
               background: abaAtiva === 'validade' ? '#ffffff' : 'transparent',
-              color: abaAtiva === 'validade' ? '#d97706' : '#64748b',
-              fontWeight: abaAtiva === 'validade' ? 700 : 500,
-              fontSize: '0.82rem',
+              color: abaAtiva === 'validade' ? '#b45309' : '#64748b',
+              fontWeight: abaAtiva === 'validade' ? 700 : 600,
+              fontSize: '0.8rem',
               borderRadius: '8px',
               cursor: 'pointer',
-              boxShadow: abaAtiva === 'validade' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              boxShadow: abaAtiva === 'validade' ? '0 1px 2px rgba(15,23,42,0.06)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
             }}
           >
-            <span>⚠️</span>
+            <AlertTriangle size={15} />
             <span>Validade</span>
             <span
               style={{
                 background: proximoVencimento.length > 0 ? '#f59e0b' : '#e2e8f0',
                 color: proximoVencimento.length > 0 ? '#ffffff' : '#64748b',
-                fontSize: '0.7rem',
+                fontSize: '0.68rem',
                 fontWeight: 700,
                 padding: '1px 6px',
-                borderRadius: '10px',
+                borderRadius: '999px',
               }}
             >
               {proximoVencimento.length}
@@ -376,52 +416,70 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
             type="button"
             onClick={() => setAbaAtiva('resumo')}
             style={{
-              padding: '8px 12px',
-              border: 'none',
+              padding: '7px 14px',
+              border: abaAtiva === 'resumo' ? '1px solid #cbd5e1' : '1px solid transparent',
               background: abaAtiva === 'resumo' ? '#ffffff' : 'transparent',
               color: abaAtiva === 'resumo' ? '#0f172a' : '#64748b',
-              fontWeight: abaAtiva === 'resumo' ? 700 : 500,
-              fontSize: '0.82rem',
+              fontWeight: abaAtiva === 'resumo' ? 700 : 600,
+              fontSize: '0.8rem',
               borderRadius: '8px',
               cursor: 'pointer',
-              boxShadow: abaAtiva === 'resumo' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              boxShadow: abaAtiva === 'resumo' ? '0 1px 2px rgba(15,23,42,0.06)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '4px',
+              gap: '6px',
             }}
           >
-            <span>📊</span>
+            <BarChart3 size={15} />
             <span>Resumo</span>
           </button>
         </div>
 
         {/* CORPO DO MODAL */}
-        <div className="corpo-modal" style={{ padding: '16px', overflowY: 'auto', flex: 1 }}>
+        <div className="corpo-modal" style={{ padding: '14px 16px', overflowY: 'auto', flex: 1, background: '#f8fafc' }}>
           {/* ========================================================================= */}
-          {/* ABA 1: ESTOQUE BAIXO & REPOSIÇÃO DEFINIDA PELO USUÁRIO                     */}
+          {/* ABA 1: ESTOQUE BAIXO & REPOSIÇÃO                                         */}
           {/* ========================================================================= */}
           {abaAtiva === 'estoque_baixo' && (
             <div>
-              {/* PAINEL DE CONFIGURAÇÃO DE LIMIAR DO USUÁRIO */}
+              {/* TOOLBAR COMPACTA DE 2 LINHAS */}
               <div
                 style={{
-                  background: '#f0fdf4',
-                  border: '1px solid #bbf7d0',
-                  borderRadius: '12px',
-                  padding: '12px 14px',
-                  marginBottom: '14px',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '10px',
+                  padding: '10px 12px',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '1.1rem' }}>⚙️</span>
-                    <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#166534' }}>
-                      Limiar de Estoque Mínimo (Ponto de Reposição)
+                {/* Linha 1: Limiar de Reposição + Ações em lote */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontWeight: 700,
+                        fontSize: '0.76rem',
+                        color: '#166534',
+                      }}
+                    >
+                      <SlidersHorizontal size={14} />
+                      <span>Mínimo:</span>
                     </span>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <input
                       type="number"
                       min="1"
@@ -445,231 +503,275 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                         }
                       }}
                       style={{
-                        width: '65px',
-                        padding: '4px 8px',
-                        fontSize: '0.9rem',
+                        width: '52px',
+                        height: '28px',
+                        padding: '2px 6px',
+                        fontSize: '0.82rem',
                         fontWeight: 700,
                         textAlign: 'center',
                         borderRadius: '6px',
                         border: '1px solid #86efac',
-                        background: '#ffffff',
+                        background: '#f0fdf4',
                         color: '#15803d',
                       }}
-                      title="Digite o número de unidades mínimo para acionar alerta de reposição"
+                      title="Digite o limite de unidades para alerta de reposição"
                     />
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#166534' }}>unidades</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                      {[2, 3, 5, 10, 15, 20].map((val) => (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => aplicarNovoLimiar(val)}
+                          style={{
+                            padding: '2px 7px',
+                            fontSize: '0.7rem',
+                            fontWeight: limiarEstoqueMinimo === val ? 700 : 600,
+                            background: limiarEstoqueMinimo === val ? '#16a34a' : '#f0fdf4',
+                            color: limiarEstoqueMinimo === val ? '#ffffff' : '#15803d',
+                            border: '1px solid #bbf7d0',
+                            borderRadius: '999px',
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {val} un
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {produtosEstoqueBaixo.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={enviarWhatsAppReposicao}
+                        style={{
+                          background: '#16a34a',
+                          color: '#ffffff',
+                          border: 'none',
+                          padding: '5px 10px',
+                          borderRadius: '7px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          height: '28px',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <MessageCircle size={13} />
+                        <span>Enviar WhatsApp</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={copiarListaReposicao}
+                        style={{
+                          background: copiado ? '#15803d' : '#f8fafc',
+                          color: copiado ? '#ffffff' : '#334155',
+                          border: '1px solid #cbd5e1',
+                          padding: '5px 10px',
+                          borderRadius: '7px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          height: '28px',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {copiado ? <Check size={13} /> : <Copy size={13} />}
+                        <span>{copiado ? 'Copiado' : 'Copiar'}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Linha 2: Busca + Filtros de Severidade */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    flexWrap: 'wrap',
+                    paddingTop: '8px',
+                    borderTop: '1px solid #f1f5f9',
+                  }}
+                >
+                  <div style={{ position: 'relative', flex: 1, minWidth: '170px' }}>
+                    <Search
+                      size={14}
+                      style={{
+                        position: 'absolute',
+                        left: '9px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: '#94a3b8',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Buscar produto ou código..."
+                      value={busca}
+                      onChange={(e) => setBusca(e.target.value)}
+                      style={{
+                        width: '100%',
+                        height: '30px',
+                        padding: '4px 10px 4px 28px',
+                        fontSize: '0.78rem',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '7px',
+                        boxSizing: 'border-box',
+                        background: '#ffffff',
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setFiltroStatus('todos')}
+                      style={{
+                        padding: '4px 9px',
+                        fontSize: '0.71rem',
+                        borderRadius: '7px',
+                        border: filtroStatus === 'todos' ? '1px solid #0284c7' : '1px solid #cbd5e1',
+                        background: filtroStatus === 'todos' ? '#0284c7' : '#ffffff',
+                        color: filtroStatus === 'todos' ? '#ffffff' : '#475569',
+                        fontWeight: filtroStatus === 'todos' ? 700 : 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Todos ({produtosEstoqueBaixo.length})
+                    </button>
+                    {countZerados > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setFiltroStatus('zerados')}
+                        style={{
+                          padding: '4px 9px',
+                          fontSize: '0.71rem',
+                          borderRadius: '7px',
+                          border: '1px solid #fca5a5',
+                          background: filtroStatus === 'zerados' ? '#dc2626' : '#fef2f2',
+                          color: filtroStatus === 'zerados' ? '#ffffff' : '#b91c1c',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Zerados ({countZerados})
+                      </button>
+                    )}
+                    {countCriticos > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setFiltroStatus('criticos')}
+                        style={{
+                          padding: '4px 9px',
+                          fontSize: '0.71rem',
+                          borderRadius: '7px',
+                          border: '1px solid #fed7aa',
+                          background: filtroStatus === 'criticos' ? '#ea580c' : '#fff7ed',
+                          color: filtroStatus === 'criticos' ? '#ffffff' : '#c2410c',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Críticos ({countCriticos})
+                      </button>
+                    )}
+                    {countBaixos > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setFiltroStatus('baixos')}
+                        style={{
+                          padding: '4px 9px',
+                          fontSize: '0.71rem',
+                          borderRadius: '7px',
+                          border: '1px solid #fde68a',
+                          background: filtroStatus === 'baixos' ? '#ca8a04' : '#fefce8',
+                          color: filtroStatus === 'baixos' ? '#ffffff' : '#a16207',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Baixos ({countBaixos})
+                      </button>
+                    )}
                   </div>
                 </div>
-
-                {/* PRESETS RÁPIDOS */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
-                  <span style={{ fontSize: '0.74rem', color: '#15803d', fontWeight: 600 }}>Atalhos Rápidos:</span>
-                  {[2, 3, 5, 10, 15, 20].map((val) => (
-                    <button
-                      key={val}
-                      type="button"
-                      onClick={() => aplicarNovoLimiar(val)}
-                      style={{
-                        padding: '2px 8px',
-                        fontSize: '0.72rem',
-                        fontWeight: limiarEstoqueMinimo === val ? 700 : 500,
-                        background: limiarEstoqueMinimo === val ? '#16a34a' : '#dcfce7',
-                        color: limiarEstoqueMinimo === val ? '#ffffff' : '#15803d',
-                        border: '1px solid #86efac',
-                        borderRadius: '12px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {val} un
-                    </button>
-                  ))}
-                </div>
-
-                <div style={{ fontSize: '0.74rem', color: '#166534', marginTop: '6px', lineHeight: 1.3 }}>
-                  💡 Destacando produtos com estoque igual ou abaixo de <b>{limiarEstoqueMinimo} unidades</b> para você solicitar reposição aos fornecedores.
-                </div>
               </div>
 
-              {/* BOTÕES DE DISPARO RÁPIDO DE PEDIDO / WHATSAPP */}
-              {produtosEstoqueBaixo.length > 0 && (
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={enviarWhatsAppReposicao}
-                    style={{
-                      flex: 1,
-                      minWidth: '180px',
-                      background: '#25d366',
-                      color: '#ffffff',
-                      border: 'none',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      boxShadow: '0 2px 4px rgba(37,211,102,0.25)',
-                    }}
-                  >
-                    <span>💬</span>
-                    <span>Enviar Pedido no WhatsApp</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={copiarListaReposicao}
-                    style={{
-                      background: copiado ? '#15803d' : '#f1f5f9',
-                      color: copiado ? '#ffffff' : '#334155',
-                      border: '1px solid #cbd5e1',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
-                  >
-                    <span>{copiado ? '✅' : '📋'}</span>
-                    <span>{copiado ? 'Copiado!' : 'Copiar Lista'}</span>
-                  </button>
-                </div>
-              )}
-
-              {/* BARRA DE FILTRO E BUSCA */}
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                <input
-                  type="text"
-                  placeholder="Buscar produto para repor..."
-                  value={busca}
-                  onChange={(e) => setBusca(e.target.value)}
-                  style={{
-                    flex: 1,
-                    minWidth: '140px',
-                    padding: '6px 10px',
-                    fontSize: '0.82rem',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: '8px',
-                  }}
-                />
-
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setFiltroStatus('todos')}
-                    style={{
-                      padding: '4px 8px',
-                      fontSize: '0.72rem',
-                      borderRadius: '6px',
-                      border: '1px solid #cbd5e1',
-                      background: filtroStatus === 'todos' ? '#0284c7' : '#ffffff',
-                      color: filtroStatus === 'todos' ? '#ffffff' : '#475569',
-                      fontWeight: filtroStatus === 'todos' ? 700 : 500,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Todos ({produtosEstoqueBaixo.length})
-                  </button>
-                  {countZerados > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setFiltroStatus('zerados')}
-                      style={{
-                        padding: '4px 8px',
-                        fontSize: '0.72rem',
-                        borderRadius: '6px',
-                        border: '1px solid #fca5a5',
-                        background: filtroStatus === 'zerados' ? '#dc2626' : '#fef2f2',
-                        color: filtroStatus === 'zerados' ? '#ffffff' : '#991b1b',
-                        fontWeight: filtroStatus === 'zerados' ? 700 : 500,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Zerados ({countZerados})
-                    </button>
-                  )}
-                  {countCriticos > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setFiltroStatus('criticos')}
-                      style={{
-                        padding: '4px 8px',
-                        fontSize: '0.72rem',
-                        borderRadius: '6px',
-                        border: '1px solid #fed7aa',
-                        background: filtroStatus === 'criticos' ? '#ea580c' : '#fff7ed',
-                        color: filtroStatus === 'criticos' ? '#ffffff' : '#c2410c',
-                        fontWeight: filtroStatus === 'criticos' ? 700 : 500,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Críticos ({countCriticos})
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* LISTA DE PRODUTOS COM ESTOQUE BAIXO */}
+              {/* LISTA EM GRADE 2 COLUNAS NO DESKTOP */}
               {produtosBaixosFiltrados.length === 0 ? (
                 <div
                   style={{
                     textAlign: 'center',
-                    padding: '28px 16px',
-                    background: '#f8fafc',
-                    borderRadius: '10px',
+                    padding: '32px 16px',
+                    background: '#ffffff',
+                    borderRadius: '12px',
                     border: '1px dashed #cbd5e1',
                     color: '#64748b',
                   }}
                 >
-                  <div style={{ fontSize: '2rem', marginBottom: '6px' }}>🎉</div>
-                  <b style={{ color: '#0f172a' }}>Nenhum item com estoque baixo!</b>
-                  <p style={{ fontSize: '0.8rem', marginTop: '4px' }}>
-                    Todos os produtos cadastrados estão com estoque acima de {limiarEstoqueMinimo} unidades.
+                  <CheckCircle2 size={32} style={{ color: '#16a34a', margin: '0 auto 8px auto' }} />
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>
+                    Nenhum item com estoque baixo
+                  </div>
+                  <p style={{ fontSize: '0.78rem', marginTop: '4px' }}>
+                    Todos os produtos filtrados estão acima de {limiarEstoqueMinimo} unidades.
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))',
+                    gap: '10px',
+                  }}
+                >
                   {produtosBaixosFiltrados.map((prod, idx) => {
                     const isZerado = prod.qtdTotal === 0;
                     const isCritico = prod.statusEstoque === 'critico';
 
-                    const corCard = isZerado ? '#fef2f2' : isCritico ? '#fff7ed' : '#fefce8';
-                    const bordaCard = isZerado ? '#fca5a5' : isCritico ? '#fed7aa' : '#fef08a';
-                    const corBadge = isZerado ? '#dc2626' : isCritico ? '#ea580c' : '#ca8a04';
+                    const corSeveridade = isZerado ? '#dc2626' : isCritico ? '#ea580c' : '#d97706';
+                    const bgBadge = isZerado ? '#fef2f2' : isCritico ? '#fff7ed' : '#fefce8';
+                    const textBadge = isZerado ? '#b91c1c' : isCritico ? '#c2410c' : '#a16207';
+                    const borderBadge = isZerado ? '#fecaca' : isCritico ? '#fed7aa' : '#fde68a';
                     const textoBadge = isZerado
-                      ? '🔴 ESGOTADO (0 un)'
+                      ? 'Esgotado • 0 un'
                       : isCritico
-                      ? `🟠 CRÍTICO (${prod.qtdTotal} un)`
-                      : `⚠️ BAIXO (${prod.qtdTotal} un)`;
+                      ? `Crítico • ${prod.qtdTotal} un`
+                      : `Baixo • ${prod.qtdTotal} un`;
 
                     return (
                       <div
                         key={`estoque_baixo_${prod.codigo}_${idx}`}
                         style={{
-                          background: corCard,
-                          border: `1px solid ${bordaCard}`,
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderLeft: `4px solid ${corSeveridade}`,
                           borderRadius: '10px',
-                          padding: '12px',
+                          padding: '10px 12px',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '10px',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                          gap: '8px',
+                          boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
                         }}
                       >
-                        {/* FOTO + DETALHES DO PRODUTO */}
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%' }}>
                           <div
                             style={{
-                              width: '46px',
-                              height: '46px',
+                              width: '42px',
+                              height: '42px',
                               borderRadius: '8px',
-                              background: '#ffffff',
-                              border: '1px solid rgba(0,0,0,0.08)',
+                              background: '#f8fafc',
+                              border: '1px solid #e2e8f0',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -685,18 +787,18 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                               />
                             ) : (
-                              <span style={{ fontSize: '1.2rem' }}>📦</span>
+                              <Package size={18} style={{ color: '#94a3b8' }} />
                             )}
                           </div>
 
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px' }}>
                               <div
                                 style={{
-                                  fontSize: '0.92rem',
+                                  fontSize: '0.84rem',
                                   color: '#0f172a',
                                   fontWeight: 700,
-                                  lineHeight: 1.35,
+                                  lineHeight: 1.3,
                                   wordBreak: 'break-word',
                                 }}
                               >
@@ -704,81 +806,82 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                               </div>
                               <span
                                 style={{
-                                  background: corBadge,
-                                  color: '#ffffff',
-                                  fontSize: '0.7rem',
+                                  background: bgBadge,
+                                  color: textBadge,
+                                  border: `1px solid ${borderBadge}`,
+                                  fontSize: '0.66rem',
                                   fontWeight: 700,
                                   padding: '2px 6px',
-                                  borderRadius: '4px',
+                                  borderRadius: '999px',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0,
                                 }}
                               >
                                 {textoBadge}
                               </span>
                             </div>
 
-                            <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '3px', lineHeight: 1.4 }}>
-                              Cód: <b>{prod.codigo}</b> | Venda: <b>R$ {Number(prod.preco_venda || 0).toFixed(2)}</b>
+                            <div style={{ fontSize: '0.73rem', color: '#64748b', marginTop: '3px', lineHeight: 1.35 }}>
+                              Cód: <b style={{ color: '#334155' }}>{prod.codigo}</b> | Venda:{' '}
+                              <b style={{ color: '#334155' }}>R$ {Number(prod.preco_venda || 0).toFixed(2)}</b>
                               {prod.preco_custo ? ` | Custo: R$ ${Number(prod.preco_custo || 0).toFixed(2)}` : ''}
                             </div>
 
-                            {/* BARRA INDICADORA DE ESTOQUE */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
                               <div
                                 style={{
                                   flex: 1,
-                                  height: '6px',
-                                  background: 'rgba(0,0,0,0.08)',
-                                  borderRadius: '3px',
+                                  height: '5px',
+                                  background: '#e2e8f0',
+                                  borderRadius: '999px',
                                   overflow: 'hidden',
                                 }}
                               >
                                 <div
                                   style={{
-                                    width: `${Math.min(100, (prod.qtdTotal / limiarEstoqueMinimo) * 100)}%`,
+                                    width: `${Math.min(100, (prod.qtdTotal / Math.max(1, limiarEstoqueMinimo)) * 100)}%`,
                                     height: '100%',
-                                    background: corBadge,
+                                    background: corSeveridade,
                                   }}
                                 ></div>
                               </div>
-                              <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#334155', whiteSpace: 'nowrap' }}>
-                                Repor: <b>+{prod.qtdSugeridaRepor} un</b>
+                              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#334155', whiteSpace: 'nowrap' }}>
+                                Repor: +{prod.qtdSugeridaRepor} un
                               </span>
                             </div>
                           </div>
                         </div>
 
-                        {/* BOTÕES DE AÇÃO RESPONSIVOS */}
                         <div
                           style={{
                             display: 'flex',
                             gap: '6px',
-                            width: '100%',
-                            paddingTop: '4px',
-                            borderTop: '1px solid rgba(0,0,0,0.06)',
+                            paddingTop: '6px',
+                            borderTop: '1px solid #f1f5f9',
                           }}
                         >
                           <button
                             type="button"
                             onClick={() => onAbrirReposicao(prod)}
                             style={{
-                              flex: 1.5,
+                              flex: 1.4,
+                              height: '30px',
                               background: '#0284c7',
                               color: '#ffffff',
                               border: 'none',
-                              padding: '8px 12px',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
+                              padding: '0 10px',
+                              borderRadius: '7px',
+                              fontSize: '0.74rem',
                               fontWeight: 700,
                               cursor: 'pointer',
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '4px',
-                              boxShadow: '0 1px 2px rgba(2,132,199,0.2)',
                             }}
                             title="Entrada rápida de novo lote / reposição"
                           >
-                            <span>➕</span>
+                            <Plus size={14} />
                             <span>Repor Estoque</span>
                           </button>
 
@@ -790,24 +893,24 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                             }}
                             style={{
                               flex: 1,
-                              background: '#25d366',
+                              height: '30px',
+                              background: '#16a34a',
                               color: '#ffffff',
                               border: 'none',
-                              padding: '8px 10px',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
+                              padding: '0 10px',
+                              borderRadius: '7px',
+                              fontSize: '0.74rem',
                               fontWeight: 700,
                               cursor: 'pointer',
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '4px',
-                              boxShadow: '0 1px 2px rgba(37,211,102,0.2)',
                             }}
                             title="Enviar pedido individual no WhatsApp"
                           >
-                            <span>💬</span>
-                            <span>Zap</span>
+                            <MessageCircle size={13} />
+                            <span>WhatsApp</span>
                           </button>
                         </div>
                       </div>
@@ -819,18 +922,18 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
           )}
 
           {/* ========================================================================= */}
-          {/* ABA 2: ALERTAS DE VALIDADE & VENCIMENTO                                    */}
+          {/* ABA 2: ALERTAS DE VALIDADE & VENCIMENTO                                   */}
           {/* ========================================================================= */}
           {abaAtiva === 'validade' && (
             <div>
-              {/* DESTAQUE WHATSAPP */}
+              {/* FAIXA COMPACTA DE 1 LINHA */}
               <div
                 style={{
-                  background: '#dcfce7',
-                  border: '1px solid #86efac',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '10px',
-                  padding: '12px 14px',
-                  marginBottom: '14px',
+                  padding: '10px 12px',
+                  marginBottom: '12px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -838,66 +941,78 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                   gap: '8px',
                 }}
               >
-                <div>
-                  <b style={{ fontSize: '0.85rem', color: '#14532d' }}>📱 Relatório Completo de Validades</b>
-                  <div style={{ fontSize: '0.74rem', color: '#166534' }}>
-                    Envie toda a relação de vencimentos para a equipe via WhatsApp
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Clock size={16} style={{ color: '#d97706', flexShrink: 0 }} />
+                  <div style={{ fontSize: '0.78rem', color: '#334155' }}>
+                    <b style={{ color: '#0f172a' }}>Monitor de Validades:</b> {vencidos.length} vencido(s)/hoje e{' '}
+                    {Math.max(0, proximoVencimento.length - vencidos.length)} a vencer nos próximos 10 dias
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={onAbrirAlertasWhatsApp}
                   style={{
-                    background: '#25d366',
+                    background: '#16a34a',
                     color: '#ffffff',
                     border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
+                    borderRadius: '7px',
+                    padding: '5px 10px',
+                    height: '28px',
                     fontWeight: 700,
-                    fontSize: '0.78rem',
+                    fontSize: '0.74rem',
                     cursor: 'pointer',
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '5px',
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  <span>💬</span>
-                  <span>Abrir WhatsApp</span>
+                  <MessageCircle size={13} />
+                  <span>Relatório WhatsApp</span>
                 </button>
               </div>
 
               {proximoVencimento.length === 0 ? (
-                <div style={{ textAlign: 'center', color: '#64748b', padding: '24px' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: '6px' }}>👍</div>
-                  <b>Nenhum alerta de validade nos próximos 10 dias!</b>
+                <div
+                  style={{
+                    textAlign: 'center',
+                    color: '#64748b',
+                    padding: '32px 16px',
+                    background: '#ffffff',
+                    borderRadius: '12px',
+                    border: '1px dashed #cbd5e1',
+                  }}
+                >
+                  <CheckCircle2 size={32} style={{ color: '#16a34a', margin: '0 auto 8px auto' }} />
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>
+                    Nenhum alerta de validade nos próximos 10 dias
+                  </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))',
+                    gap: '10px',
+                  }}
+                >
                   {proximoVencimento.map((p, idx) => {
                     const dataVal = new Date(p.validade + 'T00:00:00');
                     const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
 
-                    let textoStatus = '';
-                    let corFundo = '#fef3c7';
-                    let corTexto = '#92400e';
-                    let borda = '#fde68a';
-                    let corBadge = '#d97706';
+                    const isUrgente = dias <= 0;
+                    const corSeveridade = isUrgente ? '#dc2626' : '#d97706';
+                    const bgBadge = isUrgente ? '#fef2f2' : '#fef3c7';
+                    const textBadge = isUrgente ? '#b91c1c' : '#92400e';
+                    const borderBadge = isUrgente ? '#fecaca' : '#fde68a';
 
+                    let textoStatus = '';
                     if (dias < 0) {
-                      const diasPassados = Math.abs(dias);
-                      textoStatus = `❌ Vencido há ${diasPassados} dia(s)`;
-                      corFundo = '#fee2e2';
-                      corTexto = '#991b1b';
-                      borda = '#fca5a5';
-                      corBadge = '#dc2626';
+                      textoStatus = `Vencido há ${Math.abs(dias)}d`;
                     } else if (dias === 0) {
-                      textoStatus = '🚨 Vence HOJE';
-                      corFundo = '#fee2e2';
-                      corTexto = '#991b1b';
-                      borda = '#fca5a5';
-                      corBadge = '#dc2626';
+                      textoStatus = 'Vence HOJE';
                     } else {
-                      textoStatus = `⚠️ Vence em ${dias} dia(s)`;
+                      textoStatus = `Vence em ${dias}d`;
                     }
 
                     const fotoItem = p.foto || catalogoGlobal.find((c) => c.codigo === p.codigo)?.imagem;
@@ -906,25 +1021,25 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                       <div
                         key={`val_${p.codigo}_${p.validade}_${p.lote}_${idx}`}
                         style={{
-                          background: corFundo,
-                          border: `1px solid ${borda}`,
-                          padding: '12px',
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderLeft: `4px solid ${corSeveridade}`,
+                          padding: '10px 12px',
                           borderRadius: '10px',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '10px',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                          gap: '8px',
+                          boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
                         }}
                       >
-                        {/* CABEÇALHO DO PRODUTO: FOTO + NOME COMPLETO + STATUS */}
                         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%' }}>
                           <div
                             style={{
-                              width: '46px',
-                              height: '46px',
+                              width: '42px',
+                              height: '42px',
                               borderRadius: '8px',
-                              background: '#ffffff',
-                              border: '1px solid rgba(0,0,0,0.08)',
+                              background: '#f8fafc',
+                              border: '1px solid #e2e8f0',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -940,53 +1055,55 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                               />
                             ) : (
-                              <span style={{ fontSize: '1.2rem' }}>📦</span>
+                              <Package size={18} style={{ color: '#94a3b8' }} />
                             )}
                           </div>
 
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div
-                              style={{
-                                color: '#0f172a',
-                                fontSize: '0.92rem',
-                                fontWeight: 700,
-                                lineHeight: 1.35,
-                                wordBreak: 'break-word',
-                              }}
-                            >
-                              {p.nome}
-                            </div>
-
-                            <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '4px', lineHeight: 1.4 }}>
-                              Cód: <b>{p.codigo}</b> | Lote: <b>{p.lote || 'N/D'}</b> | Qtd: <b>{p.quantidade} un</b>
-                            </div>
-
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
-                              <span
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px' }}>
+                              <div
                                 style={{
-                                  background: corBadge,
-                                  color: '#ffffff',
-                                  fontSize: '0.72rem',
+                                  color: '#0f172a',
+                                  fontSize: '0.84rem',
                                   fontWeight: 700,
-                                  padding: '2px 8px',
-                                  borderRadius: '4px',
+                                  lineHeight: 1.3,
+                                  wordBreak: 'break-word',
                                 }}
                               >
-                                {textoStatus} ({p.validade})
+                                {p.nome}
+                              </div>
+                              <span
+                                style={{
+                                  background: bgBadge,
+                                  color: textBadge,
+                                  border: `1px solid ${borderBadge}`,
+                                  fontSize: '0.66rem',
+                                  fontWeight: 700,
+                                  padding: '2px 6px',
+                                  borderRadius: '999px',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {textoStatus}
                               </span>
+                            </div>
+
+                            <div style={{ fontSize: '0.73rem', color: '#64748b', marginTop: '3px', lineHeight: 1.35 }}>
+                              Lote: <b style={{ color: '#334155' }}>{p.lote || 'N/D'}</b> | Val:{' '}
+                              <b style={{ color: '#334155' }}>{p.validade}</b> | Qtd:{' '}
+                              <b style={{ color: '#334155' }}>{p.quantidade} un</b>
                             </div>
                           </div>
                         </div>
 
-                        {/* LINHA DE AÇÕES RESPONSIVA DE LARGURA TOTAL */}
                         <div
                           style={{
                             display: 'flex',
                             gap: '6px',
                             flexWrap: 'wrap',
-                            width: '100%',
-                            paddingTop: '4px',
-                            borderTop: '1px solid rgba(0,0,0,0.06)',
+                            paddingTop: '6px',
+                            borderTop: '1px solid #f1f5f9',
                           }}
                         >
                           <button
@@ -996,24 +1113,24 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                               window.open(`https://wa.me/?text=${encodeURIComponent(msgItem)}`, '_blank');
                             }}
                             style={{
-                              flex: '1 1 80px',
-                              background: '#25d366',
+                              flex: '1 1 85px',
+                              height: '30px',
+                              background: '#16a34a',
                               color: '#ffffff',
                               border: 'none',
-                              padding: '8px 10px',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
+                              padding: '0 8px',
+                              borderRadius: '7px',
+                              fontSize: '0.73rem',
                               fontWeight: 700,
                               cursor: 'pointer',
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '4px',
-                              boxShadow: '0 1px 2px rgba(37,211,102,0.2)',
                             }}
                           >
-                            <span>💬</span>
-                            <span>Zap</span>
+                            <MessageCircle size={13} />
+                            <span>WhatsApp</span>
                           </button>
 
                           {dias <= 0 && onDarBaixaPerda && (
@@ -1026,24 +1143,24 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                                 setMsgPerda('');
                               }}
                               style={{
-                                flex: '1.2 1 110px',
+                                flex: '1.1 1 95px',
+                                height: '30px',
                                 background: '#dc2626',
                                 color: '#ffffff',
                                 border: 'none',
-                                padding: '8px 10px',
-                                borderRadius: '6px',
-                                fontSize: '0.78rem',
+                                padding: '0 8px',
+                                borderRadius: '7px',
+                                fontSize: '0.73rem',
                                 fontWeight: 700,
                                 cursor: 'pointer',
-                                display: 'flex',
+                                display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 gap: '4px',
-                                boxShadow: '0 1px 2px rgba(220,38,38,0.2)',
                               }}
                               title="Dar baixa de descarte / perda neste produto vencido"
                             >
-                              <span>🗑️</span>
+                              <Trash2 size={13} />
                               <span>Baixa Perda</span>
                             </button>
                           )}
@@ -1052,23 +1169,23 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                             type="button"
                             onClick={() => onAbrirVenda(p.codigo, p.validade, p.lote || '')}
                             style={{
-                              flex: '1.2 1 100px',
+                              flex: '1.1 1 95px',
+                              height: '30px',
                               background: '#0284c7',
                               color: '#ffffff',
                               border: 'none',
-                              padding: '8px 10px',
-                              borderRadius: '6px',
-                              fontSize: '0.78rem',
+                              padding: '0 8px',
+                              borderRadius: '7px',
+                              fontSize: '0.73rem',
                               fontWeight: 700,
                               cursor: 'pointer',
-                              display: 'flex',
+                              display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: '4px',
-                              boxShadow: '0 1px 2px rgba(2,132,199,0.2)',
                             }}
                           >
-                            <span>🛒</span>
+                            <ShoppingCart size={13} />
                             <span>Vender / Ver</span>
                           </button>
                         </div>
@@ -1081,17 +1198,25 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
           )}
 
           {/* ========================================================================= */}
-          {/* ABA 3: PAINEL DE RESUMO GERAL DE ALERTAS                                   */}
+          {/* ABA 3: RESUMO GERAL DE ALERTAS (4 KPIs EM LINHA RESPONSIVA)               */}
           {/* ========================================================================= */}
           {abaAtiva === 'resumo' && (
             <div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '14px' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: '10px',
+                  marginBottom: '12px',
+                }}
+              >
                 <div
                   style={{
-                    background: '#fef2f2',
+                    background: '#ffffff',
                     border: '1px solid #fecaca',
+                    borderTop: '4px solid #dc2626',
                     borderRadius: '10px',
-                    padding: '12px',
+                    padding: '14px 12px',
                     textAlign: 'center',
                     cursor: 'pointer',
                   }}
@@ -1100,17 +1225,22 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                     setFiltroStatus('zerados');
                   }}
                 >
-                  <div style={{ fontSize: '1.4rem' }}>🔴</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#991b1b' }}>{countZerados}</div>
-                  <div style={{ fontSize: '0.76rem', fontWeight: 600, color: '#7f1d1d' }}>Itens Esgotados (0 un)</div>
+                  <AlertCircle size={20} style={{ color: '#dc2626', margin: '0 auto 6px auto' }} />
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#991b1b', lineHeight: 1.1 }}>
+                    {countZerados}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#7f1d1d', marginTop: '4px' }}>
+                    Itens Esgotados (0 un)
+                  </div>
                 </div>
 
                 <div
                   style={{
-                    background: '#fff7ed',
+                    background: '#ffffff',
                     border: '1px solid #fed7aa',
+                    borderTop: '4px solid #ea580c',
                     borderRadius: '10px',
-                    padding: '12px',
+                    padding: '14px 12px',
                     textAlign: 'center',
                     cursor: 'pointer',
                   }}
@@ -1119,95 +1249,118 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                     setFiltroStatus('todos');
                   }}
                 >
-                  <div style={{ fontSize: '1.4rem' }}>📦</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#c2410c' }}>{produtosEstoqueBaixo.length}</div>
-                  <div style={{ fontSize: '0.76rem', fontWeight: 600, color: '#9a3412' }}>
+                  <Package size={20} style={{ color: '#ea580c', margin: '0 auto 6px auto' }} />
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#c2410c', lineHeight: 1.1 }}>
+                    {produtosEstoqueBaixo.length}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#9a3412', marginTop: '4px' }}>
                     Abaixo do Limiar (≤ {limiarEstoqueMinimo})
                   </div>
                 </div>
 
                 <div
                   style={{
-                    background: '#fee2e2',
+                    background: '#ffffff',
                     border: '1px solid #fca5a5',
+                    borderTop: '4px solid #b91c1c',
                     borderRadius: '10px',
-                    padding: '12px',
+                    padding: '14px 12px',
                     textAlign: 'center',
                     cursor: 'pointer',
                   }}
                   onClick={() => setAbaAtiva('validade')}
                 >
-                  <div style={{ fontSize: '1.4rem' }}>❌</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#991b1b' }}>{vencidos.length}</div>
-                  <div style={{ fontSize: '0.76rem', fontWeight: 600, color: '#7f1d1d' }}>Itens Vencidos</div>
+                  <Trash2 size={20} style={{ color: '#b91c1c', margin: '0 auto 6px auto' }} />
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#991b1b', lineHeight: 1.1 }}>
+                    {vencidos.length}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#7f1d1d', marginTop: '4px' }}>
+                    Itens Vencidos / Hoje
+                  </div>
                 </div>
 
                 <div
                   style={{
-                    background: '#fef3c7',
+                    background: '#ffffff',
                     border: '1px solid #fde68a',
+                    borderTop: '4px solid #d97706',
                     borderRadius: '10px',
-                    padding: '12px',
+                    padding: '14px 12px',
                     textAlign: 'center',
                     cursor: 'pointer',
                   }}
                   onClick={() => setAbaAtiva('validade')}
                 >
-                  <div style={{ fontSize: '1.4rem' }}>⚠️</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#b45309' }}>{proximoVencimento.length}</div>
-                  <div style={{ fontSize: '0.76rem', fontWeight: 600, color: '#78350f' }}>Vencendo em até 10 dias</div>
+                  <Clock size={20} style={{ color: '#d97706', margin: '0 auto 6px auto' }} />
+                  <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#b45309', lineHeight: 1.1 }}>
+                    {proximoVencimento.length}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#78350f', marginTop: '4px' }}>
+                    Vencendo em até 10 dias
+                  </div>
                 </div>
               </div>
 
               <div
                 style={{
-                  background: '#f8fafc',
+                  background: '#ffffff',
                   border: '1px solid #e2e8f0',
                   borderRadius: '10px',
-                  padding: '12px',
-                  fontSize: '0.8rem',
+                  padding: '10px 14px',
+                  fontSize: '0.78rem',
                   color: '#475569',
-                  lineHeight: 1.4,
+                  lineHeight: 1.45,
                 }}
               >
-                <b>📌 Dica do Gerente:</b>
-                <p style={{ marginTop: '4px' }}>
-                  Mantenha o limiar de estoque mínimo atualizado de acordo com o giro de mercadorias da sua loja. O sistema calculará sugestões de pedidos automáticas para que nenhum item fique em falta na gôndola.
-                </p>
+                <b style={{ color: '#0f172a' }}>Dica do Gerente:</b> Mantenha o limiar de estoque mínimo ajustado ao
+                giro da sua loja para receber sugestões automáticas de reposição antes de faltar mercadoria na gôndola.
               </div>
             </div>
           )}
         </div>
 
-        {/* RODAPÉ DO MODAL */}
+        {/* RODAPÉ ENXUTO */}
         <div
           style={{
-            padding: '12px 16px',
-            background: '#f8fafc',
+            padding: '10px 16px',
+            background: '#ffffff',
             borderTop: '1px solid #e2e8f0',
             display: 'flex',
-            justifyContent: 'flex-end',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px',
           }}
         >
+          <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
+            {produtosEstoqueBaixo.length} item(ns) para repor • {proximoVencimento.length} alerta(s) de validade
+          </span>
           <button
             type="button"
-            className="btn btn-cancelar"
             onClick={onFechar}
-            style={{ width: '100%', padding: '10px', fontWeight: 600 }}
+            style={{
+              padding: '7px 16px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              background: '#f8fafc',
+              color: '#334155',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
           >
-            Fechar Central de Notificações
+            Fechar
           </button>
         </div>
       </div>
 
-      {/* DIÁLOGO / MODAL DE CONFIRMAÇÃO DE BAIXA POR PERDA / VENCIMENTO */}
+      {/* DIÁLOGO DE CONFIRMAÇÃO DE BAIXA POR PERDA / VENCIMENTO */}
       {itemPerdaModal && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(15, 23, 42, 0.7)',
-            zIndex: 4000,
+            background: 'rgba(15, 23, 42, 0.72)',
+            zIndex: 1000010,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1223,22 +1376,21 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
               width: '100%',
               boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
               overflow: 'hidden',
-              animation: 'fadeIn 0.2s ease-out',
             }}
           >
             <div
               style={{
                 background: '#dc2626',
                 color: '#ffffff',
-                padding: '14px 16px',
+                padding: '12px 16px',
                 fontWeight: 700,
-                fontSize: '1rem',
+                fontSize: '0.94rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
               }}
             >
-              <span>🗑️</span>
+              <Trash2 size={16} />
               <span>Registro de Baixa por Perda</span>
             </div>
 
@@ -1247,27 +1399,27 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                 style={{
                   background: '#fef2f2',
                   border: '1px solid #fca5a5',
-                  padding: '12px',
+                  padding: '10px 12px',
                   borderRadius: '8px',
-                  marginBottom: '14px',
+                  marginBottom: '12px',
                 }}
               >
-                <b style={{ color: '#991b1b', fontSize: '0.92rem', display: 'block' }}>
+                <b style={{ color: '#991b1b', fontSize: '0.88rem', display: 'block' }}>
                   {itemPerdaModal.nome}
                 </b>
-                <div style={{ fontSize: '0.8rem', color: '#7f1d1d', marginTop: '4px' }}>
+                <div style={{ fontSize: '0.76rem', color: '#7f1d1d', marginTop: '4px' }}>
                   <b>Cód:</b> {itemPerdaModal.codigo} | <b>Lote:</b> {itemPerdaModal.lote || 'N/D'}
                 </div>
-                <div style={{ fontSize: '0.8rem', color: '#7f1d1d', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.76rem', color: '#7f1d1d', marginTop: '2px' }}>
                   <b>Validade:</b> {itemPerdaModal.validade} (Vencido)
                 </div>
-                <div style={{ fontSize: '0.85rem', color: '#991b1b', marginTop: '4px', fontWeight: 700 }}>
+                <div style={{ fontSize: '0.8rem', color: '#991b1b', marginTop: '4px', fontWeight: 700 }}>
                   Estoque disponível no lote: {itemPerdaModal.quantidade} un
                 </div>
               </div>
 
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
+              <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
                   Quantidade para descartar / dar baixa:
                 </label>
                 <input
@@ -1293,8 +1445,8 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                   }}
                   style={{
                     width: '100%',
-                    padding: '8px 12px',
-                    fontSize: '0.95rem',
+                    padding: '7px 10px',
+                    fontSize: '0.9rem',
                     border: '1px solid #cbd5e1',
                     borderRadius: '8px',
                     boxSizing: 'border-box',
@@ -1302,8 +1454,8 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                 />
               </div>
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
                   Motivo da Perda / Descarte:
                 </label>
                 <select
@@ -1311,37 +1463,37 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                   onChange={(e) => setMotivoPerdaInput(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '8px 12px',
-                    fontSize: '0.88rem',
+                    padding: '7px 10px',
+                    fontSize: '0.84rem',
                     border: '1px solid #cbd5e1',
                     borderRadius: '8px',
                     boxSizing: 'border-box',
                   }}
                 >
-                  <option value="Produto Vencido">❌ Produto Vencido (Prazo de Validade Expirado)</option>
-                  <option value="Avaria / Embalagem Violada">📦 Avaria / Embalagem Violada ou Danificada</option>
-                  <option value="Quebra / Degradação">💥 Quebra ou Degradação Física</option>
-                  <option value="Descarte Sanitário">⚠️ Descarte Sanitário / Vigilância</option>
+                  <option value="Produto Vencido">Produto Vencido (Prazo de Validade Expirado)</option>
+                  <option value="Avaria / Embalagem Violada">Avaria / Embalagem Violada ou Danificada</option>
+                  <option value="Quebra / Degradação">Quebra ou Degradação Física</option>
+                  <option value="Descarte Sanitário">Descarte Sanitário / Vigilância</option>
                 </select>
               </div>
 
               {msgPerda && (
-                <div style={{ marginBottom: '12px', fontSize: '0.85rem', fontWeight: 600, textAlign: 'center' }}>
+                <div style={{ marginBottom: '10px', fontSize: '0.8rem', fontWeight: 600, textAlign: 'center' }}>
                   {msgPerda}
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                 <button
                   type="button"
                   onClick={() => {
                     const qtdNum = typeof qtdPerdaInput === 'number' ? qtdPerdaInput : (parseInt(qtdPerdaInput, 10) || 0);
                     if (isNaN(qtdNum) || qtdNum < 1) {
-                      setMsgPerda('⚠️ Digite uma quantidade válida!');
+                      setMsgPerda('Digite uma quantidade válida!');
                       return;
                     }
                     if (qtdNum > itemPerdaModal.quantidade) {
-                      setMsgPerda('⚠️ Quantidade maior que o estoque no lote!');
+                      setMsgPerda('Quantidade maior que o estoque no lote!');
                       return;
                     }
 
@@ -1355,7 +1507,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                       );
                     }
 
-                    setMsgPerda('✅ Baixa de perda registrada com sucesso!');
+                    setMsgPerda('Baixa de perda registrada com sucesso!');
                     setTimeout(() => {
                       setItemPerdaModal(null);
                       setMsgPerda('');
@@ -1366,10 +1518,10 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                     background: '#dc2626',
                     color: '#ffffff',
                     border: 'none',
-                    padding: '10px',
+                    padding: '9px',
                     borderRadius: '8px',
                     fontWeight: 700,
-                    fontSize: '0.88rem',
+                    fontSize: '0.84rem',
                     cursor: 'pointer',
                   }}
                 >
@@ -1385,10 +1537,10 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                     background: '#f1f5f9',
                     color: '#475569',
                     border: '1px solid #cbd5e1',
-                    padding: '10px 14px',
+                    padding: '9px 14px',
                     borderRadius: '8px',
                     fontWeight: 600,
-                    fontSize: '0.88rem',
+                    fontSize: '0.84rem',
                     cursor: 'pointer',
                   }}
                 >

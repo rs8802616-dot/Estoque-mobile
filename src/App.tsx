@@ -1181,6 +1181,148 @@ export default function App() {
     return '';
   };
 
+  const renderBlocoPrecoMargem = () => (
+    <div style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', margin: '6px 0' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+        <div className="grupo-input" style={{ margin: 0 }}>
+          <label className="rotulo-campo" style={{ fontSize: '0.74rem', marginBottom: '3px' }}>
+            Preço de Custo (R$)
+          </label>
+          <input
+            type="number"
+            id="cad-custo"
+            className="input-modal"
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            value={cadCusto}
+            onChange={(e) => {
+              const novoC = e.target.value;
+              setCadCusto(novoC);
+              if (cadMargemLucro) {
+                const p = calcularPrecoPorMargem(novoC, cadMargemLucro);
+                if (p) setCadPreco(p);
+              } else if (cadPreco) {
+                setCadMargemLucro(calcularMargemPorPreco(novoC, cadPreco));
+              }
+            }}
+            style={{ padding: '5px 8px', height: '32px', fontSize: '0.84rem' }}
+          />
+        </div>
+
+        <div className="grupo-input" style={{ margin: 0 }}>
+          <label className="rotulo-campo" style={{ fontSize: '0.74rem', marginBottom: '3px' }}>
+            Margem de Lucro (%)
+          </label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="number"
+              id="cad-margem"
+              className="input-modal"
+              placeholder="Ex: 40"
+              step="0.1"
+              value={cadMargemLucro}
+              onChange={(e) => {
+                const novaM = e.target.value;
+                setCadMargemLucro(novaM);
+                if (cadCusto) {
+                  const p = calcularPrecoPorMargem(cadCusto, novaM);
+                  if (p) setCadPreco(p);
+                }
+              }}
+              style={{ padding: '5px 24px 5px 8px', height: '32px', fontSize: '0.84rem' }}
+            />
+            <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 700, fontSize: '0.78rem' }}>%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ATALHOS RÁPIDOS DE MARGEM (LINHA ÚNICA COMPACTA) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginTop: '6px' }}>
+        {['20', '30', '40', '50', '70', '100'].map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => {
+              setCadMargemLucro(m);
+              if (cadCusto) {
+                const p = calcularPrecoPorMargem(cadCusto, m);
+                if (p) setCadPreco(p);
+              }
+            }}
+            style={{
+              background: cadMargemLucro === m ? '#0284c7' : '#ffffff',
+              color: cadMargemLucro === m ? '#ffffff' : '#0369a1',
+              border: '1px solid #bae6fd',
+              borderRadius: '6px',
+              padding: '3px 2px',
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              lineHeight: 1.2,
+              textAlign: 'center',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+            }}
+          >
+            +{m}%
+          </button>
+        ))}
+      </div>
+
+      {/* PREÇO DE VENDA FINAL */}
+      <div className="grupo-input" style={{ marginTop: '7px', marginBottom: 0 }}>
+        <label className="rotulo-campo" style={{ color: '#0f172a', fontWeight: 700, fontSize: '0.75rem', marginBottom: '3px' }}>
+          Preço de Venda Final (R$) *
+        </label>
+        <input
+          type="number"
+          id="cad-preco"
+          className="input-modal"
+          placeholder="0.00"
+          step="0.01"
+          min="0.01"
+          value={cadPreco}
+          onChange={(e) => {
+            const novoP = e.target.value;
+            setCadPreco(novoP);
+            if (cadCusto) {
+              setCadMargemLucro(calcularMargemPorPreco(cadCusto, novoP));
+            }
+          }}
+          style={{ padding: '5px 10px', height: '36px', fontSize: '1rem', fontWeight: 800, color: '#0284c7', border: '1.5px solid #0284c7' }}
+          required
+        />
+      </div>
+
+      {/* INDICADOR VISUAL DE LUCRO / PREJUÍZO EM REAIS */}
+      {parseFloat(cadCusto) > 0 && parseFloat(cadPreco) > 0 && (
+        <div
+          style={{
+            background: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#f0fdf4' : '#fef2f2',
+            border: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '1px solid #bbf7d0' : '1px solid #fecaca',
+            padding: '4px 8px',
+            borderRadius: '6px',
+            fontSize: '0.73rem',
+            color: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#166534' : '#991b1b',
+            fontWeight: 600,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '6px',
+          }}
+        >
+          <span>
+            {parseFloat(cadPreco) >= parseFloat(cadCusto) ? '💰 Lucro Bruto Estimado:' : '⚠️ Prejuízo na Venda:'}
+          </span>
+          <span>
+            <b>R$ {Math.abs(parseFloat(cadPreco) - parseFloat(cadCusto)).toFixed(2)}</b> / un (
+            {cadMargemLucro || calcularMargemPorPreco(cadCusto, cadPreco)}%)
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
   // Identifica se o produto já existe no Catálogo Global do Banco de Dados Central
   const itemCatalogoExistente = useMemo(() => {
     if (tipoProdutoCadastro === 'interno') return undefined;
@@ -14160,138 +14302,7 @@ export default function App() {
                 </div>
 
                 {/* BLOCO DE CUSTO, MARGEM DE LUCRO (%) E PREÇO DE VENDA */}
-                <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', margin: '8px 0' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                    <div className="grupo-input" style={{ margin: 0 }}>
-                      <label className="rotulo-campo">Preço de Custo (R$)</label>
-                      <input
-                        type="number"
-                        id="cad-custo"
-                        className="input-modal"
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        value={cadCusto}
-                        onChange={(e) => {
-                          const novoC = e.target.value;
-                          setCadCusto(novoC);
-                          if (cadMargemLucro) {
-                            const p = calcularPrecoPorMargem(novoC, cadMargemLucro);
-                            if (p) setCadPreco(p);
-                          } else if (cadPreco) {
-                            setCadMargemLucro(calcularMargemPorPreco(novoC, cadPreco));
-                          }
-                        }}
-                      />
-                    </div>
-
-                    <div className="grupo-input" style={{ margin: 0 }}>
-                      <label className="rotulo-campo">Margem de Lucro (%)</label>
-                      <div style={{ position: 'relative' }}>
-                        <input
-                          type="number"
-                          id="cad-margem"
-                          className="input-modal"
-                          placeholder="Ex: 40"
-                          step="0.1"
-                          value={cadMargemLucro}
-                          onChange={(e) => {
-                            const novaM = e.target.value;
-                            setCadMargemLucro(novaM);
-                            if (cadCusto) {
-                              const p = calcularPrecoPorMargem(cadCusto, novaM);
-                              if (p) setCadPreco(p);
-                            }
-                          }}
-                          style={{ paddingRight: '28px' }}
-                        />
-                        <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 700, fontSize: '0.85rem' }}>%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* ATALHOS RÁPIDOS DE MARGEM */}
-                  <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Atalhos:</span>
-                    {['20', '30', '40', '50', '70', '100'].map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => {
-                          setCadMargemLucro(m);
-                          if (cadCusto) {
-                            const p = calcularPrecoPorMargem(cadCusto, m);
-                            if (p) setCadPreco(p);
-                          }
-                        }}
-                        style={{
-                          background: cadMargemLucro === m ? '#0284c7' : '#ffffff',
-                          color: cadMargemLucro === m ? '#ffffff' : '#0369a1',
-                          border: '1px solid #bae6fd',
-                          borderRadius: '12px',
-                          padding: '2px 8px',
-                          fontSize: '0.72rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        +{m}%
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* PREÇO DE VENDA FINAL */}
-                  <div className="grupo-input" style={{ marginTop: '10px', marginBottom: 0 }}>
-                    <label className="rotulo-campo" style={{ color: '#0f172a', fontWeight: 700 }}>
-                      Preço de Venda Final (R$) *
-                    </label>
-                    <input
-                      type="number"
-                      id="cad-preco"
-                      className="input-modal"
-                      placeholder="0.00"
-                      step="0.01"
-                      min="0.01"
-                      value={cadPreco}
-                      onChange={(e) => {
-                        const novoP = e.target.value;
-                        setCadPreco(novoP);
-                        if (cadCusto) {
-                          setCadMargemLucro(calcularMargemPorPreco(cadCusto, novoP));
-                        }
-                      }}
-                      style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0284c7', border: '2px solid #0284c7' }}
-                      required
-                    />
-                  </div>
-
-                  {/* INDICADOR VISUAL DE LUCRO / PREJUÍZO EM REAIS */}
-                  {parseFloat(cadCusto) > 0 && parseFloat(cadPreco) > 0 && (
-                    <div
-                      style={{
-                        background: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#f0fdf4' : '#fef2f2',
-                        border: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '1px solid #bbf7d0' : '1px solid #fecaca',
-                        padding: '6px 10px',
-                        borderRadius: '6px',
-                        fontSize: '0.78rem',
-                        color: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#166534' : '#991b1b',
-                        fontWeight: 600,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: '8px',
-                      }}
-                    >
-                      <span>
-                        {parseFloat(cadPreco) >= parseFloat(cadCusto) ? '💰 Lucro Bruto Estimado:' : '⚠️ Prejuízo na Venda:'}
-                      </span>
-                      <span>
-                        <b>R$ {Math.abs(parseFloat(cadPreco) - parseFloat(cadCusto)).toFixed(2)}</b> / un (
-                        {cadMargemLucro || calcularMargemPorPreco(cadCusto, cadPreco)}%)
-                      </span>
-                    </div>
-                  )}
-                </div>
+                {renderBlocoPrecoMargem()}
               </>
             ) : (
               /* FLUXO PADRÃO INDUSTRIAL COM CÓDIGO DE BARRAS (EAN) */
@@ -14507,138 +14518,7 @@ export default function App() {
                       />
                     </div>
                     {/* BLOCO DE CUSTO, MARGEM DE LUCRO (%) E PREÇO DE VENDA */}
-                    <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', margin: '8px 0' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <div className="grupo-input" style={{ margin: 0 }}>
-                          <label className="rotulo-campo">Preço de Custo (R$)</label>
-                          <input
-                            type="number"
-                            id="cad-custo"
-                            className="input-modal"
-                            placeholder="0.00"
-                            step="0.01"
-                            min="0"
-                            value={cadCusto}
-                            onChange={(e) => {
-                              const novoC = e.target.value;
-                              setCadCusto(novoC);
-                              if (cadMargemLucro) {
-                                const p = calcularPrecoPorMargem(novoC, cadMargemLucro);
-                                if (p) setCadPreco(p);
-                              } else if (cadPreco) {
-                                setCadMargemLucro(calcularMargemPorPreco(novoC, cadPreco));
-                              }
-                            }}
-                          />
-                        </div>
-
-                        <div className="grupo-input" style={{ margin: 0 }}>
-                          <label className="rotulo-campo">Margem de Lucro (%)</label>
-                          <div style={{ position: 'relative' }}>
-                            <input
-                              type="number"
-                              id="cad-margem"
-                              className="input-modal"
-                              placeholder="Ex: 40"
-                              step="0.1"
-                              value={cadMargemLucro}
-                              onChange={(e) => {
-                                const novaM = e.target.value;
-                                setCadMargemLucro(novaM);
-                                if (cadCusto) {
-                                  const p = calcularPrecoPorMargem(cadCusto, novaM);
-                                  if (p) setCadPreco(p);
-                                }
-                              }}
-                              style={{ paddingRight: '28px' }}
-                            />
-                            <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 700, fontSize: '0.85rem' }}>%</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* ATALHOS RÁPIDOS DE MARGEM */}
-                      <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Atalhos:</span>
-                        {['20', '30', '40', '50', '70', '100'].map((m) => (
-                          <button
-                            key={m}
-                            type="button"
-                            onClick={() => {
-                              setCadMargemLucro(m);
-                              if (cadCusto) {
-                                const p = calcularPrecoPorMargem(cadCusto, m);
-                                if (p) setCadPreco(p);
-                              }
-                            }}
-                            style={{
-                              background: cadMargemLucro === m ? '#0284c7' : '#ffffff',
-                              color: cadMargemLucro === m ? '#ffffff' : '#0369a1',
-                              border: '1px solid #bae6fd',
-                              borderRadius: '12px',
-                              padding: '2px 8px',
-                              fontSize: '0.72rem',
-                              fontWeight: 700,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            +{m}%
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* PREÇO DE VENDA FINAL */}
-                      <div className="grupo-input" style={{ marginTop: '10px', marginBottom: 0 }}>
-                        <label className="rotulo-campo" style={{ color: '#0f172a', fontWeight: 700 }}>
-                          Preço de Venda Final (R$) *
-                        </label>
-                        <input
-                          type="number"
-                          id="cad-preco"
-                          className="input-modal"
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0.01"
-                          value={cadPreco}
-                          onChange={(e) => {
-                            const novoP = e.target.value;
-                            setCadPreco(novoP);
-                            if (cadCusto) {
-                              setCadMargemLucro(calcularMargemPorPreco(cadCusto, novoP));
-                            }
-                          }}
-                          style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0284c7', border: '2px solid #0284c7' }}
-                          required
-                        />
-                      </div>
-
-                      {/* INDICADOR VISUAL DE LUCRO / PREJUÍZO EM REAIS */}
-                      {parseFloat(cadCusto) > 0 && parseFloat(cadPreco) > 0 && (
-                        <div
-                          style={{
-                            background: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#f0fdf4' : '#fef2f2',
-                            border: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '1px solid #bbf7d0' : '1px solid #fecaca',
-                            padding: '6px 10px',
-                            borderRadius: '6px',
-                            fontSize: '0.78rem',
-                            color: parseFloat(cadPreco) >= parseFloat(cadCusto) ? '#166534' : '#991b1b',
-                            fontWeight: 600,
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginTop: '8px',
-                          }}
-                        >
-                          <span>
-                            {parseFloat(cadPreco) >= parseFloat(cadCusto) ? '💰 Lucro Bruto Estimado:' : '⚠️ Prejuízo na Venda:'}
-                          </span>
-                          <span>
-                            <b>R$ {Math.abs(parseFloat(cadPreco) - parseFloat(cadCusto)).toFixed(2)}</b> / un (
-                            {cadMargemLucro || calcularMargemPorPreco(cadCusto, cadPreco)}%)
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    {renderBlocoPrecoMargem()}
                   </>
                 )}
               </>
@@ -15885,7 +15765,7 @@ export default function App() {
         );
       })()}
 
-      {/* ABAS FLUTUANTES COMPACTAS NO CANTO INFERIOR ESQUERDO (MANTÉM TELAS ABERTAS ATÉ CLICAR NO X) */}
+      {/* ABAS FLUTUANTES COMPACTAS NO CANTO INFERIOR DIREITO (MANTÉM TELAS ABERTAS ATÉ CLICAR NO X) */}
       {!telaLoginVisivel && !isModoCliente && !isMotoboyRoute && !modalCardapioClienteVisivel && !operadorAlterandoSenha && !lojaGerenciandoSenha && !modalCredenciaisDonoVisivel && !modalAuditoriaLoginVisivel && (() => {
         const abaAtualSistema: AbaNavegacaoSistema =
           modalSupermercadoVisivel && perfilAtivo === 'dona_app'
@@ -15956,7 +15836,7 @@ export default function App() {
             style={{
               position: 'fixed',
               bottom: '8px',
-              left: '12px',
+              right: '12px',
               zIndex: 1000005,
               background: 'rgba(255, 255, 255, 0.96)',
               backdropFilter: 'blur(8px)',
