@@ -20,6 +20,24 @@ import {
 } from '../types';
 import { mascaraTelefone, mascaraCpfCnpj } from '../lib/mascaras';
 import { imprimirCupomTermico } from '../utils/impressaoTermica';
+import {
+  Search,
+  Users,
+  Wallet,
+  AlertTriangle,
+  CheckCircle2,
+  BookOpen,
+  DollarSign,
+  Pencil,
+  Trash2,
+  Phone,
+  MessageCircle,
+  LayoutGrid,
+  List,
+  Plus,
+  X,
+  ArrowUpDown,
+} from 'lucide-react';
 
 interface GestaoDevedoresModalProps {
   visivel: boolean;
@@ -62,7 +80,9 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
 
   // Estados principais
   const [busca, setBusca] = useState('');
-  const [filtroStatus, setFiltroStatus] = useState<'todos' | 'pendentes' | 'quitados'>('pendentes');
+  const [filtroStatus, setFiltroStatus] = useState<'todos' | 'pendentes' | 'acima_limite' | 'quitados'>('pendentes');
+  const [ordenacaoClientes, setOrdenacaoClientes] = useState<'nome' | 'maior_divida' | 'menor_divida' | 'limite'>('nome');
+  const [modoVisualizacao, setModoVisualizacao] = useState<'cards' | 'lista'>('cards');
   const [clienteSelecionado, setClienteSelecionado] = useState<ClienteDevedor | null>(null);
 
   // Mantém cliente selecionado em sincronia automática com a lista atualizada
@@ -156,27 +176,171 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
   // Aba ativa na ficha do cliente
   const [abaFicha, setAbaFicha] = useState<'compras' | 'pagamentos'>('compras');
 
+  // Helpers de formatação e ações compartilhadas da lista de fiado
+  const formatarMoedaBr = (valor: number): string =>
+    `R$ ${Number(valor || 0).toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+
+  const obterIniciaisCliente = (nome: string): string => {
+    const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+    if (partes.length === 0) return 'CL';
+    if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+    return `${partes[0][0]}${partes[1][0]}`.toUpperCase();
+  };
+
+  const handleAbrirAbatimentoRapido = (cliente: ClienteDevedor) => {
+    setClienteSelecionado(cliente);
+    setValorAbatimento('');
+    setObsPagamento('');
+    setErroPagamento('');
+    setModalPagamento(true);
+  };
+
+  const handleConfirmarExclusaoCliente = (cliente: ClienteDevedor) => {
+    if ((cliente.saldoDevedorTotal || 0) > 0) {
+      alert(
+        `Não é possível excluir o cliente ${cliente.nome} pois ele possui saldo devedor pendente de ${formatarMoedaBr(cliente.saldoDevedorTotal || 0)}.`
+      );
+      return;
+    }
+    if (confirm(`Deseja realmente excluir o cliente ${cliente.nome}?`)) {
+      onExcluirCliente(cliente.id);
+    }
+  };
+
+  const obterDadosVisuaisCliente = (cliente: ClienteDevedor) => {
+    const saldo = Number(cliente.saldoDevedorTotal || 0);
+    const limite = Number(cliente.limiteFiado || 0);
+    const emDebito = saldo > 0;
+    const acimaLimite = emDebito && limite > 0 && saldo > limite;
+    const usoPct = limite > 0 ? Math.round((saldo / limite) * 100) : 0;
+    const barraUsoPct = Math.min(100, Math.max(emDebito ? 6 : 0, usoPct));
+    const telefoneBr = cliente.telefone ? mascaraTelefone(cliente.telefone) || cliente.telefone : '';
+
+    if (acimaLimite) {
+      return {
+        saldo,
+        limite,
+        emDebito,
+        acimaLimite,
+        usoPct,
+        barraUsoPct,
+        iniciais: obterIniciaisCliente(cliente.nome),
+        telefoneBr,
+        corAccent: '#dc2626',
+        corValor: '#dc2626',
+        corAvatarBg: '#fee2e2',
+        corAvatarText: '#991b1b',
+        badgeBg: '#fee2e2',
+        badgeText: '#991b1b',
+        badgeBorder: '#fca5a5',
+        labelStatus: 'Acima do limite',
+        corBarra: '#dc2626',
+        trilhoBarra: '#fee2e2',
+      };
+    }
+
+    if (emDebito) {
+      const pertoLimite = limite > 0 && usoPct >= 80;
+      return {
+        saldo,
+        limite,
+        emDebito,
+        acimaLimite,
+        usoPct,
+        barraUsoPct,
+        iniciais: obterIniciaisCliente(cliente.nome),
+        telefoneBr,
+        corAccent: pertoLimite ? '#d97706' : '#f97316',
+        corValor: '#dc2626',
+        corAvatarBg: '#ffedd5',
+        corAvatarText: '#9a3412',
+        badgeBg: '#fff7ed',
+        badgeText: '#c2410c',
+        badgeBorder: '#fed7aa',
+        labelStatus: 'Em débito',
+        corBarra: pertoLimite ? '#f59e0b' : '#10b981',
+        trilhoBarra: '#e2e8f0',
+      };
+    }
+
+    return {
+      saldo,
+      limite,
+      emDebito,
+      acimaLimite,
+      usoPct,
+      barraUsoPct,
+      iniciais: obterIniciaisCliente(cliente.nome),
+      telefoneBr,
+      corAccent: '#10b981',
+      corValor: '#16a34a',
+      corAvatarBg: '#dcfce7',
+      corAvatarText: '#166534',
+      badgeBg: '#dcfce7',
+      badgeText: '#166534',
+      badgeBorder: '#86efac',
+      labelStatus: 'Quitado',
+      corBarra: '#10b981',
+      trilhoBarra: '#dcfce7',
+    };
+  };
+
   // KPI Calculations
   const totalDevedoresComDebito = listaClientes.filter((c) => (c.saldoDevedorTotal || 0) > 0).length;
+  const totalQuitados = listaClientes.filter((c) => (c.saldoDevedorTotal || 0) <= 0).length;
+  const totalAcimaLimite = listaClientes.filter(
+    (c) => (c.limiteFiado || 0) > 0 && (c.saldoDevedorTotal || 0) > (c.limiteFiado || 0)
+  ).length;
   const totalDividasAberto = listaClientes.reduce((acc, c) => acc + (c.saldoDevedorTotal || 0), 0);
+  const ticketMedioDebito =
+    totalDevedoresComDebito > 0 ? totalDividasAberto / totalDevedoresComDebito : 0;
 
-  // Filtragem de clientes (sempre em ordem alfabética)
+  // Filtragem e ordenação de clientes
   const clientesFiltrados = listaClientes
     .filter((c) => {
       const termo = busca.toLowerCase().trim();
+      const termoDigitos = termo.replace(/\D/g, '');
       const bateBusca =
         !termo ||
         c.nome.toLowerCase().includes(termo) ||
-        (c.telefone && c.telefone.includes(termo)) ||
-        (c.cpfOuCnpj && c.cpfOuCnpj.includes(termo));
+        (c.telefone &&
+          (c.telefone.includes(termo) ||
+            (termoDigitos.length > 0 && c.telefone.replace(/\D/g, '').includes(termoDigitos)))) ||
+        (c.cpfOuCnpj &&
+          (c.cpfOuCnpj.includes(termo) ||
+            (termoDigitos.length > 0 && c.cpfOuCnpj.replace(/\D/g, '').includes(termoDigitos))));
 
       if (!bateBusca) return false;
 
       if (filtroStatus === 'pendentes') return (c.saldoDevedorTotal || 0) > 0;
-      if (filtroStatus === 'quitados') return (c.saldoDevedorTotal || 0) === 0;
+      if (filtroStatus === 'acima_limite') {
+        return (c.limiteFiado || 0) > 0 && (c.saldoDevedorTotal || 0) > (c.limiteFiado || 0);
+      }
+      if (filtroStatus === 'quitados') return (c.saldoDevedorTotal || 0) <= 0;
       return true;
     })
-    .sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+    .sort((a, b) => {
+      const sa = Number(a.saldoDevedorTotal || 0);
+      const sb = Number(b.saldoDevedorTotal || 0);
+      if (ordenacaoClientes === 'maior_divida' && sb !== sa) {
+        return sb - sa;
+      }
+      if (ordenacaoClientes === 'menor_divida' && sa !== sb) {
+        return sa - sb;
+      }
+      if (ordenacaoClientes === 'limite') {
+        const la = Number(a.limiteFiado || 0);
+        const lb = Number(b.limiteFiado || 0);
+        const ra = la > 0 ? sa / la : -1;
+        const rb = lb > 0 ? sb / lb : -1;
+        if (rb !== ra) return rb - ra;
+        if (sb !== sa) return sb - sa;
+      }
+      return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
+    });
 
   // Abrir modal de novo cliente ou editar
   const handleAbrirModalCadastro = (cliente?: ClienteDevedor) => {
@@ -658,91 +822,380 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
 
   if (!visivel) return null;
 
+  const renderBotoesAcaoCliente = (
+    cliente: ClienteDevedor,
+    emDebito: boolean,
+    compacto = false
+  ) => {
+    const altura = compacto ? '30px' : '32px';
+    const tamIcone = compacto ? 13 : 14;
+    const tamIconeAcao = compacto ? 30 : 32;
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <button
+          type="button"
+          onClick={() => setClienteSelecionado(cliente)}
+          style={{
+            flex: compacto ? undefined : 1,
+            height: altura,
+            padding: compacto ? '0 10px' : '0 10px',
+            background: '#0284c7',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '7px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '5px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <BookOpen size={tamIcone} strokeWidth={2.2} />
+          Caderneta
+        </button>
+
+        {emDebito && (
+          <button
+            type="button"
+            onClick={() => handleAbrirAbatimentoRapido(cliente)}
+            style={{
+              flex: compacto ? undefined : 1,
+              height: altura,
+              padding: compacto ? '0 10px' : '0 10px',
+              background: '#16a34a',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '7px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <DollarSign size={tamIcone} strokeWidth={2.4} />
+            Abater
+          </button>
+        )}
+
+        {emDebito && cliente.telefone && (
+          <button
+            type="button"
+            onClick={() => handleEnviarWhatsApp(cliente)}
+            title="Cobrar no WhatsApp"
+            style={{
+              width: `${tamIconeAcao}px`,
+              height: altura,
+              flexShrink: 0,
+              background: '#f0fdf4',
+              color: '#15803d',
+              border: '1px solid #86efac',
+              borderRadius: '7px',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <MessageCircle size={tamIcone} strokeWidth={2.2} />
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={() => handleAbrirModalCadastro(cliente)}
+          title="Editar Dados do Cliente"
+          style={{
+            width: `${tamIconeAcao}px`,
+            height: altura,
+            flexShrink: 0,
+            background: '#f8fafc',
+            color: '#334155',
+            border: '1px solid #cbd5e1',
+            borderRadius: '7px',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Pencil size={tamIcone} strokeWidth={2.1} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleConfirmarExclusaoCliente(cliente)}
+          title="Excluir Cliente"
+          style={{
+            width: `${tamIconeAcao}px`,
+            height: altura,
+            flexShrink: 0,
+            background: '#fef2f2',
+            color: '#dc2626',
+            border: '1px solid #fecaca',
+            borderRadius: '7px',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Trash2 size={tamIcone} strokeWidth={2.1} />
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="tela-relatorio-cheia" style={{ display: 'flex', zIndex: 10050 }}>
       {/* CABEÇALHO */}
       <div
         className="cabecalho-relatorio"
         style={{
-          padding: '8px 12px',
+          padding: '8px 14px',
           height: 'auto',
-          minHeight: '46px',
+          minHeight: '48px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '8px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flex: 1 }}>
-          <h2 style={{ fontSize: '0.92rem', fontWeight: 700, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            💳 Devedores / Caderneta
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+          <Wallet size={17} strokeWidth={2.2} style={{ flexShrink: 0 }} />
+          <h2 style={{ fontSize: '0.94rem', fontWeight: 800, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            Devedores / Caderneta
           </h2>
-          <span style={{ fontSize: '0.7rem', color: '#64748b', background: '#ffffff', padding: '1px 6px', borderRadius: '10px', whiteSpace: 'nowrap', fontWeight: 600 }}>
+          <span
+            style={{
+              fontSize: '0.7rem',
+              color: '#334155',
+              background: '#ffffff',
+              padding: '2px 8px',
+              borderRadius: '999px',
+              whiteSpace: 'nowrap',
+              fontWeight: 700,
+              flexShrink: 0,
+            }}
+          >
             {nomeLoja}
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
           <button
+            type="button"
             style={{
               background: '#16a34a',
               color: '#ffffff',
               border: 'none',
-              padding: '6px 10px',
-              borderRadius: '6px',
+              padding: '7px 12px',
+              borderRadius: '7px',
               fontWeight: 700,
               fontSize: '0.78rem',
               cursor: 'pointer',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '5px',
               whiteSpace: 'nowrap',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
             }}
             onClick={() => handleAbrirModalCadastro()}
           >
-            ➕ Cadastrar Cliente
+            <Plus size={15} strokeWidth={2.5} />
+            Cadastrar Cliente
           </button>
 
           <button
+            type="button"
             className="btn-voltar-rel"
-            style={{ padding: '6px 10px', fontSize: '0.8rem', fontWeight: 600, background: 'rgba(255,255,255,0.15)', borderRadius: '6px' }}
+            style={{
+              padding: '7px 12px',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              background: 'rgba(255,255,255,0.16)',
+              borderRadius: '7px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}
             onClick={onFechar}
           >
-            ✕ Fechar
+            <X size={15} strokeWidth={2.4} />
+            Fechar
           </button>
         </div>
       </div>
 
       {/* CORPO PRINCIPAL */}
-      <div className="corpo-relatorio-cheio" style={{ gap: '10px', padding: '10px 12px', display: 'flex', flexDirection: 'column' }}>
+      <div className="corpo-relatorio-cheio" style={{ gap: '12px', padding: '12px 14px', display: 'flex', flexDirection: 'column' }}>
         {/* CARDS KPIS DE DEVEDORES */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-          <div style={{ background: '#ffffff', padding: '8px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-            <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              Com Débito
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 175px), 1fr))',
+            gap: '10px',
+          }}
+        >
+          {/* KPI 1: FIADO EM ABERTO */}
+          <div
+            style={{
+              background: '#fffdfd',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: '1px solid #fecaca',
+              boxShadow: '0 1px 3px rgba(220, 38, 38, 0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '0.69rem', color: '#991b1b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                Fiado em Aberto
+              </span>
+              <span style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#fee2e2', color: '#dc2626', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Wallet size={13} strokeWidth={2.2} />
+              </span>
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#dc2626', marginTop: '2px' }}>
-              {totalDevedoresComDebito} <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#991b1b' }}>cli</span>
+            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#dc2626', marginTop: '4px', fontFamily: 'monospace' }}>
+              {formatarMoedaBr(totalDividasAberto)}
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#7f1d1d', marginTop: '2px', fontWeight: 600 }}>
+              Ticket médio {formatarMoedaBr(ticketMedioDebito)}
             </div>
           </div>
 
-          <div style={{ background: '#ffffff', padding: '8px 10px', borderRadius: '8px', border: '1px solid #fca5a5', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-            <div style={{ fontSize: '0.68rem', color: '#991b1b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              Fiado Aberto
+          {/* KPI 2: COM DÉBITO */}
+          <button
+            type="button"
+            onClick={() => setFiltroStatus('pendentes')}
+            style={{
+              textAlign: 'left',
+              cursor: 'pointer',
+              background: '#ffffff',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: filtroStatus === 'pendentes' ? '1.5px solid #f97316' : '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', width: '100%' }}>
+              <span style={{ fontSize: '0.69rem', color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                Com Débito
+              </span>
+              <span style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#ffedd5', color: '#c2410c', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Users size={13} strokeWidth={2.2} />
+              </span>
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#dc2626', marginTop: '2px' }}>
-              R$ {totalDividasAberto.toFixed(2).replace('.', ',')}
+            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0f172a', marginTop: '4px', fontFamily: 'monospace' }}>
+              {totalDevedoresComDebito} <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', fontFamily: 'sans-serif' }}>clientes</span>
             </div>
-          </div>
+            <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: '2px', fontWeight: 600 }}>
+              {listaClientes.length > 0 ? Math.round((totalDevedoresComDebito / listaClientes.length) * 100) : 0}% da carteira
+            </div>
+          </button>
 
-          <div style={{ background: '#ffffff', padding: '8px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}>
-            <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              Cadastrados
+          {/* KPI 3: ACIMA DO LIMITE */}
+          <button
+            type="button"
+            onClick={() => setFiltroStatus('acima_limite')}
+            style={{
+              textAlign: 'left',
+              cursor: 'pointer',
+              background: totalAcimaLimite > 0 ? '#fffbeb' : '#ffffff',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border:
+                filtroStatus === 'acima_limite'
+                  ? '1.5px solid #dc2626'
+                  : totalAcimaLimite > 0
+                  ? '1px solid #fde68a'
+                  : '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', width: '100%' }}>
+              <span style={{ fontSize: '0.69rem', color: totalAcimaLimite > 0 ? '#92400e' : '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                Acima do Limite
+              </span>
+              <span
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '6px',
+                  background: totalAcimaLimite > 0 ? '#fee2e2' : '#dcfce7',
+                  color: totalAcimaLimite > 0 ? '#dc2626' : '#16a34a',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <AlertTriangle size={13} strokeWidth={2.2} />
+              </span>
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
-              {listaClientes.length} <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#16a34a' }}>total</span>
+            <div
+              style={{
+                fontSize: '1.15rem',
+                fontWeight: 900,
+                color: totalAcimaLimite > 0 ? '#b45309' : '#16a34a',
+                marginTop: '4px',
+                fontFamily: 'monospace',
+              }}
+            >
+              {totalAcimaLimite}
             </div>
-          </div>
+            <div style={{ fontSize: '0.7rem', color: totalAcimaLimite > 0 ? '#92400e' : '#64748b', marginTop: '2px', fontWeight: 600 }}>
+              {totalAcimaLimite > 0 ? 'Ultrapassaram o limite' : 'Todos dentro do limite'}
+            </div>
+          </button>
+
+          {/* KPI 4: CADASTRADOS */}
+          <button
+            type="button"
+            onClick={() => setFiltroStatus('todos')}
+            style={{
+              textAlign: 'left',
+              cursor: 'pointer',
+              background: '#ffffff',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: filtroStatus === 'todos' ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px', width: '100%' }}>
+              <span style={{ fontSize: '0.69rem', color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                Cadastrados
+              </span>
+              <span style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#dcfce7', color: '#16a34a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <CheckCircle2 size={13} strokeWidth={2.2} />
+              </span>
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0f172a', marginTop: '4px', fontFamily: 'monospace' }}>
+              {listaClientes.length} <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', fontFamily: 'sans-serif' }}>total</span>
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#15803d', marginTop: '2px', fontWeight: 600 }}>
+              {totalQuitados} quitados
+            </div>
+          </button>
         </div>
 
         {/* MODO FICHA DO CLIENTE OU LISTA DE CLIENTES */}
@@ -1139,242 +1592,620 @@ export const GestaoDevedoresModal: React.FC<GestaoDevedoresModalProps> = ({
           </div>
         ) : (
           /* ================= LISTA DE CLIENTES E BUSCA ================= */
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* PAINEL DE BUSCA E FILTROS */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* TOOLBAR DE BUSCA, FILTROS, ORDENAÇÃO E VISUALIZAÇÃO */}
             <div
               style={{
                 background: '#ffffff',
-                padding: '8px 10px',
-                borderRadius: '8px',
+                padding: '10px 12px',
+                borderRadius: '10px',
                 border: '1px solid #e2e8f0',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
+                flexWrap: 'wrap',
+                gap: '10px',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+              {/* CAMPO DE BUSCA SEM AUTOFILL DE SENHA */}
+              <div style={{ position: 'relative', flex: '1 1 240px', minWidth: 0 }}>
+                <Search
+                  size={15}
+                  style={{
+                    position: 'absolute',
+                    left: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#64748b',
+                    pointerEvents: 'none',
+                  }}
+                />
                 <input
-                  type="text"
-                  placeholder="🔍 Buscar por nome, telefone ou CPF..."
+                  type="search"
+                  name="busca_fiado_clientes"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  placeholder="Buscar por nome, telefone ou CPF..."
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   style={{
-                    flex: 1,
-                    minWidth: '150px',
-                    padding: '6px 10px',
-                    borderRadius: '6px',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '7px 30px 7px 32px',
+                    borderRadius: '8px',
                     border: '1px solid #cbd5e1',
                     fontSize: '0.82rem',
+                    color: '#0f172a',
+                    background: '#f8fafc',
+                    outline: 'none',
                   }}
                 />
-
-                {/* FILTROS DE STATUS */}
-                <div style={{ display: 'flex', gap: '4px' }}>
+                {busca && (
                   <button
+                    type="button"
+                    onClick={() => setBusca('')}
+                    title="Limpar busca"
                     style={{
-                      padding: '5px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
+                      position: 'absolute',
+                      right: '6px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: '20px',
+                      height: '20px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: '#e2e8f0',
+                      color: '#475569',
                       cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      background: filtroStatus === 'pendentes' ? '#fee2e2' : '#ffffff',
-                      color: filtroStatus === 'pendentes' ? '#991b1b' : '#475569',
-                      borderColor: filtroStatus === 'pendentes' ? '#fca5a5' : '#cbd5e1',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: 0,
                     }}
-                    onClick={() => setFiltroStatus('pendentes')}
                   >
-                    🔴 Débito ({listaClientes.filter((c) => (c.saldoDevedorTotal || 0) > 0).length})
+                    <X size={12} strokeWidth={2.5} />
                   </button>
+                )}
+              </div>
 
-                  <button
+              {/* FILTROS, ORDENAÇÃO E MODO DE VISUALIZAÇÃO */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+                  {[
+                    {
+                      id: 'pendentes' as const,
+                      label: `Débito (${totalDevedoresComDebito})`,
+                      dot: '#ef4444',
+                      bgAtivo: '#fee2e2',
+                      corAtivo: '#991b1b',
+                      bordaAtiva: '#fca5a5',
+                    },
+                    {
+                      id: 'acima_limite' as const,
+                      label: `Acima Limite (${totalAcimaLimite})`,
+                      dot: '#d97706',
+                      bgAtivo: '#fef3c7',
+                      corAtivo: '#92400e',
+                      bordaAtiva: '#fcd34d',
+                    },
+                    {
+                      id: 'quitados' as const,
+                      label: `Quitados (${totalQuitados})`,
+                      dot: '#16a34a',
+                      bgAtivo: '#dcfce7',
+                      corAtivo: '#166534',
+                      bordaAtiva: '#86efac',
+                    },
+                    {
+                      id: 'todos' as const,
+                      label: `Todos (${listaClientes.length})`,
+                      dot: '#0284c7',
+                      bgAtivo: '#0284c7',
+                      corAtivo: '#ffffff',
+                      bordaAtiva: '#0284c7',
+                    },
+                  ].map((f) => {
+                    const ativo = filtroStatus === f.id;
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        onClick={() => setFiltroStatus(f.id)}
+                        style={{
+                          padding: '5px 10px',
+                          borderRadius: '999px',
+                          border: `1px solid ${ativo ? f.bordaAtiva : '#cbd5e1'}`,
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          background: ativo ? f.bgAtivo : '#ffffff',
+                          color: ativo ? f.corAtivo : '#475569',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '7px',
+                            height: '7px',
+                            borderRadius: '50%',
+                            background: ativo && f.id === 'todos' ? '#ffffff' : f.dot,
+                            flexShrink: 0,
+                          }}
+                        />
+                        {f.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* ORDENAÇÃO */}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    background: '#f8fafc',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '8px',
+                    padding: '4px 8px',
+                  }}
+                >
+                  <ArrowUpDown size={13} color="#475569" style={{ flexShrink: 0 }} />
+                  <select
+                    aria-label="Ordenar clientes"
+                    value={ordenacaoClientes}
+                    onChange={(e) => setOrdenacaoClientes(e.target.value as any)}
                     style={{
-                      padding: '5px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
+                      border: 'none',
+                      background: 'transparent',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      color: '#0f172a',
                       cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      background: filtroStatus === 'quitados' ? '#dcfce7' : '#ffffff',
-                      color: filtroStatus === 'quitados' ? '#166534' : '#475569',
-                      borderColor: filtroStatus === 'quitados' ? '#86efac' : '#cbd5e1',
+                      outline: 'none',
                     }}
-                    onClick={() => setFiltroStatus('quitados')}
                   >
-                    🟢 Quitados ({listaClientes.filter((c) => (c.saldoDevedorTotal || 0) === 0).length})
+                    <option value="nome">Ordem A–Z</option>
+                    <option value="maior_divida">Maior Dívida</option>
+                    <option value="menor_divida">Menor Dívida</option>
+                    <option value="limite">Limite Estourado</option>
+                  </select>
+                </div>
+
+                {/* TOGGLE CARDS / LISTA */}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    background: '#ffffff',
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setModoVisualizacao('cards')}
+                    style={{
+                      padding: '5px 10px',
+                      border: 'none',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      background: modoVisualizacao === 'cards' ? '#0f172a' : '#ffffff',
+                      color: modoVisualizacao === 'cards' ? '#ffffff' : '#475569',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <LayoutGrid size={13} />
+                    Cards
                   </button>
-
                   <button
+                    type="button"
+                    onClick={() => setModoVisualizacao('lista')}
                     style={{
-                      padding: '5px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
+                      padding: '5px 10px',
+                      border: 'none',
+                      borderLeft: '1px solid #cbd5e1',
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
                       cursor: 'pointer',
+                      background: modoVisualizacao === 'lista' ? '#0f172a' : '#ffffff',
+                      color: modoVisualizacao === 'lista' ? '#ffffff' : '#475569',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
                       whiteSpace: 'nowrap',
-                      background: filtroStatus === 'todos' ? '#0284c7' : '#ffffff',
-                      color: filtroStatus === 'todos' ? '#ffffff' : '#475569',
-                      borderColor: filtroStatus === 'todos' ? '#0284c7' : '#cbd5e1',
                     }}
-                    onClick={() => setFiltroStatus('todos')}
                   >
-                    Todos ({listaClientes.length})
+                    <List size={13} />
+                    Lista
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* LISTAGEM DE CLIENTES */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '8px' }}>
-              {clientesFiltrados.length === 0 ? (
-                <div style={{ gridColumn: '1 / -1', padding: '20px 14px', textAlign: 'center', background: '#ffffff', borderRadius: '8px', color: '#64748b', fontSize: '0.85rem' }}>
-                  Nenhum cliente fiado encontrado para os filtros selecionados.
-                </div>
-              ) : (
-                clientesFiltrados.map((cliente) => (
-                  <div
-                    key={cliente.id}
+            {/* ESTADO VAZIO OU LISTAGEM (CARDS / LISTA) */}
+            {clientesFiltrados.length === 0 ? (
+              <div
+                style={{
+                  padding: '28px 16px',
+                  textAlign: 'center',
+                  background: '#ffffff',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  color: '#64748b',
+                  fontSize: '0.86rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                <span>Nenhum cliente fiado encontrado para os filtros selecionados.</span>
+                {(filtroStatus !== 'todos' || busca.trim() !== '') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBusca('');
+                      setFiltroStatus('todos');
+                    }}
                     style={{
-                      background: '#ffffff',
-                      padding: '10px 12px',
-                      borderRadius: '8px',
-                      border: (cliente.saldoDevedorTotal || 0) > 0 ? '1px solid #fca5a5' : '1px solid #e2e8f0',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      gap: '8px',
+                      padding: '6px 14px',
+                      borderRadius: '7px',
+                      border: '1px solid #cbd5e1',
+                      background: '#f8fafc',
+                      color: '#0f172a',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
                     }}
                   >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '6px' }}>
-                        <div>
-                          <h4 style={{ margin: 0, fontSize: '0.88rem', color: '#0f172a', fontWeight: 700 }}>
-                            👤 {cliente.nome}
-                          </h4>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '1px' }}>
-                            📞 {cliente.telefone || 'Sem telefone'}
+                    Limpar filtros e mostrar todos
+                  </button>
+                )}
+              </div>
+            ) : modoVisualizacao === 'cards' ? (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))',
+                  gap: '12px',
+                }}
+              >
+                {clientesFiltrados.map((cliente) => {
+                  const v = obterDadosVisuaisCliente(cliente);
+                  return (
+                    <div
+                      key={cliente.id}
+                      style={{
+                        background: '#ffffff',
+                        padding: '12px 14px',
+                        borderRadius: '12px',
+                        border: '1px solid #e2e8f0',
+                        borderLeft: `4px solid ${v.corAccent}`,
+                        boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        gap: '10px',
+                        minWidth: 0,
+                      }}
+                    >
+                      {/* TOPO UNIFORME */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0, flex: 1 }}>
+                          <div
+                            style={{
+                              width: '34px',
+                              height: '34px',
+                              borderRadius: '50%',
+                              background: v.corAvatarBg,
+                              color: v.corAvatarText,
+                              fontWeight: 800,
+                              fontSize: '0.78rem',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {v.iniciais}
+                          </div>
+
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <h4
+                              title={cliente.nome}
+                              style={{
+                                margin: 0,
+                                fontSize: '0.88rem',
+                                color: '#0f172a',
+                                fontWeight: 800,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                lineHeight: 1.25,
+                              }}
+                            >
+                              {cliente.nome}
+                            </h4>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '0.73rem',
+                                color: '#64748b',
+                                marginTop: '2px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              <Phone size={11} style={{ flexShrink: 0 }} />
+                              <span>{v.telefoneBr || 'Sem telefone'}</span>
+                            </div>
                           </div>
                         </div>
 
-                        {(cliente.saldoDevedorTotal || 0) > 0 ? (
-                          <span style={{ background: '#fee2e2', color: '#991b1b', fontSize: '0.68rem', padding: '1px 6px', borderRadius: '8px', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                            🔴 Débito
-                          </span>
-                        ) : (
-                          <span style={{ background: '#dcfce7', color: '#166534', fontSize: '0.68rem', padding: '1px 6px', borderRadius: '8px', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                            🟢 Quitado
-                          </span>
+                        <span
+                          style={{
+                            background: v.badgeBg,
+                            color: v.badgeText,
+                            border: `1px solid ${v.badgeBorder}`,
+                            fontSize: '0.67rem',
+                            padding: '2px 8px',
+                            borderRadius: '999px',
+                            fontWeight: 800,
+                            whiteSpace: 'nowrap',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {v.labelStatus}
+                        </span>
+                      </div>
+
+                      {/* BLOCO FINANCEIRO + BARRA DE LIMITE */}
+                      <div
+                        style={{
+                          background: v.emDebito ? '#fffafa' : '#f0fdf4',
+                          padding: '8px 10px',
+                          borderRadius: '8px',
+                          border: v.emDebito ? '1px solid #fecaca' : '1px solid #bbf7d0',
+                          minHeight: '58px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
+                          <div>
+                            <div style={{ fontSize: '0.64rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                              Saldo Devedor
+                            </div>
+                            <div style={{ fontSize: '1.12rem', fontWeight: 900, color: v.corValor, fontFamily: 'monospace', lineHeight: 1.15 }}>
+                              {formatarMoedaBr(v.saldo)}
+                            </div>
+                          </div>
+
+                          {v.limite > 0 ? (
+                            <div style={{ textAlign: 'right', fontSize: '0.7rem', color: '#475569', lineHeight: 1.25 }}>
+                              <div>
+                                Limite{' '}
+                                <b style={{ color: '#0f172a', fontFamily: 'monospace' }}>
+                                  {formatarMoedaBr(v.limite)}
+                                </b>
+                              </div>
+                              <div
+                                style={{
+                                  fontWeight: 800,
+                                  color: v.acimaLimite ? '#dc2626' : '#64748b',
+                                  fontFamily: 'monospace',
+                                }}
+                              >
+                                {v.usoPct}% usado
+                              </div>
+                            </div>
+                          ) : (
+                            <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 600 }}>
+                              Sem limite definido
+                            </span>
+                          )}
+                        </div>
+
+                        {v.limite > 0 && (
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '5px',
+                              borderRadius: '999px',
+                              background: v.trilhoBarra,
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: `${v.barraUsoPct}%`,
+                                height: '100%',
+                                background: v.corBarra,
+                                borderRadius: '999px',
+                                transition: 'width 0.2s ease',
+                              }}
+                            />
+                          </div>
                         )}
                       </div>
 
-                      {/* VALOR DEVENDO */}
-                      <div style={{ marginTop: '8px', background: (cliente.saldoDevedorTotal || 0) > 0 ? '#fef2f2' : '#f0fdf4', padding: '6px 8px', borderRadius: '6px', border: (cliente.saldoDevedorTotal || 0) > 0 ? '1px solid #fecaca' : '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>Saldo Devedor:</div>
-                          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: (cliente.saldoDevedorTotal || 0) > 0 ? '#dc2626' : '#16a34a' }}>
-                            R$ {(cliente.saldoDevedorTotal || 0).toFixed(2).replace('.', ',')}
-                          </div>
-                        </div>
-                        {cliente.limiteFiado && cliente.limiteFiado > 0 ? (
-                          <div style={{ fontSize: '0.7rem', color: '#475569', textAlign: 'right' }}>
-                            Lim: R$ {cliente.limiteFiado.toFixed(2)}
-                          </div>
-                        ) : null}
+                      {/* RODAPÉ DE AÇÕES EM 1 ÚNICA LINHA */}
+                      <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '9px' }}>
+                        {renderBotoesAcaoCliente(cliente, v.emDebito, false)}
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* MODO LISTA COMPACTA */
+              <div
+                style={{
+                  background: '#ffffff',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.05)',
+                  overflowX: 'auto',
+                }}
+              >
+                <div style={{ minWidth: '680px' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'minmax(200px, 1.4fr) minmax(150px, 1fr) 130px auto',
+                      gap: '12px',
+                      padding: '9px 14px',
+                      background: '#f8fafc',
+                      borderBottom: '1px solid #e2e8f0',
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      color: '#475569',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.4px',
+                    }}
+                  >
+                    <span>Cliente</span>
+                    <span>Status &amp; Limite</span>
+                    <span style={{ textAlign: 'right' }}>Saldo Devedor</span>
+                    <span style={{ textAlign: 'right' }}>Ações</span>
+                  </div>
 
-                    {/* BOTOES DE ACAO CARD CLIENTE */}
-                    <div style={{ display: 'flex', gap: '4px', borderTop: '1px dashed #e2e8f0', paddingTop: '8px' }}>
-                      <button
+                  {clientesFiltrados.map((cliente, idx) => {
+                    const v = obterDadosVisuaisCliente(cliente);
+                    return (
+                      <div
+                        key={cliente.id}
                         style={{
-                          flex: 1,
-                          background: '#0284c7',
-                          color: '#ffffff',
-                          border: 'none',
-                          padding: '6px 8px',
-                          borderRadius: '6px',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          textAlign: 'center',
+                          display: 'grid',
+                          gridTemplateColumns: 'minmax(200px, 1.4fr) minmax(150px, 1fr) 130px auto',
+                          gap: '12px',
+                          alignItems: 'center',
+                          padding: '9px 14px',
+                          borderBottom: idx === clientesFiltrados.length - 1 ? 'none' : '1px solid #f1f5f9',
+                          borderLeft: `4px solid ${v.corAccent}`,
+                          background: idx % 2 === 0 ? '#ffffff' : '#fafbfc',
                         }}
-                        onClick={() => setClienteSelecionado(cliente)}
                       >
-                        📂 Caderneta
-                      </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+                          <div
+                            style={{
+                              width: '30px',
+                              height: '30px',
+                              borderRadius: '50%',
+                              background: v.corAvatarBg,
+                              color: v.corAvatarText,
+                              fontWeight: 800,
+                              fontSize: '0.72rem',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}
+                          >
+                            {v.iniciais}
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <div
+                              title={cliente.nome}
+                              style={{
+                                fontSize: '0.84rem',
+                                fontWeight: 800,
+                                color: '#0f172a',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {cliente.nome}
+                            </div>
+                            <div style={{ fontSize: '0.71rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Phone size={10} />
+                              <span>{v.telefoneBr || 'Sem telefone'}</span>
+                            </div>
+                          </div>
+                        </div>
 
-                      {(cliente.saldoDevedorTotal || 0) > 0 && (
-                        <button
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <span
+                              style={{
+                                background: v.badgeBg,
+                                color: v.badgeText,
+                                border: `1px solid ${v.badgeBorder}`,
+                                fontSize: '0.66rem',
+                                padding: '1px 7px',
+                                borderRadius: '999px',
+                                fontWeight: 800,
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {v.labelStatus}
+                            </span>
+                            {v.limite > 0 && (
+                              <span style={{ fontSize: '0.69rem', color: '#64748b', fontFamily: 'monospace' }}>
+                                {formatarMoedaBr(v.limite)} ({v.usoPct}%)
+                              </span>
+                            )}
+                          </div>
+                          {v.limite > 0 && (
+                            <div
+                              style={{
+                                width: '100%',
+                                maxWidth: '160px',
+                                height: '4px',
+                                borderRadius: '999px',
+                                background: v.trilhoBarra,
+                                overflow: 'hidden',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  width: `${v.barraUsoPct}%`,
+                                  height: '100%',
+                                  background: v.corBarra,
+                                  borderRadius: '999px',
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        <div
                           style={{
-                            background: '#16a34a',
-                            color: '#ffffff',
-                            border: 'none',
-                            padding: '6px 8px',
-                            borderRadius: '6px',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            setClienteSelecionado(cliente);
-                            setValorAbatimento('');
-                            setObsPagamento('');
-                            setErroPagamento('');
-                            setModalPagamento(true);
+                            textAlign: 'right',
+                            fontFamily: 'monospace',
+                            fontWeight: 900,
+                            fontSize: '0.94rem',
+                            color: v.corValor,
                           }}
                         >
-                          💲 Abater
-                        </button>
-                      )}
+                          {formatarMoedaBr(v.saldo)}
+                        </div>
 
-                      <button
-                        style={{
-                          background: '#f1f5f9',
-                          color: '#334155',
-                          border: '1px solid #cbd5e1',
-                          padding: '6px 8px',
-                          borderRadius: '6px',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => handleAbrirModalCadastro(cliente)}
-                        title="Editar Dados do Cliente"
-                      >
-                        ✏️
-                      </button>
-
-                      <button
-                        style={{
-                          background: '#fee2e2',
-                          color: '#dc2626',
-                          border: '1px solid #fca5a5',
-                          padding: '6px 8px',
-                          borderRadius: '6px',
-                          fontSize: '0.75rem',
-                          cursor: 'pointer',
-                        }}
-                        title="Excluir Cliente"
-                        onClick={() => {
-                          if ((cliente.saldoDevedorTotal || 0) > 0) {
-                            alert(`Não é possível excluir o cliente ${cliente.nome} pois ele possui saldo devedor pendente de R$ ${(cliente.saldoDevedorTotal || 0).toFixed(2)}.`);
-                            return;
-                          }
-                          if (confirm(`Deseja realmente excluir o cliente ${cliente.nome}?`)) {
-                            onExcluirCliente(cliente.id);
-                          }
-                        }}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                        <div style={{ justifySelf: 'end' }}>
+                          {renderBotoesAcaoCliente(cliente, v.emDebito, true)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
