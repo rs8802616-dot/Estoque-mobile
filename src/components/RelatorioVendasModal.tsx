@@ -12,6 +12,8 @@ interface RelatorioVendasModalProps {
   onVerCupom?: (venda: Venda) => void;
   catalogoGlobal?: ProdutoCatalogo[];
   estoque?: ItemEstoque[];
+  erroSync?: string | null;
+  onRefazerLogin?: () => void;
 }
 
 export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
@@ -24,6 +26,8 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
   onVerCupom,
   catalogoGlobal = [],
   estoque = [],
+  erroSync = null,
+  onRefazerLogin,
 }) => {
   const [busca, setBusca] = useState('');
   const [statusFiltro, setStatusFiltro] = useState<'todas' | 'concluida' | 'estornada'>('todas');
@@ -372,6 +376,46 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
           gap: '14px',
         }}
       >
+        {erroSync && (
+          <div
+            style={{
+              background: '#fef3c7',
+              border: '1px solid #f59e0b',
+              borderRadius: '10px',
+              padding: '12px 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap',
+              color: '#92400e',
+              fontSize: '0.84rem',
+              fontWeight: 600,
+            }}
+          >
+            <span>⚠️ {erroSync}</span>
+            {onRefazerLogin && (
+              <button
+                type="button"
+                onClick={onRefazerLogin}
+                style={{
+                  background: '#d97706',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '7px 12px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                🔄 Refazer Login
+              </button>
+            )}
+          </div>
+        )}
+
         {/* CARDS KPIS PRINCIPAIS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
           {/* 1. Quantidade de Vendas e Volume de Itens Faturados */}

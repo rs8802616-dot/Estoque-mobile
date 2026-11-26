@@ -440,7 +440,11 @@ export function subscribeCatalogo(callback: (produtos: ProdutoCatalogo[]) => voi
 }
 
 // Real-time listener for Vendas (carrega todo o histórico da loja para relatórios e gráficos completos)
-export function subscribeVendas(lojaId: string, callback: (vendas: Venda[]) => void) {
+export function subscribeVendas(
+  lojaId: string,
+  callback: (vendas: Venda[]) => void,
+  onErro?: (err: any) => void
+) {
   const colRef = collection(db, 'vendas');
   const q = query(colRef, where('lojaId', '==', lojaId));
   return onSnapshot(
@@ -479,7 +483,9 @@ export function subscribeVendas(lojaId: string, callback: (vendas: Venda[]) => v
       lista.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
       callback(lista);
     },
-    (_err) => {
+    (err) => {
+      console.error('[Firestore] Erro em subscribeVendas:', err?.code || err?.message || err);
+      onErro?.(err);
       try {
         const salvo = localStorage.getItem(`vendas_${lojaId}`);
         if (salvo) callback(JSON.parse(salvo));
@@ -839,6 +845,7 @@ export async function salvarVendaFirestore(venda: Venda) {
     await setDoc(docRef, limparUndefined(venda), { merge: true });
   } catch (err) {
     console.error('Erro ao salvar venda no Firestore:', err);
+    throw err;
   }
 }
 
@@ -1221,7 +1228,11 @@ export async function buscarPedidoDeliveryPorTokenFirestore(
   }
 }
 
-export function subscribePedidosDelivery(lojaId: string, callback: (pedidos: PedidoDelivery[]) => void) {
+export function subscribePedidosDelivery(
+  lojaId: string,
+  callback: (pedidos: PedidoDelivery[]) => void,
+  onErro?: (err: any) => void
+) {
   if (!lojaId) return () => {};
 
   if (!pedidosListenersPorLoja.has(lojaId)) {
@@ -1294,7 +1305,9 @@ export function subscribePedidosDelivery(lojaId: string, callback: (pedidos: Ped
 
       callback(listaFinal);
     },
-    (_err) => {
+    (err) => {
+      console.error('[Firestore] Erro em subscribePedidosDelivery:', err?.code || err?.message || err);
+      onErro?.(err);
       try {
         const salvo = localStorage.getItem(`pedidos_delivery_${lojaId}`);
         if (salvo) {

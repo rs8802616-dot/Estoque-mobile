@@ -65,6 +65,22 @@ export async function validarPainelLojaServidor(
   }
 }
 
+async function autenticarFirebaseComCustomToken(
+  customToken?: string | null
+): Promise<{ ok: boolean; erro?: string }> {
+  if (!customToken || !auth) {
+    return { ok: false, erro: 'Token de autenticação Firebase ausente.' };
+  }
+  try {
+    await signInWithCustomToken(auth, customToken);
+    return { ok: true };
+  } catch (err: any) {
+    const msg = err?.code || err?.message || 'Erro Firebase Auth';
+    console.error('[Auth] Falha em signInWithCustomToken:', err);
+    return { ok: false, erro: String(msg) };
+  }
+}
+
 export async function autenticarLojaServidor(
   lojaId: string,
   senha: string
@@ -75,6 +91,7 @@ export async function autenticarLojaServidor(
   senhaRevogada?: boolean;
   bloqueado?: boolean;
   erro?: string;
+  firebaseAuthErro?: string;
 }> {
   if (typeof window === 'undefined') return { fallbackLocal: true };
   try {
@@ -97,13 +114,18 @@ export async function autenticarLojaServidor(
         erro: data?.erro || 'Credenciais inválidas.',
       };
     }
-    if (data?.autenticado && data?.customToken && auth) {
-      await signInWithCustomToken(auth, data.customToken);
+    let firebaseAuthErro: string | undefined = data?.customTokenErro
+      ? String(data.customTokenErro)
+      : undefined;
+    if (data?.autenticado && data?.customToken) {
+      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      if (!fb.ok) firebaseAuthErro = fb.erro;
     }
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
       deveTrocarSenha: Boolean(data?.deveTrocarSenha),
+      ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
     return { fallbackLocal: true };
@@ -120,6 +142,7 @@ export async function autenticarOperadorServidor(
   bloqueado?: boolean;
   erro?: string;
   operador?: OperadorCaixa;
+  firebaseAuthErro?: string;
 }> {
   if (typeof window === 'undefined') return { fallbackLocal: true };
   try {
@@ -141,13 +164,18 @@ export async function autenticarOperadorServidor(
         erro: data?.erro || 'Usuário ou senha inválidos.',
       };
     }
-    if (data?.autenticado && data?.customToken && auth) {
-      await signInWithCustomToken(auth, data.customToken);
+    let firebaseAuthErro: string | undefined = data?.customTokenErro
+      ? String(data.customTokenErro)
+      : undefined;
+    if (data?.autenticado && data?.customToken) {
+      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      if (!fb.ok) firebaseAuthErro = fb.erro;
     }
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
       operador: data?.operador as OperadorCaixa | undefined,
+      ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
     return { fallbackLocal: true };
@@ -164,6 +192,7 @@ export async function redefinirSenhaRevogadaServidor(
   fallbackLocal?: boolean;
   autenticado?: boolean;
   erro?: string;
+  firebaseAuthErro?: string;
 }> {
   if (typeof window === 'undefined') return { fallbackLocal: true };
   try {
@@ -191,12 +220,17 @@ export async function redefinirSenhaRevogadaServidor(
         erro: data?.erro || 'Erro ao salvar nova senha no servidor.',
       };
     }
-    if (data?.autenticado && data?.customToken && auth) {
-      await signInWithCustomToken(auth, data.customToken);
+    let firebaseAuthErro: string | undefined = data?.customTokenErro
+      ? String(data.customTokenErro)
+      : undefined;
+    if (data?.autenticado && data?.customToken) {
+      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      if (!fb.ok) firebaseAuthErro = fb.erro;
     }
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
+      ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
     return { fallbackLocal: true };
@@ -206,7 +240,12 @@ export async function redefinirSenhaRevogadaServidor(
 export async function autenticarMasterServidor(
   usuario: string,
   senha: string
-): Promise<{ fallbackLocal?: boolean; autenticado?: boolean; erro?: string }> {
+): Promise<{
+  fallbackLocal?: boolean;
+  autenticado?: boolean;
+  erro?: string;
+  firebaseAuthErro?: string;
+}> {
   if (typeof window === 'undefined') return { fallbackLocal: true };
   try {
     const resp = await fetch('/api/auth', {
@@ -226,12 +265,58 @@ export async function autenticarMasterServidor(
         erro: data?.erro || 'Credenciais Master inválidas.',
       };
     }
-    if (data?.autenticado && data?.customToken && auth) {
-      await signInWithCustomToken(auth, data.customToken);
+    let firebaseAuthErro: string | undefined = data?.customTokenErro
+      ? String(data.customTokenErro)
+      : undefined;
+    if (data?.autenticado && data?.customToken) {
+      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      if (!fb.ok) firebaseAuthErro = fb.erro;
     }
-    return { fallbackLocal: false, autenticado: Boolean(data?.autenticado) };
+    return {
+      fallbackLocal: false,
+      autenticado: Boolean(data?.autenticado),
+      ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
+    };
   } catch {
     return { fallbackLocal: true };
+  }
+}
+
+export async function renovarSessaoFirebaseServidor(): Promise<{
+  autenticado: boolean;
+  fallbackLocal?: boolean;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { autenticado: false, fallbackLocal: true };
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'renovar_custom_token' }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { autenticado: false, fallbackLocal: true };
+    }
+    if (!resp.ok || !data?.autenticado || !data?.customToken) {
+      return {
+        autenticado: false,
+        fallbackLocal: false,
+        erro: data?.erro || 'Sessão de servidor expirada. Faça login novamente.',
+      };
+    }
+    const fb = await autenticarFirebaseComCustomToken(data.customToken);
+    if (!fb.ok) {
+      return {
+        autenticado: false,
+        fallbackLocal: false,
+        erro: fb.erro || 'Falha ao autenticar token no Firebase.',
+      };
+    }
+    return { autenticado: true, fallbackLocal: false };
+  } catch {
+    return { autenticado: false, fallbackLocal: true };
   }
 }
 
@@ -257,7 +342,16 @@ export async function validarSessaoMasterServidor(tokenUrl?: string | null): Pro
 }
 
 export async function encerrarSessaoServidor(): Promise<void> {
-  if (typeof window === 'undefined' || !auth) return;
+  if (typeof window === 'undefined') return;
+  try {
+    await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'logout_sessao' }),
+    }).catch(() => {});
+  } catch {}
+  if (!auth) return;
   try {
     await signOut(auth);
   } catch {}

@@ -26,6 +26,8 @@ interface GraficosVendasModalProps {
   estoque: ItemEstoque[];
   nomeLoja: string;
   catalogoGlobal?: ProdutoCatalogo[];
+  erroSync?: string | null;
+  onRefazerLogin?: () => void;
 }
 
 export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
@@ -35,6 +37,8 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   estoque,
   nomeLoja,
   catalogoGlobal = [],
+  erroSync = null,
+  onRefazerLogin,
 }) => {
   const [periodoGrafico, setPeriodoGrafico] = useState<'dia' | 'semana' | 'mes' | 'ano'>('mes');
   const [periodoFormaPgto, setPeriodoFormaPgto] = useState<
@@ -71,19 +75,30 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         if (!isNaN(d.getTime())) return d;
       }
       if (v && v.data && typeof v.data === 'string') {
+        let hours = 12;
+        let mins = 0;
+        if (v.hora && typeof v.hora === 'string' && v.hora.includes(':')) {
+          const hParts = v.hora.split(':');
+          hours = parseInt(hParts[0], 10) || 12;
+          mins = parseInt(hParts[1], 10) || 0;
+        }
         if (v.data.includes('-')) {
           const parts = v.data.split('-');
           if (parts.length === 3) {
             const year = parseInt(parts[0], 10);
             const month = parseInt(parts[1], 10) - 1;
             const day = parseInt(parts[2], 10);
-            let hours = 12;
-            let mins = 0;
-            if (v.hora && typeof v.hora === 'string' && v.hora.includes(':')) {
-              const hParts = v.hora.split(':');
-              hours = parseInt(hParts[0], 10) || 12;
-              mins = parseInt(hParts[1], 10) || 0;
-            }
+            const d = new Date(year, month, day, hours, mins, 0);
+            if (!isNaN(d.getTime())) return d;
+          }
+        }
+        if (v.data.includes('/')) {
+          const parts = v.data.split('/');
+          if (parts.length === 3) {
+            const isAnoPrimeiro = parts[0].length === 4;
+            const day = parseInt(isAnoPrimeiro ? parts[2] : parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1;
+            const year = parseInt(isAnoPrimeiro ? parts[0] : parts[2], 10);
             const d = new Date(year, month, day, hours, mins, 0);
             if (!isNaN(d.getTime())) return d;
           }
@@ -100,7 +115,9 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
   // 1. Safe arrays of sales
   const vendasValidas = useMemo(() => {
-    return Array.isArray(vendas) ? vendas.filter((v) => v && v.status === 'concluida') : [];
+    return Array.isArray(vendas)
+      ? vendas.filter((v) => v && v.status !== 'estornada' && (v.status as string) !== 'cancelada')
+      : [];
   }, [vendas]);
 
   const vendasEstornadas = useMemo(() => {
@@ -983,7 +1000,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   const totalEstornosGeral = vendasEstornadas.reduce((acc, v) => acc + (Number(v.valorTotal) || 0), 0);
 
   // --- INÍCIO: CÁLCULOS DO NOVO PAINEL DE INTELIGÊNCIA & GRÁFICOS (Imagens 2, 3, 4 e 5) ---
-  const [periodoFiltro, setPeriodoFiltro] = useState<'hoje' | '7dias' | '30dias' | 'ano' | 'custom'>('7dias');
+  const [periodoFiltro, setPeriodoFiltro] = useState<'hoje' | '7dias' | '30dias' | 'ano' | 'tudo' | 'custom'>('7dias');
   const [tipoVisualizacaoCurva, setTipoVisualizacaoCurva] = useState<'area' | 'barras' | 'linha'>('area');
   const [metricaTop, setMetricaTop] = useState<'faturamento' | 'quantidade'>('faturamento');
   const [filtroCategoriaTop, setFiltroCategoriaTop] = useState<string>('todas');
@@ -991,14 +1008,34 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   const [hoveredTopIdx, setHoveredTopIdx] = useState<number | null>(null);
   const [copiadoFeedback, setCopiadoFeedback] = useState<boolean>(false);
 
-  // Datas padrão para filtro
-  const hojeObj = useMemo(() => new Date(), []);
+  // Datas padrão para filtro (atualizadas ao abrir o modal)
+  const hojeObj = useMemo(() => new Date(), [visivel]);
   const hojeIsoStr = useMemo(() => obterDataLocalISO(hojeObj), [hojeObj]);
   const seteDiasAtrasIsoStr = useMemo(() => {
     const d = new Date(hojeObj);
     d.setDate(d.getDate() - 6);
     return obterDataLocalISO(d);
   }, [hojeObj]);
+  const trintaDiasAtrasIsoStr = useMemo(() => {
+    const d = new Date(hojeObj);
+    d.setDate(d.getDate() - 29);
+    return obterDataLocalISO(d);
+  }, [hojeObj]);
+  const inicioAnoIsoStr = useMemo(() => `${hojeObj.getFullYear()}-01-01`, [hojeObj]);
+
+  const dataMaisAntigaObj = useMemo(() => {
+    if (!vendasValidas || vendasValidas.length === 0) {
+      return new Date(2020, 0, 1, 0, 0, 0, 0);
+    }
+    let minMs = Infinity;
+    vendasValidas.forEach((v) => {
+      const ms = parseDataVenda(v).getTime();
+      if (!isNaN(ms) && ms < minMs) minMs = ms;
+    });
+    if (!isFinite(minMs)) return new Date(2020, 0, 1, 0, 0, 0, 0);
+    const d = new Date(minMs);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+  }, [vendasValidas]);
 
   const [dataInicioCustom, setDataInicioCustom] = useState<string>(seteDiasAtrasIsoStr);
   const [dataFimCustom, setDataFimCustom] = useState<string>(hojeIsoStr);
@@ -1030,6 +1067,10 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       inicio = new Date(agora.getFullYear(), 0, 1, 0, 0, 0, 0);
       fim = new Date(agora.getFullYear(), 11, 31, 23, 59, 59, 999);
       label = `ano de ${agora.getFullYear()}`;
+    } else if (periodoFiltro === 'tudo') {
+      inicio = new Date(dataMaisAntigaObj);
+      fim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
+      label = 'todo o histórico';
     } else {
       const pIni = (dataInicioCustom || '').split('-');
       const pFim = (dataFimCustom || '').split('-');
@@ -1041,7 +1082,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
 
     return { dataInicioObj: inicio, dataFimObj: fim, periodoLabel: label };
-  }, [periodoFiltro, dataInicioCustom, dataFimCustom]);
+  }, [periodoFiltro, dataInicioCustom, dataFimCustom, dataMaisAntigaObj]);
 
   // Vendas do período atual e do período anterior equivalente
   const { vendasPainel, faturamentoTotal, faturamentoAnterior, variacaoPercentual } = useMemo(() => {
@@ -1311,7 +1352,15 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
 
     if (periodoFiltro === 'hoje') {
-      const horas = ['10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h'];
+      let horaMin = 8;
+      vendasPainel.forEach((v) => {
+        const h = parseDataVenda(v).getHours();
+        if (h < horaMin) horaMin = h;
+      });
+      const horas: string[] = [];
+      for (let h = horaMin; h <= 23; h++) {
+        horas.push(`${String(h).padStart(2, '0')}h`);
+      }
       return horas.map((hStr) => {
         const hNum = parseInt(hStr, 10);
         let fat = 0;
@@ -1341,6 +1390,43 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         });
         return { label: mes, faturamento: fat, pedidos: ped };
       });
+    }
+
+    if (periodoFiltro === 'tudo') {
+      const tIni = dataInicioObj.getTime();
+      const tFim = dataFimObj.getTime();
+      const diffDias = Math.max(1, Math.round((tFim - tIni) / (24 * 60 * 60 * 1000)));
+      if (diffDias > 60) {
+        const mapaMeses = new Map<string, { label: string; faturamento: number; pedidos: number; sortKey: string }>();
+        vendasPainel.forEach((v) => {
+          const dt = parseDataVenda(v);
+          const mes = String(dt.getMonth() + 1).padStart(2, '0');
+          const ano = String(dt.getFullYear());
+          const sortKey = `${ano}-${mes}`;
+          const label = `${mes}/${ano}`;
+          const atual = mapaMeses.get(sortKey) || { label, faturamento: 0, pedidos: 0, sortKey };
+          atual.faturamento += Number(v.valorTotal) || 0;
+          atual.pedidos += 1;
+          mapaMeses.set(sortKey, atual);
+        });
+        return Array.from(mapaMeses.values())
+          .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+          .map(({ label, faturamento, pedidos }) => ({ label, faturamento, pedidos }));
+      }
+      const mapaDiasTudo = new Map<string, { label: string; faturamento: number; pedidos: number; sortKey: string }>();
+      vendasPainel.forEach((v) => {
+        const dt = parseDataVenda(v);
+        const iso = obterDataLocalISO(dt);
+        const parts = iso.split('-');
+        const label = `${parts[2]}/${parts[1]}`;
+        const atual = mapaDiasTudo.get(iso) || { label, faturamento: 0, pedidos: 0, sortKey: iso };
+        atual.faturamento += Number(v.valorTotal) || 0;
+        atual.pedidos += 1;
+        mapaDiasTudo.set(iso, atual);
+      });
+      return Array.from(mapaDiasTudo.values())
+        .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+        .map(({ label, faturamento, pedidos }) => ({ label, faturamento, pedidos }));
     }
 
     // 30 dias ou custom
@@ -1713,6 +1799,45 @@ ${top3 || '- Nenhum produto vendido'}
 
       {/* CORPO COM ROLAGEM */}
       <div className="corpo-relatorio-cheio" style={{ gap: '14px', display: 'flex', flexDirection: 'column', paddingBottom: '24px', overflowX: 'hidden' }}>
+        {erroSync && (
+          <div
+            style={{
+              background: '#fef3c7',
+              border: '1px solid #f59e0b',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap',
+              color: '#92400e',
+              fontSize: '0.84rem',
+              fontWeight: 600,
+            }}
+          >
+            <span>⚠️ {erroSync}</span>
+            {onRefazerLogin && (
+              <button
+                type="button"
+                onClick={onRefazerLogin}
+                style={{
+                  background: '#d97706',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                🔄 Refazer Login
+              </button>
+            )}
+          </div>
+        )}
                 {/* ABA PRINCIPAL: NOVO PAINEL DE INTELIGÊNCIA & GRÁFICOS (IMAGENS 2, 3, 4 e 5) */}
         {abaAtiva === 'grafico' && (
           <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
@@ -1824,7 +1949,8 @@ ${top3 || '- Nenhum produto vendido'}
                     { id: '7dias', label: '7 Dias' },
                     { id: '30dias', label: '30 Dias' },
                     { id: 'ano', label: 'Ano' },
-                  ].map((p) => {
+                    { id: 'tudo', label: 'Tudo' },
+                  ].map((p, idx, arr) => {
                     const ativo = periodoFiltro === p.id;
                     return (
                       <button
@@ -1832,7 +1958,7 @@ ${top3 || '- Nenhum produto vendido'}
                         style={{
                           padding: '5px 12px',
                           border: 'none',
-                          borderRight: '1px solid #cbd5e1',
+                          borderRight: idx < arr.length - 1 ? '1px solid #cbd5e1' : 'none',
                           fontSize: '0.76rem',
                           fontWeight: 800,
                           cursor: 'pointer',
@@ -1847,6 +1973,15 @@ ${top3 || '- Nenhum produto vendido'}
                             setDataFimCustom(hojeIsoStr);
                           } else if (p.id === '7dias') {
                             setDataInicioCustom(seteDiasAtrasIsoStr);
+                            setDataFimCustom(hojeIsoStr);
+                          } else if (p.id === '30dias') {
+                            setDataInicioCustom(trintaDiasAtrasIsoStr);
+                            setDataFimCustom(hojeIsoStr);
+                          } else if (p.id === 'ano') {
+                            setDataInicioCustom(inicioAnoIsoStr);
+                            setDataFimCustom(hojeIsoStr);
+                          } else if (p.id === 'tudo') {
+                            setDataInicioCustom(obterDataLocalISO(dataMaisAntigaObj));
                             setDataFimCustom(hojeIsoStr);
                           }
                         }}
@@ -1880,6 +2015,50 @@ ${top3 || '- Nenhum produto vendido'}
                 </button>
               </div>
             </div>
+
+            {vendasPainel.length === 0 && vendasValidas.length > 0 && periodoFiltro !== 'tudo' && (
+              <div
+                style={{
+                  background: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                  flexWrap: 'wrap',
+                  fontSize: '0.82rem',
+                  color: '#1e40af',
+                  fontWeight: 600,
+                }}
+              >
+                <span>
+                  ℹ️ Nenhuma venda neste período ({periodoLabel}) — há <b>{vendasValidas.length}</b> venda(s) no histórico total.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPeriodoFiltro('tudo');
+                    setDataInicioCustom(obterDataLocalISO(dataMaisAntigaObj));
+                    setDataFimCustom(hojeIsoStr);
+                  }}
+                  style={{
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Ver Todo o Histórico
+                </button>
+              </div>
+            )}
 
             {/* CONTAINER 2: 4 CARDS KPIS (PRD NEO-BRUTALISTA GOURMET) */}
             <div

@@ -110,6 +110,7 @@ import {
   validarPainelLojaServidor,
   buscarPedidoMotoboyServidor,
   confirmarPinEntregaMotoboyServidor,
+  renovarSessaoFirebaseServidor,
 } from './lib/authClient';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
@@ -1081,10 +1082,17 @@ export default function App() {
   const [firebaseAuthUid, setFirebaseAuthUid] = useState<string | null>(() =>
     auth?.currentUser && !auth.currentUser.isAnonymous ? auth.currentUser.uid : null
   );
+  const [erroSyncRelatorios, setErroSyncRelatorios] = useState<string | null>(null);
+  const tentouRenovarAuthRef = useRef<boolean>(false);
   useEffect(() => {
     if (!auth) return;
     const unsubAuth = onAuthStateChanged(auth, (u) => {
-      setFirebaseAuthUid(u && !u.isAnonymous ? u.uid : null);
+      const uidValido = u && !u.isAnonymous ? u.uid : null;
+      setFirebaseAuthUid(uidValido);
+      if (uidValido) {
+        tentouRenovarAuthRef.current = false;
+        setErroSyncRelatorios(null);
+      }
     });
     return () => unsubAuth();
   }, []);
@@ -1546,6 +1554,30 @@ export default function App() {
     configDeliveryRef.current = configDelivery;
   }, [configDelivery]);
 
+  // Autorrecuperação do token Firebase Auth via cookie HttpOnly em_usuario_auth caso o usuário já esteja logado localmente
+  useEffect(() => {
+    if (isModoCliente || telaLoginVisivel || firebaseAuthUid || painelFallbackLocal) return;
+    if (tentouRenovarAuthRef.current) return;
+
+    const timer = window.setTimeout(() => {
+      if (auth?.currentUser && !auth.currentUser.isAnonymous) return;
+      if (tentouRenovarAuthRef.current) return;
+      tentouRenovarAuthRef.current = true;
+      renovarSessaoFirebaseServidor()
+        .then((res) => {
+          if (!res.autenticado && !res.fallbackLocal) {
+            setErroSyncRelatorios(
+              res.erro ||
+                'Sessão de nuvem expirada ou sem token Firebase. Clique em "Refazer Login" para sincronizar vendas e relatórios.'
+            );
+          }
+        })
+        .catch(() => {});
+    }, 1200);
+
+    return () => window.clearTimeout(timer);
+  }, [isModoCliente, telaLoginVisivel, firebaseAuthUid, painelFallbackLocal]);
+
   // Firebase Firestore Real-time Cloud Database Sync
   useEffect(() => {
     // Usuário de uma única loja autenticado: assina apenas o documento supermercados/{lojaId} (compatível com firestore.rules.strict)
@@ -1899,6 +1931,12 @@ export default function App() {
           }
         }
       }
+    }, (err) => {
+      if (err?.code === 'permission-denied') {
+        setErroSyncRelatorios(
+          'Permissão negada ao ler pedidos na nuvem (permission-denied). Clique em "Refazer Login" para renovar o token de acesso e verifique se publicou firestore.rules.strict.'
+        );
+      }
     });
 
     // Subscribe to Estoque for active store (com proteção para modo offline e auto-reconciliação de nomes)
@@ -1967,25 +2005,40 @@ export default function App() {
     }
 
     // Subscribe to Vendas for active store (Apenas para Painel do Lojista)
-    const unsubVendas = subscribeVendas(supermercadoAtual, (listaVendas) => {
-      if (listaVendas && listaVendas.length > 0) {
-        setVendas(listaVendas);
-        safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(listaVendas));
-      } else {
-        const salvo = localStorage.getItem(`vendas_${supermercadoAtual}`);
-        if (salvo) {
-          try {
-            const parsed = JSON.parse(salvo);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              setVendas(parsed);
-              return;
-            }
-          } catch (e) {}
+    const unsubVendas = subscribeVendas(
+      supermercadoAtual,
+      (listaVendas) => {
+        setErroSyncRelatorios(null);
+        if (listaVendas && listaVendas.length > 0) {
+          setVendas(listaVendas);
+          safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(listaVendas));
+        } else {
+          const salvo = localStorage.getItem(`vendas_${supermercadoAtual}`);
+          if (salvo) {
+            try {
+              const parsed = JSON.parse(salvo);
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                setVendas(parsed);
+                return;
+              }
+            } catch (e) {}
+          }
+          setVendas([]);
+          safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify([]));
         }
-        setVendas([]);
-        safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify([]));
+      },
+      (err) => {
+        if (err?.code === 'permission-denied') {
+          setErroSyncRelatorios(
+            'Permissão negada ao ler vendas na nuvem (permission-denied). Clique em "Refazer Login" para renovar o token de acesso e publicar firestore.rules.strict.'
+          );
+        } else {
+          setErroSyncRelatorios(
+            `Falha ao sincronizar vendas com a nuvem (${err?.code || err?.message || 'erro desconhecido'}).`
+          );
+        }
       }
-    });
+    );
 
     // Subscribe to Operadores for active store
     const unsubOperadores = subscribeOperadores(supermercadoAtual, (ops) => {
@@ -3831,6 +3884,8 @@ export default function App() {
       sessionStorage.removeItem('sessao_loja_ativa');
     } catch {}
     encerrarSessaoServidor().catch(() => {});
+    tentouRenovarAuthRef.current = false;
+    setErroSyncRelatorios(null);
 
     setVendas([]);
     setClientesDevedores([]);
@@ -7721,7 +7776,10 @@ export default function App() {
     setVendas(novasVendas);
     safeLocalStorageSet(`vendas_${supermercadoAtual}`, JSON.stringify(novasVendas));
 
-    salvarVendaFirestore(novasVendas[vendaIndex]);
+    salvarVendaFirestore(novasVendas[vendaIndex]).catch(() => {
+      adicionarVendaFilaOffline(novasVendas[vendaIndex]);
+      setVendasPendentesCount(obterVendasPendentesOffline().length);
+    });
     itensAtualizadosParaSync.forEach((it) => {
       salvarItemEstoqueFirestore(it, supermercadoAtual);
     });
@@ -7943,7 +8001,10 @@ export default function App() {
       const novasVendas = [novaVenda, ...vendas];
       setVendas(novasVendas);
       safeLocalStorageSet(`vendas_${storeId}`, JSON.stringify(novasVendas));
-      salvarVendaFirestore(novaVenda);
+      salvarVendaFirestore(novaVenda).catch(() => {
+        adicionarVendaFilaOffline(novaVenda);
+        setVendasPendentesCount(obterVendasPendentesOffline().length);
+      });
 
       // Emissão automática de NFC-e no Delivery (somente se a loja tiver habilitado o módulo fiscal)
       const lojaDeliveryObj = listaSupermercados.find((l) => l.id === storeId) || null;
@@ -8151,7 +8212,10 @@ export default function App() {
         const novasVendas = vendas.map((v) => (v.id === vendaAtualizada.id ? vendaAtualizada : v));
         setVendas(novasVendas);
         safeLocalStorageSet(`vendas_${storeId}`, JSON.stringify(novasVendas));
-        salvarVendaFirestore(vendaAtualizada);
+        salvarVendaFirestore(vendaAtualizada).catch(() => {
+          adicionarVendaFilaOffline(vendaAtualizada);
+          setVendasPendentesCount(obterVendasPendentesOffline().length);
+        });
       }
     }
 
@@ -15235,6 +15299,8 @@ export default function App() {
         onEstornarVenda={handleEstornarVenda}
         onVerCupom={(venda) => setVendaCupomVer(venda)}
         abaInicial={abaRelatorioInicial}
+        erroSync={erroSyncRelatorios}
+        onRefazerLogin={handleLogout}
       />
 
       {/* MÓDULO DE GESTÃO DE DELIVERY (ESTILO ZÉ DELIVERY - PAINEL LOJISTA) */}
@@ -15287,6 +15353,8 @@ export default function App() {
         onVerCupom={(venda) => setVendaCupomVer(venda)}
         catalogoGlobal={catalogoGlobal}
         estoque={estoque}
+        erroSync={erroSyncRelatorios}
+        onRefazerLogin={handleLogout}
       />
 
       {/* MODAL DE PESQUISAR PRODUTO DIRETO NA API OFICIAL SI5 GLOBAL */}
@@ -15304,6 +15372,8 @@ export default function App() {
         estoque={estoque}
         nomeLoja={nomeSupermercadoAtivo}
         catalogoGlobal={catalogoGlobal}
+        erroSync={erroSyncRelatorios}
+        onRefazerLogin={handleLogout}
       />
 
       {/* MODAL DE CUPOM DE VENDA / IMPRESSÃO */}

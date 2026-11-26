@@ -8,22 +8,144 @@ service cloud.firestore {
     // `FIREBASE_SERVICE_ACCOUNT_JSON` na Vercel (/api/auth emitindo Custom Tokens).
     // =========================================================================
 
+    // =========================================================================
+    // Assumed Data Model
+    // =========================================================================
+    //
+    // Collection: usuarios_master / config_sistema
+    // Document ID: {docId}
+    // Access: Blocked completely on Client SDK (Server/Admin SDK only)
+    //
+    // Collection: lojas_publico
+    // Document ID: {lojaId}
+    // Fields:
+    //   - id: string (optional, <= 128)
+    //   - nome: string (optional on partial update, <= 200)
+    //   - slug, telefone, cidade, endereco, status: string (optional, bounded)
+    //   - taxa_entrega: number >= 0 (optional)
+    //   - taxas_bairro: list <= 200 (optional)
+    //   - permissoesLoja: map <= 64 (optional)
+    //   - Credential/token/fiscal fields & cnpj: FORBIDDEN
+    //
+    // Collection: supermercados
+    // Document ID: {lojaId}
+    // Fields:
+    //   - id: string (optional, <= 128, immutable once set)
+    //   - nome: string (optional on partial update, <= 200)
+    //   - status: 'ativo' | 'bloqueado' (optional, immutable for non-Master once set)
+    //   - slug, marca, logo_url, cnpj, hashes, tokens, endereco, cidade, telefone, configFiscal, permissoesLoja, taxas_bairro, limites
+    //
+    // Collection: produtos_catalogo / catalogo_global
+    // Document ID: {codigoBarra}
+    // Fields:
+    //   - codigo: string (optional, <= 64), nome: string (optional, <= 300)
+    //   - marca, categoria, unidade_medida, imagem, foto, foto_url, descricao, fiscal fields, prices >= 0
+    //
+    // Collection: estoque
+    // Document ID: {itemId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - nome: string (required, <= 250)
+    //   - preco_venda: number >= 0 (required)
+    //   - quantidade: number >= 0 (required)
+    //   - Optional metadata: codigo, codigo_barras, marca, categoria, descricao, lote, validade, preco_custo >= 0, foto, tipoCadastro, estoqueIlimitado, exclusivoLoja, fiscal fields
+    //
+    // Collection: vendas
+    // Document ID: {vendaId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - valorTotal: number >= 0 (required)
+    //   - itens: list <= 500 (required)
+    //   - Optional metadata: id, numeroVenda, data, hora, timestamp, operadorId, operadorNome, total, subtotal, desconto, acrescimo, formaPagamento, valorRecebido, valorPago, troco, status, estorno fields, clienteFiado fields, origem, taxaEntrega, pedidoDeliveryId, cpfNaNota, nfce
+    //
+    // Collection: operadores
+    // Document ID: {opId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - nome, cargo, cpfOuUsuario, pinSenha, password hash/salt fields, permissoes, ativo, dataCadastro
+    //
+    // Collection: clientes_devedores
+    // Document ID: {clienteId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - nome: string (required, <= 150)
+    //   - cpfOuCnpj, telefone, endereco, observacoes, limiteFiado >= 0, saldoDevedorTotal >= 0, compras <= 2000, pagamentos <= 2000, ativo, dataCadastro
+    //
+    // Collection: sessoes_ativas
+    // Document ID: {userKey}
+    // Fields:
+    //   - userKey, sessaoToken, tipo, usuarioNome, lojaId, operadorId, dataLogin, dispositivoInfo (all bounded strings)
+    //
+    // Collection: sessoes_caixa
+    // Document ID: {sessaoId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - status: 'aberto' | 'fechado' (optional), valorInicialSuprimento >= 0, expected/informed/difference numbers, timestamps, observacoesFechamento
+    //
+    // Collection: logs_auditoria (append-only)
+    // Document ID: {logId}
+    // Fields:
+    //   - lojaId: string (required, <= 128)
+    //   - id, operadorId, operadorNome, acao, detalhes, dataHora, createdAt, timestamp
+    //
+    // Collection: termos_concordancia (create-once)
+    // Document ID: {termoId}
+    // Fields:
+    //   - aceitou: true (if present), id, idContaLogin, usuarioId, usuarioNome, perfil, lojaId, lojaNome, dataAceite, horaAceite, timestamp, versaoTermo, atualizadoEm
+    //
+    // Collection: config_delivery
+    // Document ID: {lojaId}
+    // Fields:
+    //   - ativo, extensaoContratada, raioMaximoKm >= 0, taxaEntregaFixa >= 0, valorMinimoPedido >= 0, payment flags, schedule/message/pix/phone/address fields
+    //
+    // Collection: pedidos_delivery
+    // Document ID: {pedidoId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - valorTotal: number >= 0 (required)
+    //   - Strict allowlist of PedidoDelivery fields; bounded cliente, enderecoEntrega, itens <= 200, status enum
+    //
+    // Collection: comandas_locais
+    // Document ID: {comandaId}
+    // Fields:
+    //   - lojaId: string (required, <= 128, immutable for non-Master)
+    //   - numeroComanda, nomeCliente, mesaOuReferencia, telefone, status, itens <= 300, pagamentos <= 100, totals >= 0, timestamps
+    //
+    // =========================================================================
+
+    // =========================================================================
+    // Helper Functions
+    // =========================================================================
+
     function isSignedIn() {
       return request.auth != null
-        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+        && (!('firebase' in request.auth.token)
+          || request.auth.token.firebase == null
+          || request.auth.token.firebase.get('sign_in_provider', '') != 'anonymous');
     }
 
     function isMaster() {
       return isSignedIn() && (
-        request.auth.token.role == 'master' ||
-        request.auth.token.is_master == true
+        request.auth.token.get('role', '') == 'master' ||
+        request.auth.token.get('is_master', false) == true
       );
     }
 
     function belongsToLoja(lojaId) {
       return isSignedIn() && (
         isMaster() ||
-        (request.auth.token.lojaId != null && request.auth.token.lojaId == lojaId)
+        (
+          request.auth.token.get('lojaId', '') is string &&
+          request.auth.token.get('lojaId', '') != '' &&
+          request.auth.token.get('lojaId', '') == lojaId
+        )
+      );
+    }
+
+    function canUpdateLojaScoped(data, prevData) {
+      return belongsToLoja(data.lojaId) && (
+        isMaster() ||
+        (belongsToLoja(prevData.lojaId) && data.lojaId == prevData.lojaId)
       );
     }
 
@@ -33,6 +155,382 @@ service cloud.firestore {
 
     function isValidNumber(val) {
       return val is number && val >= 0;
+    }
+
+    function isOptionalString(data, field, maxLen) {
+      return !(field in data) || data[field] == null || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isOptionalNonNegNumber(data, field) {
+      return !(field in data) || data[field] == null || isValidNumber(data[field]);
+    }
+
+    function isOptionalNumber(data, field) {
+      return !(field in data) || data[field] == null || data[field] is number;
+    }
+
+    function isOptionalBool(data, field) {
+      return !(field in data) || data[field] == null || data[field] is bool;
+    }
+
+    function isOptionalMap(data, field, maxKeys) {
+      return !(field in data) || data[field] == null || (data[field] is map && data[field].size() <= maxKeys);
+    }
+
+    function isOptionalList(data, field, maxSize) {
+      return !(field in data) || data[field] == null || (data[field] is list && data[field].size() <= maxSize);
+    }
+
+    // =========================================================================
+    // Domain Validators (Applied on both create and update)
+    // =========================================================================
+
+    function isValidLojaPublico(data) {
+      return !data.keys().hasAny([
+          'senha', 'senhaAdmin', 'senhaHash', 'senhaSalt', 'senhaAlgo',
+          'senhaHashPbkdf2', 'senhaSaltPbkdf2', 'senhaPbkdf2RefSalt',
+          'token_admin', 'token_caixa', 'token_garcom', 'token_cozinha',
+          'configFiscal', 'cnpj'
+        ])
+        && isOptionalString(data, 'id', 128)
+        && (!('nome' in data) || isNonEmptyString(data.nome, 200))
+        && isOptionalString(data, 'slug', 200)
+        && isOptionalString(data, 'telefone', 40)
+        && isOptionalString(data, 'cidade', 120)
+        && isOptionalString(data, 'endereco', 300)
+        && isOptionalString(data, 'status', 32)
+        && isOptionalNonNegNumber(data, 'taxa_entrega')
+        && isOptionalList(data, 'taxas_bairro', 200)
+        && isOptionalMap(data, 'permissoesLoja', 64);
+    }
+
+    function isValidSupermercado(data) {
+      return isOptionalString(data, 'id', 128)
+        && (!('nome' in data) || isNonEmptyString(data.nome, 200))
+        && isOptionalString(data, 'slug', 200)
+        && isOptionalString(data, 'marca', 150)
+        && isOptionalString(data, 'logo_url', 600000)
+        && isOptionalString(data, 'cnpj', 32)
+        && isOptionalString(data, 'senha', 256)
+        && isOptionalString(data, 'senhaAdmin', 256)
+        && isOptionalString(data, 'senhaHash', 256)
+        && isOptionalString(data, 'senhaSalt', 256)
+        && isOptionalString(data, 'senhaAlgo', 32)
+        && isOptionalString(data, 'senhaHashPbkdf2', 256)
+        && isOptionalString(data, 'senhaSaltPbkdf2', 256)
+        && isOptionalString(data, 'senhaPbkdf2RefSalt', 256)
+        && isOptionalBool(data, 'senha_revogada')
+        && isOptionalString(data, 'endereco', 300)
+        && isOptionalString(data, 'cidade', 120)
+        && isOptionalString(data, 'telefone', 40)
+        && (!('status' in data) || data.status == null || data.status in ['ativo', 'bloqueado'])
+        && isOptionalString(data, 'motivoBloqueio', 500)
+        && isOptionalString(data, 'dataCadastro', 64)
+        && isOptionalMap(data, 'permissoesLoja', 64)
+        && isOptionalNonNegNumber(data, 'limiteCaixas')
+        && isOptionalNonNegNumber(data, 'limiteSupervisores')
+        && isOptionalNonNegNumber(data, 'taxa_entrega')
+        && isOptionalString(data, 'tempo_estimado_entrega', 64)
+        && isOptionalList(data, 'taxas_bairro', 200)
+        && isOptionalString(data, 'token_admin', 128)
+        && isOptionalString(data, 'token_garcom', 128)
+        && isOptionalString(data, 'token_cozinha', 128)
+        && isOptionalString(data, 'token_caixa', 128)
+        && isOptionalMap(data, 'configFiscal', 64);
+    }
+
+    function isValidProdutoCatalogo(data) {
+      return (!('codigo' in data) || isNonEmptyString(data.codigo, 64))
+        && (!('nome' in data) || isNonEmptyString(data.nome, 300))
+        && isOptionalString(data, 'marca', 150)
+        && isOptionalString(data, 'categoria', 150)
+        && isOptionalString(data, 'unidade_medida', 40)
+        && isOptionalString(data, 'imagem', 600000)
+        && isOptionalString(data, 'foto', 600000)
+        && isOptionalString(data, 'foto_url', 2000)
+        && isOptionalString(data, 'descricao', 1500)
+        && isOptionalString(data, 'ncm', 32)
+        && isOptionalString(data, 'cfop', 32)
+        && isOptionalString(data, 'csosn', 32)
+        && isOptionalString(data, 'cest', 32)
+        && isOptionalString(data, 'origem_fiscal', 32)
+        && isOptionalNonNegNumber(data, 'preco')
+        && isOptionalNonNegNumber(data, 'preco_custo')
+        && isOptionalNonNegNumber(data, 'preco_venda')
+        && isOptionalString(data, 'origem', 100)
+        && isOptionalString(data, 'buscaImagem', 500);
+    }
+
+    function isValidEstoqueItem(data) {
+      return data.keys().hasAll(['lojaId', 'nome', 'preco_venda', 'quantidade'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isNonEmptyString(data.nome, 250)
+        && isValidNumber(data.preco_venda)
+        && isValidNumber(data.quantidade)
+        && isOptionalString(data, 'codigo', 100)
+        && isOptionalString(data, 'codigo_barras', 100)
+        && isOptionalString(data, 'marca', 150)
+        && isOptionalString(data, 'categoria', 150)
+        && isOptionalString(data, 'descricao', 1500)
+        && isOptionalString(data, 'lote', 100)
+        && isOptionalString(data, 'validade', 40)
+        && isOptionalNonNegNumber(data, 'preco_custo')
+        && isOptionalString(data, 'foto', 600000)
+        && isOptionalString(data, 'tipoCadastro', 32)
+        && isOptionalBool(data, 'estoqueIlimitado')
+        && isOptionalBool(data, 'exclusivoLoja')
+        && isOptionalString(data, 'ncm', 32)
+        && isOptionalString(data, 'cfop', 32)
+        && isOptionalString(data, 'csosn', 32)
+        && isOptionalString(data, 'cest', 32)
+        && isOptionalString(data, 'unidade_medida', 32)
+        && isOptionalString(data, 'origem_fiscal', 32);
+    }
+
+    function isValidVenda(data) {
+      return data.keys().hasAll(['lojaId', 'valorTotal', 'itens'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isValidNumber(data.valorTotal)
+        && data.itens is list
+        && data.itens.size() <= 500
+        && isOptionalString(data, 'id', 128)
+        && (!('numeroVenda' in data) || data.numeroVenda == null || data.numeroVenda is number || (data.numeroVenda is string && data.numeroVenda.size() <= 64))
+        && isOptionalString(data, 'data', 40)
+        && isOptionalString(data, 'hora', 20)
+        && isOptionalNonNegNumber(data, 'timestamp')
+        && isOptionalString(data, 'operadorId', 128)
+        && isOptionalString(data, 'operadorNome', 150)
+        && isOptionalNonNegNumber(data, 'total')
+        && isOptionalNonNegNumber(data, 'subtotal')
+        && isOptionalNonNegNumber(data, 'desconto')
+        && isOptionalNonNegNumber(data, 'acrescimo')
+        && isOptionalString(data, 'formaPagamento', 50)
+        && isOptionalNonNegNumber(data, 'valorRecebido')
+        && isOptionalNonNegNumber(data, 'valorPago')
+        && isOptionalNonNegNumber(data, 'troco')
+        && isOptionalString(data, 'status', 50)
+        && isOptionalString(data, 'dataEstorno', 64)
+        && isOptionalString(data, 'operadorEstornoNome', 150)
+        && isOptionalString(data, 'motivoEstorno', 500)
+        && isOptionalString(data, 'clienteFiadoId', 128)
+        && isOptionalString(data, 'clienteFiadoNome', 150)
+        && isOptionalString(data, 'origem', 32)
+        && isOptionalNonNegNumber(data, 'taxaEntrega')
+        && isOptionalString(data, 'pedidoDeliveryId', 128)
+        && isOptionalString(data, 'cpfNaNota', 32)
+        && isOptionalMap(data, 'nfce', 32);
+    }
+
+    function isValidOperador(data) {
+      return data.keys().hasAll(['lojaId'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isOptionalString(data, 'id', 128)
+        && (!('nome' in data) || data.nome == null || isNonEmptyString(data.nome, 150))
+        && isOptionalString(data, 'cargo', 80)
+        && isOptionalString(data, 'cpfOuUsuario', 100)
+        && isOptionalString(data, 'pinSenha', 200)
+        && isOptionalString(data, 'senhaHash', 256)
+        && isOptionalString(data, 'senhaSalt', 256)
+        && isOptionalString(data, 'senhaAlgo', 32)
+        && isOptionalString(data, 'senhaHashPbkdf2', 256)
+        && isOptionalString(data, 'senhaSaltPbkdf2', 256)
+        && isOptionalString(data, 'senhaPbkdf2RefSalt', 256)
+        && isOptionalMap(data, 'permissoes', 64)
+        && isOptionalBool(data, 'ativo')
+        && isOptionalString(data, 'dataCadastro', 64);
+    }
+
+    function isValidClienteDevedor(data) {
+      return data.keys().hasAll(['lojaId', 'nome'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isNonEmptyString(data.nome, 150)
+        && isOptionalString(data, 'id', 128)
+        && isOptionalString(data, 'cpfOuCnpj', 32)
+        && isOptionalString(data, 'telefone', 40)
+        && isOptionalString(data, 'endereco', 300)
+        && isOptionalString(data, 'observacoes', 1000)
+        && isOptionalNonNegNumber(data, 'limiteFiado')
+        && isOptionalString(data, 'dataCadastro', 64)
+        && isOptionalNonNegNumber(data, 'saldoDevedorTotal')
+        && isOptionalList(data, 'compras', 2000)
+        && isOptionalList(data, 'pagamentos', 2000)
+        && isOptionalBool(data, 'ativo');
+    }
+
+    function isValidSessaoAtiva(data) {
+      return isOptionalString(data, 'userKey', 200)
+        && isOptionalString(data, 'sessaoToken', 200)
+        && isOptionalString(data, 'tipo', 50)
+        && isOptionalString(data, 'usuarioNome', 150)
+        && isOptionalString(data, 'lojaId', 128)
+        && isOptionalString(data, 'operadorId', 128)
+        && isOptionalString(data, 'dataLogin', 64)
+        && isOptionalString(data, 'dispositivoInfo', 250);
+    }
+
+    function isValidSessaoCaixa(data) {
+      return data.keys().hasAll(['lojaId'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isOptionalString(data, 'id', 128)
+        && isOptionalString(data, 'operadorId', 128)
+        && isOptionalString(data, 'operadorNome', 150)
+        && isOptionalString(data, 'dataAbertura', 40)
+        && isOptionalString(data, 'horaAbertura', 20)
+        && isOptionalNonNegNumber(data, 'timestampAbertura')
+        && (!('status' in data) || data.status == null || data.status in ['aberto', 'fechado'])
+        && isOptionalNonNegNumber(data, 'valorInicialSuprimento')
+        && isOptionalString(data, 'dataFechamento', 40)
+        && isOptionalString(data, 'horaFechamento', 20)
+        && isOptionalNonNegNumber(data, 'timestampFechamento')
+        && isOptionalNonNegNumber(data, 'valorDinheiroInformado')
+        && isOptionalNonNegNumber(data, 'valorCartaoInformado')
+        && isOptionalNonNegNumber(data, 'valorPixInformado')
+        && isOptionalNonNegNumber(data, 'valorTotalInformado')
+        && isOptionalNumber(data, 'valorDinheiroEsperado')
+        && isOptionalNumber(data, 'valorCartaoEsperado')
+        && isOptionalNumber(data, 'valorPixEsperado')
+        && isOptionalNumber(data, 'valorFiadoEsperado')
+        && isOptionalNonNegNumber(data, 'valorTotalVendasTurno')
+        && isOptionalNumber(data, 'valorTotalEsperadoGeral')
+        && isOptionalNumber(data, 'diferencaDinheiro')
+        && isOptionalNumber(data, 'diferencaCartao')
+        && isOptionalNumber(data, 'diferencaPix')
+        && isOptionalNumber(data, 'diferencaTotalGeral')
+        && isOptionalString(data, 'observacoesFechamento', 1000);
+    }
+
+    function isValidLogAuditoria(data) {
+      return data.keys().hasAll(['lojaId'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isOptionalString(data, 'id', 128)
+        && isOptionalString(data, 'operadorId', 128)
+        && isOptionalString(data, 'operadorNome', 150)
+        && isOptionalString(data, 'acao', 250)
+        && isOptionalString(data, 'detalhes', 2000)
+        && isOptionalString(data, 'dataHora', 64)
+        && isOptionalString(data, 'createdAt', 64)
+        && isOptionalNonNegNumber(data, 'timestamp');
+    }
+
+    function isValidTermoConcordancia(data) {
+      return isOptionalString(data, 'id', 128)
+        && isOptionalString(data, 'idContaLogin', 200)
+        && isOptionalString(data, 'usuarioId', 128)
+        && isOptionalString(data, 'usuarioNome', 150)
+        && isOptionalString(data, 'perfil', 80)
+        && isOptionalString(data, 'lojaId', 128)
+        && isOptionalString(data, 'lojaNome', 200)
+        && isOptionalString(data, 'dataAceite', 40)
+        && isOptionalString(data, 'horaAceite', 20)
+        && isOptionalNonNegNumber(data, 'timestamp')
+        && isOptionalString(data, 'versaoTermo', 64)
+        && isOptionalString(data, 'atualizadoEm', 64)
+        && (!('aceitou' in data) || data.aceitou == true);
+    }
+
+    function isValidConfigDelivery(data) {
+      return isOptionalBool(data, 'ativo')
+        && isOptionalBool(data, 'extensaoContratada')
+        && isOptionalNonNegNumber(data, 'raioMaximoKm')
+        && isOptionalNonNegNumber(data, 'taxaEntregaFixa')
+        && isOptionalNonNegNumber(data, 'taxaPorKm')
+        && isOptionalNonNegNumber(data, 'tempoMinimoMinutos')
+        && isOptionalNonNegNumber(data, 'tempoMaximoMinutos')
+        && isOptionalNonNegNumber(data, 'valorMinimoPedido')
+        && isOptionalNonNegNumber(data, 'pedidoMinimo')
+        && isOptionalNonNegNumber(data, 'tempoMedioMinutos')
+        && isOptionalBool(data, 'aceitaPix')
+        && isOptionalBool(data, 'aceitaCartaoEntrega')
+        && isOptionalBool(data, 'aceitaDinheiro')
+        && isOptionalString(data, 'horarioAbertura', 20)
+        && isOptionalString(data, 'horarioFechamento', 20)
+        && isOptionalString(data, 'mensagemBoasVindas', 1000)
+        && isOptionalString(data, 'chavePix', 200)
+        && isOptionalString(data, 'telefoneContatoLoja', 40)
+        && isOptionalNonNegNumber(data, 'repeticoesAlerta')
+        && isOptionalBool(data, 'aceitarAutomatico')
+        && isOptionalBool(data, 'imprimirAutomatico')
+        && isOptionalString(data, 'larguraImpressao', 16)
+        && isOptionalMap(data, 'enderecoLoja', 16);
+    }
+
+    function isValidPedidoDelivery(data) {
+      return data.keys().hasAll(['lojaId', 'valorTotal'])
+        && data.keys().hasOnly([
+          'id', 'numeroPedido', 'lojaId', 'data', 'hora', 'timestamp', 'cliente',
+          'enderecoEntrega', 'itens', 'subtotal', 'taxaEntrega', 'valorTotal',
+          'formaPagamento', 'trocoPara', 'status', 'tipo_pedido', 'mesaNumero',
+          'atendenteNome', 'observacao', 'codigoEntregaPin', 'pinTamanho',
+          'tentativasPinEntrega', 'pinBloqueado', 'motivoCancelamento',
+          'dataFinalizacao', 'horaFinalizacao', 'entregadorNome', 'motoboyToken',
+          'motoboyTokenExpiraEm', 'chegouAoEndereco', 'entregueEmTimestamp'
+        ])
+        && isNonEmptyString(data.lojaId, 128)
+        && isValidNumber(data.valorTotal)
+        && isOptionalString(data, 'id', 128)
+        && (!('numeroPedido' in data) || data.numeroPedido == null || data.numeroPedido is number || (data.numeroPedido is string && data.numeroPedido.size() <= 64))
+        && isOptionalString(data, 'data', 40)
+        && isOptionalString(data, 'hora', 20)
+        && isOptionalNonNegNumber(data, 'timestamp')
+        && (!('cliente' in data) || data.cliente == null || (
+          data.cliente is map && data.cliente.size() <= 16
+          && isOptionalString(data.cliente, 'nome', 150)
+          && isOptionalString(data.cliente, 'telefone', 40)
+          && isOptionalString(data.cliente, 'cpf', 32)
+          && isOptionalBool(data.cliente, 'maior18AnosConfirmado')
+        ))
+        && (!('enderecoEntrega' in data) || data.enderecoEntrega == null || (
+          data.enderecoEntrega is map && data.enderecoEntrega.size() <= 16
+          && isOptionalString(data.enderecoEntrega, 'logradouro', 250)
+          && isOptionalString(data.enderecoEntrega, 'numero', 40)
+          && isOptionalString(data.enderecoEntrega, 'complemento', 150)
+          && isOptionalString(data.enderecoEntrega, 'bairro', 120)
+          && isOptionalString(data.enderecoEntrega, 'cidade', 120)
+          && isOptionalString(data.enderecoEntrega, 'referencia', 250)
+          && isOptionalString(data.enderecoEntrega, 'cep', 20)
+        ))
+        && isOptionalList(data, 'itens', 200)
+        && isOptionalNonNegNumber(data, 'subtotal')
+        && isOptionalNonNegNumber(data, 'taxaEntrega')
+        && isOptionalString(data, 'formaPagamento', 50)
+        && isOptionalNonNegNumber(data, 'trocoPara')
+        && (!('status' in data) || data.status == null || data.status in ['pendente', 'em_separacao', 'pronto', 'saiu_para_entrega', 'entregue', 'cancelado'])
+        && isOptionalString(data, 'tipo_pedido', 32)
+        && isOptionalString(data, 'mesaNumero', 32)
+        && isOptionalString(data, 'atendenteNome', 150)
+        && isOptionalString(data, 'observacao', 1000)
+        && isOptionalString(data, 'codigoEntregaPin', 16)
+        && isOptionalNonNegNumber(data, 'pinTamanho')
+        && isOptionalNonNegNumber(data, 'tentativasPinEntrega')
+        && isOptionalBool(data, 'pinBloqueado')
+        && isOptionalString(data, 'motivoCancelamento', 500)
+        && isOptionalString(data, 'dataFinalizacao', 40)
+        && isOptionalString(data, 'horaFinalizacao', 20)
+        && isOptionalString(data, 'entregadorNome', 150)
+        && isOptionalString(data, 'motoboyToken', 128)
+        && isOptionalNonNegNumber(data, 'motoboyTokenExpiraEm')
+        && isOptionalBool(data, 'chegouAoEndereco')
+        && isOptionalNonNegNumber(data, 'entregueEmTimestamp');
+    }
+
+    function isValidComandaLocal(data) {
+      return data.keys().hasAll(['lojaId'])
+        && isNonEmptyString(data.lojaId, 128)
+        && isOptionalString(data, 'id', 128)
+        && isOptionalNonNegNumber(data, 'numeroComanda')
+        && isOptionalString(data, 'nomeCliente', 150)
+        && isOptionalString(data, 'mesaOuReferencia', 100)
+        && isOptionalString(data, 'telefone', 40)
+        && (!('status' in data) || data.status == null || data.status in ['aberta', 'fechada', 'cancelada'])
+        && isOptionalList(data, 'itens', 300)
+        && isOptionalList(data, 'pagamentos', 100)
+        && isOptionalNonNegNumber(data, 'qtdPessoasDivisao')
+        && isOptionalNonNegNumber(data, 'valorTotal')
+        && isOptionalNonNegNumber(data, 'valorPago')
+        && isOptionalString(data, 'abertaEm', 64)
+        && isOptionalString(data, 'fechadaEm', 64)
+        && isOptionalString(data, 'operadorAbertura', 150)
+        && isOptionalString(data, 'vendaIdGerada', 128);
     }
 
     // 1. Credenciais Master & Configs Sensíveis (Somente Admin SDK)
@@ -46,103 +544,148 @@ service cloud.firestore {
     // 2. Supermercados (Dados sensíveis da loja isolados; vitrine pública fica em lojas_publico)
     match /lojas_publico/{lojaId} {
       allow read: if true;
-      allow write: if belongsToLoja(lojaId);
+      allow create, update: if belongsToLoja(lojaId)
+        && isValidLojaPublico(request.resource.data);
+      allow delete: if belongsToLoja(lojaId);
     }
 
     match /supermercados/{lojaId} {
       allow read: if belongsToLoja(lojaId);
-      allow create, delete: if isMaster();
-      allow update: if belongsToLoja(lojaId);
+      allow create: if isMaster()
+        && isValidSupermercado(request.resource.data);
+      allow update: if belongsToLoja(lojaId)
+        && isValidSupermercado(request.resource.data)
+        && (!('id' in resource.data) || !('id' in request.resource.data) || request.resource.data.id == resource.data.id)
+        && (isMaster() || !('status' in resource.data) || resource.data.status == null || request.resource.data.get('status', '') == resource.data.status);
+      allow delete: if isMaster();
     }
 
-    // 3. Catálogo Global (Leitura autenticada ou cardápio; escrita apenas operadores/master)
+    // 3. Catálogo Global (Leitura pública para consulta; escrita apenas autenticados não-anônimos)
     match /produtos_catalogo/{codigoBarra} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && isValidProdutoCatalogo(request.resource.data);
+      allow delete: if isSignedIn();
     }
     match /catalogo_global/{codigoBarra} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && isValidProdutoCatalogo(request.resource.data);
+      allow delete: if isSignedIn();
     }
 
     // 4. Estoque por Supermercado (Leitura pública para vitrine Delivery; escrita isolada por lojaId)
     match /estoque/{itemId} {
       allow read: if true;
-      allow create, update: if belongsToLoja(request.resource.data.lojaId)
-        && isNonEmptyString(request.resource.data.nome, 250)
-        && isValidNumber(request.resource.data.preco_venda)
-        && isValidNumber(request.resource.data.quantidade);
-      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidEstoqueItem(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
+      allow update: if isSignedIn()
+        && isValidEstoqueItem(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
+      allow delete: if isMaster() || belongsToLoja(resource.data.lojaId);
     }
 
     // 5. Vendas (Estritamente isolado por lojaId — nunca público)
     match /vendas/{vendaId} {
-      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create, update: if belongsToLoja(request.resource.data.lojaId)
-        && isValidNumber(request.resource.data.valorTotal)
-        && request.resource.data.itens is list
-        && request.resource.data.itens.size() <= 500;
+      allow read: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidVenda(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
+      allow update: if isSignedIn()
+        && isValidVenda(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
       allow delete: if isMaster();
     }
 
     // 6. Operadores de Caixa (Estritamente isolado por lojaId)
     match /operadores/{opId} {
-      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create, update: if belongsToLoja(request.resource.data.lojaId);
-      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow read: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidOperador(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
+      allow update: if isSignedIn()
+        && isValidOperador(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
+      allow delete: if isMaster() || belongsToLoja(resource.data.lojaId);
     }
 
     // 7. Clientes Devedores / Fiado (Dados sensíveis — estritamente isolado por lojaId)
     match /clientes_devedores/{clienteId} {
-      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create, update: if belongsToLoja(request.resource.data.lojaId)
-        && isNonEmptyString(request.resource.data.nome, 150);
-      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow read: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidClienteDevedor(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
+      allow update: if isSignedIn()
+        && isValidClienteDevedor(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
+      allow delete: if isMaster() || belongsToLoja(resource.data.lojaId);
     }
 
     // 8. Sessões Ativas & Sessões de Caixa
     match /sessoes_ativas/{userKey} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && isValidSessaoAtiva(request.resource.data);
+      allow delete: if isSignedIn();
     }
     match /sessoes_caixa/{sessaoId} {
-      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create, update: if belongsToLoja(request.resource.data.lojaId);
+      allow read: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidSessaoCaixa(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
+      allow update: if isSignedIn()
+        && isValidSessaoCaixa(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
       allow delete: if isMaster();
     }
 
     // 9. Logs de Auditoria (Append-only por loja autenticada)
     match /logs_auditoria/{logId} {
-      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create: if belongsToLoja(request.resource.data.lojaId);
+      allow read: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidLogAuditoria(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
       allow update, delete: if false;
     }
 
     // 10. Termos de Concordância
     match /termos_concordancia/{termoId} {
-      allow read, create: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && isValidTermoConcordancia(request.resource.data);
       allow update, delete: if false;
     }
 
     // 11. Pedidos de Delivery & Configuração Delivery
     match /config_delivery/{lojaId} {
       allow read: if true;
-      allow write: if belongsToLoja(lojaId);
+      allow create, update: if belongsToLoja(lojaId)
+        && isValidConfigDelivery(request.resource.data);
+      allow delete: if belongsToLoja(lojaId);
     }
 
     match /pedidos_delivery/{pedidoId} {
       allow get: if true;
-      allow list: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create: if isNonEmptyString(request.resource.data.lojaId, 128)
-        && isValidNumber(request.resource.data.valorTotal);
-      allow update: if belongsToLoja(request.resource.data.lojaId);
+      allow list: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isValidPedidoDelivery(request.resource.data)
+        && (belongsToLoja(request.resource.data.lojaId) || !('status' in request.resource.data) || request.resource.data.status == 'pendente');
+      allow update: if isSignedIn()
+        && isValidPedidoDelivery(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
       allow delete: if isMaster();
     }
 
     // 12. Comandas / Mesas Locais
     match /comandas_locais/{comandaId} {
-      allow read: if resource != null && belongsToLoja(resource.data.lojaId);
-      allow create, update: if belongsToLoja(request.resource.data.lojaId);
-      allow delete: if resource != null && belongsToLoja(resource.data.lojaId);
+      allow read: if isMaster() || belongsToLoja(resource.data.lojaId);
+      allow create: if isSignedIn()
+        && isValidComandaLocal(request.resource.data)
+        && belongsToLoja(request.resource.data.lojaId);
+      allow update: if isSignedIn()
+        && isValidComandaLocal(request.resource.data)
+        && canUpdateLojaScoped(request.resource.data, resource.data);
+      allow delete: if isMaster() || belongsToLoja(resource.data.lojaId);
     }
 
     // Bloqueio padrão

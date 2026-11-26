@@ -460,12 +460,41 @@ function verificarCookieMasterAssinado(cookieVal, secretHmac) {
   return parsed?.role === 'master';
 }
 
+function criarCookieUsuarioAuth(dados, secretHmac) {
+  return criarCookieAssinado(
+    {
+      type: 'usuario_auth',
+      uid: String(dados.uid || '').slice(0, 128),
+      role: String(dados.role || ''),
+      is_master: Boolean(dados.is_master),
+      lojaId: dados.lojaId ? String(dados.lojaId) : null,
+      operadorId: dados.operadorId ? String(dados.operadorId) : null,
+      exp: Date.now() + 12 * 60 * 60 * 1000,
+    },
+    secretHmac
+  );
+}
+
+function verificarCookieUsuarioAuth(cookieVal, secretHmac) {
+  const parsed = verificarCookieAssinado(cookieVal, secretHmac);
+  if (!parsed || parsed.type !== 'usuario_auth' || !parsed.uid || !parsed.role) return null;
+  return parsed;
+}
+
 function definirCookieHttpOnly(req, res, nome, valor, maxAgeSec = 43200) {
   const isHttps =
     String(req.headers['x-forwarded-proto'] || '').includes('https') ||
     Boolean(process.env.VERCEL);
   const flags = `HttpOnly; Path=/; Max-Age=${maxAgeSec}; SameSite=Strict${isHttps ? '; Secure' : ''}`;
-  res.setHeader('Set-Cookie', `${nome}=${encodeURIComponent(valor)}; ${flags}`);
+  const novoCookie = `${nome}=${encodeURIComponent(valor)}; ${flags}`;
+  const existente = typeof res.getHeader === 'function' ? res.getHeader('Set-Cookie') : undefined;
+  if (Array.isArray(existente)) {
+    res.setHeader('Set-Cookie', [...existente, novoCookie]);
+  } else if (typeof existente === 'string' && existente.length > 0) {
+    res.setHeader('Set-Cookie', [existente, novoCookie]);
+  } else {
+    res.setHeader('Set-Cookie', novoCookie);
+  }
 }
 
 export default async function handler(req, res) {
@@ -492,6 +521,11 @@ export default async function handler(req, res) {
   const hmacSecret = String(
     process.env.SENHA_PEPPER || masterSecret || 'estoque_master_hmac_v1'
   );
+
+  if (acao === 'logout_sessao') {
+    definirCookieHttpOnly(req, res, 'em_usuario_auth', '', 0);
+    return res.status(200).json({ ok: true });
+  }
 
   if (acao === 'validar_master_token') {
     const tokenRecebido = String(body.token || '').trim();
@@ -524,19 +558,47 @@ export default async function handler(req, res) {
     if (!compararTempoConstante(u, masterUserEnv) || !compararTempoConstante(s, masterPassEnv)) {
       return res.status(401).json({ configurado: true, autenticado: false, erro: 'Usuário ou senha Master inválidos.' });
     }
+    const uidMaster = `master_${u}`;
     let customToken = null;
+    let customTokenErro = '';
     if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
       try {
         const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
         sa.private_key = String(sa.private_key).replace(/\\n/g, '\n');
-        customToken = criarCustomTokenFirebase(sa, `master_${u}`, {
+        customToken = criarCustomTokenFirebase(sa, uidMaster, {
           role: 'master',
           is_master: true,
           sessaoId: crypto.randomUUID(),
         });
-      } catch {}
+      } catch (err) {
+        customTokenErro = String(err?.message || err || 'Erro ao assinar Firebase Custom Token.');
+        console.error('[api/auth] Falha ao assinar customToken Master:', customTokenErro);
+      }
+    } else {
+      customTokenErro = 'FIREBASE_SERVICE_ACCOUNT_JSON não configurada no servidor.';
+      console.warn('[api/auth] Master autenticado sem FIREBASE_SERVICE_ACCOUNT_JSON para emitir Custom Token.');
     }
-    return res.status(200).json({ configurado: true, autenticado: true, customToken });
+    definirCookieHttpOnly(
+      req,
+      res,
+      'em_usuario_auth',
+      criarCookieUsuarioAuth(
+        {
+          uid: uidMaster,
+          role: 'master',
+          is_master: true,
+          lojaId: null,
+          operadorId: null,
+        },
+        hmacSecret
+      )
+    );
+    return res.status(200).json({
+      configurado: true,
+      autenticado: true,
+      customToken,
+      ...(customTokenErro ? { customTokenErro } : {}),
+    });
   }
 
   const rawSa = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -562,6 +624,40 @@ export default async function handler(req, res) {
   }
 
   const pepper = String(process.env.SENHA_PEPPER || 'estoque_mobile_pepper_v1');
+
+  if (acao === 'renovar_custom_token') {
+    const cookies = parseCookies(req);
+    const dados = verificarCookieUsuarioAuth(cookies.em_usuario_auth, hmacSecret);
+    if (!dados) {
+      return res.status(401).json({
+        configurado: true,
+        autenticado: false,
+        erro: 'Sessão de servidor expirada. Faça login novamente.',
+      });
+    }
+    try {
+      const claims = {
+        role: dados.role,
+        is_master: Boolean(dados.is_master),
+        ...(dados.lojaId ? { lojaId: dados.lojaId } : {}),
+        ...(dados.operadorId ? { operadorId: dados.operadorId } : {}),
+        sessaoId: crypto.randomUUID(),
+      };
+      const customToken = criarCustomTokenFirebase(serviceAccount, dados.uid, claims);
+      return res.status(200).json({
+        configurado: true,
+        autenticado: true,
+        customToken,
+      });
+    } catch (err) {
+      console.error('[api/auth] Falha ao renovar customToken:', err?.message || err);
+      return res.status(500).json({
+        configurado: true,
+        autenticado: false,
+        erro: err?.message || 'Erro interno ao renovar token Firebase.',
+      });
+    }
+  }
 
   // ---------------------------------------------------------------------------
   // A. Validação server-side dos links exclusivos da loja (adm_/cx_/gar_/coz_)
@@ -805,6 +901,22 @@ export default async function handler(req, res) {
         sessaoId,
       });
 
+      definirCookieHttpOnly(
+        req,
+        res,
+        'em_usuario_auth',
+        criarCookieUsuarioAuth(
+          {
+            uid: `${lojaId}_admin`,
+            role: 'admin_loja',
+            is_master: false,
+            lojaId,
+            operadorId: null,
+          },
+          hmacSecret
+        )
+      );
+
       return res.status(200).json({
         configurado: true,
         autenticado: true,
@@ -926,6 +1038,22 @@ export default async function handler(req, res) {
         lojaId,
         sessaoId,
       });
+
+      definirCookieHttpOnly(
+        req,
+        res,
+        'em_usuario_auth',
+        criarCookieUsuarioAuth(
+          {
+            uid: `${lojaId}_admin`,
+            role: 'admin_loja',
+            is_master: false,
+            lojaId,
+            operadorId: null,
+          },
+          hmacSecret
+        )
+      );
 
       return res.status(200).json({
         configurado: true,
@@ -1097,6 +1225,22 @@ export default async function handler(req, res) {
         operadorId: opId,
         sessaoId,
       });
+
+      definirCookieHttpOnly(
+        req,
+        res,
+        'em_usuario_auth',
+        criarCookieUsuarioAuth(
+          {
+            uid,
+            role,
+            is_master: false,
+            lojaId,
+            operadorId: opId,
+          },
+          hmacSecret
+        )
+      );
 
       return res.status(200).json({
         configurado: true,

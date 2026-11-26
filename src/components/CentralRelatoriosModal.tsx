@@ -56,6 +56,8 @@ interface CentralRelatoriosModalProps {
   onEstornarVenda: (vendaId: string, motivo: string) => void;
   onVerCupom?: (venda: Venda) => void;
   abaInicial?: 'faturamento' | 'vendas' | 'estoque' | 'delivery';
+  erroSync?: string | null;
+  onRefazerLogin?: () => void;
 }
 
 const CORES_PIE = ['#10B981', '#0284C7', '#D97706', '#64748B', '#0EA5E9', '#DC2626'];
@@ -72,6 +74,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   onEstornarVenda,
   onVerCupom,
   abaInicial = 'faturamento',
+  erroSync = null,
+  onRefazerLogin,
 }) => {
   const [abaAtiva, setAbaAtiva] = useState<'faturamento' | 'vendas' | 'estoque' | 'delivery'>(abaInicial);
 
@@ -161,7 +165,9 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
   // Métricas Consolidadas (Cards do Topo)
   const metricasGerais = useMemo(() => {
-    const concluidas = vendasFiltradasPorPeriodo.filter((v) => v.status === 'concluida');
+    const concluidas = vendasFiltradasPorPeriodo.filter(
+      (v) => v.status !== 'estornada' && (v.status as string) !== 'cancelada'
+    );
     let faturamentoBruto = 0;
     let custoTotal = 0;
     let itensTotal = 0;
@@ -209,7 +215,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
     const mapaDias = new Map<string, { data: string; faturamento: number; lucro: number; custo: number }>();
 
     vendasFiltradasPorPeriodo
-      .filter((v) => v.status === 'concluida')
+      .filter((v) => v.status !== 'estornada' && (v.status as string) !== 'cancelada')
       .forEach((v) => {
         const dia = v.data || hojeStr;
         const m = calcularMetricasVenda(v);
@@ -233,7 +239,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   const dadosGraficoPagamentos = useMemo(() => {
     const mapa = new Map<string, number>();
     vendasFiltradasPorPeriodo
-      .filter((v) => v.status === 'concluida')
+      .filter((v) => v.status !== 'estornada' && (v.status as string) !== 'cancelada')
       .forEach((v) => {
         const fp = v.formaPagamento || 'outros';
         const nomeFp =
@@ -507,6 +513,23 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
         {/* CORPO PRINCIPAL COM CONTEÚDO DA ABA */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-[#FAF7F2]">
+
+          {erroSync && (
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-amber-50 border-2 border-amber-400 rounded-xl p-3 sm:p-4 text-amber-900 shadow-sm">
+              <div className="text-xs sm:text-sm font-semibold">
+                ⚠️ {erroSync}
+              </div>
+              {onRefazerLogin && (
+                <button
+                  type="button"
+                  onClick={onRefazerLogin}
+                  className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs whitespace-nowrap transition cursor-pointer"
+                >
+                  🔄 Refazer Login
+                </button>
+              )}
+            </div>
+          )}
 
           {/* ======================================================== */}
           {/* ABA 1: FATURAMENTO & LUCRO REAL                         */}
