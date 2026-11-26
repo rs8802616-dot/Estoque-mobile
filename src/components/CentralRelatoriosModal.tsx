@@ -464,8 +464,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
-            <TrendingUp className="w-4 h-4" />
-            📊 Faturamento & Lucro Real
+            <TrendingUp className="w-4 h-4 shrink-0" />
+            Faturamento & Lucro Real
           </button>
 
           <button
@@ -476,8 +476,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
-            <Receipt className="w-4 h-4" />
-            🧾 Histórico de Vendas & Cupons ({vendasHistoricoFiltradas.length})
+            <Receipt className="w-4 h-4 shrink-0" />
+            Histórico de Vendas & Cupons ({vendasHistoricoFiltradas.length})
           </button>
 
           <button
@@ -488,8 +488,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
-            <Package className="w-4 h-4" />
-            📦 Estoque & Validades ({metricasEstoque.totalItensUnicos})
+            <Package className="w-4 h-4 shrink-0" />
+            Estoque & Validades ({metricasEstoque.totalItensUnicos})
           </button>
 
           <button
@@ -500,8 +500,8 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                 : 'bg-[#FAF7F2] text-stone-800 border-2 border-stone-300 rounded-t-lg hover:bg-stone-100 font-semibold'
             }`}
           >
-            <Bike className="w-4 h-4" />
-            🛵 Inteligência Delivery ({metricasDelivery.totalPedidos})
+            <Bike className="w-4 h-4 shrink-0" />
+            Inteligência Delivery ({metricasDelivery.totalPedidos})
           </button>
         </div>
 

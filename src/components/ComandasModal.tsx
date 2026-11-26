@@ -532,16 +532,16 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
 
               <input
                 type="search"
-                name="busca_comanda_nao_login"
-                autoComplete="new-password"
+                name="filtro_comanda_pesquisa"
+                role="searchbox"
+                aria-autocomplete="none"
+                autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="none"
                 spellCheck={false}
                 data-form-type="other"
                 data-lpignore="true"
                 data-1p-ignore="true"
-                readOnly
-                onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
                 value={buscaComanda}
                 onChange={(e) => setBuscaComanda(e.target.value)}
                 placeholder="🔍 Buscar comanda por nome ou mesa..."
@@ -754,16 +754,16 @@ export const ComandasPanel: React.FC<ComandasPanelProps> = ({
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <input
                         type="search"
-                        name="busca_produto_comanda_nao_login"
-                        autoComplete="new-password"
+                        name="filtro_produto_comanda_pesquisa"
+                        role="searchbox"
+                        aria-autocomplete="none"
+                        autoComplete="off"
                         autoCorrect="off"
                         autoCapitalize="none"
                         spellCheck={false}
                         data-form-type="other"
                         data-lpignore="true"
                         data-1p-ignore="true"
-                        readOnly
-                        onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
                         value={buscaProduto}
                         onChange={(e) => setBuscaProduto(e.target.value)}
                         placeholder="🔍 Adicionar produto (nome ou código)..."

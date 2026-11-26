@@ -2332,4 +2332,354 @@
     }
 }
 
+/* ============================================================================
+   MODAL DE CADASTRO / EDIÇÃO DE PRODUTO (#modalCadastro)
+   Celular (< 768px): mantém formato vertical em 1 coluna original.
+   Computador (>= 768px): expande para 2 colunas confortáveis sem rolagem.
+   ============================================================================ */
+.modal-conteudo.modal-cadastro-conteudo {
+    box-sizing: border-box;
+}
+
+.modal-cadastro-cab {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    text-align: left;
+    padding: 12px 14px;
+}
+
+.modal-cadastro-btn-fechar-x {
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    color: #ffffff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.modal-cadastro-btn-fechar-x:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-cadastro-corpo {
+    padding: 14px;
+}
+
+.modal-cadastro-topo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.modal-cadastro-modos {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.modal-cadastro-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.modal-cadastro-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.modal-cadastro-ean-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.modal-cadastro-btn-pesquisar {
+    width: 100%;
+    padding: 11px 12px;
+    background: #0284c7;
+    color: #ffffff;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);
+    transition: all 0.15s ease;
+}
+
+.modal-cadastro-btn-pesquisar:hover {
+    background: #0369a1;
+}
+
+.modal-cadastro-linha-2,
+.modal-cadastro-linha-3 {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.modal-cadastro-preco-bloco {
+    background: #f8fafc;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin: 4px 0 10px;
+}
+
+.preview-foto.modal-cadastro-preview-foto {
+    height: auto;
+    min-height: 132px;
+    margin: 6px 0 0;
+}
+
+.preview-foto.modal-cadastro-preview-foto img {
+    width: auto;
+    height: auto;
+    max-height: 110px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.modal-cadastro-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 14px 14px;
+}
+
+.modal-cadastro-footer-linha {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.modal-cadastro-footer-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.modal-cadastro-footer-primarios {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.modal-cadastro-footer-primarios .btn {
+    flex: 1;
+}
+
+.modal-cadastro-btn-excluir {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.modal-cadastro-so-mobile {
+    display: inline;
+}
+
+@media (min-width: 768px) {
+    .modal-conteudo.modal-cadastro-conteudo {
+        max-width: 920px;
+        width: 95%;
+        max-height: 92vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 14px;
+    }
+
+    .modal-cadastro-cab {
+        padding: 11px 18px;
+        border-radius: 14px 14px 0 0;
+        flex-shrink: 0;
+    }
+
+    .modal-cadastro-corpo {
+        padding: 14px 18px 12px;
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .modal-cadastro-topo {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .modal-cadastro-modos {
+        width: auto;
+        flex: 0 1 auto;
+    }
+
+    .modal-cadastro-modos button {
+        padding: 7px 12px !important;
+        font-size: 0.78rem !important;
+        white-space: nowrap;
+    }
+
+    .modal-cadastro-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .modal-cadastro-col {
+        gap: 9px;
+    }
+
+    .modal-cadastro-col > *,
+    .modal-cadastro-linha-2 > *,
+    .modal-cadastro-linha-3 > * {
+        min-width: 0;
+    }
+
+    .modal-cadastro-col .grupo-input {
+        margin-bottom: 0;
+    }
+
+    .modal-cadastro-col .rotulo-campo {
+        font-size: 0.76rem;
+        margin-bottom: 3px;
+    }
+
+    .modal-cadastro-col .input-modal {
+        padding: 7px 10px;
+        font-size: 0.86rem;
+        box-sizing: border-box;
+    }
+
+    .modal-cadastro-ean-acoes {
+        flex-direction: row;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .modal-cadastro-ean-acoes .linha-input {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .modal-cadastro-ean-acoes .input-modal {
+        height: 38px;
+    }
+
+    .modal-cadastro-ean-acoes .btn-buscar-ean,
+    .modal-cadastro-ean-acoes .btn-cam-pequeno {
+        height: 38px !important;
+    }
+
+    .modal-cadastro-btn-pesquisar {
+        width: auto;
+        padding: 0 12px;
+        height: 38px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .modal-cadastro-linha-2 {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 10px;
+        align-items: end;
+    }
+
+    .modal-cadastro-linha-3 {
+        display: grid;
+        grid-template-columns: 0.65fr 1.25fr 1fr;
+        gap: 8px;
+        align-items: end;
+    }
+
+    .modal-cadastro-preco-bloco {
+        margin: 0;
+    }
+
+    .modal-cadastro-preview-foto {
+        min-height: 112px !important;
+    }
+
+    .modal-cadastro-preview-foto img {
+        max-height: 92px !important;
+    }
+
+    .modal-cadastro-footer {
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+        padding: 10px 18px;
+        flex-shrink: 0;
+        border-radius: 0 0 14px 14px;
+        gap: 8px;
+    }
+
+    .modal-cadastro-footer-linha {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .modal-cadastro-footer-acoes {
+        flex-direction: row;
+        align-items: center;
+        width: auto;
+        gap: 8px;
+    }
+
+    .modal-cadastro-footer-primarios {
+        width: auto;
+    }
+
+    .modal-cadastro-footer-primarios .btn {
+        flex: 0 0 auto;
+        padding: 9px 18px;
+        white-space: nowrap;
+    }
+
+    .modal-cadastro-btn-excluir {
+        width: auto;
+        padding: 8px 12px;
+        white-space: nowrap;
+    }
+
+    .modal-cadastro-so-mobile {
+        display: none;
+    }
+}
+
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

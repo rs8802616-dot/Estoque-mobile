@@ -1182,7 +1182,7 @@ export default function App() {
   };
 
   const renderBlocoPrecoMargem = () => (
-    <div style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', margin: '6px 0' }}>
+    <div className="modal-cadastro-preco-bloco">
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         <div className="grupo-input" style={{ margin: 0 }}>
           <label className="rotulo-campo" style={{ fontSize: '0.74rem', marginBottom: '3px' }}>
@@ -8674,15 +8674,15 @@ export default function App() {
               type="search"
               id="busca"
               name="search_query_estoque_pdv"
-              autoComplete="new-password"
+              role="searchbox"
+              aria-autocomplete="none"
+              autoComplete="off"
               autoCorrect="off"
               autoCapitalize="none"
               spellCheck={false}
               data-form-type="other"
               data-lpignore="true"
               data-1p-ignore="true"
-              readOnly
-              onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
               className="input-busca input-busca-desktop"
               placeholder="Buscar no estoque..."
               value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
@@ -9177,10 +9177,15 @@ export default function App() {
               type="search"
               id="busca-mobile"
               name="search_query_mobile"
-              autoComplete="new-password"
+              role="searchbox"
+              aria-autocomplete="none"
+              autoComplete="off"
               autoCorrect="off"
               autoCapitalize="none"
               spellCheck={false}
+              data-form-type="other"
+              data-lpignore="true"
+              data-1p-ignore="true"
               className="input-busca-mobile-destaque"
               placeholder="Buscar produto no estoque..."
               value={busca.toLowerCase().includes('rodrigo.souza') ? '' : busca}
@@ -11056,7 +11061,9 @@ export default function App() {
                         type="search"
                         id="buscaRelatorio"
                         name="search_query_relatorio_estoque"
-                        autoComplete="new-password"
+                        role="searchbox"
+                        aria-autocomplete="none"
+                        autoComplete="off"
                         autoCorrect="off"
                         autoCapitalize="none"
                         spellCheck={false}
@@ -12354,7 +12361,9 @@ export default function App() {
                           type="search"
                           id="busca_loja_cnpj_nome_input"
                           name="search_query_loja_cnpj_nome"
-                          autoComplete="new-password"
+                          role="searchbox"
+                          aria-autocomplete="none"
+                          autoComplete="off"
                           autoCorrect="off"
                           autoCapitalize="none"
                           spellCheck={false}
@@ -12802,7 +12811,9 @@ export default function App() {
                         type="search"
                         id="busca_banco_dados_mestre_input"
                         name="search_query_banco_dados_mestre"
-                        autoComplete="new-password"
+                        role="searchbox"
+                        aria-autocomplete="none"
+                        autoComplete="off"
                         autoCorrect="off"
                         autoCapitalize="none"
                         spellCheck={false}
@@ -13180,10 +13191,11 @@ export default function App() {
       </div>
 
       {/* OPERATORS / CASHIERS & STAFF MANAGEMENT MODAL (FULL SCREEN) */}
+      {modalOperadoresVisivel && (
       <div
         className="tela-relatorio-cheia"
         id="modalOperadores"
-        style={{ display: modalOperadoresVisivel ? 'flex' : 'none', background: '#f8fafc' }}
+        style={{ display: 'flex', background: '#f8fafc' }}
       >
         {/* CABEÇALHO NO PADRÃO DO PDV */}
         <div
@@ -13428,6 +13440,7 @@ export default function App() {
                 </label>
                 <input
                   type="text"
+                  autoComplete="off"
                   className="input-modal"
                   style={{ borderRadius: '8px', padding: '8px 11px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.83rem', marginBottom: 0 }}
                   placeholder="000.000.000-00 ou caixa01"
@@ -13451,6 +13464,7 @@ export default function App() {
                   </label>
                   <input
                     type="password"
+                    autoComplete="new-password"
                     className="input-modal"
                     style={{ borderRadius: '8px', padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginBottom: 0 }}
                     placeholder={opEditandoId ? 'Manter atual' : 'Mín. 8 dígitos'}
@@ -13466,6 +13480,7 @@ export default function App() {
                   </label>
                   <input
                     type="password"
+                    autoComplete="new-password"
                     className="input-modal"
                     style={{ borderRadius: '8px', padding: '8px 10px', background: '#f8fafc', border: '1px solid #cbd5e1', fontSize: '0.82rem', marginBottom: 0 }}
                     placeholder="Repita a senha"
@@ -14115,512 +14130,533 @@ export default function App() {
           </div>
         </div>
       </div>
+      )}
 
       {/* PRODUCT REGISTRATION MODAL */}
       <div className="modal" id="modalCadastro" style={{ display: modalCadastroVisivel ? 'flex' : 'none', zIndex: 99999 }}>
-        <div className="modal-conteudo">
-          <div className="cab-modal" id="titulo-modal-cad">
-            {tipoProdutoCadastro === 'interno'
-              ? (codigoEditando ? `✏️ Editar Produto Próprio / Balcão (${nomeSupermercadoAtivo})` : '🍢 Novo Produto Próprio / Balcão (Sem Código de Barras)')
-              : (perfilAtivo === 'dona_app'
-                  ? (modoCadastroItem === 'master'
-                      ? (codigoEditando ? '👑 Editar Item no Banco de Dados Master' : '👑 Cadastrar Item no Banco Master')
-                      : (codigoEditando ? `✏️ Editar Produto com Código de Barras (${nomeSupermercadoAtivo})` : `➕ Novo Produto com Código de Barras (${nomeSupermercadoAtivo})`))
-                  : (codigoEditando ? `✏️ Editar Produto com Código de Barras (${nomeSupermercadoAtivo})` : `➕ Novo Produto com Código de Barras (${nomeSupermercadoAtivo})`))}
+        <div className="modal-conteudo modal-cadastro-conteudo">
+          <div className="cab-modal modal-cadastro-cab" id="titulo-modal-cad">
+            <span style={{ flex: 1, minWidth: 0 }}>
+              {tipoProdutoCadastro === 'interno'
+                ? (codigoEditando ? `✏️ Editar Produto Próprio / Balcão (${nomeSupermercadoAtivo})` : '🍢 Novo Produto Próprio / Balcão (Sem Código de Barras)')
+                : (perfilAtivo === 'dona_app'
+                    ? (modoCadastroItem === 'master'
+                        ? (codigoEditando ? '👑 Editar Item no Banco de Dados Master' : '👑 Cadastrar Item no Banco Master')
+                        : (codigoEditando ? `✏️ Editar Produto com Código de Barras (${nomeSupermercadoAtivo})` : `➕ Novo Produto com Código de Barras (${nomeSupermercadoAtivo})`))
+                    : (codigoEditando ? `✏️ Editar Produto com Código de Barras (${nomeSupermercadoAtivo})` : `➕ Novo Produto com Código de Barras (${nomeSupermercadoAtivo})`))}
+            </span>
+            <button
+              type="button"
+              className="modal-cadastro-btn-fechar-x"
+              onClick={() => fecharAbaDefinitivo('cadastro')}
+              title="Fechar"
+              aria-label="Fechar"
+            >
+              ✕
+            </button>
           </div>
-          <div className="corpo-modal">
-            {/* SELETOR DE MODO PARA DONA DO APP (SE FOR PRODUTO PADRÃO) */}
-            {perfilAtivo === 'dona_app' && !codigoEditando && tipoProdutoCadastro === 'padrao' && (
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-                <button
-                  type="button"
-                  style={{
-                    flex: 1,
-                    padding: '10px 8px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    borderRadius: '8px',
-                    border: modoCadastroItem === 'estoque' ? '2px solid #16a34a' : '1px solid #cbd5e1',
-                    background: modoCadastroItem === 'estoque' ? '#dcfce7' : '#ffffff',
-                    color: modoCadastroItem === 'estoque' ? '#15803d' : '#64748b',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                  }}
-                  onClick={() => setModoCadastroItem('estoque')}
-                >
-                  📦 Adicionar ao Estoque da Loja
-                </button>
-                <button
-                  type="button"
-                  style={{
-                    flex: 1,
-                    padding: '10px 8px',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    borderRadius: '8px',
-                    border: modoCadastroItem === 'master' ? '2px solid #0284c7' : '1px solid #cbd5e1',
-                    background: modoCadastroItem === 'master' ? '#e0f2fe' : '#ffffff',
-                    color: modoCadastroItem === 'master' ? '#0369a1' : '#64748b',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '4px',
-                  }}
-                  onClick={() => setModoCadastroItem('master')}
-                >
-                  👑 Banco Master (Catálogo)
-                </button>
-              </div>
-            )}
 
-            {/* INFORMAÇÃO DA LOJA SELECIONADA */}
-            {tipoProdutoCadastro === 'padrao' && (perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') && (
-              <div
-                style={{
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  padding: '10px 12px',
-                  marginBottom: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--primario)' }}>🏪 Loja Selecionada:</span>
-                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: 'var(--texto)' }}>{nomeSupermercadoAtivo}</span>
-              </div>
-            )}
-
-            {perfilAtivo === 'dona_app' && modoCadastroItem === 'master' && tipoProdutoCadastro === 'padrao' && (
-              <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '10px 12px', marginBottom: '14px', fontSize: '0.82rem', color: '#0369a1' }}>
-                👑 <b>Modo Banco de Dados Master:</b> Os dados deste item ficarão disponíveis para todos os supermercados utilizarem na leitura de código de barras.
-              </div>
-            )}
-
-            {/* CAMPOS ESPECÍFICOS PARA PRODUTO INTERNO (ADEGA / ESPETINHO / BALCÃO) */}
-            {tipoProdutoCadastro === 'interno' ? (
-              <>
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Código Interno do Produto</label>
-                  <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      id="cad-cod"
-                      className="input-modal"
-                      placeholder="Ex: ESP-01, DOS-01, GEL-01"
-                      value={cadCod}
-                      onChange={(e) => setCadCod(e.target.value)}
-                      required
-                    />
+          <div className="corpo-modal modal-cadastro-corpo">
+            {/* FAIXA SUPERIOR: MODO DONA DO APP + LOJA SELECIONADA */}
+            {tipoProdutoCadastro === 'padrao' && (
+              <div className="modal-cadastro-topo">
+                {perfilAtivo === 'dona_app' && !codigoEditando && (
+                  <div className="modal-cadastro-modos">
                     <button
                       type="button"
-                      className="btn"
                       style={{
-                        background: '#fef3c7',
-                        color: '#92400e',
-                        border: '1px solid #fde68a',
-                        borderRadius: '6px',
-                        padding: '0 12px',
-                        height: '42px',
+                        flex: 1,
+                        padding: '10px 8px',
                         fontSize: '0.82rem',
                         fontWeight: 700,
+                        borderRadius: '8px',
+                        border: modoCadastroItem === 'estoque' ? '2px solid #16a34a' : '1px solid #cbd5e1',
+                        background: modoCadastroItem === 'estoque' ? '#dcfce7' : '#ffffff',
+                        color: modoCadastroItem === 'estoque' ? '#15803d' : '#64748b',
                         cursor: 'pointer',
-                        whiteSpace: 'nowrap',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
-                      onClick={() => setCadCod(gerarCodigoInternoAutomatico(cadCod.slice(0, 3) || 'ESP'))}
-                      title="Gerar próximo código sequencial"
-                    >
-                      🔄 Próximo
-                    </button>
-                  </div>
-                  {/* Atalhos Rápidos de Prefixos para Adegas */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.74rem', color: '#64748b', marginRight: '4px' }}>Prefixos:</span>
-                    {[
-                      { pref: 'ESP', label: '🍢 Espetinho', cat: '🍢 Espetinhos & Churrasco' },
-                      { pref: 'DOS', label: '🍺 Dose', cat: '🍺 Doses & Destilados' },
-                      { pref: 'GEL', label: '🧊 Gelo/Carvão', cat: '🧊 Gelo & Carvão' },
-                      { pref: 'BAL', label: '📌 Balcão', cat: '📌 Balcão & Doces' },
-                      { pref: 'ASS', label: '🍗 Assados', cat: '🍗 Assados & Porções' },
-                      { pref: 'COK', label: '🍹 Drinks', cat: '🍹 Coquetéis & Drinks' },
-                    ].map((btn) => (
-                      <button
-                        key={btn.pref}
-                        type="button"
-                        style={{
-                          background: cadCod.startsWith(btn.pref) ? '#d97706' : '#f1f5f9',
-                          color: cadCod.startsWith(btn.pref) ? '#ffffff' : '#334155',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '4px 8px',
-                          fontSize: '0.74rem',
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => {
-                          setCadCod(gerarCodigoInternoAutomatico(btn.pref));
-                          setCadCategoria(btn.cat);
-                        }}
-                      >
-                        {btn.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Nome do Produto</label>
-                  <input
-                    type="text"
-                    id="cad-nome"
-                    className="input-modal"
-                    placeholder="Ex: Espetinho de Carne Bovina, Dose de Gin Trop..."
-                    value={cadNome}
-                    onChange={(e) => setCadNome(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Categoria</label>
-                  <input
-                    type="text"
-                    id="cad-categoria"
-                    className="input-modal"
-                    placeholder="Ex: 🍢 Espetinhos & Churrasco"
-                    value={cadCategoria}
-                    onChange={(e) => setCadCategoria(e.target.value)}
-                  />
-                </div>
-
-                {/* BLOCO DE CUSTO, MARGEM DE LUCRO (%) E PREÇO DE VENDA */}
-                {renderBlocoPrecoMargem()}
-              </>
-            ) : (
-              /* FLUXO PADRÃO INDUSTRIAL COM CÓDIGO DE BARRAS (EAN) */
-              <>
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Código de Barras (EAN / GTIN)</label>
-                  <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      id="cad-cod"
-                      className="input-modal"
-                      placeholder="Ex: 7891000379585"
-                      value={cadCod}
-                      onChange={(e) => setCadCod(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          buscarProdutoPeloCodigo(cadCod);
-                        }
-                      }}
-                      required
-                    />
-                    <button
-                      type="button"
-                      style={{
-                        padding: '0 14px',
-                        height: '42px',
-                        fontWeight: 700,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '4px',
-                        whiteSpace: 'nowrap',
-                        background: '#f0f9ff',
-                        color: '#0369a1',
-                        borderRadius: '8px',
-                        border: '1px solid #bae6fd',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem'
                       }}
-                      onClick={() => buscarProdutoPeloCodigo(cadCod)}
-                      disabled={buscandoProdutoCodigo || !cadCod.trim()}
-                      title="Buscar produto pelo código de barras digitado"
+                      onClick={() => setModoCadastroItem('estoque')}
                     >
-                      {buscandoProdutoCodigo ? '⏳' : '🔍 Buscar'}
+                      📦 Adicionar ao Estoque da Loja
                     </button>
-                    <button className="btn-cam-pequeno" onClick={abrirLeitorCadastro} title="Escanear Código de Barras com Câmera">
-                      📷
-                    </button>
-                  </div>
-                </div>
-
-                {/* BOTÃO AZUL OFICIAL DE PESQUISA DE PRODUTO */}
-                <button
-                  type="button"
-                  style={{
-                    width: '100%',
-                    padding: '11px 12px',
-                    background: '#0284c7',
-                    color: '#fff',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontWeight: 700,
-                    fontSize: '0.88rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    marginBottom: '14px',
-                    boxShadow: '0 2px 4px rgba(2, 132, 199, 0.25)',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onClick={() => setModalPesquisaCatalogoVisivel(true)}
-                  title="Pesquisar produto pelo nome no catálogo oficial e APIs (ex: Picanha, Heineken, Nescau...) para preencher código, foto e dados"
-                >
-                  🔍 Pesquisar Produto
-                </button>
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Nome Detalhado do Produto</label>
-                  <input
-                    type="text"
-                    id="cad-nome"
-                    className="input-modal"
-                    placeholder="Ex: Achocolatado em Pó Nestlé Nescau 2.0 Lata 370g"
-                    value={cadNome}
-                    disabled={isProdutoBloqueadoParaEdicaoMestre}
-                    readOnly={isProdutoBloqueadoParaEdicaoMestre}
-                    style={{
-                      background: isProdutoBloqueadoParaEdicaoMestre ? '#f8fafc' : '#ffffff',
-                      color: isProdutoBloqueadoParaEdicaoMestre ? '#334155' : 'inherit',
-                      cursor: isProdutoBloqueadoParaEdicaoMestre ? 'not-allowed' : 'text',
-                      borderColor: isProdutoBloqueadoParaEdicaoMestre ? '#cbd5e1' : undefined,
-                    }}
-                    onChange={(e) => setCadNome(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Marca</label>
-                  <input
-                    type="text"
-                    id="cad-marca"
-                    className="input-modal"
-                    placeholder="Ex: Nestlé, Coca-Cola, Piracanjuba"
-                    value={cadMarca}
-                    disabled={isProdutoBloqueadoParaEdicaoMestre}
-                    readOnly={isProdutoBloqueadoParaEdicaoMestre}
-                    style={{
-                      background: isProdutoBloqueadoParaEdicaoMestre ? '#f8fafc' : '#ffffff',
-                      color: isProdutoBloqueadoParaEdicaoMestre ? '#334155' : 'inherit',
-                      cursor: isProdutoBloqueadoParaEdicaoMestre ? 'not-allowed' : 'text',
-                      borderColor: isProdutoBloqueadoParaEdicaoMestre ? '#cbd5e1' : undefined,
-                    }}
-                    onChange={(e) => setCadMarca(e.target.value)}
-                  />
-                </div>
-                <div className="grupo-input">
-                  <label className="rotulo-campo">Categoria do Produto</label>
-                  <div className="linha-input">
-                    <input
-                      type="text"
-                      id="cad-categoria"
-                      list="lista-categorias-sugestoes"
-                      className="input-modal"
-                      placeholder="Ex: Achocolatados em Pó, Bebidas, Laticínios, Limpeza..."
-                      value={cadCategoria}
-                      disabled={isProdutoBloqueadoParaEdicaoMestre}
-                      readOnly={isProdutoBloqueadoParaEdicaoMestre}
+                    <button
+                      type="button"
                       style={{
-                        marginBottom: 0,
-                        background: isProdutoBloqueadoParaEdicaoMestre ? '#f8fafc' : '#ffffff',
-                        color: isProdutoBloqueadoParaEdicaoMestre ? '#334155' : 'inherit',
-                        cursor: isProdutoBloqueadoParaEdicaoMestre ? 'not-allowed' : 'text',
-                        borderColor: isProdutoBloqueadoParaEdicaoMestre ? '#cbd5e1' : undefined,
+                        flex: 1,
+                        padding: '10px 8px',
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        borderRadius: '8px',
+                        border: modoCadastroItem === 'master' ? '2px solid #0284c7' : '1px solid #cbd5e1',
+                        background: modoCadastroItem === 'master' ? '#e0f2fe' : '#ffffff',
+                        color: modoCadastroItem === 'master' ? '#0369a1' : '#64748b',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
                       }}
-                      onChange={(e) => setCadCategoria(e.target.value)}
-                    />
-                    {!isProdutoBloqueadoParaEdicaoMestre && (
-                      <select
-                        className="input-modal"
-                        style={{ width: 'auto', minWidth: '130px', marginBottom: 0, fontSize: '0.82rem', background: '#f8fafc' }}
-                        value=""
-                        onChange={(e) => {
-                          if (e.target.value) setCadCategoria(e.target.value);
-                        }}
-                        title="Selecionar das categorias sugeridas"
-                      >
-                        <option value="">📂 Sugestões...</option>
-                        {LISTA_CATEGORIAS.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {cat}
-                          </option>
-                        ))}
-                      </select>
-                    )}
+                      onClick={() => setModoCadastroItem('master')}
+                    >
+                      👑 Banco Master (Catálogo)
+                    </button>
                   </div>
-                  <datalist id="lista-categorias-sugestoes">
-                    {Array.from(
-                      new Set([
-                        ...LISTA_CATEGORIAS,
-                        ...catalogoGlobal.map((c) => c.categoria).filter(Boolean),
-                        ...estoque.map((e) => e.categoria).filter(Boolean),
-                      ])
-                    ).map((cat) => (
-                      <option key={cat as string} value={cat as string} />
-                    ))}
-                  </datalist>
-                </div>
-
-                {/* CAMPOS DO ESTOQUE DA LOJA (Quantidade, Lote, Validade, Preço de Custo, Preço de Venda) */}
-                {(perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') && (
-                  <>
-                    <div className="grupo-input">
-                      <label className="rotulo-campo">Quantidade em Estoque</label>
-                      <input
-                        type="number"
-                        id="cad-qtd"
-                        className="input-modal"
-                        placeholder="Qtd de unidades"
-                        min="1"
-                        value={cadQtd}
-                        onChange={(e) => setCadQtd(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <div className="grupo-input">
-                      <label className="rotulo-campo">Lote do Produto</label>
-                      <div className="linha-input">
-                        <input
-                          type="text"
-                          id="cad-lote"
-                          className="input-modal"
-                          placeholder="Ex: LOTE-104526 (opcional)"
-                          value={cadLote}
-                          onChange={(e) => setCadLote(e.target.value)}
-                        />
-                        <button className="btn-cam-pequeno" onClick={abrirLeitorLote} title="Fotografar Carimbo de Lote e Validade com IA">
-                          📷
-                        </button>
-                      </div>
-                    </div>
-                    <div className="grupo-input">
-                      <label className="rotulo-campo">Data de Validade</label>
-                      <input
-                        type="date"
-                        id="cad-val"
-                        className="input-modal"
-                        value={cadVal}
-                        onChange={(e) => setCadVal(e.target.value)}
-                        required
-                      />
-                    </div>
-                    {/* BLOCO DE CUSTO, MARGEM DE LUCRO (%) E PREÇO DE VENDA */}
-                    {renderBlocoPrecoMargem()}
-                  </>
                 )}
-              </>
-            )}
 
-            <div className="grupo-input">
-              <label className="rotulo-campo">Foto do Produto (Packshot Fundo Branco)</label>
-              {!isProdutoBloqueadoParaEdicaoMestre && (
-                <input
-                  type="file"
-                  id="cad-foto"
-                  accept="image/*"
-                  style={{ width: '100%', fontSize: '0.85rem' }}
-                  onChange={carregarFoto}
-                />
-              )}
-              <div
-                className="preview-foto"
-                id="preview-foto"
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '8px',
-                  marginTop: '6px',
-                  minHeight: '140px',
-                  position: 'relative',
-                }}
-              >
-                {fotoTemp ? (
-                  <>
-                    <img
-                      src={fotoTemp}
-                      alt="Preview Produto Fundo Branco"
-                      referrerPolicy="no-referrer"
-                      style={{ maxHeight: '110px', maxWidth: '100%', objectFit: 'contain' }}
-                    />
-                    {!isProdutoBloqueadoParaEdicaoMestre && (
-                      <div
-                        style={{
-                          marginTop: '8px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          width: '100%',
-                          background: '#f0fdf4',
-                          border: '1px solid #bbf7d0',
-                          borderRadius: '6px',
-                          padding: '4px 8px',
-                          fontSize: '0.75rem',
-                          color: '#166534',
-                        }}
-                      >
-                        <span>
-                          ⚡ <b>Otimizada:</b> ~{calcularTamanhoImagemKB(fotoTemp)} KB
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setFotoTemp('')}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#dc2626',
-                            cursor: 'pointer',
-                            fontWeight: 700,
-                            fontSize: '0.75rem',
-                            padding: '2px 6px',
-                          }}
-                          title="Remover foto"
-                        >
-                          ✕ Remover
-                        </button>
-                      </div>
-                    )}
-                  </>
+                {(perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') ? (
+                  <div
+                    style={{
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      padding: '8px 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primario)' }}>🏪 Loja Selecionada:</span>
+                    <span style={{ fontSize: '0.84rem', fontWeight: 800, color: 'var(--texto)' }}>{nomeSupermercadoAtivo}</span>
+                  </div>
                 ) : (
-                  <div style={{ textAlign: 'center', padding: '10px', color: '#94a3b8' }}>
-                    <div style={{ fontSize: '0.82rem', marginBottom: '4px' }}>Sem foto vinculada</div>
-                    {!isProdutoBloqueadoParaEdicaoMestre && (
-                      <div style={{ fontSize: '0.73rem', color: '#64748b' }}>
-                        💡 Envie fotos em qualquer resolução (celular/câmera/downloads): o sistema comprime automaticamente para o menor tamanho possível antes de salvar no banco.
-                      </div>
-                    )}
+                  <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '8px 12px', fontSize: '0.8rem', color: '#0369a1' }}>
+                    👑 <b>Modo Banco de Dados Master:</b> Disponível para todas as lojas na leitura de código de barras.
                   </div>
                 )}
               </div>
+            )}
+
+            <div className="modal-cadastro-grid">
+              {/* COLUNA ESQUERDA: IDENTIFICAÇÃO, CATEGORIA E ESTOQUE */}
+              <div className="modal-cadastro-col">
+                {tipoProdutoCadastro === 'interno' ? (
+                  <>
+                    <div className="grupo-input">
+                      <label className="rotulo-campo">Código Interno do Produto</label>
+                      <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          id="cad-cod"
+                          className="input-modal"
+                          placeholder="Ex: ESP-01, DOS-01, GEL-01"
+                          value={cadCod}
+                          onChange={(e) => setCadCod(e.target.value)}
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="btn"
+                          style={{
+                            background: '#fef3c7',
+                            color: '#92400e',
+                            border: '1px solid #fde68a',
+                            borderRadius: '6px',
+                            padding: '0 12px',
+                            height: '38px',
+                            fontSize: '0.82rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                          onClick={() => setCadCod(gerarCodigoInternoAutomatico(cadCod.slice(0, 3) || 'ESP'))}
+                          title="Gerar próximo código sequencial"
+                        >
+                          🔄 Próximo
+                        </button>
+                      </div>
+                      {/* Atalhos Rápidos de Prefixos para Adegas */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '0.74rem', color: '#64748b', marginRight: '4px' }}>Prefixos:</span>
+                        {[
+                          { pref: 'ESP', label: '🍢 Espetinho', cat: '🍢 Espetinhos & Churrasco' },
+                          { pref: 'DOS', label: '🍺 Dose', cat: '🍺 Doses & Destilados' },
+                          { pref: 'GEL', label: '🧊 Gelo/Carvão', cat: '🧊 Gelo & Carvão' },
+                          { pref: 'BAL', label: '📌 Balcão', cat: '📌 Balcão & Doces' },
+                          { pref: 'ASS', label: '🍗 Assados', cat: '🍗 Assados & Porções' },
+                          { pref: 'COK', label: '🍹 Drinks', cat: '🍹 Coquetéis & Drinks' },
+                        ].map((btn) => (
+                          <button
+                            key={btn.pref}
+                            type="button"
+                            style={{
+                              background: cadCod.startsWith(btn.pref) ? '#d97706' : '#f1f5f9',
+                              color: cadCod.startsWith(btn.pref) ? '#ffffff' : '#334155',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '4px 8px',
+                              fontSize: '0.74rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => {
+                              setCadCod(gerarCodigoInternoAutomatico(btn.pref));
+                              setCadCategoria(btn.cat);
+                            }}
+                          >
+                            {btn.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grupo-input">
+                      <label className="rotulo-campo">Nome do Produto</label>
+                      <input
+                        type="text"
+                        id="cad-nome"
+                        className="input-modal"
+                        placeholder="Ex: Espetinho de Carne Bovina, Dose de Gin Trop..."
+                        value={cadNome}
+                        onChange={(e) => setCadNome(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="grupo-input">
+                      <label className="rotulo-campo">Categoria</label>
+                      <input
+                        type="text"
+                        id="cad-categoria"
+                        className="input-modal"
+                        placeholder="Ex: 🍢 Espetinhos & Churrasco"
+                        value={cadCategoria}
+                        onChange={(e) => setCadCategoria(e.target.value)}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  /* FLUXO PADRÃO INDUSTRIAL COM CÓDIGO DE BARRAS (EAN) */
+                  <>
+                    <div className="grupo-input">
+                      <label className="rotulo-campo">Código de Barras (EAN / GTIN)</label>
+                      <div className="modal-cadastro-ean-acoes">
+                        <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <input
+                            type="text"
+                            id="cad-cod"
+                            className="input-modal"
+                            placeholder="Ex: 7891000379585"
+                            value={cadCod}
+                            onChange={(e) => setCadCod(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                buscarProdutoPeloCodigo(cadCod);
+                              }
+                            }}
+                            required
+                          />
+                          <button
+                            type="button"
+                            className="btn-buscar-ean"
+                            style={{
+                              padding: '0 12px',
+                              height: '42px',
+                              fontWeight: 700,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px',
+                              whiteSpace: 'nowrap',
+                              background: '#f0f9ff',
+                              color: '#0369a1',
+                              borderRadius: '8px',
+                              border: '1px solid #bae6fd',
+                              cursor: 'pointer',
+                              fontSize: '0.82rem',
+                            }}
+                            onClick={() => buscarProdutoPeloCodigo(cadCod)}
+                            disabled={buscandoProdutoCodigo || !cadCod.trim()}
+                            title="Buscar produto pelo código de barras digitado"
+                          >
+                            {buscandoProdutoCodigo ? '⏳' : '🔍 Buscar'}
+                          </button>
+                          <button type="button" className="btn-cam-pequeno" onClick={abrirLeitorCadastro} title="Escanear Código de Barras com Câmera">
+                            📷
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="modal-cadastro-btn-pesquisar"
+                          onClick={() => setModalPesquisaCatalogoVisivel(true)}
+                          title="Pesquisar produto pelo nome no catálogo oficial e APIs (ex: Picanha, Heineken, Nescau...) para preencher código, foto e dados"
+                        >
+                          🔍 Pesquisar Produto
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grupo-input">
+                      <label className="rotulo-campo">Nome Detalhado do Produto</label>
+                      <input
+                        type="text"
+                        id="cad-nome"
+                        className="input-modal"
+                        placeholder="Ex: Achocolatado em Pó Nestlé Nescau 2.0 Lata 370g"
+                        value={cadNome}
+                        disabled={isProdutoBloqueadoParaEdicaoMestre}
+                        readOnly={isProdutoBloqueadoParaEdicaoMestre}
+                        style={{
+                          background: isProdutoBloqueadoParaEdicaoMestre ? '#f8fafc' : '#ffffff',
+                          color: isProdutoBloqueadoParaEdicaoMestre ? '#334155' : 'inherit',
+                          cursor: isProdutoBloqueadoParaEdicaoMestre ? 'not-allowed' : 'text',
+                          borderColor: isProdutoBloqueadoParaEdicaoMestre ? '#cbd5e1' : undefined,
+                        }}
+                        onChange={(e) => setCadNome(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div className="modal-cadastro-linha-2">
+                      <div className="grupo-input">
+                        <label className="rotulo-campo">Marca</label>
+                        <input
+                          type="text"
+                          id="cad-marca"
+                          className="input-modal"
+                          placeholder="Ex: Nestlé, Coca-Cola, Piracanjuba"
+                          value={cadMarca}
+                          disabled={isProdutoBloqueadoParaEdicaoMestre}
+                          readOnly={isProdutoBloqueadoParaEdicaoMestre}
+                          style={{
+                            background: isProdutoBloqueadoParaEdicaoMestre ? '#f8fafc' : '#ffffff',
+                            color: isProdutoBloqueadoParaEdicaoMestre ? '#334155' : 'inherit',
+                            cursor: isProdutoBloqueadoParaEdicaoMestre ? 'not-allowed' : 'text',
+                            borderColor: isProdutoBloqueadoParaEdicaoMestre ? '#cbd5e1' : undefined,
+                          }}
+                          onChange={(e) => setCadMarca(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="grupo-input">
+                        <label className="rotulo-campo">Categoria do Produto</label>
+                        <div className="linha-input">
+                          <input
+                            type="text"
+                            id="cad-categoria"
+                            list="lista-categorias-sugestoes"
+                            className="input-modal"
+                            placeholder="Ex: Bebidas, Laticínios..."
+                            value={cadCategoria}
+                            disabled={isProdutoBloqueadoParaEdicaoMestre}
+                            readOnly={isProdutoBloqueadoParaEdicaoMestre}
+                            style={{
+                              marginBottom: 0,
+                              minWidth: 0,
+                              flex: 1,
+                              background: isProdutoBloqueadoParaEdicaoMestre ? '#f8fafc' : '#ffffff',
+                              color: isProdutoBloqueadoParaEdicaoMestre ? '#334155' : 'inherit',
+                              cursor: isProdutoBloqueadoParaEdicaoMestre ? 'not-allowed' : 'text',
+                              borderColor: isProdutoBloqueadoParaEdicaoMestre ? '#cbd5e1' : undefined,
+                            }}
+                            onChange={(e) => setCadCategoria(e.target.value)}
+                          />
+                          {!isProdutoBloqueadoParaEdicaoMestre && (
+                            <select
+                              className="input-modal"
+                              style={{ width: 'auto', minWidth: '108px', maxWidth: '125px', marginBottom: 0, fontSize: '0.78rem', background: '#f8fafc', padding: '7px 6px' }}
+                              value=""
+                              onChange={(e) => {
+                                if (e.target.value) setCadCategoria(e.target.value);
+                              }}
+                              title="Selecionar das categorias sugeridas"
+                            >
+                              <option value="">📂 Sugestões...</option>
+                              {LISTA_CATEGORIAS.map((cat) => (
+                                <option key={cat} value={cat}>
+                                  {cat}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                        <datalist id="lista-categorias-sugestoes">
+                          {Array.from(
+                            new Set([
+                              ...LISTA_CATEGORIAS,
+                              ...catalogoGlobal.map((c) => c.categoria).filter(Boolean),
+                              ...estoque.map((e) => e.categoria).filter(Boolean),
+                            ])
+                          ).map((cat) => (
+                            <option key={cat as string} value={cat as string} />
+                          ))}
+                        </datalist>
+                      </div>
+                    </div>
+
+                    {/* CAMPOS DO ESTOQUE DA LOJA (Quantidade, Lote, Validade) */}
+                    {(perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') && (
+                      <div className="modal-cadastro-linha-3">
+                        <div className="grupo-input">
+                          <label className="rotulo-campo">Quantidade em Estoque</label>
+                          <input
+                            type="number"
+                            id="cad-qtd"
+                            className="input-modal"
+                            placeholder="Qtd"
+                            min="1"
+                            value={cadQtd}
+                            onChange={(e) => setCadQtd(e.target.value)}
+                            required
+                          />
+                        </div>
+
+                        <div className="grupo-input">
+                          <label className="rotulo-campo">Lote do Produto</label>
+                          <div className="linha-input">
+                            <input
+                              type="text"
+                              id="cad-lote"
+                              className="input-modal"
+                              placeholder="Ex: LOTE-104526 (opcional)"
+                              value={cadLote}
+                              onChange={(e) => setCadLote(e.target.value)}
+                            />
+                            <button type="button" className="btn-cam-pequeno" onClick={abrirLeitorLote} title="Fotografar Carimbo de Lote e Validade com IA">
+                              📷
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grupo-input">
+                          <label className="rotulo-campo">Data de Validade</label>
+                          <input
+                            type="date"
+                            id="cad-val"
+                            className="input-modal"
+                            value={cadVal}
+                            onChange={(e) => setCadVal(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* COLUNA DIREITA: PRECIFICAÇÃO E FOTO DO PRODUTO */}
+              <div className="modal-cadastro-col">
+                {(tipoProdutoCadastro === 'interno' || perfilAtivo !== 'dona_app' || modoCadastroItem === 'estoque') && (
+                  renderBlocoPrecoMargem()
+                )}
+
+                <div className="grupo-input">
+                  <label className="rotulo-campo">Foto do Produto (Packshot Fundo Branco)</label>
+                  {!isProdutoBloqueadoParaEdicaoMestre && (
+                    <input
+                      type="file"
+                      id="cad-foto"
+                      accept="image/*"
+                      style={{ width: '100%', fontSize: '0.82rem' }}
+                      onChange={carregarFoto}
+                    />
+                  )}
+                  <div
+                    className="preview-foto modal-cadastro-preview-foto"
+                    id="preview-foto"
+                    style={{
+                      background: '#ffffff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '8px',
+                      position: 'relative',
+                    }}
+                  >
+                    {fotoTemp ? (
+                      <>
+                        <img
+                          src={fotoTemp}
+                          alt="Preview Produto Fundo Branco"
+                          referrerPolicy="no-referrer"
+                        />
+                        {!isProdutoBloqueadoParaEdicaoMestre && (
+                          <div
+                            style={{
+                              marginTop: '6px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              width: '100%',
+                              background: '#f0fdf4',
+                              border: '1px solid #bbf7d0',
+                              borderRadius: '6px',
+                              padding: '4px 8px',
+                              fontSize: '0.73rem',
+                              color: '#166534',
+                            }}
+                          >
+                            <span>
+                              ⚡ <b>Otimizada:</b> ~{calcularTamanhoImagemKB(fotoTemp)} KB
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setFotoTemp('')}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#dc2626',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                fontSize: '0.73rem',
+                                padding: '2px 6px',
+                              }}
+                              title="Remover foto"
+                            >
+                              ✕ Remover
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div style={{ textAlign: 'center', padding: '8px', color: '#94a3b8' }}>
+                        <div style={{ fontSize: '0.8rem', marginBottom: '3px' }}>Sem foto vinculada</div>
+                        {!isProdutoBloqueadoParaEdicaoMestre && (
+                          <div style={{ fontSize: '0.71rem', color: '#64748b' }}>
+                            💡 Envie fotos em qualquer resolução: o sistema comprime automaticamente antes de salvar.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="grupo-botoes" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          </div>
+
+          <div className="modal-cadastro-footer">
+            {msgCad ? (
+              <div className="msg" id="msg-cad" style={{ margin: 0 }}>
+                {msgCad}
+              </div>
+            ) : (
+              <div className="msg" id="msg-cad" style={{ display: 'none' }} />
+            )}
+
+            <div className="modal-cadastro-footer-linha">
               <label
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  fontSize: '0.82rem',
+                  fontSize: '0.8rem',
                   fontWeight: 600,
                   color: '#334155',
-                  background: '#f8fafc',
-                  padding: '8px 10px',
+                  background: '#ffffff',
+                  padding: '7px 10px',
                   borderRadius: '8px',
                   border: '1px solid #e2e8f0',
                   cursor: 'pointer',
@@ -14631,47 +14667,35 @@ export default function App() {
                   type="checkbox"
                   checked={continuarCadastrandoAposSalvar}
                   onChange={(e) => setContinuarCadastrandoAposSalvar(e.target.checked)}
-                  style={{ width: '16px', height: '16px', accentColor: '#0284c7', cursor: 'pointer' }}
+                  style={{ width: '16px', height: '16px', accentColor: '#0284c7', cursor: 'pointer', flexShrink: 0 }}
                 />
-                <span>Continuar nesta tela após salvar (para cadastrar mais produtos)</span>
+                <span>
+                  Continuar nesta tela após salvar
+                  <span className="modal-cadastro-so-mobile"> (para cadastrar mais produtos)</span>
+                </span>
               </label>
-              <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-                <button className="btn btn-salvar" style={{ flex: 1 }} onClick={salvarProduto}>
-                  💾 Salvar Produto
-                </button>
-                <button className="btn btn-cancelar" style={{ flex: 1 }} onClick={() => fecharAbaDefinitivo('cadastro')}>
-                  Fechar
-                </button>
+
+              <div className="modal-cadastro-footer-acoes">
+                {codigoEditando && (
+                  <button
+                    type="button"
+                    className="btn modal-cadastro-btn-excluir"
+                    onClick={() => {
+                      excluirProduto(codigoEditando.codigo, codigoEditando.validade, codigoEditando.lote);
+                    }}
+                  >
+                    🗑️ Excluir<span className="modal-cadastro-so-mobile"> Produto do Estoque</span>
+                  </button>
+                )}
+                <div className="modal-cadastro-footer-primarios">
+                  <button type="button" className="btn btn-salvar" onClick={salvarProduto}>
+                    💾 Salvar Produto
+                  </button>
+                  <button type="button" className="btn btn-cancelar" onClick={() => fecharAbaDefinitivo('cadastro')}>
+                    Fechar
+                  </button>
+                </div>
               </div>
-              {codigoEditando && (
-                <button
-                  type="button"
-                  className="btn"
-                  style={{
-                    background: '#fee2e2',
-                    color: '#dc2626',
-                    border: '1px solid #fca5a5',
-                    fontWeight: 700,
-                    fontSize: '0.82rem',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
-                  onClick={() => {
-                    excluirProduto(codigoEditando.codigo, codigoEditando.validade, codigoEditando.lote);
-                  }}
-                >
-                  🗑️ Excluir Produto do Estoque
-                </button>
-              )}
-            </div>
-            <div className="msg" id="msg-cad">
-              {msgCad}
             </div>
           </div>
         </div>
