@@ -28,7 +28,10 @@ interface MotoboyDeliveryViewProps {
   pedido: PedidoDelivery;
   loja?: Supermercado | null;
   onAtualizarStatus?: (pedidoId: string, novoStatus: StatusPedidoDelivery) => void;
-  onConfirmarEntregaPin?: (pedidoId: string, pin: string) => boolean;
+  onConfirmarEntregaPin?: (
+    pedidoId: string,
+    pin: string
+  ) => boolean | { ok: boolean; erro?: string } | Promise<boolean | { ok: boolean; erro?: string }>;
 }
 
 export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
@@ -42,7 +45,11 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
   const [modalPinAberto, setModalPinAberto] = useState(false);
   const [pinDigitado, setPinDigitado] = useState('');
   const [erroPin, setErroPin] = useState('');
+  const [validandoPin, setValidandoPin] = useState(false);
   const [entregaSucesso, setEntregaSucesso] = useState(pedido.status === 'entregue');
+  const pinTamanhoEsperado =
+    pedido.pinTamanho ||
+    (pedido.codigoEntregaPin ? pedido.codigoEntregaPin.trim().length : 6);
 
   // Regra LGPD: O link do motoboy é desativado após 5 minutos da confirmação da entrega
   const EXPIRACAO_MINUTOS = 5;
@@ -140,18 +147,29 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
     }
   };
 
-  const handleFinalizarEntregaSubmit = (e: React.FormEvent) => {
+  const handleFinalizarEntregaSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (validandoPin) return;
+    setErroPin('');
     if (onConfirmarEntregaPin) {
-      if (pinDigitado.length !== 4) {
-        setErroPin('Digite o PIN de 4 dígitos informado pelo cliente.');
+      if (pinDigitado.length < 4 || pinDigitado.length < pinTamanhoEsperado) {
+        setErroPin(`Digite o PIN de ${pinTamanhoEsperado} dígitos informado pelo cliente.`);
         return;
       }
-      const ok = onConfirmarEntregaPin(pedido.id, pinDigitado);
-      if (ok) {
-        registrarConclusaoEntrega();
-      } else {
-        setErroPin('PIN incorreto! Solicite o código ao cliente.');
+      setValidandoPin(true);
+      try {
+        const res = await onConfirmarEntregaPin(pedido.id, pinDigitado);
+        const ok = typeof res === 'boolean' ? res : Boolean(res?.ok);
+        if (ok) {
+          registrarConclusaoEntrega();
+        } else {
+          setErroPin(
+            (typeof res === 'object' && res?.erro) ||
+              'PIN incorreto! Solicite o código ao cliente.'
+          );
+        }
+      } finally {
+        setValidandoPin(false);
       }
     } else if (onAtualizarStatus) {
       onAtualizarStatus(pedido.id, 'entregue');
@@ -552,7 +570,7 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
                 Confirmar Entrega #{pedido.numeroPedido}
               </h3>
               <p className="text-xs text-slate-500 mt-1">
-                Solicite o PIN de 4 dígitos ao cliente <strong>{pedido.cliente.nome}</strong>:
+                Solicite o PIN de {pinTamanhoEsperado} dígitos ao cliente <strong>{pedido.cliente.nome}</strong>:
               </p>
             </div>
 
@@ -560,11 +578,11 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
               <input
                 type="text"
                 autoFocus
-                maxLength={4}
+                maxLength={6}
                 value={pinDigitado}
-                onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, ''))}
-                placeholder="0000"
-                className="w-36 text-center text-3xl font-mono font-black tracking-widest bg-slate-50 border-2 border-emerald-500 text-emerald-800 rounded-2xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, '').slice(0, pinTamanhoEsperado))}
+                placeholder={'0'.repeat(pinTamanhoEsperado)}
+                className="w-44 text-center text-2xl font-mono font-black tracking-widest bg-slate-50 border-2 border-emerald-500 text-emerald-800 rounded-2xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
               />
 
               {erroPin && (
@@ -581,10 +599,10 @@ export const MotoboyDeliveryView: React.FC<MotoboyDeliveryViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  disabled={pinDigitado.length < 4}
+                  disabled={validandoPin || pinDigitado.length < pinTamanhoEsperado}
                   className="flex-1 py-2.5 bg-[#059669] hover:bg-[#047857] disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
                 >
-                  Confirmar
+                  {validandoPin ? 'Validando...' : 'Confirmar'}
                 </button>
               </div>
             </form>

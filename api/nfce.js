@@ -1,8 +1,184 @@
 // Vercel Serverless Function: /api/nfce
 // Proxy seguro para emissão, consulta, cancelamento e teste de conexão de NFC-e (Modelo 65) via Focus NFe API v2
 
+import crypto from 'node:crypto';
+
 function limparDigitos(val) {
   return String(val || '').replace(/\D/g, '');
+}
+
+function compararTempoConstante(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+}
+
+function base64Url(input) {
+  return Buffer.from(input)
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+// Cache dos certificados públicos do Firebase Auth (securetoken)
+let certsCache = null;
+let certsCacheExpMs = 0;
+
+async function obterCertificadosFirebase(forcarAtualizacao = false) {
+  const agora = Date.now();
+  if (!forcarAtualizacao && certsCache && agora < certsCacheExpMs) {
+    return certsCache;
+  }
+  const resp = await fetch(
+    'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
+  );
+  if (!resp.ok) {
+    throw new Error('Falha ao obter certificados públicos do Firebase Auth.');
+  }
+  const cc = String(resp.headers.get('cache-control') || '');
+  const matchMaxAge = cc.match(/max-age=(\d+)/i);
+  const maxAgeSeg = matchMaxAge ? Number(matchMaxAge[1]) : 3600;
+  const json = await resp.json();
+  certsCache = json || {};
+  certsCacheExpMs = agora + Math.max(60, maxAgeSeg) * 1000;
+  return certsCache;
+}
+
+async function verificarFirebaseIdToken(idToken, projectId) {
+  if (!idToken || typeof idToken !== 'string') return null;
+  const partes = idToken.split('.');
+  if (partes.length !== 3) return null;
+  const [hB64, pB64, sB64] = partes;
+  if (!hB64 || !pB64 || !sB64) return null;
+
+  let header;
+  let payload;
+  try {
+    header = JSON.parse(Buffer.from(hB64, 'base64url').toString('utf8'));
+    payload = JSON.parse(Buffer.from(pB64, 'base64url').toString('utf8'));
+  } catch {
+    return null;
+  }
+
+  if (header?.alg !== 'RS256' || typeof header?.kid !== 'string' || !header.kid) {
+    return null;
+  }
+
+  let certs = await obterCertificadosFirebase(false);
+  let certPem = certs[header.kid];
+  if (!certPem) {
+    certs = await obterCertificadosFirebase(true);
+    certPem = certs[header.kid];
+  }
+  if (!certPem) return null;
+
+  const verifier = crypto.createVerify('RSA-SHA256');
+  verifier.update(`${hB64}.${pB64}`);
+  verifier.end();
+  let assinaturaOk = false;
+  try {
+    assinaturaOk = verifier.verify(certPem, Buffer.from(sB64, 'base64url'));
+  } catch {
+    return null;
+  }
+  if (!assinaturaOk) return null;
+
+  const agoraSec = Math.floor(Date.now() / 1000);
+  if (payload?.aud !== projectId) return null;
+  if (payload?.iss !== `https://securetoken.googleapis.com/${projectId}`) return null;
+  if (typeof payload?.sub !== 'string' || !payload.sub || payload.sub.length > 128) return null;
+  if (Number(payload?.exp || 0) <= agoraSec) return null;
+  if (Number(payload?.iat || 0) > agoraSec + 300) return null;
+
+  // Bloqueia sessões anônimas na API fiscal
+  if (payload?.firebase?.sign_in_provider === 'anonymous') {
+    return null;
+  }
+
+  const isMaster = payload?.is_master === true || payload?.role === 'master';
+  const lojaId = typeof payload?.lojaId === 'string' && payload.lojaId.trim() ? payload.lojaId.trim() : null;
+  if (!isMaster && !lojaId) {
+    return null;
+  }
+
+  return {
+    uid: payload.sub,
+    isMaster,
+    lojaId,
+    role: String(payload?.role || ''),
+  };
+}
+
+function extrairValorFirestore(v) {
+  if (!v || typeof v !== 'object') return undefined;
+  if ('stringValue' in v) return v.stringValue;
+  if ('integerValue' in v) return Number(v.integerValue);
+  if ('doubleValue' in v) return Number(v.doubleValue);
+  if ('booleanValue' in v) return Boolean(v.booleanValue);
+  if ('nullValue' in v) return null;
+  if ('timestampValue' in v) return v.timestampValue;
+  if ('mapValue' in v) {
+    const out = {};
+    for (const [mk, mv] of Object.entries(v.mapValue?.fields || {})) {
+      const val = extrairValorFirestore(mv);
+      if (val !== undefined) out[mk] = val;
+    }
+    return out;
+  }
+  if ('arrayValue' in v) {
+    const vals = Array.isArray(v.arrayValue?.values) ? v.arrayValue.values : [];
+    return vals.map((item) => extrairValorFirestore(item)).filter((item) => item !== undefined);
+  }
+  return undefined;
+}
+
+async function obterAccessTokenAdmin(serviceAccount) {
+  const agora = Math.floor(Date.now() / 1000);
+  const header = base64Url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const claim = base64Url(
+    JSON.stringify({
+      iss: serviceAccount.client_email,
+      scope: 'https://www.googleapis.com/auth/datastore',
+      aud: 'https://oauth2.googleapis.com/token',
+      iat: agora,
+      exp: agora + 3600,
+    })
+  );
+  const signer = crypto.createSign('RSA-SHA256');
+  signer.update(`${header}.${claim}`);
+  signer.end();
+  const sig = signer
+    .sign(serviceAccount.private_key, 'base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+
+  const resp = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${header}.${claim}.${sig}`,
+  });
+  const json = await resp.json();
+  if (!resp.ok || !json?.access_token) {
+    throw new Error('Falha ao obter access_token OAuth2');
+  }
+  return json.access_token;
+}
+
+async function lerDocFirestoreAdmin(projectId, accessToken, caminho) {
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${caminho}`;
+  const resp = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (resp.status === 404) return null;
+  if (!resp.ok) throw new Error(`Firestore GET ${resp.status}`);
+  const data = await resp.json();
+  const out = {};
+  for (const [k, v] of Object.entries(data.fields || {})) {
+    const val = extrairValorFirestore(v);
+    if (val !== undefined) out[k] = val;
+  }
+  return out;
 }
 
 function getBaseUrl(ambiente) {
@@ -71,6 +247,7 @@ function verificarRateLimitNfce(req) {
 }
 
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-NFCE-Secret');
@@ -93,49 +270,111 @@ export default async function handler(req, res) {
   const secretServidor = String(process.env.NFCE_API_SECRET || '').trim();
   if (secretServidor) {
     const secretHeader = String(req.headers['x-nfce-secret'] || '').trim();
-    if (secretHeader !== secretServidor) {
+    if (!compararTempoConstante(secretHeader, secretServidor)) {
       return res.status(401).json({ sucesso: false, erro: 'Não autorizado para emitir NFC-e.' });
     }
   }
 
-  if (process.env.EXIGIR_AUTH_API === 'true') {
-    const authHeaderReq = String(req.headers.authorization || '');
-    const apiKeyFb = String(process.env.FIREBASE_WEB_API_KEY || process.env.VITE_FIREBASE_API_KEY || '').trim();
-    if (!authHeaderReq.startsWith('Bearer ') || !apiKeyFb) {
-      return res.status(401).json({ sucesso: false, erro: 'Sessão Firebase obrigatória para emitir NFC-e.' });
-    }
+  let serviceAccount = null;
+  const rawSa = String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
+  if (rawSa) {
     try {
-      const idToken = authHeaderReq.slice(7).trim();
-      const chk = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(apiKeyFb)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      });
-      if (!chk.ok) {
-        return res.status(401).json({ sucesso: false, erro: 'Token de sessão Firebase inválido ou expirado.' });
+      const parsed = JSON.parse(rawSa);
+      if (parsed?.client_email && parsed?.private_key && parsed?.project_id) {
+        parsed.private_key = String(parsed.private_key).replace(/\\n/g, '\n');
+        serviceAccount = parsed;
       }
-    } catch {
-      return res.status(401).json({ sucesso: false, erro: 'Falha ao validar sessão Firebase.' });
-    }
+    } catch {}
   }
+
+  const projectId = String(
+    serviceAccount?.project_id || process.env.FIREBASE_PROJECT_ID || 'adega-delivery-pdv'
+  ).trim();
 
   try {
     const body = req.body || {};
     const { acao = 'emitir', ambiente = 'homologacao', tokenFocusNfe } = body;
+    const lojaIdBody = String(body.lojaId || '').trim();
+    const temTokenCorpo = Boolean(String(tokenFocusNfe || '').trim());
+
+    const exigirAuth =
+      Boolean(serviceAccount) ||
+      process.env.EXIGIR_AUTH_API === 'true' ||
+      !temTokenCorpo;
+
+    let claims = null;
+    if (exigirAuth) {
+      const authHeaderReq = String(req.headers.authorization || '');
+      if (!authHeaderReq.startsWith('Bearer ')) {
+        return res.status(401).json({
+          sucesso: false,
+          erro: 'Sessão autenticada obrigatória para operações fiscais (NFC-e).',
+        });
+      }
+      const idToken = authHeaderReq.slice(7).trim();
+      claims = await verificarFirebaseIdToken(idToken, projectId);
+      if (!claims) {
+        return res.status(401).json({
+          sucesso: false,
+          erro: 'Token de sessão inválido, expirado ou sessão anônima não autorizada.',
+        });
+      }
+      if (!claims.isMaster) {
+        if (!lojaIdBody || lojaIdBody !== claims.lojaId) {
+          return res.status(403).json({
+            sucesso: false,
+            erro: 'Você não possui permissão para operar NFC-e em nome desta loja.',
+          });
+        }
+      }
+    }
 
     if (!ACOES_PERMITIDAS.has(String(acao))) {
       return res.status(400).json({ sucesso: false, erro: 'Ação fiscal não permitida.' });
     }
-    if (acao === 'emitir' && (!body.venda || !body.venda.id)) {
-      return res.status(400).json({ sucesso: false, erro: 'Dados da venda inválidos para emissão.' });
+
+    if (acao === 'emitir') {
+      if (!body.venda || !body.venda.id) {
+        return res.status(400).json({ sucesso: false, erro: 'Dados da venda inválidos para emissão.' });
+      }
+      const valorTotalNum = Number(body.venda.valorTotal);
+      if (!Number.isFinite(valorTotalNum) || valorTotalNum < 0) {
+        return res.status(400).json({ sucesso: false, erro: 'Valor total da venda inválido para NFC-e.' });
+      }
     }
 
-    // Permite usar token específico da loja ou token global de revenda/conta Focus NFe no servidor
-    const token = String(tokenFocusNfe || process.env.FOCUS_NFE_TOKEN || '').trim();
+    // Busca token Focus NFe seguro no Firestore quando Service Account estiver configurada
+    let tokenDoFirestore = '';
+    const lojaParaBuscar = lojaIdBody || claims?.lojaId || '';
+    if (serviceAccount && lojaParaBuscar) {
+      try {
+        const accessToken = await obterAccessTokenAdmin(serviceAccount);
+        const lojaDoc = await lerDocFirestoreAdmin(
+          projectId,
+          accessToken,
+          `supermercados/${encodeURIComponent(lojaParaBuscar)}`
+        );
+        tokenDoFirestore = String(lojaDoc?.configFiscal?.tokenFocusNfe || '').trim();
+      } catch {}
+    }
+
+    let token = '';
+    if (acao === 'testar_conexao') {
+      token =
+        String(tokenFocusNfe || '').trim() ||
+        tokenDoFirestore ||
+        (claims ? String(process.env.FOCUS_NFE_TOKEN || '').trim() : '');
+    } else {
+      token =
+        tokenDoFirestore ||
+        (claims ? String(process.env.FOCUS_NFE_TOKEN || '').trim() : '') ||
+        (!serviceAccount ? String(tokenFocusNfe || '').trim() : '');
+    }
+
     if (!token) {
       return res.status(400).json({
         sucesso: false,
-        erro: 'Token da Focus NFe não configurado. Informe o token nas Configurações Fiscais da loja ou na variável FOCUS_NFE_TOKEN.',
+        erro: 'Token da Focus NFe não configurado para esta loja. Salve o token nas Configurações Fiscais antes de emitir.',
       });
     }
 
@@ -188,8 +427,8 @@ export default async function handler(req, res) {
     // 2. CONSULTAR STATUS DE NFC-E JÁ ENVIADA
     if (acao === 'consultar') {
       const ref = String(body.ref || '').trim();
-      if (!ref) {
-        return res.status(400).json({ sucesso: false, erro: 'Referência (ref) da NFC-e não informada.' });
+      if (!ref || ref.length > 120) {
+        return res.status(400).json({ sucesso: false, erro: 'Referência (ref) da NFC-e inválida.' });
       }
 
       const resp = await fetch(`${baseUrl}/v2/nfce/${encodeURIComponent(ref)}?completa=1`, {
@@ -218,8 +457,8 @@ export default async function handler(req, res) {
     if (acao === 'cancelar') {
       const ref = String(body.ref || '').trim();
       const justificativa = String(body.justificativa || '').trim();
-      if (!ref) {
-        return res.status(400).json({ sucesso: false, erro: 'Referência (ref) da NFC-e não informada.' });
+      if (!ref || ref.length > 120) {
+        return res.status(400).json({ sucesso: false, erro: 'Referência (ref) da NFC-e inválida.' });
       }
       if (justificativa.length < 15) {
         return res.status(400).json({
@@ -250,6 +489,9 @@ export default async function handler(req, res) {
     if (acao === 'emitir') {
       const { ref, emitente = {}, venda = {}, cpfNaNota = '', padroes = {} } = body;
       const refFinal = String(ref || `pdv_${Date.now()}`).trim();
+      if (!refFinal || refFinal.length > 120) {
+        return res.status(400).json({ sucesso: false, erro: 'Referência da NFC-e inválida ou longa demais.' });
+      }
       const cnpjEmitente = limparDigitos(emitente.cnpj);
 
       if (cnpjEmitente.length !== 14) {
@@ -260,8 +502,11 @@ export default async function handler(req, res) {
       }
 
       const itensVenda = Array.isArray(venda.itens) ? venda.itens : [];
-      if (itensVenda.length === 0) {
-        return res.status(400).json({ sucesso: false, erro: 'A venda não possui itens para emitir NFC-e.' });
+      if (itensVenda.length === 0 || itensVenda.length > 500) {
+        return res.status(400).json({
+          sucesso: false,
+          erro: 'Quantidade de itens inválida para emissão de NFC-e (1 a 500 itens).',
+        });
       }
 
       const ncmPadrao = limparDigitos(padroes.ncmPadrao || '21069090').padEnd(8, '0').slice(0, 8);

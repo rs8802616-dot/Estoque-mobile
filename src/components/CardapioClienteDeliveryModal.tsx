@@ -638,7 +638,14 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
     localStorage.setItem('delivery_cliente_endereco', JSON.stringify(endereco));
     localStorage.setItem('delivery_bairro_selecionado', bairroSelecionadoId);
 
-    const pinGerado = Math.floor(1000 + Math.random() * 9000).toString();
+    const pinGerado = (() => {
+      if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+        const arr = new Uint32Array(1);
+        window.crypto.getRandomValues(arr);
+        return String(100000 + (arr[0] % 900000));
+      }
+      return String(Math.floor(100000 + Math.random() * 900000));
+    })();
     const numeroPedido = Math.floor(100 + Math.random() * 900);
     const agora = new Date();
 
@@ -1740,7 +1747,7 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
                       {pedidoAtivoRastreio.codigoEntregaPin}
                     </div>
                     <p className="text-xs text-emerald-100 font-medium">
-                      Informe este código de 4 dígitos para o entregador para confirmar o recebimento!
+                      Informe este código de {String(pedidoAtivoRastreio.codigoEntregaPin || '').length || 6} dígitos para o entregador para confirmar o recebimento!
                     </p>
                   </div>
                 </>

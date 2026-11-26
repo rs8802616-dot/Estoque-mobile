@@ -58,7 +58,10 @@ interface GestaoDeliveryModalProps {
   onSalvarConfig: (novaConfig: ConfiguracaoDelivery) => void;
   onAtualizarStatusPedido: (pedidoId: string, novoStatus: StatusPedidoDelivery, motivo?: string) => void;
   onRemoverItemPedido?: (pedidoId: string, indiceItem: number, motivo?: string) => void;
-  onConfirmarEntregaPin: (pedidoId: string, pinDigitado: string) => boolean;
+  onConfirmarEntregaPin: (
+    pedidoId: string,
+    pinDigitado: string
+  ) => boolean | { ok: boolean; erro?: string } | Promise<boolean | { ok: boolean; erro?: string }>;
   onAbrirCardapioCliente: () => void;
   estoque: ItemEstoque[];
   lojaAtual: Supermercado | null;
@@ -1092,18 +1095,18 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   Confirmar Entrega #{pedidoParaValidarPin.numeroPedido}
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Digite o código PIN de 4 dígitos informado pelo cliente no momento da entrega:
+                  Digite o código PIN (6 dígitos ou 4 em pedidos antigos) informado pelo cliente no momento da entrega:
                 </p>
               </div>
 
               <div>
                 <input
                   type="text"
-                  maxLength={4}
+                  maxLength={6}
                   value={pinDigitado}
-                  onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, ''))}
-                  placeholder="0000"
-                  className="w-36 text-center text-3xl font-mono font-bold tracking-widest bg-slate-50 border-2 border-emerald-500 rounded-2xl p-2.5 text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000000"
+                  className="w-44 text-center text-2xl font-mono font-bold tracking-widest bg-slate-50 border-2 border-emerald-500 rounded-2xl p-2.5 text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   autoFocus
                 />
                 {erroPin && <p className="text-xs text-rose-500 mt-2 font-semibold">{erroPin}</p>}
@@ -1119,16 +1122,17 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (pinDigitado.length !== 4) {
-                      setErroPin('O PIN deve conter exatamente 4 dígitos.');
+                  onClick={async () => {
+                    if (pinDigitado.length < 4) {
+                      setErroPin('Digite o PIN de confirmação (mínimo 4 dígitos).');
                       return;
                     }
-                    const sucesso = onConfirmarEntregaPin(pedidoParaValidarPin.id, pinDigitado);
+                    const res = await onConfirmarEntregaPin(pedidoParaValidarPin.id, pinDigitado);
+                    const sucesso = typeof res === 'boolean' ? res : Boolean(res?.ok);
                     if (sucesso) {
                       setPedidoParaValidarPin(null);
                     } else {
-                      setErroPin('PIN incorreto! Verifique com o cliente.');
+                      setErroPin((typeof res === 'object' && res?.erro) || 'PIN incorreto! Verifique com o cliente.');
                     }
                   }}
                   className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"

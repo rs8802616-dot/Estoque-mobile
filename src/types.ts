@@ -638,7 +638,8 @@ export interface PedidoDelivery {
   mesaNumero?: string;
   atendenteNome?: string;
   observacao?: string;
-  codigoEntregaPin: string; // Ex: '4912' (PIN de 4 dígitos para confirmação de entrega segura)
+  codigoEntregaPin: string; // Ex: '491208' (PIN de 6 dígitos para confirmação de entrega segura)
+  pinTamanho?: number;
   tentativasPinEntrega?: number;
   pinBloqueado?: boolean;
   motivoCancelamento?: string;

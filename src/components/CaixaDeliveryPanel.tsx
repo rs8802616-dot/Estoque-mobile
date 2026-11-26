@@ -27,7 +27,10 @@ interface CaixaDeliveryPanelProps {
   loja: Supermercado | null;
   onAtualizarStatus: (id: string, novoStatus: StatusPedidoDelivery, motivo?: string) => void;
   onRemoverItemPedido?: (pedidoId: string, indiceItem: number, motivo?: string) => void;
-  onConfirmarEntregaPin: (id: string, pin: string) => boolean;
+  onConfirmarEntregaPin: (
+    id: string,
+    pin: string
+  ) => boolean | { ok: boolean; erro?: string } | Promise<boolean | { ok: boolean; erro?: string }>;
   onAbrirCardapioCliente?: () => void;
   onImprimirComanda?: (pedido: PedidoDelivery) => void;
 }
@@ -167,24 +170,29 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       (pedido.trocoPara ? `💵 *Troco para:* R$ ${pedido.trocoPara.toFixed(2)}\n` : '') +
       `💰 *Total a Cobrar:* R$ ${pedido.valorTotal.toFixed(2)}\n\n` +
       `📱 *LINK EXCLUSIVO DO ENTREGADOR (GPS & ITENS):*\n${linkMotoboy}\n\n` +
-      `🔐 *PIN de Confirmação:* O cliente fornecerá o PIN de 4 dígitos no ato da entrega.`;
+      `🔐 *PIN de Confirmação:* O cliente fornecerá o PIN de segurança no ato da entrega.`;
 
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank');
   };
 
   // Confirmação de PIN
-  const handleValidarPinSubmit = (e: React.FormEvent) => {
+  const handleValidarPinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validandoPinPedido) return;
+    if (pinDigitado.length < 4) {
+      setErroPin('Digite o PIN de confirmação (mínimo 4 dígitos).');
+      return;
+    }
 
-    const ok = onConfirmarEntregaPin(validandoPinPedido.id, pinDigitado);
+    const res = await onConfirmarEntregaPin(validandoPinPedido.id, pinDigitado);
+    const ok = typeof res === 'boolean' ? res : Boolean(res?.ok);
     if (ok) {
       setValidandoPinPedido(null);
       setPinDigitado('');
       setErroPin('');
     } else {
-      setErroPin('PIN incorreto! Solicite os 4 dígitos ao cliente ou entregador.');
+      setErroPin((typeof res === 'object' && res?.erro) || 'PIN incorreto! Solicite o código ao cliente ou entregador.');
     }
   };
 
@@ -681,7 +689,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
                           setErroPin('');
                         }}
                         className="flex-1 py-2 px-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm transition cursor-pointer active:scale-95 min-w-0"
-                        title="Confirmar entrega digitando o PIN de 4 dígitos do cliente"
+                        title="Confirmar entrega digitando o PIN do cliente"
                       >
                         <Check className="w-3.5 h-3.5 stroke-[3] shrink-0" />
                         <span className="truncate">Confirmar Entrega</span>
@@ -917,18 +925,18 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
             </div>
 
             <p className="text-xs text-stone-600">
-              Digite o código PIN de 4 dígitos fornecido pelo cliente <strong>{validandoPinPedido.cliente.nome}</strong> (Pedido #{validandoPinPedido.numeroPedido}):
+              Digite o código PIN (6 dígitos ou 4 em pedidos antigos) fornecido pelo cliente <strong>{validandoPinPedido.cliente.nome}</strong> (Pedido #{validandoPinPedido.numeroPedido}):
             </p>
 
             <form onSubmit={handleValidarPinSubmit} className="space-y-3">
               <input
                 type="text"
                 autoFocus
-                maxLength={4}
+                maxLength={6}
                 value={pinDigitado}
-                onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, ''))}
-                placeholder="Ex: 4891"
-                className="w-full text-center tracking-widest text-3xl font-mono font-black p-3 rounded-2xl bg-stone-50 border-2 border-emerald-500 text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                onChange={(e) => setPinDigitado(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="Ex: 489120"
+                className="w-full text-center tracking-widest text-2xl font-mono font-black p-3 rounded-2xl bg-stone-50 border-2 border-emerald-500 text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               />
 
               {erroPin && (

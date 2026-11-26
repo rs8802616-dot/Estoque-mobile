@@ -4,12 +4,12 @@
   "description": "Aplicativo mobile de gestão de estoque, leitor de código de barras e PDV para supermercados",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
+      "src": "/icons/icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
+      "src": "/icons/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

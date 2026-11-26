@@ -91,7 +91,7 @@ export const ConfiguracaoFiscalModal: React.FC<ConfiguracaoFiscalModalProps> = (
     setTestandoConexao(true);
     setResultadoTeste(null);
     try {
-      const res = await testarConexaoFocusNfe(cnpjEditavel, form);
+      const res = await testarConexaoFocusNfe(cnpjEditavel, form, loja.id);
       if (res.sucesso && res.aviso) {
         setResultadoTeste({ tipo: 'aviso', texto: res.aviso });
       } else if (res.sucesso) {

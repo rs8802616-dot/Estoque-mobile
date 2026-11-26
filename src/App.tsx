@@ -108,6 +108,8 @@ import {
   encerrarSessaoServidor,
   validarSessaoMasterServidor,
   validarPainelLojaServidor,
+  buscarPedidoMotoboyServidor,
+  confirmarPinEntregaMotoboyServidor,
 } from './lib/authClient';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
@@ -203,6 +205,7 @@ import {
   adicionarItemFilaOffline,
   sincronizarFilaOfflinePrioritaria,
   obterEstatisticasFilaOffline,
+  reenviarFilaOfflineErros,
 } from './lib/offlineSync';
 import {
   SessaoCaixaTurno,
@@ -579,14 +582,39 @@ export default function App() {
   const isMotoboyRoute = isMotoboyUrlFlag;
   const motoboyTokenParam = tokenParamAtivo;
   const [pedidoMotoboyRemoto, setPedidoMotoboyRemoto] = useState<PedidoDelivery | null>(null);
+  const [lojaMotoboyRemota, setLojaMotoboyRemota] = useState<Supermercado | null>(null);
   const [buscandoPedidoMotoboy, setBuscandoPedidoMotoboy] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isMotoboyRoute || !motoboyPedidoParam || !motoboyTokenParam) return;
     let ativo = true;
     setBuscandoPedidoMotoboy(true);
-    buscarPedidoDeliveryPorTokenFirestore(motoboyPedidoParam, motoboyTokenParam)
-      .then((ped) => {
+
+    buscarPedidoMotoboyServidor(motoboyPedidoParam, motoboyTokenParam)
+      .then(async (resSrv) => {
+        if (!ativo) return;
+        if (!resSrv.fallbackLocal) {
+          if (resSrv.sucesso && resSrv.pedido) {
+            setPedidoMotoboyRemoto(resSrv.pedido);
+            if (resSrv.loja) {
+              setLojaMotoboyRemota(resSrv.loja as Supermercado);
+            }
+            try {
+              localStorage.setItem(
+                `motoboy_pedido_${resSrv.pedido.numeroPedido}`,
+                JSON.stringify(resSrv.pedido)
+              );
+            } catch {}
+          } else {
+            setPedidoMotoboyRemoto(null);
+            try {
+              localStorage.removeItem(`motoboy_pedido_${motoboyPedidoParam}`);
+            } catch {}
+          }
+          return;
+        }
+
+        const ped = await buscarPedidoDeliveryPorTokenFirestore(motoboyPedidoParam, motoboyTokenParam);
         if (ativo && ped) {
           setPedidoMotoboyRemoto(ped);
           try {
@@ -3627,7 +3655,7 @@ export default function App() {
       encerrarSessaoAtivaNoFirestore(userKey, token);
     }
 
-    // Limpeza total de persistência de sessão para impedir acesso indevido ao recarregar a página
+    // Limpeza total de persistência de sessão e caches operacionais sensíveis (preservando filas offline pendentes)
     fecharTodosModaisSemRemoverAbas();
     setAbasAbertas([]);
     localStorage.removeItem('tela_ativa_sistema');
@@ -3637,10 +3665,37 @@ export default function App() {
     localStorage.removeItem('operadorNomeAtivo');
     localStorage.removeItem('sessao_ativa_token');
     try {
+      const prefixosSensiveis = [
+        'vendas_',
+        'operadores_caixa_',
+        'clientes_devedores_',
+        'logs_auditoria_',
+        'movimentacoes_caixa_',
+        'comandas_locais_',
+        'pedidos_delivery_',
+        'config_supermercado_',
+        'sessao_caixa_',
+      ];
+      const chavesParaRemover = Object.keys(localStorage).filter(
+        (k) =>
+          prefixosSensiveis.some((pref) => k.startsWith(pref)) ||
+          k === 'lista_supermercados_app' ||
+          k === 'auditoria_tentativas_login_v1' ||
+          k === 'credenciais_dono_app'
+      );
+      chavesParaRemover.forEach((k) => localStorage.removeItem(k));
+    } catch {}
+    try {
       sessionStorage.removeItem('sessao_loja_ativa');
     } catch {}
     encerrarSessaoServidor().catch(() => {});
 
+    setVendas([]);
+    setClientesDevedores([]);
+    setLogsAuditoria([]);
+    setListaOperadores([]);
+    setPedidosDelivery([]);
+    setComandasLocais([]);
     setOperadorAtivoId(null);
     setSessaoTokenAtivo('');
     setMotivoCaixaObrigatorio(null);
@@ -7986,7 +8041,10 @@ export default function App() {
     notificarSincronizacao();
   };
 
-  const handleConfirmarEntregaPin = (pedidoId: string, pinDigitado: string): boolean => {
+  const handleConfirmarEntregaPin = async (
+    pedidoId: string,
+    pinDigitado: string
+  ): Promise<{ ok: boolean; erro?: string }> => {
     let pedidoAlvo: PedidoDelivery | undefined =
       pedidosDelivery.find((p) => p.id === pedidoId) ||
       (pedidoMotoboyRemoto?.id === pedidoId ? pedidoMotoboyRemoto : undefined);
@@ -8001,15 +8059,55 @@ export default function App() {
       } catch {}
     }
 
-    if (!pedidoAlvo) return false;
+    if (isMotoboyRoute && motoboyTokenParam) {
+      const numeroRef = String(pedidoAlvo?.numeroPedido || motoboyPedidoParam || '');
+      const resSrv = await confirmarPinEntregaMotoboyServidor(
+        pedidoId,
+        numeroRef,
+        motoboyTokenParam,
+        pinDigitado
+      );
+      if (!resSrv.fallbackLocal) {
+        if (resSrv.sucesso) {
+          const agoraTs = resSrv.pedido?.entregueEmTimestamp || Date.now();
+          if (numeroRef) {
+            try {
+              localStorage.setItem(`motoboy_entregue_ts_${numeroRef}`, String(agoraTs));
+            } catch {}
+          }
+          if (resSrv.pedido) {
+            setPedidoMotoboyRemoto(resSrv.pedido);
+            try {
+              localStorage.setItem(
+                `motoboy_pedido_${resSrv.pedido.numeroPedido}`,
+                JSON.stringify(resSrv.pedido)
+              );
+            } catch {}
+          }
+          tocarSomEntregaFinalizadaMotoboy();
+          return { ok: true };
+        }
+        if (pedidoAlvo && typeof resSrv.tentativasPinEntrega === 'number') {
+          const atualizadoFalha: PedidoDelivery = {
+            ...pedidoAlvo,
+            tentativasPinEntrega: resSrv.tentativasPinEntrega,
+            pinBloqueado: Boolean(resSrv.bloqueado),
+          };
+          setPedidoMotoboyRemoto(atualizadoFalha);
+        }
+        return { ok: false, erro: resSrv.erro || 'PIN incorreto!' };
+      }
+    }
+
+    if (!pedidoAlvo) return { ok: false, erro: 'Pedido não encontrado.' };
     if (pedidoAlvo.pinBloqueado || (pedidoAlvo.tentativasPinEntrega || 0) >= 5) {
-      return false;
+      return { ok: false, erro: 'PIN bloqueado após 5 tentativas incorretas.' };
     }
 
     const storeId = pedidoAlvo.lojaId || supermercadoAtual || 'loja_matriz_01';
 
     // Confere o PIN (máx. 5 tentativas para impedir força bruta)
-    if (pedidoAlvo.codigoEntregaPin.trim() !== pinDigitado.trim()) {
+    if (String(pedidoAlvo.codigoEntregaPin || '').trim() !== pinDigitado.trim()) {
       const novasTentativas = (pedidoAlvo.tentativasPinEntrega || 0) + 1;
       const pinBloqueado = novasTentativas >= 5;
       const pedidoFalhaSync: PedidoDelivery = {
@@ -8029,7 +8127,12 @@ export default function App() {
         localStorage.setItem(`motoboy_pedido_${pedidoFalhaSync.numeroPedido}`, JSON.stringify(pedidoFalhaSync));
       } catch {}
       salvarPedidoDeliveryFirestore(pedidoFalhaSync);
-      return false;
+      return {
+        ok: false,
+        erro: pinBloqueado
+          ? 'Limite de 5 tentativas excedido. PIN bloqueado.'
+          : `PIN incorreto (${novasTentativas}/5).`,
+      };
     }
 
     const agora = new Date();
@@ -8063,7 +8166,7 @@ export default function App() {
     salvarPedidoDeliveryFirestore(pedidoAtualizadoParaSync);
     notificarSincronizacao();
     tocarSomEntregaFinalizadaMotoboy();
-    return true;
+    return { ok: true };
   };
 
   const handleCriarPedidoCliente = (novoPedido: PedidoDelivery) => {
@@ -8324,6 +8427,7 @@ export default function App() {
     }
 
     const lojaMotoboy =
+      lojaMotoboyRemota ||
       listaSupermercados.find((l) => l.id === pedidoMotoboy!.lojaId) ||
       listaSupermercados[0] ||
       null;
@@ -9952,6 +10056,38 @@ export default function App() {
                 <span>Sincronizar Fila ({vendasPendentesCount})</span>
               </span>
             </div>
+          )}
+
+          {filaOfflineStats.errosArquivados > 0 && (
+            <button
+              type="button"
+              className="sidebar-item"
+              style={{
+                width: '100%',
+                fontWeight: 700,
+                background: '#fef2f2',
+                color: '#b91c1c',
+                border: '1px solid #fecaca',
+                borderRadius: '11px',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={async () => {
+                const res = await reenviarFilaOfflineErros();
+                const statsAtual = obterEstatisticasFilaOffline();
+                setFilaOfflineStats(statsAtual);
+                setVendasPendentesCount(statsAtual.total);
+                alert(
+                  `🔁 Reenvio Concluído!\n\n` +
+                    `${res.sincronizados} registro(s) sincronizado(s) com o Firestore.` +
+                    (statsAtual.errosArquivados > 0
+                      ? `\nAinda restam ${statsAtual.errosArquivados} registro(s) com falha.`
+                      : '')
+                );
+              }}
+            >
+              <span>⚠️ Falhas de sincronização ({filaOfflineStats.errosArquivados}) — Reenviar</span>
+            </button>
           )}
 
           <button

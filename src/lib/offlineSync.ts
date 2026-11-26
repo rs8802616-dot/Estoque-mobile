@@ -182,6 +182,46 @@ export function obterVendasPendentesOffline(): Venda[] {
   return fila.filter((it) => it.tipoOperacao === 'VENDA').map((it) => it.payload as Venda);
 }
 
+export function obterFilaOfflineErros(): ItemFilaOffline[] {
+  try {
+    const salvo = localStorage.getItem(CHAVE_FILA_OFFLINE_ERROS);
+    const parsed = salvo ? JSON.parse(salvo) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function reenviarFilaOfflineErros(): Promise<{
+  sincronizados: number;
+  erros: number;
+  restantes: number;
+}> {
+  const errosSalvos = obterFilaOfflineErros();
+  if (errosSalvos.length === 0) {
+    return sincronizarFilaOfflinePrioritaria();
+  }
+  const filaAtual = obterFilaOfflinePrioritaria();
+  const reincorporados = errosSalvos.map((it) => {
+    const limpo: ItemFilaOffline = {
+      ...it,
+      tentativas: 0,
+      proximaTentativaEm: undefined,
+      ultimoErro: undefined,
+    };
+    return limpo;
+  });
+  const unificada = [...filaAtual];
+  reincorporados.forEach((item) => {
+    if (!unificada.some((u) => u.id === item.id)) {
+      unificada.push(item);
+    }
+  });
+  safeLocalStorageSet(CHAVE_FILA_OFFLINE_PRIORITARIA, JSON.stringify(unificada));
+  safeLocalStorageSet(CHAVE_FILA_OFFLINE_ERROS, JSON.stringify([]));
+  return sincronizarFilaOfflinePrioritaria();
+}
+
 /**
  * Estatísticas detalhadas da fila de sincronização
  */
@@ -192,8 +232,10 @@ export function obterEstatisticasFilaOffline(): {
   baixos: number; // Prioridade 3 (Catálogo / Logs)
   vendasCount: number;
   estoqueCount: number;
+  errosArquivados: number;
 } {
   const fila = obterFilaOfflinePrioritaria();
+  const errosArquivados = obterFilaOfflineErros().length;
   return {
     total: fila.length,
     criticos: fila.filter((it) => it.prioridade === 1).length,
@@ -201,6 +243,7 @@ export function obterEstatisticasFilaOffline(): {
     baixos: fila.filter((it) => it.prioridade === 3).length,
     vendasCount: fila.filter((it) => it.tipoOperacao === 'VENDA').length,
     estoqueCount: fila.filter((it) => it.tipoOperacao === 'ESTOQUE_UPDATE' || it.tipoOperacao === 'ESTOQUE_DELETE').length,
+    errosArquivados,
   };
 }
 

@@ -1,12 +1,14 @@
 // Service Worker para Estoque Mobile Multi-Supermercado
 // Permite funcionamento 100% offline mesmo ao recarregar a página (F5 ou abrir app sem conexão)
 
-const CACHE_NAME = 'estoque-mobile-pwa-v192';
+const CACHE_NAME = 'estoque-mobile-pwa-v193';
 
 const ASSETS_PARA_CACHE_INICIAL = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
   '/pdf.worker.min.js',
   '/som_novo_pedido.mp3',
 ];

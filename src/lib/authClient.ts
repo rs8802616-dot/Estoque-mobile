@@ -1,6 +1,6 @@
 import { signInWithCustomToken, signOut } from 'firebase/auth';
 import { auth } from './firebase';
-import type { OperadorCaixa, Supermercado } from '../types';
+import type { OperadorCaixa, PedidoDelivery, Supermercado } from '../types';
 
 export interface ParametrosAuthServidor {
   papel: 'master' | 'admin_loja' | 'caixa' | 'gerente' | 'garcom' | 'cozinha';
@@ -261,4 +261,91 @@ export async function encerrarSessaoServidor(): Promise<void> {
   try {
     await signOut(auth);
   } catch {}
+}
+
+export async function buscarPedidoMotoboyServidor(
+  numeroPedido: string,
+  motoboyToken: string
+): Promise<{
+  fallbackLocal?: boolean;
+  sucesso: boolean;
+  expirado?: boolean;
+  pedido?: PedidoDelivery;
+  loja?: Partial<Supermercado> | null;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { fallbackLocal: true, sucesso: false };
+  try {
+    const resp = await fetch('/api/motoboy', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'buscar_pedido', numeroPedido, motoboyToken }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true, sucesso: false };
+    }
+    if (!resp.ok || !data?.sucesso) {
+      return {
+        fallbackLocal: false,
+        sucesso: false,
+        expirado: Boolean(data?.expirado),
+        erro: data?.erro || 'Pedido de entrega não encontrado.',
+      };
+    }
+    return {
+      fallbackLocal: false,
+      sucesso: true,
+      pedido: data.pedido as PedidoDelivery,
+      loja: (data.loja as Partial<Supermercado>) || null,
+    };
+  } catch {
+    return { fallbackLocal: true, sucesso: false };
+  }
+}
+
+export async function confirmarPinEntregaMotoboyServidor(
+  pedidoId: string,
+  numeroPedido: string,
+  motoboyToken: string,
+  pin: string
+): Promise<{
+  fallbackLocal?: boolean;
+  sucesso: boolean;
+  bloqueado?: boolean;
+  tentativasPinEntrega?: number;
+  pedido?: PedidoDelivery;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { fallbackLocal: true, sucesso: false };
+  try {
+    const resp = await fetch('/api/motoboy', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'confirmar_pin', pedidoId, numeroPedido, motoboyToken, pin }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (resp.status === 503 || data?.configurado === false) {
+      return { fallbackLocal: true, sucesso: false };
+    }
+    if (!resp.ok || !data?.sucesso) {
+      return {
+        fallbackLocal: false,
+        sucesso: false,
+        bloqueado: Boolean(data?.bloqueado || resp.status === 429),
+        tentativasPinEntrega:
+          typeof data?.tentativasPinEntrega === 'number' ? data.tentativasPinEntrega : undefined,
+        erro: data?.erro || 'PIN incorreto.',
+      };
+    }
+    return {
+      fallbackLocal: false,
+      sucesso: true,
+      pedido: data.pedido as PedidoDelivery | undefined,
+    };
+  } catch {
+    return { fallbackLocal: true, sucesso: false };
+  }
 }

@@ -8,7 +8,12 @@ import {
   getFirestore,
   Firestore,
 } from 'firebase/firestore';
-import { getAuth, signInAnonymously, onAuthStateChanged, Auth } from 'firebase/auth';
+import { getAuth, Auth } from 'firebase/auth';
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+  ReCaptchaV3Provider,
+} from 'firebase/app-check';
 import firebaseConfig from '../../firebase-applet-config.json';
 import { limparArmazenamentoLocalCorrompido } from './safeStorage';
 
@@ -57,21 +62,26 @@ try {
 // Export safe Firestore instance with persistent multi-tab cache
 export const db = firestoreInstance;
 
-// Initialize Firebase Auth
+// Initialize Firebase Auth (Custom Token emitido pelo servidor /api/auth; sem login anônimo automático)
 export const auth: Auth = getAuth(app);
 
-// Assegura que o cliente web possua uma credencial Firebase Auth ativa (request.auth != null)
-try {
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      signInAnonymously(auth).catch((authErr) => {
-        // Se provedor anônimo ainda não estiver habilitado no console do Firebase, registra aviso sem travar a aplicação offline
-        console.info('Firebase Auth: Sessão local inicializada. Para ativar autenticação estrita no Firebase Console, habilite o provedor Anonymous ou Email/Senha.');
+// Inicializa Firebase App Check quando VITE_RECAPTCHA_SITE_KEY estiver configurada
+if (typeof window !== 'undefined') {
+  const recaptchaSiteKey = String(import.meta.env.VITE_RECAPTCHA_SITE_KEY || '').trim();
+  if (recaptchaSiteKey) {
+    try {
+      const providerMode = String(import.meta.env.VITE_RECAPTCHA_PROVIDER || '').trim().toLowerCase();
+      initializeAppCheck(app, {
+        provider:
+          providerMode === 'enterprise'
+            ? new ReCaptchaEnterpriseProvider(recaptchaSiteKey)
+            : new ReCaptchaV3Provider(recaptchaSiteKey),
+        isTokenAutoRefreshEnabled: true,
       });
+    } catch (appCheckErr) {
+      console.warn('Aviso ao inicializar Firebase App Check:', appCheckErr);
     }
-  });
-} catch (err) {
-  console.warn('Aviso na inicialização do Firebase Auth:', err);
+  }
 }
 
 export default app;

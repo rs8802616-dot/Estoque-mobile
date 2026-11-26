@@ -81,13 +81,15 @@ async function parseRespostaNfce(resp: Response): Promise<RespostaNfceApi> {
 
 export async function testarConexaoFocusNfe(
   cnpj: string,
-  configFiscal: Partial<ConfigFiscalLoja>
+  configFiscal: Partial<ConfigFiscalLoja>,
+  lojaId?: string
 ): Promise<RespostaNfceApi> {
   const resp = await fetch('/api/nfce', {
     method: 'POST',
     headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'testar_conexao',
+      lojaId: lojaId || '',
       ambiente: configFiscal.ambiente || 'homologacao',
       tokenFocusNfe: configFiscal.tokenFocusNfe || '',
       cnpj,
@@ -132,6 +134,7 @@ export async function emitirNfceVenda(
     headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'emitir',
+      lojaId: loja.id,
       ref,
       ambiente: cfg.ambiente || 'homologacao',
       tokenFocusNfe: cfg.tokenFocusNfe || '',
@@ -175,6 +178,7 @@ export async function consultarNfceVenda(
     headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'consultar',
+      lojaId: loja.id,
       ref,
       ambiente: cfg?.ambiente || 'homologacao',
       tokenFocusNfe: cfg?.tokenFocusNfe || '',
@@ -194,6 +198,7 @@ export async function cancelarNfceVenda(
     headers: await headersNfceComAuth(),
     body: JSON.stringify({
       acao: 'cancelar',
+      lojaId: loja.id,
       ref,
       justificativa,
       ambiente: cfg?.ambiente || 'homologacao',

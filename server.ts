@@ -1104,6 +1104,16 @@ Retorne JSON com: "nomeProduto", "marca", "categoria", "fotoUrl", "descricao".`,
   });
 
   // Rota explícita para o Service Worker com cabeçalho Service-Worker-Allowed
+  app.all("/api/motoboy", async (req, res) => {
+    try {
+      const mod = await import(pathToFileURL(path.join(process.cwd(), "api", "motoboy.js")).href);
+      return await mod.default(req, res);
+    } catch (err: any) {
+      console.error("Erro ao processar /api/motoboy no servidor Express:", err);
+      return res.status(500).json({ configurado: false, sucesso: false, erro: err?.message || "Erro interno na rota /api/motoboy." });
+    }
+  });
+
   app.get("/sw.js", (req, res) => {
     res.setHeader("Content-Type", "application/javascript");
     res.setHeader("Service-Worker-Allowed", "/");
