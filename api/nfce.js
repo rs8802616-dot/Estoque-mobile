@@ -2,6 +2,7 @@
 // Proxy seguro para emissão, consulta, cancelamento e teste de conexão de NFC-e (Modelo 65) via Focus NFe API v2
 
 import crypto from 'node:crypto';
+import { parseServiceAccountEnv } from './_serviceAccount.js';
 
 function limparDigitos(val) {
   return String(val || '').replace(/\D/g, '');
@@ -279,11 +280,7 @@ export default async function handler(req, res) {
   const rawSa = String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
   if (rawSa) {
     try {
-      const parsed = JSON.parse(rawSa);
-      if (parsed?.client_email && parsed?.private_key && parsed?.project_id) {
-        parsed.private_key = String(parsed.private_key).replace(/\\n/g, '\n');
-        serviceAccount = parsed;
-      }
+      serviceAccount = parseServiceAccountEnv(rawSa);
     } catch {}
   }
 

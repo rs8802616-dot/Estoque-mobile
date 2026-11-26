@@ -3,6 +3,7 @@
 // - Valida o PIN de entrega no servidor com comparação em tempo constante e bloqueio após 5 erros
 
 import crypto from 'node:crypto';
+import { parseServiceAccountEnv } from './_serviceAccount.js';
 
 const RATE_JANELA_MS = 60 * 1000;
 const RATE_MAX = 30;
@@ -267,16 +268,12 @@ export default async function handler(req, res) {
 
   let serviceAccount;
   try {
-    serviceAccount = JSON.parse(rawSa);
-    if (!serviceAccount?.client_email || !serviceAccount?.private_key || !serviceAccount?.project_id) {
-      throw new Error('Service account incompleto');
-    }
-    serviceAccount.private_key = String(serviceAccount.private_key).replace(/\\n/g, '\n');
-  } catch {
+    serviceAccount = parseServiceAccountEnv(rawSa);
+  } catch (err) {
     return res.status(500).json({
       configurado: false,
       sucesso: false,
-      erro: 'FIREBASE_SERVICE_ACCOUNT_JSON inválido.',
+      erro: `FIREBASE_SERVICE_ACCOUNT_JSON inválido: ${String(err?.message || err || 'formato incorreto')}`,
     });
   }
 

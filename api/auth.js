@@ -5,6 +5,7 @@
 // - Controla lockout de tentativas (5 falhas / 15 min) no Firestore via Service Account
 
 import crypto from 'node:crypto';
+import { parseServiceAccountEnv } from './_serviceAccount.js';
 
 const RATE_JANELA_MS = 60 * 1000;
 const RATE_MAX = 25;
@@ -71,103 +72,6 @@ function derivarPbkdf2(senha, saltHex, pepper) {
 
 function sha256Legado(senha, salt) {
   return crypto.createHash('sha256').update(`${salt}:${senha}`).digest('hex');
-}
-
-function repararNewlinesEmStringsJson(str) {
-  const normalizado = str.replace(/\r\n?/g, '\n');
-  let out = '';
-  let inString = false;
-  let escaped = false;
-  for (let i = 0; i < normalizado.length; i++) {
-    const ch = normalizado[i];
-    if (inString) {
-      if (escaped) {
-        out += ch === '\n' ? 'n' : ch;
-        escaped = false;
-      } else if (ch === '\\') {
-        out += ch;
-        escaped = true;
-      } else if (ch === '"') {
-        out += ch;
-        inString = false;
-      } else if (ch === '\n') {
-        out += '\\n';
-      } else if (ch === '\t') {
-        out += '\\t';
-      } else {
-        out += ch;
-      }
-    } else {
-      if (ch === '"') {
-        inString = true;
-      }
-      out += ch;
-    }
-  }
-  return out;
-}
-
-function parseServiceAccountEnv(rawEnv) {
-  let texto = String(rawEnv ?? '').replace(/^\uFEFF/, '').trim();
-  if (!texto) {
-    throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON vazio.');
-  }
-
-  if (
-    (texto.startsWith("'") && texto.endsWith("'")) ||
-    (texto.startsWith('`') && texto.endsWith('`'))
-  ) {
-    texto = texto.slice(1, -1).trim();
-  }
-
-  if (!texto.startsWith('{') && !texto.startsWith('"')) {
-    try {
-      const decodificado = Buffer.from(texto, 'base64').toString('utf8').replace(/^\uFEFF/, '').trim();
-      if (decodificado.startsWith('{') || decodificado.startsWith('"')) {
-        texto = decodificado;
-      }
-    } catch {
-      // Mantém texto original caso não seja Base64 válido
-    }
-  }
-
-  const tentarParse = (candidato) => {
-    try {
-      return JSON.parse(candidato);
-    } catch {
-      const reparado = repararNewlinesEmStringsJson(candidato).replace(/,\s*([}\]])/g, '$1');
-      return JSON.parse(reparado);
-    }
-  };
-
-  let parsed = tentarParse(texto);
-  for (let i = 0; i < 3 && typeof parsed === 'string'; i++) {
-    parsed = tentarParse(parsed.trim());
-  }
-
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    throw new Error('Conteúdo não é um objeto JSON de Service Account.');
-  }
-
-  const clientEmail = String(parsed.client_email || '').trim();
-  const projectId = String(parsed.project_id || '').trim();
-  let privateKey = String(parsed.private_key || '').trim();
-
-  if (!clientEmail || !clientEmail.includes('@') || !projectId || !privateKey) {
-    throw new Error('Campos client_email, private_key ou project_id ausentes.');
-  }
-
-  privateKey = privateKey.replace(/\\n/g, '\n').replace(/\r\n?/g, '\n');
-  if (!privateKey.includes('-----BEGIN') || !privateKey.includes('-----END')) {
-    throw new Error('Campo private_key sem cabeçalho/rodapé PEM válido (BEGIN/END PRIVATE KEY).');
-  }
-
-  return {
-    ...parsed,
-    client_email: clientEmail,
-    project_id: projectId,
-    private_key: privateKey,
-  };
 }
 
 function criarCustomTokenFirebase(serviceAccount, uid, claims = {}) {
