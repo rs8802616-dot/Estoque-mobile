@@ -44,6 +44,8 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   const [periodoFormaPgto, setPeriodoFormaPgto] = useState<
     'hoje' | '7dias' | '30dias' | 'mes' | 'mes_anterior' | 'ano' | 'todos'
   >('mes');
+  const [periodoRanking, setPeriodoRanking] = useState<'hoje' | '7dias' | '30dias' | 'ano' | 'todos'>('todos');
+  const [ordenacaoRanking, setOrdenacaoRanking] = useState<'unidades' | 'faturamento'>('unidades');
   const [tipoGrafico, setTipoGrafico] = useState<'area' | 'barras'>('area');
   const [metricaGrafico, setMetricaGrafico] = useState<'lucro_e_faturamento' | 'so_lucro' | 'faturamento'>('lucro_e_faturamento');
   const [abaAtiva, setAbaAtiva] = useState<
@@ -735,50 +737,135 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
   }, [estoque]);
 
-  // 5. Ranking of Sales (Calculado antes do estoque para correlacionar vendas reais de balcão)
-  const { maisVendidos, menosVendidos, resumoItens } = useMemo(() => {
-    try {
-      const mapaItens: Record<
-        string,
-        { codigo: string; nome: string; qtdVendida: number; totalFaturado: number; foto?: string }
-      > = {};
+  // Helper compartilhado de agregação por item vendido
+  const agregarItensVendidos = (
+    listaVendas: Venda[],
+    catalogo: typeof catalogoGlobal
+  ): Record<string, { codigo: string; nome: string; qtdVendida: number; totalFaturado: number; foto?: string }> => {
+    const mapaItens: Record<
+      string,
+      { codigo: string; nome: string; qtdVendida: number; totalFaturado: number; foto?: string }
+    > = {};
 
-      vendasValidas.forEach((v) => {
-        const itens = Array.isArray(v?.itens) ? v.itens : [];
-        itens.forEach((item) => {
-          if (!item) return;
-          const cod = item.codigo || item.nome || 'SEM_CODIGO';
-          if (!mapaItens[cod]) {
-            const catItem = catalogoGlobal.find((c) => c.codigo === (item.codigo || cod));
-            mapaItens[cod] = {
-              codigo: item.codigo || cod,
-              nome: item.nome || catItem?.nome || 'Produto sem nome',
-              qtdVendida: 0,
-              totalFaturado: 0,
-              foto: item.foto || catItem?.imagem,
-            };
-          }
-          const qtd = Number(item.quantidade) || 0;
-          const subtotal = Number(item.subtotal) || qtd * (Number(item.preco_unitario) || 0) || 0;
-          mapaItens[cod].qtdVendida += qtd;
-          mapaItens[cod].totalFaturado += subtotal;
-        });
+    listaVendas.forEach((v) => {
+      const itens = Array.isArray(v?.itens) ? v.itens : [];
+      itens.forEach((item) => {
+        if (!item) return;
+        const cod = item.codigo || item.nome || 'SEM_CODIGO';
+        if (!mapaItens[cod]) {
+          const catItem = catalogo.find((c) => c.codigo === (item.codigo || cod));
+          mapaItens[cod] = {
+            codigo: item.codigo || cod,
+            nome: item.nome || catItem?.nome || 'Produto sem nome',
+            qtdVendida: 0,
+            totalFaturado: 0,
+            foto: item.foto || catItem?.imagem,
+          };
+        }
+        const qtd = Number(item.quantidade) || 0;
+        const subtotal = Number(item.subtotal) || qtd * (Number(item.preco_unitario) || 0) || 0;
+        mapaItens[cod].qtdVendida += qtd;
+        mapaItens[cod].totalFaturado += subtotal;
+      });
+    });
+
+    return mapaItens;
+  };
+
+  // 5. Resumo global de itens vendidos (correlaciona vendas reais com estoque e inteligência)
+  const resumoItens = useMemo(() => {
+    try {
+      return agregarItensVendidos(vendasValidas, catalogoGlobal);
+    } catch (err) {
+      console.error('Erro ao calcular resumo de itens vendidos:', err);
+      return {};
+    }
+  }, [vendasValidas, catalogoGlobal]);
+
+  // 5b. Ranking Top 10 Mais e Menos Vendidos filtrado por período e critério
+  const rankingVendas = useMemo(() => {
+    try {
+      const agora = new Date();
+      const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate()).getTime();
+      const fimHoje = inicioHoje + 24 * 60 * 60 * 1000 - 1;
+      const limite7d = agora.getTime() - 7 * 24 * 60 * 60 * 1000;
+      const limite30d = agora.getTime() - 30 * 24 * 60 * 60 * 1000;
+      const anoAtual = agora.getFullYear();
+
+      const vendasFiltradas = vendasValidas.filter((v) => {
+        if (periodoRanking === 'todos') return true;
+        const dt = parseDataVenda(v);
+        const dtTime = dt.getTime();
+        if (periodoRanking === 'hoje') {
+          return dtTime >= inicioHoje && dtTime <= fimHoje;
+        }
+        if (periodoRanking === '7dias') {
+          return dtTime >= limite7d && dtTime <= agora.getTime() + 60000;
+        }
+        if (periodoRanking === '30dias') {
+          return dtTime >= limite30d && dtTime <= agora.getTime() + 60000;
+        }
+        return dt.getFullYear() === anoAtual;
       });
 
-      const lista = Object.values(mapaItens);
-      const ordenadosMais = [...lista].sort((a, b) => b.qtdVendida - a.qtdVendida);
-      const ordenadosMenos = [...lista].sort((a, b) => a.qtdVendida - b.qtdVendida);
+      const mapaItens = agregarItensVendidos(vendasFiltradas, catalogoGlobal);
+      const lista = Object.values(mapaItens).filter(
+        (item) => item.qtdVendida > 0 || item.totalFaturado > 0
+      );
+
+      const ordenadosMais = [...lista].sort((a, b) => {
+        const diff =
+          ordenacaoRanking === 'faturamento'
+            ? b.totalFaturado - a.totalFaturado
+            : b.qtdVendida - a.qtdVendida;
+        if (diff !== 0) return diff;
+        return ordenacaoRanking === 'faturamento'
+          ? b.qtdVendida - a.qtdVendida
+          : b.totalFaturado - a.totalFaturado;
+      });
+
+      const ordenadosMenos = [...lista].sort((a, b) => {
+        const diff =
+          ordenacaoRanking === 'faturamento'
+            ? a.totalFaturado - b.totalFaturado
+            : a.qtdVendida - b.qtdVendida;
+        if (diff !== 0) return diff;
+        return ordenacaoRanking === 'faturamento'
+          ? a.qtdVendida - b.qtdVendida
+          : a.totalFaturado - b.totalFaturado;
+      });
+
+      const mais = ordenadosMais.slice(0, 10);
+      const menos = ordenadosMenos.slice(0, 10);
+      const valorMetrica = (item: { qtdVendida: number; totalFaturado: number }) =>
+        ordenacaoRanking === 'faturamento' ? item.totalFaturado : item.qtdVendida;
 
       return {
-        maisVendidos: ordenadosMais.slice(0, 10),
-        menosVendidos: ordenadosMenos.slice(0, 10),
-        resumoItens: mapaItens,
+        maisVendidos: mais,
+        menosVendidos: menos,
+        totalQtdMais: mais.reduce((acc, it) => acc + it.qtdVendida, 0),
+        totalFatMais: mais.reduce((acc, it) => acc + it.totalFaturado, 0),
+        maxMais: mais.length > 0 ? Math.max(...mais.map(valorMetrica), 1) : 1,
+        totalQtdMenos: menos.reduce((acc, it) => acc + it.qtdVendida, 0),
+        totalFatMenos: menos.reduce((acc, it) => acc + it.totalFaturado, 0),
+        maxMenos: menos.length > 0 ? Math.max(...menos.map(valorMetrica), 1) : 1,
+        totalProdutosDistintos: lista.length,
       };
     } catch (err) {
       console.error('Erro ao calcular ranking de vendas:', err);
-      return { maisVendidos: [], menosVendidos: [], resumoItens: {} };
+      return {
+        maisVendidos: [],
+        menosVendidos: [],
+        totalQtdMais: 0,
+        totalFatMais: 0,
+        maxMais: 1,
+        totalQtdMenos: 0,
+        totalFatMenos: 0,
+        maxMenos: 1,
+        totalProdutosDistintos: 0,
+      };
     }
-  }, [vendasValidas, catalogoGlobal]);
+  }, [vendasValidas, catalogoGlobal, periodoRanking, ordenacaoRanking]);
 
   // 6. Visão Geral do Estoque Chart Data (Diferencia estoque físico real de produtos contínuos de balcão)
   const dadosEstoqueGrafico = useMemo(() => {
@@ -3872,130 +3959,415 @@ ${top3 || '- Nenhum produto vendido'}
         )}
 
         {/* ABA 5: RANKING DE PRODUTOS MAIS E MENOS VENDIDOS */}
-        {abaAtiva === 'ranking' && (
-          <div className="aba-conteudo-painel" style={{ display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
-            {/* SELEÇÃO DE PERÍODO PARA O RANKING */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#ffffff', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.8rem', color: '#111827', fontWeight: 800 }}>Período do Ranking:</span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', flex: 1 }}>
-                {(['dia', 'semana', 'mes', 'ano'] as const).map((p) => (
-                  <button
-                    key={p}
+        {abaAtiva === 'ranking' && (() => {
+          const opcoesPeriodoRanking: { id: 'hoje' | '7dias' | '30dias' | 'ano' | 'todos'; label: string }[] = [
+            { id: 'hoje', label: 'Hoje' },
+            { id: '7dias', label: '7 Dias' },
+            { id: '30dias', label: '30 Dias' },
+            { id: 'ano', label: 'Ano' },
+            { id: 'todos', label: 'Tudo' },
+          ];
+
+          const formatarReais = (v: number) =>
+            `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+          const colunasRanking = [
+            {
+              chave: 'mais',
+              titulo: 'Produtos Mais Vendidos (Top 10)',
+              icone: '🔥',
+              itens: rankingVendas.maisVendidos,
+              totalQtd: rankingVendas.totalQtdMais,
+              totalFat: rankingVendas.totalFatMais,
+              maxValor: rankingVendas.maxMais,
+              bordaCard: '#BBF7D0',
+              sombraCard: '0 2px 8px rgba(22, 163, 74, 0.06)',
+              headerBg: 'linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%)',
+              corTitulo: '#15803D',
+              pillBg: '#DCFCE7',
+              pillBorder: '#86EFAC',
+              pillColor: '#166534',
+              rowTopBg: '#F0FDF4',
+              rowTopBorder: '#BBF7D0',
+              rowRestBg: '#FAFFFC',
+              rowRestBorder: '#E2F5EA',
+              badgeOutrosBg: '#DCFCE7',
+              badgeOutrosColor: '#15803D',
+              badgeOutrosBorder: '#86EFAC',
+              barraTrilho: '#DCFCE7',
+              barraCor: '#10B981',
+              corPrincipal: '#15803D',
+              corSecundaria: '#166534',
+              isPodio: true,
+            },
+            {
+              chave: 'menos',
+              titulo: 'Produtos Menos Vendidos (Top 10)',
+              icone: '🧊',
+              itens: rankingVendas.menosVendidos,
+              totalQtd: rankingVendas.totalQtdMenos,
+              totalFat: rankingVendas.totalFatMenos,
+              maxValor: rankingVendas.maxMenos,
+              bordaCard: '#FECACA',
+              sombraCard: '0 2px 8px rgba(220, 38, 38, 0.06)',
+              headerBg: 'linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%)',
+              corTitulo: '#DC2626',
+              pillBg: '#FEE2E2',
+              pillBorder: '#FCA5A5',
+              pillColor: '#991B1B',
+              rowTopBg: '#FEF2F2',
+              rowTopBorder: '#FECACA',
+              rowRestBg: '#FFFBFB',
+              rowRestBorder: '#FEE2E2',
+              badgeOutrosBg: '#FEE2E2',
+              badgeOutrosColor: '#B91C1C',
+              badgeOutrosBorder: '#FCA5A5',
+              barraTrilho: '#FEE2E2',
+              barraCor: '#F87171',
+              corPrincipal: '#DC2626',
+              corSecundaria: '#991B1B',
+              isPodio: false,
+            },
+          ];
+
+          return (
+            <div
+              className="aba-conteudo-painel"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                boxSizing: 'border-box',
+              }}
+            >
+              {/* BARRA SUPERIOR UNIFICADA E COMPACTA */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                  background: '#ffffff',
+                  padding: '8px 12px',
+                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <span style={{ fontSize: '0.84rem', color: '#0f172a', fontWeight: 900, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <span>🏆</span> Ranking Top 10
+                  </span>
+                  <span
                     style={{
-                      padding: '6px 8px',
-                      borderRadius: '6px',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '0.75rem',
+                      fontSize: '0.7rem',
                       fontWeight: 700,
+                      color: '#475569',
+                      background: '#f1f5f9',
+                      padding: '2px 7px',
+                      borderRadius: '999px',
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
+                    {rankingVendas.totalProdutosDistintos} itens
+                  </span>
+                  <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '4px', background: '#f8fafc', padding: '3px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    {opcoesPeriodoRanking.map((p) => {
+                      const ativo = periodoRanking === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setPeriodoRanking(p.id)}
+                          style={{
+                            padding: '4px 9px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            whiteSpace: 'nowrap',
+                            background: ativo ? '#0284c7' : 'transparent',
+                            color: ativo ? '#ffffff' : '#475569',
+                            boxShadow: ativo ? '0 1px 2px rgba(2, 132, 199, 0.25)' : 'none',
+                            transition: 'all 0.15s ease',
+                          }}
+                        >
+                          {p.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div style={{ display: 'inline-flex', border: '1px solid #cbd5e1', borderRadius: '8px', overflow: 'hidden', background: '#ffffff' }}>
+                  <button
+                    type="button"
+                    onClick={() => setOrdenacaoRanking('unidades')}
+                    style={{
+                      padding: '5px 10px',
+                      border: 'none',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
                       cursor: 'pointer',
-                      textAlign: 'center',
                       whiteSpace: 'nowrap',
-                      background: periodoGrafico === p ? '#0284c7' : '#ffffff',
-                      color: periodoGrafico === p ? '#ffffff' : '#334155',
+                      background: ordenacaoRanking === 'unidades' ? '#0f172a' : '#ffffff',
+                      color: ordenacaoRanking === 'unidades' ? '#ffffff' : '#334155',
                       transition: 'all 0.15s ease',
                     }}
-                    onClick={() => setPeriodoGrafico(p)}
                   >
-                    {p.toUpperCase()}
+                    Qtd (un)
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrdenacaoRanking('faturamento')}
+                    style={{
+                      padding: '5px 10px',
+                      border: 'none',
+                      borderLeft: '1px solid #cbd5e1',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      background: ordenacaoRanking === 'faturamento' ? '#0f172a' : '#ffffff',
+                      color: ordenacaoRanking === 'faturamento' ? '#ffffff' : '#334155',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    Faturamento (R$)
+                  </button>
+                </div>
+              </div>
+
+              {/* DUAS COLUNAS LADO A LADO (MAIS VENDIDOS X MENOS VENDIDOS) */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
+                  gap: '12px',
+                  alignItems: 'start',
+                }}
+              >
+                {colunasRanking.map((col) => (
+                  <div
+                    key={col.chave}
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: '12px',
+                      border: `1px solid ${col.bordaCard}`,
+                      boxShadow: col.sombraCard,
+                      overflow: 'hidden',
+                      minWidth: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '6px',
+                        padding: '9px 12px',
+                        background: col.headerBg,
+                        borderBottom: `1px solid ${col.bordaCard}`,
+                      }}
+                    >
+                      <h3
+                        style={{
+                          margin: 0,
+                          fontSize: '0.88rem',
+                          fontWeight: 900,
+                          color: col.corTitulo,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <span>{col.icone}</span> {col.titulo}
+                      </h3>
+                      <span
+                        style={{
+                          fontSize: '0.7rem',
+                          fontWeight: 800,
+                          color: col.pillColor,
+                          background: col.pillBg,
+                          border: `1px solid ${col.pillBorder}`,
+                          padding: '2px 8px',
+                          borderRadius: '999px',
+                          fontFamily: 'monospace',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {col.totalQtd.toLocaleString('pt-BR')} un • {formatarReais(col.totalFat)}
+                      </span>
+                    </div>
+
+                    {col.itens.length === 0 ? (
+                      <div
+                        style={{
+                          color: '#64748b',
+                          fontSize: '0.8rem',
+                          padding: '24px 14px',
+                          textAlign: 'center',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}
+                      >
+                        <span>Nenhum registro de vendas no período selecionado.</span>
+                        {periodoRanking !== 'todos' && (
+                          <button
+                            type="button"
+                            onClick={() => setPeriodoRanking('todos')}
+                            style={{
+                              padding: '5px 12px',
+                              borderRadius: '6px',
+                              border: '1px solid #cbd5e1',
+                              background: '#f8fafc',
+                              color: '#0f172a',
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Ver Todo Histórico
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px 10px' }}>
+                        {col.itens.map((prod, index) => {
+                          const isTop3 = index < 3;
+                          const valorAtual =
+                            ordenacaoRanking === 'faturamento' ? prod.totalFaturado : prod.qtdVendida;
+                          const pctBarra = Math.max(6, Math.min(100, Math.round((valorAtual / col.maxValor) * 100)));
+
+                          let badgeBg = col.badgeOutrosBg;
+                          let badgeColor = col.badgeOutrosColor;
+                          let badgeBorder = `1px solid ${col.badgeOutrosBorder}`;
+
+                          if (isTop3) {
+                            badgeBorder = 'none';
+                            badgeColor = '#ffffff';
+                            if (col.isPodio) {
+                              badgeBg = index === 0 ? '#F59E0B' : index === 1 ? '#94A3B8' : '#B45309';
+                            } else {
+                              badgeBg = '#EF4444';
+                            }
+                          }
+
+                          return (
+                            <div
+                              key={`${col.chave}_${prod.codigo || 'cod'}_${index}`}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '5px 8px',
+                                background: isTop3 ? col.rowTopBg : col.rowRestBg,
+                                border: `1px solid ${isTop3 ? col.rowTopBorder : col.rowRestBorder}`,
+                                borderRadius: '8px',
+                                gap: '8px',
+                                minWidth: 0,
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
+                                <span
+                                  style={{
+                                    width: '28px',
+                                    height: '24px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: '6px',
+                                    fontWeight: 900,
+                                    fontSize: '0.73rem',
+                                    flexShrink: 0,
+                                    background: badgeBg,
+                                    color: badgeColor,
+                                    border: badgeBorder,
+                                  }}
+                                >
+                                  #{index + 1}
+                                </span>
+                                <div style={{ minWidth: 0, flex: 1 }}>
+                                  <div
+                                    title={prod.nome}
+                                    style={{
+                                      fontSize: '0.8rem',
+                                      fontWeight: 700,
+                                      color: '#0F172A',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      lineHeight: 1.2,
+                                    }}
+                                  >
+                                    {prod.nome}
+                                  </div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px', minWidth: 0 }}>
+                                    <div
+                                      style={{
+                                        width: '54px',
+                                        height: '4px',
+                                        borderRadius: '999px',
+                                        background: col.barraTrilho,
+                                        overflow: 'hidden',
+                                        flexShrink: 0,
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          width: `${pctBarra}%`,
+                                          height: '100%',
+                                          background: col.barraCor,
+                                          borderRadius: '999px',
+                                        }}
+                                      />
+                                    </div>
+                                    <small
+                                      style={{
+                                        color: '#64748B',
+                                        fontSize: '0.67rem',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                      }}
+                                    >
+                                      Cód: {prod.codigo}
+                                    </small>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div style={{ textAlign: 'right', flexShrink: 0, fontFamily: 'monospace', lineHeight: 1.15 }}>
+                                <div style={{ fontWeight: 900, color: col.corPrincipal, fontSize: '0.82rem' }}>
+                                  {ordenacaoRanking === 'faturamento'
+                                    ? formatarReais(prod.totalFaturado)
+                                    : `${prod.qtdVendida.toLocaleString('pt-BR')} un`}
+                                </div>
+                                <div style={{ color: col.corSecundaria, fontSize: '0.68rem', fontWeight: 700 }}>
+                                  {ordenacaoRanking === 'faturamento'
+                                    ? `${prod.qtdVendida.toLocaleString('pt-BR')} un`
+                                    : formatarReais(prod.totalFaturado)}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
-
-            {/* MAIS VENDIDOS (COM VIDA E CORES VIBRANTES) */}
-            <div style={{ background: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #BBF7D0', boxShadow: '0 4px 8px rgba(22, 163, 74, 0.06)' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 900, color: '#15803D', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                <span>🔥</span> Produtos Mais Vendidos
-              </h3>
-              {maisVendidos.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
-                  Nenhum registro de vendas no período.
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
-                  {maisVendidos.map((prod, index) => {
-                    const bgBadge = index === 0 ? '#F59E0B' : index === 1 ? '#94A3B8' : index === 2 ? '#B45309' : '#10B981';
-                    return (
-                      <div
-                        key={`mais_vendido_${prod.codigo || 'cod'}_${index}`}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '10px 14px',
-                          background: '#F0FDF4',
-                          borderRadius: '8px',
-                          border: '1px solid #BBF7D0',
-                          gap: '10px',
-                          transition: 'all 0.15s ease',
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                          <span style={{ fontWeight: 900, color: '#ffffff', background: bgBadge, padding: '3px 8px', borderRadius: '6px', fontSize: '0.82rem', flexShrink: 0, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                            #{index + 1}
-                          </span>
-                          <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                            <b style={{ fontSize: '0.88rem', color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
-                            <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
-                          </div>
-                        </div>
-                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <div style={{ fontWeight: 900, color: '#15803D', fontSize: '0.95rem', fontFamily: 'monospace' }}>{prod.qtdVendida} un</div>
-                          <small style={{ color: '#166534', fontSize: '0.76rem', fontWeight: 700, fontFamily: 'monospace' }}>R$ {prod.totalFaturado.toFixed(2)}</small>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* MENOS VENDIDOS (COM VIDA E CORES VIBRANTES) */}
-            <div style={{ background: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #FECACA', boxShadow: '0 4px 8px rgba(220, 38, 38, 0.06)' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 900, color: '#DC2626', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                <span>🧊</span> Produtos Menos Vendidos
-              </h3>
-              {menosVendidos.length === 0 ? (
-                <div style={{ color: '#64748b', fontSize: '0.82rem', padding: '16px', textAlign: 'center' }}>
-                  Nenhum registro de vendas no período.
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
-                  {menosVendidos.map((prod, index) => (
-                    <div
-                      key={`menos_vendido_${prod.codigo || 'cod'}_${index}`}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '10px 14px',
-                        background: '#FEF2F2',
-                        borderRadius: '8px',
-                        border: '1px solid #FECACA',
-                        gap: '10px',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                        <span style={{ fontWeight: 900, color: '#ffffff', background: '#EF4444', padding: '3px 8px', borderRadius: '6px', fontSize: '0.82rem', flexShrink: 0, boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)' }}>
-                          #{index + 1}
-                        </span>
-                        <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                          <b style={{ fontSize: '0.88rem', color: '#0F172A', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prod.nome}</b>
-                          <small style={{ color: '#64748B', fontSize: '0.72rem' }}>Cód: {prod.codigo}</small>
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontWeight: 900, color: '#DC2626', fontSize: '0.95rem', fontFamily: 'monospace' }}>{prod.qtdVendida} un</div>
-                        <small style={{ color: '#991B1B', fontSize: '0.76rem', fontWeight: 700, fontFamily: 'monospace' }}>R$ {prod.totalFaturado.toFixed(2)}</small>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* ABA 6: INTELIGÊNCIA DE ESTOQUE E CONSELHOS AO DONO */}
         {abaAtiva === 'inteligencia' && (
