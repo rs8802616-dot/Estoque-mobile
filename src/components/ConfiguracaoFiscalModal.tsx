@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ConfigFiscalLoja, Supermercado } from '../types';
 import { testarConexaoFocusNfe, validarProntidaoFiscal } from '../lib/focusNfeService';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface ConfiguracaoFiscalModalProps {
   visivel: boolean;
@@ -80,6 +81,8 @@ export const ConfiguracaoFiscalModal: React.FC<ConfiguracaoFiscalModalProps> = (
       configFiscal: form,
     });
   }, [loja, cnpjEditavel, form]);
+
+  useVoltarHierarquico(visivel && Boolean(loja), onFechar);
 
   if (!visivel || !loja) return null;
 

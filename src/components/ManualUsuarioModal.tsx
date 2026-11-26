@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { PermissoesOperador, PermissoesLoja, SessaoUsuario } from '../types';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface ManualUsuarioModalProps {
   visivel: boolean;
@@ -582,6 +583,8 @@ export const ManualUsuarioModal: React.FC<ManualUsuarioModalProps> = ({
     });
     return Array.from(map.entries());
   }, [topicosFiltrados]);
+
+  useVoltarHierarquico(visivel, onFechar);
 
   if (!visivel) return null;
 

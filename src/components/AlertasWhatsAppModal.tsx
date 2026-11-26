@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ItemEstoque, Supermercado } from '../types';
 import { obterDataLocalISO } from '../lib/dateUtils';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface AlertasWhatsAppModalProps {
   visivel: boolean;
@@ -17,6 +18,8 @@ export const AlertasWhatsAppModal: React.FC<AlertasWhatsAppModalProps> = ({
 }) => {
   const [diasFiltro, setDiasFiltro] = useState<number>(30);
   const [copiado, setCopiado] = useState(false);
+
+  useVoltarHierarquico(visivel, onFechar);
 
   if (!visivel) return null;
 

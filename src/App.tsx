@@ -2890,8 +2890,17 @@ export default function App() {
   };
 
   // Menu Drawer
+  const abasComRetornoMenuRef = useRef<Set<string>>(new Set());
   const abrirMenu = () => setMenuAtivo(true);
   const fecharMenu = () => setMenuAtivo(false);
+  const abrirTelaPeloMenu = (
+    aba: AbaSecundariaSistema | 'cardapio_cliente',
+    acaoAbrir: () => void
+  ) => {
+    abasComRetornoMenuRef.current.add(aba);
+    acaoAbrir();
+    fecharMenu();
+  };
 
   // Supermarket Management Modal / Screen
   const abrirModalSupermercado = () => {
@@ -3405,7 +3414,7 @@ export default function App() {
   };
 
   const fecharModalOperadores = () => {
-    setModalOperadoresVisivel(false);
+    fecharAbaDefinitivo('equipe');
   };
 
   const alternarPermissaoOperador = (chave: keyof PermissoesOperador) => {
@@ -3774,6 +3783,7 @@ export default function App() {
     // Ao entrar com qualquer login/senha, fecha todos os modais e abre sempre na tela do PDV
     fecharTodosModaisSemRemoverAbas();
     setAbasAbertas([]);
+    abasComRetornoMenuRef.current.clear();
     localStorage.removeItem('tela_ativa_sistema');
 
     setPerfilAtivo(sessao.tipo);
@@ -3912,6 +3922,7 @@ export default function App() {
     // Limpeza total de persistência de sessão e caches operacionais sensíveis (preservando filas offline pendentes)
     fecharTodosModaisSemRemoverAbas();
     setAbasAbertas([]);
+    abasComRetornoMenuRef.current.clear();
     localStorage.removeItem('tela_ativa_sistema');
     localStorage.removeItem('usuario_autenticado');
     localStorage.removeItem('perfilAtivoTipo');
@@ -5509,7 +5520,13 @@ export default function App() {
     }
   };
 
-  const fecharAbaDefinitivo = (aba: AbaSecundariaSistema) => {
+  const fecharAbaDefinitivo = (
+    aba: AbaSecundariaSistema,
+    opcoes?: { reabrirMenu?: boolean }
+  ) => {
+    const deveReabrirMenu =
+      opcoes?.reabrirMenu !== false && abasComRetornoMenuRef.current.has(aba);
+    abasComRetornoMenuRef.current.delete(aba);
     setAbasAbertas((prev) => prev.filter((a) => a !== aba));
     if (aba === 'cadastro') {
       setCodigoEditando(null);
@@ -5548,6 +5565,9 @@ export default function App() {
       setModalComandasVisivel(false);
     } else if (aba === 'fiscal') {
       setModalConfigFiscalVisivel(false);
+    }
+    if (deveReabrirMenu) {
+      setMenuAtivo(true);
     }
   };
 
@@ -8544,6 +8564,7 @@ export default function App() {
     fecharAbaDefinitivo('estoque');
   };
 
+  useVoltarHierarquico(menuAtivo, fecharMenu);
   useVoltarHierarquico(
     perfilAtivo === 'dona_app' && modalSupermercadoVisivel,
     () => fecharAbaDefinitivo('master')
@@ -9578,10 +9599,7 @@ export default function App() {
                   {temPermissaoOperador('gestao_caixa', 'gestao_caixa') && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        setModalCaixaVisivel(true);
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('caixa', () => setModalCaixaVisivel(true))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <DollarSign size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
@@ -9609,10 +9627,7 @@ export default function App() {
                     <div
                       className="sidebar-item"
                       style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
-                      onClick={() => {
-                        setModalComandasVisivel(true);
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('comandas', () => setModalComandasVisivel(true))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Receipt size={15} style={{ color: '#2563eb', flexShrink: 0 }} />
@@ -9639,10 +9654,7 @@ export default function App() {
                   {temPermissaoOperador('gerenciar_devedores', 'devedores') && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        setModalDevedoresVisivel(true);
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('devedores', () => setModalDevedoresVisivel(true))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <CreditCard size={15} style={{ color: '#e11d48', flexShrink: 0 }} />
@@ -9667,10 +9679,7 @@ export default function App() {
                   {temPermissaoOperador('ver_relatorios', 'relatorios') && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        abrirRelatorioVendas();
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('historico_vendas', abrirRelatorioVendas)}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Receipt size={15} style={{ color: '#64748b', flexShrink: 0 }} />
@@ -9763,10 +9772,7 @@ export default function App() {
                     <div
                       className="sidebar-item"
                       style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0' }}
-                      onClick={() => {
-                        abrirCadastro('estoque');
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('cadastro', () => abrirCadastro('estoque'))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <PlusCircle size={15} style={{ color: '#059669', flexShrink: 0 }} />
@@ -9779,10 +9785,7 @@ export default function App() {
                     <div
                       className="sidebar-item"
                       style={{ background: '#f5f3ff', color: '#5b21b6', border: '1px solid #ddd6fe' }}
-                      onClick={() => {
-                        setModalEntradaNotaVisivel(true);
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('xml', () => setModalEntradaNotaVisivel(true))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <FileCheck2 size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
@@ -9795,10 +9798,7 @@ export default function App() {
                     temPermissaoOperador('cadastrar_produtos', 'estoque')) && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        abrirRelatorio();
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('estoque', () => abrirRelatorio())}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Layers size={15} style={{ color: '#059669', flexShrink: 0 }} />
@@ -9810,10 +9810,7 @@ export default function App() {
                   {temPermissaoOperador('imprimir_etiquetas', 'etiquetas') && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        setModalEtiquetasVisivel(true);
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('etiquetas', () => setModalEtiquetasVisivel(true))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Tag size={15} style={{ color: '#64748b', flexShrink: 0 }} />
@@ -9866,10 +9863,7 @@ export default function App() {
                 {perfilAtivo === 'dona_app' && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        abrirCadastro('master');
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('cadastro', () => abrirCadastro('master'))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Crown size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
@@ -9976,10 +9970,7 @@ export default function App() {
                 <div
                   className="sidebar-item"
                   style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fcd34d' }}
-                  onClick={() => {
-                    abrirGestaoDelivery();
-                    fecharMenu();
-                  }}
+                  onClick={() => abrirTelaPeloMenu('delivery', abrirGestaoDelivery)}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Bike size={15} style={{ color: '#d97706', flexShrink: 0 }} />
@@ -10004,10 +9995,7 @@ export default function App() {
 
                 <div
                   className="sidebar-item"
-                  onClick={() => {
-                    abrirCardapioCliente();
-                    fecharMenu();
-                  }}
+                  onClick={() => abrirTelaPeloMenu('cardapio_cliente', abrirCardapioCliente)}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <ShoppingBag size={15} style={{ color: '#d97706', flexShrink: 0 }} />
@@ -10124,10 +10112,7 @@ export default function App() {
                     <div
                       className="sidebar-item"
                       style={{ background: '#f5f3ff', color: '#5b21b6', border: '1px solid #ddd6fe' }}
-                      onClick={() => {
-                        abrirCentralRelatorios('faturamento');
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('relatorios', () => abrirCentralRelatorios('faturamento'))}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <PieChart size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
@@ -10152,10 +10137,7 @@ export default function App() {
                   {temPermissaoOperador('ver_graficos', 'graficos') && (
                     <div
                       className="sidebar-item"
-                      onClick={() => {
-                        abrirGraficosVendas();
-                        fecharMenu();
-                      }}
+                      onClick={() => abrirTelaPeloMenu('graficos', abrirGraficosVendas)}
                     >
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <TrendingUp size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
@@ -10242,10 +10224,7 @@ export default function App() {
                 {temPermissaoOperador('gerenciar_equipe', 'usuarios') && (
                   <div
                     className="sidebar-item"
-                    onClick={() => {
-                      abrirModalOperadores();
-                      fecharMenu();
-                    }}
+                    onClick={() => abrirTelaPeloMenu('equipe', abrirModalOperadores)}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Users size={15} style={{ color: '#475569', flexShrink: 0 }} />
@@ -10257,10 +10236,7 @@ export default function App() {
                 {(perfilAtivo === 'dona_app' || perfilAtivo === 'admin_loja') && (
                   <div
                     className="sidebar-item"
-                    onClick={() => {
-                      setModalConfigFiscalVisivel(true);
-                      fecharMenu();
-                    }}
+                    onClick={() => abrirTelaPeloMenu('fiscal', () => setModalConfigFiscalVisivel(true))}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Receipt size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
@@ -10272,10 +10248,7 @@ export default function App() {
                 {perfilAtivo === 'dona_app' && (
                   <div
                     className="sidebar-item"
-                    onClick={() => {
-                      abrirModalSupermercado();
-                      fecharMenu();
-                    }}
+                    onClick={() => abrirTelaPeloMenu('master', abrirModalSupermercado)}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Building2 size={15} style={{ color: '#475569', flexShrink: 0 }} />
@@ -10289,10 +10262,7 @@ export default function App() {
                 {temPermissaoOperador('alertas_whatsapp', 'alertas_whatsapp') && (
                   <div
                     className="sidebar-item"
-                    onClick={() => {
-                      setModalAlertasWhatsAppVisivel(true);
-                      fecharMenu();
-                    }}
+                    onClick={() => abrirTelaPeloMenu('whatsapp', () => setModalAlertasWhatsAppVisivel(true))}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <BellRing size={15} style={{ color: '#16a34a', flexShrink: 0 }} />
@@ -10304,10 +10274,7 @@ export default function App() {
                 {temPermissaoOperador('ver_manual_usuario', 'manual_ajuda') && (
                   <div
                     className="sidebar-item"
-                    onClick={() => {
-                      setModalManualVisivel(true);
-                      fecharMenu();
-                    }}
+                    onClick={() => abrirTelaPeloMenu('manual', () => setModalManualVisivel(true))}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <BookOpen size={15} style={{ color: '#0284c7', flexShrink: 0 }} />
@@ -15395,7 +15362,12 @@ export default function App() {
       {/* CARDÁPIO ONLINE DO CLIENTE (MESMO PADRÃO DO PDV) */}
       <CardapioClienteDeliveryModal
         visivel={modalCardapioClienteVisivel}
-        onFechar={() => setModalCardapioClienteVisivel(false)}
+        onFechar={() => {
+          setModalCardapioClienteVisivel(false);
+          if (abasComRetornoMenuRef.current.delete('cardapio_cliente')) {
+            setMenuAtivo(true);
+          }
+        }}
         estoque={estoque}
         loja={
           listaSupermercados.find(
@@ -16130,7 +16102,7 @@ export default function App() {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      fecharAbaDefinitivo(abaId);
+                      fecharAbaDefinitivo(abaId, { reabrirMenu: false });
                     }}
                     title={`Fechar aba ${info.label}`}
                     style={{

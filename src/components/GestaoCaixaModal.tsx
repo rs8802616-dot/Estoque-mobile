@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SessaoCaixaTurno, MovimentacaoCaixa, Venda, Supermercado, OperadorCaixa } from '../types';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface GestaoCaixaModalProps {
   visivel: boolean;
@@ -66,6 +67,8 @@ export const GestaoCaixaModal: React.FC<GestaoCaixaModalProps> = ({
       setLoginFechar((prev) => (prev ? prev : operadorAtivo.cpfOuUsuario));
     }
   }, [operadorAtivo?.cpfOuUsuario]);
+
+  useVoltarHierarquico(visivel, onFechar);
 
   if (!visivel) return null;
 

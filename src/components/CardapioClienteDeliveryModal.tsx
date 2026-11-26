@@ -11,6 +11,7 @@ import { verificarStatusFuncionamentoDelivery } from '../utils/deliveryHorarios'
 import { mascaraTelefone } from '../lib/mascaras';
 import { obterDataLocalISO } from '../lib/dateUtils';
 import { subscribePedidoIndividual } from '../lib/firestoreSync';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 import {
   X,
   Search,
@@ -740,6 +741,8 @@ export const CardapioClienteDeliveryModal: React.FC<CardapioClienteDeliveryModal
       return matchNome || matchFone;
     }).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   }, [pedidosExistentes, nomeCliente, telefoneCliente]);
+
+  useVoltarHierarquico(visivel, onFechar);
 
   if (!visivel) return null;
 

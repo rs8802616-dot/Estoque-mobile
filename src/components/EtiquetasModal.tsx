@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ItemEstoque, Supermercado } from '../types';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 interface EtiquetasModalProps {
   visivel: boolean;
@@ -29,6 +30,8 @@ export const EtiquetasModal: React.FC<EtiquetasModalProps> = ({
     });
     return Array.from(mapa.values());
   }, [estoque]);
+
+  useVoltarHierarquico(visivel, onFechar);
 
   if (!visivel) return null;
 
