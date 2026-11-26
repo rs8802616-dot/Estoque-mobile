@@ -73,6 +73,103 @@ function sha256Legado(senha, salt) {
   return crypto.createHash('sha256').update(`${salt}:${senha}`).digest('hex');
 }
 
+function repararNewlinesEmStringsJson(str) {
+  const normalizado = str.replace(/\r\n?/g, '\n');
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < normalizado.length; i++) {
+    const ch = normalizado[i];
+    if (inString) {
+      if (escaped) {
+        out += ch === '\n' ? 'n' : ch;
+        escaped = false;
+      } else if (ch === '\\') {
+        out += ch;
+        escaped = true;
+      } else if (ch === '"') {
+        out += ch;
+        inString = false;
+      } else if (ch === '\n') {
+        out += '\\n';
+      } else if (ch === '\t') {
+        out += '\\t';
+      } else {
+        out += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inString = true;
+      }
+      out += ch;
+    }
+  }
+  return out;
+}
+
+function parseServiceAccountEnv(rawEnv) {
+  let texto = String(rawEnv ?? '').replace(/^\uFEFF/, '').trim();
+  if (!texto) {
+    throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON vazio.');
+  }
+
+  if (
+    (texto.startsWith("'") && texto.endsWith("'")) ||
+    (texto.startsWith('`') && texto.endsWith('`'))
+  ) {
+    texto = texto.slice(1, -1).trim();
+  }
+
+  if (!texto.startsWith('{') && !texto.startsWith('"')) {
+    try {
+      const decodificado = Buffer.from(texto, 'base64').toString('utf8').replace(/^\uFEFF/, '').trim();
+      if (decodificado.startsWith('{') || decodificado.startsWith('"')) {
+        texto = decodificado;
+      }
+    } catch {
+      // Mantém texto original caso não seja Base64 válido
+    }
+  }
+
+  const tentarParse = (candidato) => {
+    try {
+      return JSON.parse(candidato);
+    } catch {
+      const reparado = repararNewlinesEmStringsJson(candidato).replace(/,\s*([}\]])/g, '$1');
+      return JSON.parse(reparado);
+    }
+  };
+
+  let parsed = tentarParse(texto);
+  for (let i = 0; i < 3 && typeof parsed === 'string'; i++) {
+    parsed = tentarParse(parsed.trim());
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('Conteúdo não é um objeto JSON de Service Account.');
+  }
+
+  const clientEmail = String(parsed.client_email || '').trim();
+  const projectId = String(parsed.project_id || '').trim();
+  let privateKey = String(parsed.private_key || '').trim();
+
+  if (!clientEmail || !clientEmail.includes('@') || !projectId || !privateKey) {
+    throw new Error('Campos client_email, private_key ou project_id ausentes.');
+  }
+
+  privateKey = privateKey.replace(/\\n/g, '\n').replace(/\r\n?/g, '\n');
+  if (!privateKey.includes('-----BEGIN') || !privateKey.includes('-----END')) {
+    throw new Error('Campo private_key sem cabeçalho/rodapé PEM válido (BEGIN/END PRIVATE KEY).');
+  }
+
+  return {
+    ...parsed,
+    client_email: clientEmail,
+    project_id: projectId,
+    private_key: privateKey,
+  };
+}
+
 function criarCustomTokenFirebase(serviceAccount, uid, claims = {}) {
   const agora = Math.floor(Date.now() / 1000);
   const header = { alg: 'RS256', typ: 'JWT' };
@@ -561,10 +658,11 @@ export default async function handler(req, res) {
     const uidMaster = `master_${u}`;
     let customToken = null;
     let customTokenErro = '';
+    let firebaseProjectId = null;
     if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
       try {
-        const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
-        sa.private_key = String(sa.private_key).replace(/\\n/g, '\n');
+        const sa = parseServiceAccountEnv(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+        firebaseProjectId = sa.project_id;
         customToken = criarCustomTokenFirebase(sa, uidMaster, {
           role: 'master',
           is_master: true,
@@ -597,6 +695,7 @@ export default async function handler(req, res) {
       configurado: true,
       autenticado: true,
       customToken,
+      ...(firebaseProjectId ? { firebaseProjectId } : {}),
       ...(customTokenErro ? { customTokenErro } : {}),
     });
   }
@@ -611,15 +710,13 @@ export default async function handler(req, res) {
 
   let serviceAccount;
   try {
-    serviceAccount = JSON.parse(rawSa);
-    if (!serviceAccount?.client_email || !serviceAccount?.private_key || !serviceAccount?.project_id) {
-      throw new Error('Campos client_email/private_key/project_id ausentes');
-    }
-    serviceAccount.private_key = String(serviceAccount.private_key).replace(/\\n/g, '\n');
-  } catch {
+    serviceAccount = parseServiceAccountEnv(rawSa);
+  } catch (err) {
+    const detalhe = String(err?.message || err || 'formato incorreto');
+    console.error('[api/auth] FIREBASE_SERVICE_ACCOUNT_JSON inválido:', detalhe);
     return res.status(500).json({
       configurado: false,
-      erro: 'FIREBASE_SERVICE_ACCOUNT_JSON inválido.',
+      erro: `FIREBASE_SERVICE_ACCOUNT_JSON inválido: ${detalhe}`,
     });
   }
 
@@ -648,6 +745,7 @@ export default async function handler(req, res) {
         configurado: true,
         autenticado: true,
         customToken,
+        firebaseProjectId: serviceAccount.project_id,
       });
     } catch (err) {
       console.error('[api/auth] Falha ao renovar customToken:', err?.message || err);
@@ -921,6 +1019,7 @@ export default async function handler(req, res) {
         configurado: true,
         autenticado: true,
         customToken,
+        firebaseProjectId: serviceAccount.project_id,
         sessaoId,
         deveTrocarSenha: Boolean(lojaDoc.senha_revogada) || SENHAS_PADRAO_FRACAS.has(senha.toLowerCase()),
       });
@@ -1059,6 +1158,7 @@ export default async function handler(req, res) {
         configurado: true,
         autenticado: true,
         customToken,
+        firebaseProjectId: serviceAccount.project_id,
         sessaoId,
       });
     } catch (err) {
@@ -1246,6 +1346,7 @@ export default async function handler(req, res) {
         configurado: true,
         autenticado: true,
         customToken,
+        firebaseProjectId: serviceAccount.project_id,
         sessaoId,
         operador: sanitizarOperadorParaCliente(opEncontrado),
       });

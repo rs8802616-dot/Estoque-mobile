@@ -65,19 +65,69 @@ export async function validarPainelLojaServidor(
   }
 }
 
+const CHAVE_ERRO_FIREBASE_AUTH = 'ultimo_erro_firebase_auth';
+
+export function obterUltimoErroFirebaseAuth(): string | null {
+  try {
+    return sessionStorage.getItem(CHAVE_ERRO_FIREBASE_AUTH);
+  } catch {
+    return null;
+  }
+}
+
+export function limparUltimoErroFirebaseAuth(): void {
+  try {
+    sessionStorage.removeItem(CHAVE_ERRO_FIREBASE_AUTH);
+  } catch {
+    // ignore
+  }
+}
+
+function registrarErroFirebaseAuth(erro?: string | null): void {
+  try {
+    const msg = String(erro || '').trim();
+    if (!msg) {
+      sessionStorage.removeItem(CHAVE_ERRO_FIREBASE_AUTH);
+    } else {
+      sessionStorage.setItem(CHAVE_ERRO_FIREBASE_AUTH, msg);
+    }
+  } catch {
+    // ignore
+  }
+}
+
 async function autenticarFirebaseComCustomToken(
-  customToken?: string | null
+  customToken?: string | null,
+  serverProjectId?: string | null
 ): Promise<{ ok: boolean; erro?: string }> {
+  const clientProjectId = String(auth?.app?.options?.projectId || '').trim();
+  if (serverProjectId && clientProjectId && serverProjectId !== clientProjectId) {
+    const msg = `Projeto Firebase incompatível: servidor usa "${serverProjectId}", mas o app usa "${clientProjectId}". Ajuste FIREBASE_SERVICE_ACCOUNT_JSON na Vercel.`;
+    registrarErroFirebaseAuth(msg);
+    console.error('[Auth]', msg);
+    return { ok: false, erro: msg };
+  }
   if (!customToken || !auth) {
-    return { ok: false, erro: 'Token de autenticação Firebase ausente.' };
+    const msg = !auth
+      ? 'Firebase Auth não inicializado no cliente.'
+      : 'Token de autenticação Firebase ausente na resposta do servidor (verifique FIREBASE_SERVICE_ACCOUNT_JSON).';
+    registrarErroFirebaseAuth(msg);
+    return { ok: false, erro: msg };
   }
   try {
-    await signInWithCustomToken(auth, customToken);
+    const cred = await signInWithCustomToken(auth, customToken);
+    await cred.user.getIdToken(true);
+    registrarErroFirebaseAuth(null);
     return { ok: true };
   } catch (err: any) {
-    const msg = err?.code || err?.message || 'Erro Firebase Auth';
+    const code = String(err?.code || '');
+    const msg =
+      code === 'auth/custom-token-mismatch'
+        ? `Token Firebase pertence a outro projeto (auth/custom-token-mismatch; cliente="${clientProjectId || 'adega-delivery-pdv'}"${serverProjectId ? `, servidor="${serverProjectId}"` : ''}). Confira FIREBASE_SERVICE_ACCOUNT_JSON na Vercel.`
+        : `${code ? `${code}: ` : ''}${err?.message || 'Erro Firebase Auth'}`;
+    registrarErroFirebaseAuth(msg);
     console.error('[Auth] Falha em signInWithCustomToken:', err);
-    return { ok: false, erro: String(msg) };
+    return { ok: false, erro: msg };
   }
 }
 
@@ -117,9 +167,15 @@ export async function autenticarLojaServidor(
     let firebaseAuthErro: string | undefined = data?.customTokenErro
       ? String(data.customTokenErro)
       : undefined;
+    if (firebaseAuthErro) {
+      registrarErroFirebaseAuth(firebaseAuthErro);
+    }
     if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
       if (!fb.ok) firebaseAuthErro = fb.erro;
+    } else if (data?.autenticado && !firebaseAuthErro) {
+      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
+      registrarErroFirebaseAuth(firebaseAuthErro);
     }
     return {
       fallbackLocal: false,
@@ -167,9 +223,15 @@ export async function autenticarOperadorServidor(
     let firebaseAuthErro: string | undefined = data?.customTokenErro
       ? String(data.customTokenErro)
       : undefined;
+    if (firebaseAuthErro) {
+      registrarErroFirebaseAuth(firebaseAuthErro);
+    }
     if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
       if (!fb.ok) firebaseAuthErro = fb.erro;
+    } else if (data?.autenticado && !firebaseAuthErro) {
+      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
+      registrarErroFirebaseAuth(firebaseAuthErro);
     }
     return {
       fallbackLocal: false,
@@ -223,9 +285,15 @@ export async function redefinirSenhaRevogadaServidor(
     let firebaseAuthErro: string | undefined = data?.customTokenErro
       ? String(data.customTokenErro)
       : undefined;
+    if (firebaseAuthErro) {
+      registrarErroFirebaseAuth(firebaseAuthErro);
+    }
     if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
       if (!fb.ok) firebaseAuthErro = fb.erro;
+    } else if (data?.autenticado && !firebaseAuthErro) {
+      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
+      registrarErroFirebaseAuth(firebaseAuthErro);
     }
     return {
       fallbackLocal: false,
@@ -268,9 +336,15 @@ export async function autenticarMasterServidor(
     let firebaseAuthErro: string | undefined = data?.customTokenErro
       ? String(data.customTokenErro)
       : undefined;
+    if (firebaseAuthErro) {
+      registrarErroFirebaseAuth(firebaseAuthErro);
+    }
     if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken);
+      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
       if (!fb.ok) firebaseAuthErro = fb.erro;
+    } else if (data?.autenticado && !firebaseAuthErro) {
+      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
+      registrarErroFirebaseAuth(firebaseAuthErro);
     }
     return {
       fallbackLocal: false,
@@ -297,16 +371,24 @@ export async function renovarSessaoFirebaseServidor(): Promise<{
     });
     const data = await resp.json().catch(() => ({}));
     if (resp.status === 503 || data?.configurado === false) {
-      return { autenticado: false, fallbackLocal: true };
+      const msg = String(
+        data?.erro || 'FIREBASE_SERVICE_ACCOUNT_JSON não configurado no servidor.'
+      );
+      registrarErroFirebaseAuth(msg);
+      return { autenticado: false, fallbackLocal: true, erro: msg };
     }
     if (!resp.ok || !data?.autenticado || !data?.customToken) {
+      const msg = String(
+        data?.customTokenErro || data?.erro || 'Sessão de servidor expirada. Faça login novamente.'
+      );
+      registrarErroFirebaseAuth(msg);
       return {
         autenticado: false,
         fallbackLocal: false,
-        erro: data?.erro || 'Sessão de servidor expirada. Faça login novamente.',
+        erro: msg,
       };
     }
-    const fb = await autenticarFirebaseComCustomToken(data.customToken);
+    const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
     if (!fb.ok) {
       return {
         autenticado: false,
@@ -342,6 +424,7 @@ export async function validarSessaoMasterServidor(tokenUrl?: string | null): Pro
 }
 
 export async function encerrarSessaoServidor(): Promise<void> {
+  limparUltimoErroFirebaseAuth();
   if (typeof window === 'undefined') return;
   try {
     await fetch('/api/auth', {

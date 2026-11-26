@@ -81,7 +81,10 @@ export function subscribeLojasPublicas(callback: (lojas: Supermercado[]) => void
   };
 }
 
-export function subscribeSupermercados(callback: (lojas: Supermercado[]) => void) {
+export function subscribeSupermercados(
+  callback: (lojas: Supermercado[]) => void,
+  onErro?: (erro: any) => void
+) {
   const colRef = collection(db, 'supermercados');
   return onSnapshot(
     colRef,
@@ -131,7 +134,9 @@ export function subscribeSupermercados(callback: (lojas: Supermercado[]) => void
         callback([]);
       }
     },
-    (_err) => {
+    (err) => {
+      console.error('[Firestore] Erro em subscribeSupermercados:', err);
+      onErro?.(err);
       // Graceful offline fallback
       try {
         const salvo = localStorage.getItem('lista_supermercados_app');

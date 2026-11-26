@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from './lib/firebase';
 import {
   Store,
@@ -111,6 +111,8 @@ import {
   buscarPedidoMotoboyServidor,
   confirmarPinEntregaMotoboyServidor,
   renovarSessaoFirebaseServidor,
+  obterUltimoErroFirebaseAuth,
+  limparUltimoErroFirebaseAuth,
 } from './lib/authClient';
 import { UnrecognizedLinkView } from './components/UnrecognizedLinkView';
 import { GerenciarSenhaLojaModal } from './components/GerenciarSenhaLojaModal';
@@ -1084,6 +1086,34 @@ export default function App() {
   );
   const [erroSyncRelatorios, setErroSyncRelatorios] = useState<string | null>(null);
   const tentouRenovarAuthRef = useRef<boolean>(false);
+
+  const montarDiagnosticoPermissaoFirestore = async (
+    colecao: string,
+    err?: any
+  ): Promise<string> => {
+    const cod = err?.code || err?.message || 'permission-denied';
+    const ultimoErroAuth = obterUltimoErroFirebaseAuth();
+    const u = auth?.currentUser;
+    const projectId = auth?.app?.options?.projectId || 'desconhecido';
+    if (!u) {
+      return `Permissão negada ao ler ${colecao} na nuvem (${cod}). Firebase Auth sem usuário autenticado (projeto=${projectId}${ultimoErroAuth ? `; motivo auth: ${ultimoErroAuth}` : '; possível ausência ou erro em FIREBASE_SERVICE_ACCOUNT_JSON na Vercel'}). Clique em "Refazer Login".`;
+    }
+    if (u.isAnonymous) {
+      return `Permissão negada ao ler ${colecao} na nuvem (${cod}). Sessão anônima residual ativa (uid=${u.uid}, projeto=${projectId}). Clique em "Refazer Login" para autenticar com Custom Token.`;
+    }
+    try {
+      const resToken = await u.getIdTokenResult();
+      const claims = resToken?.claims || {};
+      const role = String(claims.role || 'ausente');
+      const isMaster = claims.is_master === true ? 'true' : String(claims.is_master ?? 'ausente');
+      const lojaClaim = String(claims.lojaId || 'ausente');
+      const provider = String(resToken?.signInProvider || 'desconhecido');
+      return `Permissão negada ao ler ${colecao} na nuvem (${cod}). [uid=${u.uid}, provider=${provider}, role=${role}, is_master=${isMaster}, lojaId=${lojaClaim}, projeto=${projectId}${ultimoErroAuth ? `, erroAuth=${ultimoErroAuth}` : ''}]. Confirme se firestore.rules.strict foi publicado neste projeto (${projectId}).`;
+    } catch (tokenErr: any) {
+      return `Permissão negada ao ler ${colecao} na nuvem (${cod}). Usuário ${u.uid} sem claims legíveis (${tokenErr?.message || 'erro token'}). Clique em "Refazer Login".`;
+    }
+  };
+
   useEffect(() => {
     if (!auth) return;
     const unsubAuth = onAuthStateChanged(auth, (u) => {
@@ -1559,20 +1589,28 @@ export default function App() {
     if (isModoCliente || telaLoginVisivel || firebaseAuthUid || painelFallbackLocal) return;
     if (tentouRenovarAuthRef.current) return;
 
-    const timer = window.setTimeout(() => {
+    const timer = window.setTimeout(async () => {
       if (auth?.currentUser && !auth.currentUser.isAnonymous) return;
       if (tentouRenovarAuthRef.current) return;
       tentouRenovarAuthRef.current = true;
-      renovarSessaoFirebaseServidor()
-        .then((res) => {
-          if (!res.autenticado && !res.fallbackLocal) {
+      try {
+        if (auth?.currentUser?.isAnonymous) {
+          await signOut(auth).catch(() => {});
+        }
+        const res = await renovarSessaoFirebaseServidor();
+        if (!res.autenticado) {
+          const ultimoErro = obterUltimoErroFirebaseAuth();
+          if (!res.fallbackLocal || ultimoErro) {
             setErroSyncRelatorios(
-              res.erro ||
+              ultimoErro ||
+                res.erro ||
                 'Sessão de nuvem expirada ou sem token Firebase. Clique em "Refazer Login" para sincronizar vendas e relatórios.'
             );
           }
-        })
-        .catch(() => {});
+        }
+      } catch {
+        // ignore
+      }
     }, 1200);
 
     return () => window.clearTimeout(timer);
@@ -1601,8 +1639,7 @@ export default function App() {
     // Antes do login em modo estrito (ou no cardápio público), usa lojas_publico para evitar permission-denied
     const usarPublico =
       isModoCliente || (telaLoginVisivel && !firebaseAuthUid && !painelFallbackLocal);
-    const assinarLojas = usarPublico ? subscribeLojasPublicas : subscribeSupermercados;
-    const unsubLojas = assinarLojas((lojasRaw) => {
+    const tratarLojas = (lojasRaw: any[]) => {
       const lojas = Array.isArray(lojasRaw)
         ? lojasRaw.map((l) => (usarPublico ? l : garantirTokensLoja(l)))
         : [];
@@ -1705,7 +1742,17 @@ export default function App() {
         safeLocalStorageSet('supermercadoAtualId', lojaPadrao.id);
         safeLocalStorageSet('supermercadoNome', lojaPadrao.nome);
       }
-    });
+    };
+
+    const unsubLojas = usarPublico
+      ? subscribeLojasPublicas(tratarLojas)
+      : subscribeSupermercados(tratarLojas, (err) => {
+          if (err?.code === 'permission-denied') {
+            void montarDiagnosticoPermissaoFirestore('supermercados', err).then((msg) =>
+              setErroSyncRelatorios(msg)
+            );
+          }
+        });
 
     // Proteção de Cota do Firebase:
     // O download em massa em tempo real do Catálogo Global (8.849 itens) foi DESATIVADO.
@@ -1933,8 +1980,8 @@ export default function App() {
       }
     }, (err) => {
       if (err?.code === 'permission-denied') {
-        setErroSyncRelatorios(
-          'Permissão negada ao ler pedidos na nuvem (permission-denied). Clique em "Refazer Login" para renovar o token de acesso e verifique se publicou firestore.rules.strict.'
+        void montarDiagnosticoPermissaoFirestore('pedidos_delivery', err).then((msg) =>
+          setErroSyncRelatorios(msg)
         );
       }
     });
@@ -2029,8 +2076,8 @@ export default function App() {
       },
       (err) => {
         if (err?.code === 'permission-denied') {
-          setErroSyncRelatorios(
-            'Permissão negada ao ler vendas na nuvem (permission-denied). Clique em "Refazer Login" para renovar o token de acesso e publicar firestore.rules.strict.'
+          void montarDiagnosticoPermissaoFirestore('vendas', err).then((msg) =>
+            setErroSyncRelatorios(msg)
           );
         } else {
           setErroSyncRelatorios(
@@ -3786,6 +3833,17 @@ export default function App() {
       localStorage.removeItem('operadorAtivoId');
     }
 
+    const erroAuthLogin = obterUltimoErroFirebaseAuth();
+    if (erroAuthLogin) {
+      setErroSyncRelatorios(
+        `Falha ao autenticar sessão no Firebase: ${erroAuthLogin}. Verifique FIREBASE_SERVICE_ACCOUNT_JSON na Vercel.`
+      );
+    } else if (auth && !auth.currentUser) {
+      setErroSyncRelatorios(
+        'Login validado no painel, porém sem sessão ativa no Firebase Auth. Verifique FIREBASE_SERVICE_ACCOUNT_JSON na Vercel.'
+      );
+    }
+
     // Registra sessão ativa no Firestore - Isso invalida e desloga imediatamente qualquer outro aparelho que estava nesta mesma conta
     await registrarSessaoAtivaNoFirestore(sessao, novoToken);
 
@@ -3883,6 +3941,10 @@ export default function App() {
     try {
       sessionStorage.removeItem('sessao_loja_ativa');
     } catch {}
+    limparUltimoErroFirebaseAuth();
+    if (auth?.currentUser) {
+      signOut(auth).catch(() => {});
+    }
     encerrarSessaoServidor().catch(() => {});
     tentouRenovarAuthRef.current = false;
     setErroSyncRelatorios(null);
