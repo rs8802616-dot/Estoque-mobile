@@ -497,7 +497,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     return partes.length === 3 ? `${partes[2]}/${partes[1]}` : data || '';
   };
 
-  // Renderizador de Card Individual limpo e respirável
+  // Renderizador de Card Individual compacto e limpo
   const renderCard = (order: PedidoDelivery) => {
     const isNovo = order.status === 'pendente';
     const isPreparo = order.status === 'em_separacao';
@@ -506,9 +506,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     const isEntregue = order.status === 'entregue';
     const isCancelado = order.status === 'cancelado';
 
-    const partesData = (order.data || '').split('-');
-    const dataFormatada =
-      partesData.length === 3 ? `${partesData[2]}/${partesData[1]}/${partesData[0]}` : order.data;
     const isAnterior = Boolean(order.data && order.data < hojeFormatado);
 
     const canal = obterMetaCanal(order);
@@ -523,56 +520,47 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     return (
       <div
         key={order.id}
-        className={`bg-white rounded-2xl border shadow-xs hover:shadow-md transition flex flex-col overflow-hidden ${
+        className={`bg-white rounded-xl border shadow-xs hover:shadow-md transition flex flex-col overflow-hidden ${
           isNovo ? 'border-red-300 ring-2 ring-red-500/15' : 'border-slate-200'
         }`}
       >
         {/* Faixa superior de status */}
         <div className={`h-1 w-full shrink-0 ${statusMeta.barClass}`} />
 
-        {/* Corpo do card */}
-        <div className="p-4 flex-1 flex flex-col gap-3">
-          {/* Topo: Canal + #Pedido + Hoje/Anterior | Badge Status */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+        {/* Corpo compacto */}
+        <div className="p-2.5 flex-1 flex flex-col gap-2">
+          {/* Topo: Canal + #Pedido | Badge Status */}
+          <div className="flex items-center justify-between gap-1.5">
+            <div className="flex items-center gap-1.5 min-w-0">
               <span
-                className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wide ${canal.pillClass}`}
+                className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wide shrink-0 ${canal.pillClass}`}
               >
-                <CanalIcon className="w-3 h-3 shrink-0" />
+                <CanalIcon className="w-2.5 h-2.5 shrink-0" />
                 <span>{canal.label}</span>
               </span>
-              <span className="font-mono font-black text-slate-900 text-xs">
+              <span className="font-mono font-black text-slate-900 text-[11px] shrink-0">
                 #{order.numeroPedido}
-              </span>
-              <span
-                className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide ${
-                  isAnterior
-                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                }`}
-              >
-                {isAnterior ? 'Anterior' : 'Hoje'}
               </span>
             </div>
 
             <span
-              className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider shrink-0 ${statusMeta.badgeClass}`}
+              className={`inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide shrink-0 ${statusMeta.badgeClass}`}
             >
               {statusMeta.pulse ? (
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
               ) : (
-                <StatusIcon className="w-3 h-3 shrink-0" />
+                <StatusIcon className="w-2.5 h-2.5 shrink-0" />
               )}
               <span>{statusMeta.label}</span>
             </span>
           </div>
 
-          {/* Cliente + Endereço + Horário + Pagamento */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span className="font-bold text-sm text-slate-900 truncate">
+          {/* Cliente + Fone inline | Endereço 1 linha | Meta compacta */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between gap-1.5">
+              <div className="flex items-center gap-1 min-w-0 flex-1">
+                <User className="w-3 h-3 text-slate-400 shrink-0" />
+                <span className="font-extrabold text-xs text-slate-900 truncate">
                   {order.cliente?.nome || 'Cliente'}
                 </span>
               </div>
@@ -581,52 +569,63 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 <button
                   type="button"
                   onClick={() => abrirContatoCliente(order)}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-[11px] font-mono font-bold transition cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-sky-700 hover:underline transition cursor-pointer shrink-0"
                   title="Ligar ou enviar WhatsApp para o cliente"
                 >
-                  <Phone className="w-3 h-3 shrink-0" />
+                  <Phone className="w-2.5 h-2.5 shrink-0" />
                   <span>{order.cliente.telefone}</span>
                 </button>
               )}
             </div>
 
             {enderecoTexto && (
-              <div className="flex items-start gap-1.5 text-xs text-slate-600 leading-snug">
-                <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
-                <span className="line-clamp-2 break-words">{enderecoTexto}</span>
+              <div
+                className="flex items-center gap-1 text-[11px] text-slate-600 leading-tight"
+                title={enderecoTexto}
+              >
+                <MapPin className="w-3 h-3 text-rose-500 shrink-0" />
+                <span className="truncate">{enderecoTexto}</span>
               </div>
             )}
 
-            <div className="flex items-center flex-wrap gap-1.5 pt-0.5 text-[11px] text-slate-500">
-              <span className="inline-flex items-center gap-1 font-mono text-slate-500">
-                <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+            <div className="flex items-center flex-wrap gap-1 pt-0.5 text-[10px] text-slate-500">
+              <span className="inline-flex items-center gap-0.5 font-mono text-slate-500">
+                <Clock className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                 <span>
-                  {dataFormatada} às {order.hora}
+                  {formatarDataCurta(order.data)} {order.hora}
                 </span>
               </span>
 
-              <span className="text-slate-300">•</span>
+              <span
+                className={`text-[9px] font-bold px-1 py-0.2 rounded uppercase ${
+                  isAnterior
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                }`}
+              >
+                {isAnterior ? 'Anterior' : 'Hoje'}
+              </span>
 
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold border border-slate-200">
-                <CreditCard className="w-3 h-3 text-slate-500 shrink-0" />
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                <CreditCard className="w-2.5 h-2.5 text-slate-500 shrink-0" />
                 <span>{formatarFormaPagamento(order.formaPagamento)}</span>
                 {order.trocoPara ? (
                   <span className="text-slate-500 font-normal">
-                    (Troco p/ {formatCurrency(order.trocoPara)})
+                    (p/ {formatCurrency(order.trocoPara)})
                   </span>
                 ) : null}
               </span>
 
               {Number(order.taxaEntrega) > 0 && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium border border-slate-200">
-                  Entrega {formatCurrency(order.taxaEntrega)}
+                <span className="inline-flex items-center px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium border border-slate-200">
+                  +{formatCurrency(order.taxaEntrega)} ent.
                 </span>
               )}
             </div>
 
             {order.observacao && (
-              <div className="flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px]">
-                <MessageSquareText className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-1 px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[10px]">
+                <MessageSquareText className="w-3 h-3 text-amber-600 shrink-0 mt-0.5" />
                 <span className="line-clamp-2">{order.observacao}</span>
               </div>
             )}
@@ -634,36 +633,36 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
           {/* Motivo de cancelamento */}
           {isCancelado && order.motivoCancelamento && (
-            <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[11px] font-semibold flex items-start gap-1.5">
-              <Ban className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+            <div className="p-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-[10px] font-semibold flex items-start gap-1">
+              <Ban className="w-3 h-3 shrink-0 mt-0.5" />
               <span>Motivo: {order.motivoCancelamento}</span>
             </div>
           )}
 
           {/* Alerta de falta de estoque para pedidos pendentes */}
           {itensSemSaldo.length > 0 && (
-            <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-[11px] font-bold space-y-0.5">
+            <div className="p-2 rounded-lg bg-red-50 border border-red-200 text-red-800 text-[10px] font-bold space-y-0.5">
               <div className="flex items-center gap-1 text-red-700 font-black">
-                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                <AlertTriangle className="w-3 h-3 shrink-0" />
                 <span>Estoque insuficiente para aceitar:</span>
               </div>
               {itensSemSaldo.map((it, idx) => (
-                <div key={idx} className="text-[10px] text-red-700 pl-4 font-semibold">
-                  • {it.nome} (Pedido: {it.quantidade} un)
+                <div key={idx} className="text-[10px] text-red-700 pl-3 font-semibold">
+                  • {it.nome} ({it.quantidade} un)
                 </div>
               ))}
             </div>
           )}
 
-          {/* Caixa de itens */}
-          <div className="bg-slate-50 border border-slate-100 rounded-xl p-2.5 max-h-40 overflow-y-auto space-y-1.5 mt-auto">
+          {/* Caixa de itens compacta (sem mt-auto para não criar vão vazio) */}
+          <div className="bg-slate-50 border border-slate-100 rounded-lg px-2 py-1.5 max-h-24 overflow-y-auto space-y-0.5 text-[11px]">
             {order.itens.map((it, idx) => (
-              <div key={idx} className="flex justify-between items-start gap-2 text-xs">
-                <span className="text-slate-700 flex-1 min-w-0 leading-snug">
+              <div key={idx} className="flex justify-between items-start gap-1.5 leading-snug">
+                <span className="text-slate-700 flex-1 min-w-0 truncate" title={`${it.quantidade}x ${it.nome}`}>
                   <strong className="text-slate-900 mr-1 font-bold">{it.quantidade}x</strong>
                   <span>{it.nome}</span>
                   {it.gelado && (
-                    <span className="ml-1 inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-cyan-100 text-cyan-800 border border-cyan-200">
+                    <span className="ml-1 inline-block text-[9px] font-bold px-1 rounded bg-cyan-100 text-cyan-800 border border-cyan-200">
                       Gelada
                     </span>
                   )}
@@ -687,7 +686,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                       className="p-0.5 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
                       title={`Retirar ${it.nome} do pedido`}
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3 h-3" />
                     </button>
                   )}
                 </div>
@@ -696,24 +695,19 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
         </div>
 
-        {/* Rodapé em 2 faixas bem espaçadas */}
-        <div className="px-4 py-3 bg-slate-50/70 border-t border-slate-100 flex flex-col gap-2.5">
-          {/* Faixa 1: Valor Total + Utilitários */}
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block leading-none">
-                Total
-              </span>
-              <span className="text-base font-black text-slate-900 font-mono tabular-nums leading-tight">
-                {formatCurrency(order.valorTotal)}
-              </span>
-            </div>
+        {/* Rodapé compacto */}
+        <div className="px-2.5 py-2 bg-slate-50/70 border-t border-slate-100 mt-auto flex flex-col gap-1.5">
+          {/* Linha 1: Valor total direto + Utilitários compactos */}
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="text-sm font-black text-slate-900 font-mono tabular-nums">
+              {formatCurrency(order.valorTotal)}
+            </span>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => setComandaImpressao(order)}
-                className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center transition cursor-pointer active:scale-95"
+                className="w-7 h-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center transition cursor-pointer active:scale-95"
                 title="Imprimir comanda térmica"
               >
                 <Printer className="w-3.5 h-3.5" />
@@ -722,10 +716,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleDispararNfce(order)}
-                className="h-8 px-2.5 rounded-lg border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-bold text-[11px] flex items-center gap-1 transition cursor-pointer active:scale-95"
+                className="h-7 px-2 rounded-lg border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-bold text-[10px] flex items-center gap-1 transition cursor-pointer active:scale-95"
                 title="Emitir ou verificar NFC-e"
               >
-                <FileCheck className="w-3.5 h-3.5 shrink-0" />
+                <FileCheck className="w-3 h-3 shrink-0" />
                 <span>NFC-e</span>
               </button>
 
@@ -733,7 +727,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 <button
                   type="button"
                   onClick={() => abrirCancelarPedido(order)}
-                  className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-600 flex items-center justify-center transition cursor-pointer active:scale-95"
+                  className="w-7 h-7 rounded-lg border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-600 flex items-center justify-center transition cursor-pointer active:scale-95"
                   title="Cancelar ou recusar este pedido"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -742,7 +736,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             </div>
           </div>
 
-          {/* Faixa 2: Ação Principal do Ciclo */}
+          {/* Linha 2: Ação Principal do Ciclo */}
           {temAcaoPrincipal && (
             <div className="w-full">
               {isNovo && (
@@ -752,32 +746,30 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     pararAlertaNovoPedidoDelivery();
                     onAtualizarStatusPedido(order.id, 'em_separacao');
                   }}
-                  className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer active:scale-[0.99]"
+                  className="w-full py-1.5 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer active:scale-[0.99]"
                 >
-                  <Check className="w-4 h-4 stroke-[2.5]" />
+                  <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Confirmar Pedido</span>
                 </button>
               )}
 
               {(isPreparo || isPronto) && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex gap-1.5">
                   {mostrarLinkMotoboy && (
                     <button
                       type="button"
                       onClick={() => setPedidoLinkMotoboy(order)}
-                      className="py-2 px-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-[0.99]"
+                      className="py-1.5 px-2.5 rounded-lg bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer shrink-0 active:scale-[0.99]"
                       title="Abrir link do motoboy para envio no WhatsApp"
                     >
-                      <Share2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>Link Motoboy</span>
+                      <Share2 className="w-3 h-3 shrink-0" />
+                      <span>Link</span>
                     </button>
                   )}
                   <button
                     type="button"
                     onClick={() => onAtualizarStatusPedido(order.id, 'saiu_para_entrega')}
-                    className={`py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer active:scale-[0.99] ${
-                      !mostrarLinkMotoboy ? 'col-span-2' : ''
-                    }`}
+                    className="flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer active:scale-[0.99]"
                     title="Despachar para o motoboy"
                   >
                     <Bike className="w-3.5 h-3.5 shrink-0" />
@@ -787,24 +779,22 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               )}
 
               {isACaminho && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex gap-1.5">
                   {mostrarLinkMotoboy && (
                     <button
                       type="button"
                       onClick={() => setPedidoLinkMotoboy(order)}
-                      className="py-2 px-2.5 rounded-xl bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-[0.99]"
+                      className="py-1.5 px-2.5 rounded-lg bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer shrink-0 active:scale-[0.99]"
                       title="Abrir link do motoboy para envio no WhatsApp"
                     >
-                      <Share2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>Link Motoboy</span>
+                      <Share2 className="w-3 h-3 shrink-0" />
+                      <span>Link</span>
                     </button>
                   )}
                   <button
                     type="button"
                     onClick={() => abrirConfirmarEntrega(order)}
-                    className={`py-2 px-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer active:scale-[0.99] ${
-                      !mostrarLinkMotoboy ? 'col-span-2' : ''
-                    }`}
+                    className="flex-1 py-1.5 px-2.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-2xs transition cursor-pointer active:scale-[0.99]"
                     title="Validar PIN com o cliente e finalizar"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
@@ -1122,24 +1112,24 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
         </div>
 
         {/* ÁREA PRINCIPAL DE PEDIDOS */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
-          <div className="max-w-[1600px] mx-auto space-y-4">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 bg-slate-50">
+          <div className="w-full space-y-3">
             {toastNfce && (
-              <div className="p-3 bg-cyan-50 border border-cyan-200 text-cyan-800 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs">
+              <div className="p-2.5 bg-cyan-50 border border-cyan-200 text-cyan-800 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs">
                 <FileCheck className="w-4 h-4 text-cyan-700 shrink-0" />
                 <span>{toastNfce}</span>
               </div>
             )}
 
-            {/* FAIXA DE 4 KPIS CLICÁVEIS */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* FAIXA DE 4 KPIS COMPACTOS E CLICÁVEIS */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
               {/* KPI 1: Novos p/ Confirmar */}
               <button
                 type="button"
                 onClick={() =>
                   setPedidosFilterStatus((prev) => (prev === 'novo' ? 'todos' : 'novo'))
                 }
-                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                className={`text-left px-3 py-2 rounded-xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm flex items-center justify-between gap-2.5 ${
                   pedidosFilterStatus === 'novo'
                     ? 'border-red-500 ring-2 ring-red-500/15'
                     : countNovos > 0
@@ -1147,21 +1137,29 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Novos p/ Confirmar
-                  </span>
-                  <Bell className={`w-4 h-4 ${countNovos > 0 ? 'text-red-500' : 'text-slate-400'}`} />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                      countNovos > 0 ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-500'
+                    }`}
+                  >
+                    <Bell className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
+                      Novos p/ Confirmar
+                    </div>
+                    <div className="text-[10px] text-slate-500 truncate">
+                      {countNovos > 0 ? 'Aguardando aceite' : 'Nenhum aguardando'}
+                    </div>
+                  </div>
                 </div>
                 <div
-                  className={`text-2xl font-black mt-1 font-mono tabular-nums ${
+                  className={`text-lg font-black font-mono tabular-nums shrink-0 ${
                     countNovos > 0 ? 'text-red-600' : 'text-slate-900'
                   }`}
                 >
                   {countNovos}
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  {countNovos > 0 ? 'Aguardando aceite da loja' : 'Nenhum aguardando'}
                 </div>
               </button>
 
@@ -1175,23 +1173,27 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     return countPreparo === 0 && countProntos > 0 ? 'pronto' : 'em_preparo';
                   })
                 }
-                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                className={`text-left px-3 py-2 rounded-xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm flex items-center justify-between gap-2.5 ${
                   pedidosFilterStatus === 'em_preparo' || pedidosFilterStatus === 'pronto'
                     ? 'border-amber-500 ring-2 ring-amber-500/15'
                     : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Preparo &amp; Prontos
-                  </span>
-                  <Flame className="w-4 h-4 text-amber-500" />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                    <Flame className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
+                      Preparo &amp; Prontos
+                    </div>
+                    <div className="text-[10px] text-slate-500 truncate">
+                      {countPreparo} preparo • {countProntos} pronto(s)
+                    </div>
+                  </div>
                 </div>
-                <div className="text-2xl font-black mt-1 text-amber-600 font-mono tabular-nums">
+                <div className="text-lg font-black text-amber-600 font-mono tabular-nums shrink-0">
                   {countPreparo + countProntos}
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  {countPreparo} preparo • {countProntos} pronto(s)
                 </div>
               </button>
 
@@ -1201,23 +1203,27 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 onClick={() =>
                   setPedidosFilterStatus((prev) => (prev === 'a_caminho' ? 'todos' : 'a_caminho'))
                 }
-                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                className={`text-left px-3 py-2 rounded-xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm flex items-center justify-between gap-2.5 ${
                   pedidosFilterStatus === 'a_caminho'
                     ? 'border-sky-500 ring-2 ring-sky-500/15'
                     : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    A Caminho
-                  </span>
-                  <Bike className="w-4 h-4 text-sky-600" />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+                    <Bike className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
+                      A Caminho
+                    </div>
+                    <div className="text-[10px] text-slate-500 truncate">
+                      {countACaminho > 0 ? 'Em rota c/ motoboy' : 'Nenhuma em rota'}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-2xl font-black mt-1 text-sky-600 font-mono tabular-nums">
+                <div className="text-lg font-black text-sky-600 font-mono tabular-nums shrink-0">
                   {countACaminho}
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  {countACaminho > 0 ? 'Em rota com o motoboy' : 'Nenhuma entrega em rota'}
                 </div>
               </button>
 
@@ -1227,23 +1233,27 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 onClick={() =>
                   setPedidosFilterStatus((prev) => (prev === 'entregue' ? 'todos' : 'entregue'))
                 }
-                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                className={`text-left px-3 py-2 rounded-xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm flex items-center justify-between gap-2.5 ${
                   pedidosFilterStatus === 'entregue'
                     ? 'border-emerald-500 ring-2 ring-emerald-500/15'
                     : 'border-slate-200'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Entregues ({apenasHoje ? 'Hoje' : 'Total'})
-                  </span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 truncate">
+                      Entregues ({apenasHoje ? 'Hoje' : 'Total'})
+                    </div>
+                    <div className="text-[10px] text-slate-500 truncate">
+                      {countEntregues} pedido(s) concluído(s)
+                    </div>
+                  </div>
                 </div>
-                <div className="text-2xl font-black mt-1 text-emerald-700 font-mono tabular-nums">
+                <div className="text-lg font-black text-emerald-700 font-mono tabular-nums shrink-0">
                   {formatCurrency(faturamentoEntregues)}
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5">
-                  {countEntregues} pedido(s) concluído(s)
                 </div>
               </button>
             </div>
@@ -1538,13 +1548,13 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 </div>
 
                 {/* Fallback Mobile para modo Lista */}
-                <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {filteredOrders.map((order) => renderCard(order))}
                 </div>
               </>
             ) : (
-              /* MODO CARDS (1 / 2 / 3 COLUNAS RESPIRÁVEIS) */
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              /* MODO CARDS (DENSO E RESPONSIVO ATÉ 5 COLUNAS) */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
                 {filteredOrders.map((order) => renderCard(order))}
               </div>
             )}
