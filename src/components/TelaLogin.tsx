@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Supermercado, OperadorCaixa, SessaoUsuario, CredenciaisDonoApp } from '../types';
+import { Supermercado, OperadorCaixa, SessaoUsuario } from '../types';
 import {
   MIN_CARACTERES_SENHA,
   MAX_TENTATIVAS_LOGIN,
@@ -39,7 +39,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   visivel,
   listaSupermercados,
   onLoginSucesso,
-  senhaMasterPadrao = '',
   modoPortal = 'loja',
   lojaAlvo = null,
   painelAlvo = null,
@@ -47,7 +46,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
 }) => {
   const isMasterMode = modoPortal === 'master';
   const isPainelRestritoEquipe = Boolean(painelAlvo && painelAlvo !== 'admin');
-  const escopoLockout = lojaAlvo?.id || 'global';
+  const escopoLockout = isMasterMode ? 'master' : lojaAlvo?.id || 'global';
   const chavesLockout = obterChavesLockout(escopoLockout);
 
   const [usuarioOuCpf, setUsuarioOuCpf] = useState<string>('');
@@ -62,15 +61,17 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   const [forcarTelaRedefinicao, setForcarTelaRedefinicao] = useState<boolean>(false);
   const [senhaAtualParaReset, setSenhaAtualParaReset] = useState<string>('');
 
-  // Estados de proteção contra força bruta (Imunidade total para o Dono em isMasterMode)
+  // Estados de proteção contra força bruta (5 tentativas / 15 minutos, inclusive Master)
   const [tentativasFalhas, setTentativasFalhas] = useState<number>(() => {
-    if (isMasterMode) return 0;
-    const salvo = localStorage.getItem(chavesLockout.tentativas) || localStorage.getItem('tentativas_falhas_login');
+    const salvo =
+      localStorage.getItem(chavesLockout.tentativas) ||
+      (!isMasterMode ? localStorage.getItem('tentativas_falhas_login') : null);
     return salvo ? parseInt(salvo, 10) || 0 : 0;
   });
   const [bloqueadoAte, setBloqueadoAte] = useState<number | null>(() => {
-    if (isMasterMode) return null;
-    const salvo = localStorage.getItem(chavesLockout.bloqueioTs) || localStorage.getItem('bloqueio_login_timestamp');
+    const salvo =
+      localStorage.getItem(chavesLockout.bloqueioTs) ||
+      (!isMasterMode ? localStorage.getItem('bloqueio_login_timestamp') : null);
     if (salvo) {
       const ts = parseInt(salvo, 10);
       if (ts > Date.now()) return ts;
@@ -85,7 +86,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
 
   // Efeito para checar e atualizar o bloqueio ativo com cronômetro em tempo real
   React.useEffect(() => {
-    if (isMasterMode || !bloqueadoAte) {
+    if (!bloqueadoAte) {
       setSegundosRestantes(0);
       return;
     }
@@ -101,8 +102,10 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
         localStorage.removeItem(chavesLockout.bloqueioTs);
         localStorage.removeItem(chavesLockout.tentativas);
         localStorage.removeItem(chavesLockout.primeiroErroTs);
-        localStorage.removeItem('bloqueio_login_timestamp');
-        localStorage.removeItem('tentativas_falhas_login');
+        if (!isMasterMode) {
+          localStorage.removeItem('bloqueio_login_timestamp');
+          localStorage.removeItem('tentativas_falhas_login');
+        }
         setErro('');
       }
     };
@@ -125,27 +128,30 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       setCarregando(false);
       setErro('');
 
-      if (isMasterMode) {
-        setBloqueadoAte(null);
-        setTentativasFalhas(0);
-        return;
-      }
-
       const salvoBloqueio =
-        localStorage.getItem(chavesLockout.bloqueioTs) || localStorage.getItem('bloqueio_login_timestamp');
+        localStorage.getItem(chavesLockout.bloqueioTs) ||
+        (!isMasterMode ? localStorage.getItem('bloqueio_login_timestamp') : null);
+      const salvoTentativas =
+        localStorage.getItem(chavesLockout.tentativas) ||
+        (!isMasterMode ? localStorage.getItem('tentativas_falhas_login') : null);
       if (salvoBloqueio) {
         const ts = parseInt(salvoBloqueio, 10);
         if (ts > Date.now()) {
           setBloqueadoAte(ts);
+          setTentativasFalhas(salvoTentativas ? parseInt(salvoTentativas, 10) || 0 : 0);
         } else {
           setBloqueadoAte(null);
+          setTentativasFalhas(0);
           localStorage.removeItem(chavesLockout.bloqueioTs);
           localStorage.removeItem(chavesLockout.tentativas);
-          localStorage.removeItem('bloqueio_login_timestamp');
-          localStorage.removeItem('tentativas_falhas_login');
+          if (!isMasterMode) {
+            localStorage.removeItem('bloqueio_login_timestamp');
+            localStorage.removeItem('tentativas_falhas_login');
+          }
         }
       } else {
         setBloqueadoAte(null);
+        setTentativasFalhas(salvoTentativas ? parseInt(salvoTentativas, 10) || 0 : 0);
       }
     }
   }, [visivel, isMasterMode, chavesLockout.bloqueioTs, chavesLockout.tentativas]);
@@ -162,12 +168,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
       motivo: motivoAuditoria,
     });
 
-    // Imunidade do Dono: a conta mestre do Dono da Plataforma não fica travada pelo lockout
-    if (isMasterMode) {
-      setErro('Credenciais Master inválidas. Verifique seu usuário e senha secreta.');
-      return;
-    }
-
     const agora = Date.now();
     const primeiroErroSalvo = parseInt(localStorage.getItem(chavesLockout.primeiroErroTs) || '0', 10);
     const dentroJanela15Min = primeiroErroSalvo > 0 && agora - primeiroErroSalvo <= TEMPO_BLOQUEIO_LOGIN_MS;
@@ -179,15 +179,21 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
 
     setTentativasFalhas(novasFalhas);
     localStorage.setItem(chavesLockout.tentativas, String(novasFalhas));
-    localStorage.setItem('tentativas_falhas_login', String(novasFalhas));
+    if (!isMasterMode) {
+      localStorage.setItem('tentativas_falhas_login', String(novasFalhas));
+    }
 
     if (novasFalhas >= MAX_TENTATIVAS_LOGIN) {
       const timestampBloqueio = agora + TEMPO_BLOQUEIO_LOGIN_MS;
       setBloqueadoAte(timestampBloqueio);
       localStorage.setItem(chavesLockout.bloqueioTs, String(timestampBloqueio));
-      localStorage.setItem('bloqueio_login_timestamp', String(timestampBloqueio));
+      if (!isMasterMode) {
+        localStorage.setItem('bloqueio_login_timestamp', String(timestampBloqueio));
+      }
       setErro(
-        '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'
+        isMasterMode
+          ? '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde o temporizador expirar.'
+          : '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'
       );
     } else {
       const restantes = MAX_TENTATIVAS_LOGIN - novasFalhas;
@@ -202,11 +208,46 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   const limparFalhasLogin = () => {
     setTentativasFalhas(0);
     setBloqueadoAte(null);
+    setSegundosRestantes(0);
     localStorage.removeItem(chavesLockout.tentativas);
     localStorage.removeItem(chavesLockout.primeiroErroTs);
     localStorage.removeItem(chavesLockout.bloqueioTs);
-    localStorage.removeItem('tentativas_falhas_login');
-    localStorage.removeItem('bloqueio_login_timestamp');
+    if (!isMasterMode) {
+      localStorage.removeItem('tentativas_falhas_login');
+      localStorage.removeItem('bloqueio_login_timestamp');
+    }
+  };
+
+  const aplicarFalhaAutenticacaoServidor = (
+    res: {
+      bloqueado?: boolean;
+      segundosRestantes?: number;
+      tentativas?: number;
+      erro?: string;
+    },
+    mensagemPadrao: string
+  ) => {
+    const agora = Date.now();
+    if (typeof res.tentativas === 'number' && res.tentativas >= 0) {
+      setTentativasFalhas(res.tentativas);
+      try {
+        localStorage.setItem(chavesLockout.tentativas, String(res.tentativas));
+      } catch {}
+    }
+    if (res.bloqueado) {
+      const seg =
+        typeof res.segundosRestantes === 'number' && res.segundosRestantes > 0
+          ? res.segundosRestantes
+          : MINUTOS_BLOQUEIO_LOGIN * 60;
+      const tsBloqueio = agora + seg * 1000;
+      setBloqueadoAte(tsBloqueio);
+      setSegundosRestantes(seg);
+      try {
+        localStorage.setItem(chavesLockout.bloqueioTs, String(tsBloqueio));
+      } catch {}
+    }
+    setCarregando(false);
+    setErro(res.erro || mensagemPadrao);
   };
 
   const formatarTempo = (seg: number) => {
@@ -281,9 +322,11 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isMasterMode && bloqueadoAte && Date.now() < bloqueadoAte) {
+    if (bloqueadoAte && Date.now() < bloqueadoAte) {
       setErro(
-        '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'
+        isMasterMode
+          ? '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde o temporizador expirar.'
+          : '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'
       );
       return;
     }
@@ -308,123 +351,33 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
     }
 
     // =========================================================================
-    // 1. PORTAL EXCLUSIVO DO DONO (?portal=master&token=master_9k2m8x7p)
-    // Imunidade total contra Lockout + Criptografia SHA-256 + Salt
+    // 1. PORTAL EXCLUSIVO DO DONO (?portal=master&token=...)
+    // Validação estritamente no servidor com bloqueio após 5 tentativas (15 min)
     // =========================================================================
     if (isMasterMode) {
-      // 1a. Tenta validar credenciais Master no servidor (/api/auth -> MASTER_ADMIN_USER/PASS)
       const resMasterSrv = await autenticarMasterServidor(userDigitado, passDigitada);
-      if (!resMasterSrv.fallbackLocal) {
-        if (resMasterSrv.autenticado) {
-          registrarAuditoriaLogin({
-            usuario: userDigitado,
-            portal: 'master',
-            sucesso: true,
-            motivo: 'Login Master autenticado no servidor',
-          });
-          setCarregando(false);
-          onLoginSucesso({ tipo: 'dona_app' });
-          return;
-        }
-        registrarAuditoriaLogin({
-          usuario: userDigitado,
-          portal: 'master',
-          sucesso: false,
-          motivo: resMasterSrv.erro || 'Credenciais Master inválidas no servidor',
-        });
-        setCarregando(false);
-        setErro(resMasterSrv.erro || 'Usuário ou senha Master inválidos.');
-        return;
-      }
-
-      let credenciaisMaster: CredenciaisDonoApp = {
-        usuario: '',
-        senha: senhaMasterPadrao || '',
-        nomeExibicao: 'Dono do App (Master)',
-      };
-
-      const salvoMaster = localStorage.getItem('credenciais_dono_app');
-      if (salvoMaster) {
-        try {
-          const parsed = JSON.parse(salvoMaster);
-          if (parsed && typeof parsed === 'object') {
-            if (parsed.usuario) credenciaisMaster.usuario = parsed.usuario;
-            if (parsed.senha !== undefined) credenciaisMaster.senha = parsed.senha;
-            if (parsed.senhaHash) credenciaisMaster.senhaHash = parsed.senhaHash;
-            if (parsed.senhaSalt) credenciaisMaster.senhaSalt = parsed.senhaSalt;
-            if (parsed.nomeExibicao) credenciaisMaster.nomeExibicao = parsed.nomeExibicao;
-          }
-        } catch (e) {}
-      } else {
-        const senhaLegada = localStorage.getItem('senha_master_dono');
-        const usuarioLegado = localStorage.getItem('usuario_master_dono');
-        if (senhaLegada) credenciaisMaster.senha = senhaLegada;
-        if (usuarioLegado) credenciaisMaster.usuario = usuarioLegado;
-      }
-
-      const masterUserEsperado = (credenciaisMaster.usuario || '').trim().toLowerCase();
-      const possuiCredencialLocal = Boolean(credenciaisMaster.senhaHash || credenciaisMaster.senha);
-
-      // Primeiro acesso no navegador quando MASTER_ADMIN_USER/PASS ainda não foram configuradas na Vercel:
-      // como o acesso ao Portal Master já foi validado pelo servidor (cookie HttpOnly), permite definir a senha na hora.
-      if (!possuiCredencialLocal) {
-        const pol = validarPoliticaSenha(passDigitada);
-        if (!pol.valida) {
-          setCarregando(false);
-          setErro(
-            `Defina seu usuário e uma senha forte (mín. ${MIN_CARACTERES_SENHA} caracteres) para este primeiro acesso — ou configure MASTER_ADMIN_USER e MASTER_ADMIN_PASS na Vercel.`
-          );
-          return;
-        }
-        const { senhaHash, senhaSalt } = await criarHashComSalt(passDigitada);
-        const novaCred: CredenciaisDonoApp = {
-          usuario: userDigitado,
-          senha: '',
-          senhaHash,
-          senhaSalt,
-          nomeExibicao: 'Dono do App (Master)',
-        };
-        try {
-          localStorage.setItem('credenciais_dono_app', JSON.stringify(novaCred));
-        } catch {}
+      if (resMasterSrv.autenticado) {
+        limparFalhasLogin();
         registrarAuditoriaLogin({
           usuario: userDigitado,
           portal: 'master',
           sucesso: true,
-          motivo: 'Credencial Master definida no primeiro acesso local',
+          motivo: 'Login Master autenticado no servidor',
         });
         setCarregando(false);
         onLoginSucesso({ tipo: 'dona_app' });
         return;
       }
-
-      const isMasterUser =
-        (masterUserEsperado !== '' && userDigitadoLower === masterUserEsperado) ||
-        userDigitadoLower === 'dono';
-
-      const isMasterPass = await verificarSenhaComHash(
-        passDigitada,
-        credenciaisMaster.senhaHash,
-        credenciaisMaster.senhaSalt,
-        credenciaisMaster.senha
+      registrarAuditoriaLogin({
+        usuario: userDigitado,
+        portal: 'master',
+        sucesso: false,
+        motivo: resMasterSrv.erro || 'Credenciais Master inválidas no servidor',
+      });
+      aplicarFalhaAutenticacaoServidor(
+        resMasterSrv,
+        'Usuário ou senha Master inválidos.'
       );
-
-      if (isMasterUser && isMasterPass) {
-        registrarAuditoriaLogin({
-          usuario: userDigitado,
-          portal: 'master',
-          sucesso: true,
-          motivo: 'Login autenticado com sucesso no Portal Master (Dono)',
-        });
-        setCarregando(false);
-        onLoginSucesso({
-          tipo: 'dona_app',
-        });
-        return;
-      }
-
-      setCarregando(false);
-      registrarFalhaLogin(userDigitado, 'Tentativa falha de login no Portal Master');
       return;
     }
 
@@ -506,8 +459,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               sucesso: false,
               motivo: resSrv.erro || 'Senha incorreta no servidor',
             });
-            setCarregando(false);
-            setErro(resSrv.erro || 'Usuário ou senha inválidos.');
+            aplicarFalhaAutenticacaoServidor(resSrv, 'Usuário ou senha inválidos.');
             return;
           }
           limparFalhasLogin();
@@ -583,8 +535,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
             sucesso: false,
             motivo: resOpSrv.erro || 'Credenciais de operador inválidas no servidor',
           });
-          setCarregando(false);
-          setErro(resOpSrv.erro || 'Usuário ou senha inválidos.');
+          aplicarFalhaAutenticacaoServidor(resOpSrv, 'Usuário ou senha inválidos.');
           return;
         }
 
@@ -905,7 +856,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
           ) : (
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               {/* BANNER DE BLOQUEIO DE FORÇA BRUTA (5 TENTATIVAS / 15 MINUTOS) */}
-              {!isMasterMode && bloqueadoAte && segundosRestantes > 0 ? (
+              {bloqueadoAte && segundosRestantes > 0 ? (
                 <div
                   style={{
                     background: '#fef2f2',
@@ -922,7 +873,9 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                 >
                   <div style={{ fontSize: '1.8rem' }}>🔒</div>
                   <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#b91c1c', lineHeight: 1.45 }}>
-                    ⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.
+                    {isMasterMode
+                      ? '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde o temporizador expirar antes de tentar novamente.'
+                      : '⚠️ Acesso bloqueado por segurança! Limite de 5 tentativas excedido. Aguarde 15 min ou solicite ao Dono do App para revogar o tempo no painel.'}
                   </div>
                   <div
                     style={{
@@ -960,8 +913,14 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                     <span>👤</span>
                     <span>{isMasterMode ? 'Login Master do Dono' : 'Usuário, CPF ou Login'}</span>
                   </label>
-                  {!isMasterMode && tentativasFalhas > 0 && !bloqueadoAte && (
-                    <span style={{ fontSize: '0.78rem', color: '#dc2626', fontWeight: 600 }}>
+                  {tentativasFalhas > 0 && !bloqueadoAte && (
+                    <span
+                      style={{
+                        fontSize: '0.78rem',
+                        color: isMasterMode ? '#fca5a5' : '#dc2626',
+                        fontWeight: 600,
+                      }}
+                    >
                       Tentativa {tentativasFalhas} de {MAX_TENTATIVAS_LOGIN}
                     </span>
                   )}
@@ -1032,7 +991,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                   <button
                     type="button"
                     onClick={() => setSenhaVisivel(!senhaVisivel)}
-                    disabled={!isMasterMode && !!bloqueadoAte}
+                    disabled={!!bloqueadoAte}
                     style={{
                       position: 'absolute',
                       right: '12px',
@@ -1040,7 +999,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
                       transform: 'translateY(-50%)',
                       background: 'transparent',
                       border: 'none',
-                      cursor: !isMasterMode && bloqueadoAte ? 'not-allowed' : 'pointer',
+                      cursor: bloqueadoAte ? 'not-allowed' : 'pointer',
                       fontSize: '1.3rem',
                       color: isMasterMode ? '#fbbf24' : '#64748b',
                       padding: '6px',
@@ -1056,7 +1015,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               </div>
 
               {/* MENSAGEM DE ERRO */}
-              {erro && (isMasterMode || !bloqueadoAte) && (
+              {erro && !bloqueadoAte && (
                 <div
                   style={{
                     background: '#fef2f2',
@@ -1076,32 +1035,30 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({
               {/* BOTÃO DE ENTRADA */}
               <button
                 type="submit"
-                disabled={carregando || (!isMasterMode && !!bloqueadoAte)}
+                disabled={carregando || !!bloqueadoAte}
                 style={{
-                  background:
-                    !isMasterMode && bloqueadoAte
-                      ? '#94a3b8'
-                      : isMasterMode
-                      ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
-                      : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                  background: bloqueadoAte
+                    ? '#94a3b8'
+                    : isMasterMode
+                    ? 'linear-gradient(135deg, #d97706 0%, #b45309 100%)'
+                    : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
                   color: '#ffffff',
                   border: isMasterMode ? '1px solid #fbbf24' : 'none',
                   padding: '15px',
                   borderRadius: '12px',
                   fontWeight: 800,
                   fontSize: '1.05rem',
-                  cursor: !isMasterMode && bloqueadoAte ? 'not-allowed' : carregando ? 'wait' : 'pointer',
-                  boxShadow:
-                    !isMasterMode && bloqueadoAte
-                      ? 'none'
-                      : isMasterMode
-                      ? '0 6px 20px rgba(217, 119, 6, 0.45)'
-                      : '0 6px 18px rgba(2, 132, 199, 0.4)',
+                  cursor: bloqueadoAte ? 'not-allowed' : carregando ? 'wait' : 'pointer',
+                  boxShadow: bloqueadoAte
+                    ? 'none'
+                    : isMasterMode
+                    ? '0 6px 20px rgba(217, 119, 6, 0.45)'
+                    : '0 6px 18px rgba(2, 132, 199, 0.4)',
                   marginTop: '6px',
                   transition: 'all 0.15s ease',
                 }}
               >
-                {!isMasterMode && bloqueadoAte
+                {bloqueadoAte
                   ? `🔒 Bloqueado (${formatarTempo(segundosRestantes)})`
                   : carregando
                   ? 'Validando Criptografia SHA-256...'

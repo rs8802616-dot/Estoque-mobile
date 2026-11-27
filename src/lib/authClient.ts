@@ -17,6 +17,16 @@ export async function autenticarSessaoServidor(_params: ParametrosAuthServidor):
   return false;
 }
 
+export function isAmbienteLocalDev(): boolean {
+  if (typeof window === 'undefined') return false;
+  const host = String(window.location?.hostname || '').toLowerCase();
+  return host === 'localhost' || host === '127.0.0.1';
+}
+
+function deveUsarFallbackLocalDev(resp: Response, data: Record<string, unknown>): boolean {
+  return isAmbienteLocalDev() && resp.status === 503 && data?.configurado === false;
+}
+
 export async function validarPainelLojaServidor(
   lojaSlug: string,
   tokenUrl?: string | null
@@ -27,7 +37,7 @@ export async function validarPainelLojaServidor(
   papelPermitido?: string;
   erro?: string;
 }> {
-  if (typeof window === 'undefined') return { fallbackLocal: true, validado: false };
+  if (typeof window === 'undefined') return { fallbackLocal: false, validado: false };
   const slugLimpo = String(lojaSlug || '').trim();
   if (!slugLimpo) return { fallbackLocal: false, validado: false };
 
@@ -44,7 +54,7 @@ export async function validarPainelLojaServidor(
       ),
     });
     const data = await resp.json().catch(() => ({}));
-    if (resp.status === 503 || data?.configurado === false) {
+    if (deveUsarFallbackLocalDev(resp, data)) {
       return { fallbackLocal: true, validado: false };
     }
     if (resp.ok && data?.validado && data?.loja) {
@@ -61,7 +71,11 @@ export async function validarPainelLojaServidor(
       erro: data?.erro || 'Link de acesso inválido.',
     };
   } catch {
-    return { fallbackLocal: true, validado: false };
+    return {
+      fallbackLocal: false,
+      validado: false,
+      erro: 'Falha de conexão com o servidor ao validar acesso.',
+    };
   }
 }
 
@@ -131,6 +145,26 @@ async function autenticarFirebaseComCustomToken(
   }
 }
 
+async function resolverCustomTokenServidor(data: Record<string, unknown>): Promise<string | undefined> {
+  let firebaseAuthErro: string | undefined = data?.customTokenErro
+    ? String(data.customTokenErro)
+    : undefined;
+  if (firebaseAuthErro) {
+    registrarErroFirebaseAuth(firebaseAuthErro);
+  }
+  if (data?.autenticado && typeof data?.customToken === 'string' && data.customToken) {
+    const fb = await autenticarFirebaseComCustomToken(
+      data.customToken,
+      typeof data?.firebaseProjectId === 'string' ? data.firebaseProjectId : undefined
+    );
+    if (!fb.ok) firebaseAuthErro = fb.erro;
+  } else if (data?.autenticado && !firebaseAuthErro) {
+    firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
+    registrarErroFirebaseAuth(firebaseAuthErro);
+  }
+  return firebaseAuthErro;
+}
+
 export async function autenticarLojaServidor(
   lojaId: string,
   senha: string
@@ -140,10 +174,12 @@ export async function autenticarLojaServidor(
   deveTrocarSenha?: boolean;
   senhaRevogada?: boolean;
   bloqueado?: boolean;
+  segundosRestantes?: number;
+  tentativas?: number;
   erro?: string;
   firebaseAuthErro?: string;
 }> {
-  if (typeof window === 'undefined') return { fallbackLocal: true };
+  if (typeof window === 'undefined') return { fallbackLocal: false, autenticado: false };
   try {
     const resp = await fetch('/api/auth', {
       method: 'POST',
@@ -151,8 +187,8 @@ export async function autenticarLojaServidor(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ acao: 'autenticar_loja', lojaId, senha }),
     });
-    const data = await resp.json().catch(() => ({}));
-    if (resp.status === 503 || data?.configurado === false) {
+    const data = (await resp.json().catch(() => ({}))) as Record<string, unknown>;
+    if (deveUsarFallbackLocalDev(resp, data)) {
       return { fallbackLocal: true };
     }
     if (!resp.ok) {
@@ -161,22 +197,18 @@ export async function autenticarLojaServidor(
         autenticado: false,
         senhaRevogada: Boolean(data?.senhaRevogada),
         bloqueado: Boolean(data?.bloqueado || resp.status === 429),
-        erro: data?.erro || 'Credenciais inválidas.',
+        segundosRestantes:
+          typeof data?.segundosRestantes === 'number' ? data.segundosRestantes : undefined,
+        tentativas: typeof data?.tentativas === 'number' ? data.tentativas : undefined,
+        erro: String(
+          data?.erro ||
+            (resp.status === 503
+              ? 'Servidor de autenticação indisponível no momento.'
+              : 'Credenciais inválidas.')
+        ),
       };
     }
-    let firebaseAuthErro: string | undefined = data?.customTokenErro
-      ? String(data.customTokenErro)
-      : undefined;
-    if (firebaseAuthErro) {
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
-    if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
-      if (!fb.ok) firebaseAuthErro = fb.erro;
-    } else if (data?.autenticado && !firebaseAuthErro) {
-      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
+    const firebaseAuthErro = await resolverCustomTokenServidor(data);
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
@@ -184,7 +216,11 @@ export async function autenticarLojaServidor(
       ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
-    return { fallbackLocal: true };
+    return {
+      fallbackLocal: false,
+      autenticado: false,
+      erro: 'Falha de conexão com o servidor de autenticação. Tente novamente.',
+    };
   }
 }
 
@@ -196,11 +232,13 @@ export async function autenticarOperadorServidor(
   fallbackLocal?: boolean;
   autenticado?: boolean;
   bloqueado?: boolean;
+  segundosRestantes?: number;
+  tentativas?: number;
   erro?: string;
   operador?: OperadorCaixa;
   firebaseAuthErro?: string;
 }> {
-  if (typeof window === 'undefined') return { fallbackLocal: true };
+  if (typeof window === 'undefined') return { fallbackLocal: false, autenticado: false };
   try {
     const resp = await fetch('/api/auth', {
       method: 'POST',
@@ -208,8 +246,8 @@ export async function autenticarOperadorServidor(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ acao: 'autenticar_operador', lojaId, usuario, senha }),
     });
-    const data = await resp.json().catch(() => ({}));
-    if (resp.status === 503 || data?.configurado === false) {
+    const data = (await resp.json().catch(() => ({}))) as Record<string, unknown>;
+    if (deveUsarFallbackLocalDev(resp, data)) {
       return { fallbackLocal: true };
     }
     if (!resp.ok) {
@@ -217,22 +255,18 @@ export async function autenticarOperadorServidor(
         fallbackLocal: false,
         autenticado: false,
         bloqueado: Boolean(data?.bloqueado || resp.status === 429),
-        erro: data?.erro || 'Usuário ou senha inválidos.',
+        segundosRestantes:
+          typeof data?.segundosRestantes === 'number' ? data.segundosRestantes : undefined,
+        tentativas: typeof data?.tentativas === 'number' ? data.tentativas : undefined,
+        erro: String(
+          data?.erro ||
+            (resp.status === 503
+              ? 'Servidor de autenticação indisponível no momento.'
+              : 'Usuário ou senha inválidos.')
+        ),
       };
     }
-    let firebaseAuthErro: string | undefined = data?.customTokenErro
-      ? String(data.customTokenErro)
-      : undefined;
-    if (firebaseAuthErro) {
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
-    if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
-      if (!fb.ok) firebaseAuthErro = fb.erro;
-    } else if (data?.autenticado && !firebaseAuthErro) {
-      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
+    const firebaseAuthErro = await resolverCustomTokenServidor(data);
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
@@ -240,7 +274,11 @@ export async function autenticarOperadorServidor(
       ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
-    return { fallbackLocal: true };
+    return {
+      fallbackLocal: false,
+      autenticado: false,
+      erro: 'Falha de conexão com o servidor de autenticação. Tente novamente.',
+    };
   }
 }
 
@@ -256,7 +294,7 @@ export async function redefinirSenhaRevogadaServidor(
   erro?: string;
   firebaseAuthErro?: string;
 }> {
-  if (typeof window === 'undefined') return { fallbackLocal: true };
+  if (typeof window === 'undefined') return { fallbackLocal: false, autenticado: false };
   try {
     const resp = await fetch('/api/auth', {
       method: 'POST',
@@ -271,37 +309,29 @@ export async function redefinirSenhaRevogadaServidor(
         senhaAtual: senhaAtual || '',
       }),
     });
-    const data = await resp.json().catch(() => ({}));
-    if (resp.status === 503 || data?.configurado === false) {
+    const data = (await resp.json().catch(() => ({}))) as Record<string, unknown>;
+    if (deveUsarFallbackLocalDev(resp, data)) {
       return { fallbackLocal: true };
     }
     if (!resp.ok) {
       return {
         fallbackLocal: false,
         autenticado: false,
-        erro: data?.erro || 'Erro ao salvar nova senha no servidor.',
+        erro: String(data?.erro || 'Erro ao salvar nova senha no servidor.'),
       };
     }
-    let firebaseAuthErro: string | undefined = data?.customTokenErro
-      ? String(data.customTokenErro)
-      : undefined;
-    if (firebaseAuthErro) {
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
-    if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
-      if (!fb.ok) firebaseAuthErro = fb.erro;
-    } else if (data?.autenticado && !firebaseAuthErro) {
-      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
+    const firebaseAuthErro = await resolverCustomTokenServidor(data);
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
       ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
-    return { fallbackLocal: true };
+    return {
+      fallbackLocal: false,
+      autenticado: false,
+      erro: 'Falha de conexão com o servidor ao salvar nova senha.',
+    };
   }
 }
 
@@ -311,10 +341,13 @@ export async function autenticarMasterServidor(
 ): Promise<{
   fallbackLocal?: boolean;
   autenticado?: boolean;
+  bloqueado?: boolean;
+  segundosRestantes?: number;
+  tentativas?: number;
   erro?: string;
   firebaseAuthErro?: string;
 }> {
-  if (typeof window === 'undefined') return { fallbackLocal: true };
+  if (typeof window === 'undefined') return { fallbackLocal: false, autenticado: false };
   try {
     const resp = await fetch('/api/auth', {
       method: 'POST',
@@ -322,37 +355,36 @@ export async function autenticarMasterServidor(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ acao: 'autenticar_master', usuario, senha }),
     });
-    const data = await resp.json().catch(() => ({}));
-    if (resp.status === 503 || data?.configurado === false) {
-      return { fallbackLocal: true };
-    }
+    const data = (await resp.json().catch(() => ({}))) as Record<string, unknown>;
     if (!resp.ok) {
+      const erroPadrao =
+        resp.status === 503
+          ? 'Autenticação Master não configurada no servidor.'
+          : resp.status === 429
+            ? 'Muitas tentativas. Aguarde antes de tentar novamente.'
+            : 'Credenciais Master inválidas.';
       return {
         fallbackLocal: false,
         autenticado: false,
-        erro: data?.erro || 'Credenciais Master inválidas.',
+        bloqueado: Boolean(data?.bloqueado || resp.status === 429),
+        segundosRestantes:
+          typeof data?.segundosRestantes === 'number' ? data.segundosRestantes : undefined,
+        tentativas: typeof data?.tentativas === 'number' ? data.tentativas : undefined,
+        erro: String(data?.erro || erroPadrao),
       };
     }
-    let firebaseAuthErro: string | undefined = data?.customTokenErro
-      ? String(data.customTokenErro)
-      : undefined;
-    if (firebaseAuthErro) {
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
-    if (data?.autenticado && data?.customToken) {
-      const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
-      if (!fb.ok) firebaseAuthErro = fb.erro;
-    } else if (data?.autenticado && !firebaseAuthErro) {
-      firebaseAuthErro = 'Servidor autenticou, mas não retornou Firebase Custom Token.';
-      registrarErroFirebaseAuth(firebaseAuthErro);
-    }
+    const firebaseAuthErro = await resolverCustomTokenServidor(data);
     return {
       fallbackLocal: false,
       autenticado: Boolean(data?.autenticado),
       ...(firebaseAuthErro ? { firebaseAuthErro } : {}),
     };
   } catch {
-    return { fallbackLocal: true };
+    return {
+      fallbackLocal: false,
+      autenticado: false,
+      erro: 'Falha de conexão com o servidor ao validar acesso Master. Tente novamente.',
+    };
   }
 }
 

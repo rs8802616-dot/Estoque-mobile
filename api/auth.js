@@ -29,11 +29,146 @@ const SENHAS_PADRAO_FRACAS = new Set([
   'abc12345',
 ]);
 const tentativasIp = new Map();
+const lockoutMemoria = new Map();
 
 function getClientIp(req) {
   return String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'local')
     .split(',')[0]
     .trim();
+}
+
+function sanitizarChaveLockout(valor) {
+  return String(valor || 'local').replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
+function normalizarEstadoLockout(reg, agora = Date.now()) {
+  const tentativas = Number(reg?.tentativas || 0);
+  const bloqueadoAte = Number(reg?.bloqueadoAte || 0);
+  const atualizadoEm = Number(reg?.atualizadoEm || 0);
+
+  if (bloqueadoAte > 0 && bloqueadoAte <= agora) {
+    return { tentativas: 0, bloqueadoAte: 0, atualizadoEm, segundosRestantes: 0 };
+  }
+  if (bloqueadoAte === 0 && tentativas > 0 && atualizadoEm > 0 && agora - atualizadoEm > BLOQUEIO_MS) {
+    return { tentativas: 0, bloqueadoAte: 0, atualizadoEm, segundosRestantes: 0 };
+  }
+  const segundosRestantes =
+    bloqueadoAte > agora ? Math.max(1, Math.ceil((bloqueadoAte - agora) / 1000)) : 0;
+  return { tentativas, bloqueadoAte, atualizadoEm, segundosRestantes };
+}
+
+function escolherEstadoLockout(memEstado, fsEstado, agora = Date.now()) {
+  if (!fsEstado) return memEstado;
+  const memBloq = memEstado.bloqueadoAte > agora;
+  const fsBloq = fsEstado.bloqueadoAte > agora;
+  if (memBloq || fsBloq) {
+    const bloqueadoAte = Math.max(memEstado.bloqueadoAte, fsEstado.bloqueadoAte);
+    const tentativas = Math.max(memEstado.tentativas, fsEstado.tentativas);
+    const atualizadoEm = Math.max(memEstado.atualizadoEm, fsEstado.atualizadoEm);
+    return {
+      tentativas,
+      bloqueadoAte,
+      atualizadoEm,
+      segundosRestantes: Math.max(1, Math.ceil((bloqueadoAte - agora) / 1000)),
+    };
+  }
+  if (fsEstado.atualizadoEm > memEstado.atualizadoEm) return fsEstado;
+  if (memEstado.atualizadoEm > fsEstado.atualizadoEm) return memEstado;
+  return fsEstado.tentativas >= memEstado.tentativas ? fsEstado : memEstado;
+}
+
+async function obterContextoFirestoreOpcional() {
+  const rawSa = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  if (!rawSa) return null;
+  try {
+    const serviceAccount = parseServiceAccountEnv(rawSa);
+    const accessToken = await obterAccessTokenAdmin(serviceAccount);
+    return { projectId: serviceAccount.project_id, accessToken };
+  } catch (err) {
+    console.warn('[api/auth] Lockout Firestore opcional indisponível:', err?.message || err);
+    return null;
+  }
+}
+
+async function lerLockoutCombinado(lockoutKey, firestoreCtx = null) {
+  const agora = Date.now();
+  const memEstado = normalizarEstadoLockout(lockoutMemoria.get(lockoutKey), agora);
+  let fsEstado = null;
+  if (firestoreCtx) {
+    try {
+      const doc = await lerDocFirestoreAdmin(
+        firestoreCtx.projectId,
+        firestoreCtx.accessToken,
+        `controle_login/${lockoutKey}`
+      );
+      if (doc) {
+        fsEstado = normalizarEstadoLockout(doc, agora);
+      }
+    } catch (err) {
+      console.warn('[api/auth] Falha ao ler lockout no Firestore:', err?.message || err);
+    }
+  }
+  const combinado = escolherEstadoLockout(memEstado, fsEstado, agora);
+  if (combinado.tentativas > 0 || combinado.bloqueadoAte > 0) {
+    lockoutMemoria.set(lockoutKey, combinado);
+  } else {
+    lockoutMemoria.delete(lockoutKey);
+  }
+  return combinado;
+}
+
+async function registrarFalhaLockout(lockoutKey, estadoAtual, firestoreCtx = null) {
+  const agora = Date.now();
+  const base = normalizarEstadoLockout(estadoAtual, agora);
+  const novasTentativas = base.tentativas + 1;
+  const bloqueadoAte =
+    novasTentativas >= MAX_TENTATIVAS_LOCKOUT ? agora + BLOQUEIO_MS : 0;
+  const novoEstado = {
+    tentativas: novasTentativas,
+    bloqueadoAte,
+    atualizadoEm: agora,
+  };
+  lockoutMemoria.set(lockoutKey, novoEstado);
+  if (firestoreCtx) {
+    try {
+      await gravarDocFirestoreAdmin(
+        firestoreCtx.projectId,
+        firestoreCtx.accessToken,
+        `controle_login/${lockoutKey}`,
+        novoEstado
+      );
+    } catch (err) {
+      console.warn('[api/auth] Falha ao gravar lockout no Firestore:', err?.message || err);
+    }
+  }
+  const segundosRestantes =
+    bloqueadoAte > agora ? Math.max(1, Math.ceil((bloqueadoAte - agora) / 1000)) : 0;
+  return {
+    tentativas: novasTentativas,
+    bloqueadoAte,
+    bloqueado: bloqueadoAte > 0,
+    segundosRestantes,
+  };
+}
+
+async function limparLockoutCombinado(lockoutKey, firestoreCtx = null) {
+  lockoutMemoria.delete(lockoutKey);
+  if (firestoreCtx) {
+    try {
+      await gravarDocFirestoreAdmin(
+        firestoreCtx.projectId,
+        firestoreCtx.accessToken,
+        `controle_login/${lockoutKey}`,
+        {
+          tentativas: 0,
+          bloqueadoAte: 0,
+          atualizadoEm: Date.now(),
+        }
+      );
+    } catch (err) {
+      console.warn('[api/auth] Falha ao limpar lockout no Firestore:', err?.message || err);
+    }
+  }
 }
 
 function checarRateLimit(req) {
@@ -46,7 +181,11 @@ function checarRateLimit(req) {
   }
   reg.count += 1;
   tentativasIp.set(ip, reg);
-  return reg.count <= RATE_MAX;
+  const segundosRestantes = Math.max(1, Math.ceil((reg.resetEm - agora) / 1000));
+  return {
+    permitido: reg.count <= RATE_MAX,
+    segundosRestantes,
+  };
 }
 
 function base64Url(input) {
@@ -508,10 +647,21 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
   if (req.method !== 'POST') {
-    return res.status(405).json({ configurado: false, erro: 'Método não permitido. Use POST.' });
+    return res.status(405).json({
+      configurado: true,
+      autenticado: false,
+      erro: 'Método não permitido. Use POST.',
+    });
   }
-  if (!checarRateLimit(req)) {
-    return res.status(429).json({ configurado: false, erro: 'Muitas tentativas. Aguarde 1 minuto.' });
+  const rate = checarRateLimit(req);
+  if (!rate.permitido) {
+    return res.status(429).json({
+      configurado: true,
+      autenticado: false,
+      bloqueado: true,
+      segundosRestantes: rate.segundosRestantes,
+      erro: 'Muitas tentativas. Aguarde 1 minuto.',
+    });
   }
 
   const body = req.body || {};
@@ -545,20 +695,67 @@ export default async function handler(req, res) {
   }
 
   if (acao === 'autenticar_master') {
-    const cookies = parseCookies(req);
-    if (!verificarCookieMasterAssinado(cookies.em_master_sessao, hmacSecret)) {
-      return res.status(401).json({ configurado: true, autenticado: false, erro: 'Sessão master inválida.' });
-    }
     const masterUserEnv = String(process.env.MASTER_ADMIN_USER || '').trim().toLowerCase();
     const masterPassEnv = String(process.env.MASTER_ADMIN_PASS || '').trim();
     if (!masterUserEnv || !masterPassEnv) {
-      return res.status(503).json({ configurado: false });
+      return res.status(503).json({
+        configurado: false,
+        erro: 'Credenciais Master não configuradas no servidor.',
+      });
     }
+
+    const ip = sanitizarChaveLockout(getClientIp(req));
+    const lockoutKey = `master__${ip}`;
+    const firestoreCtx = await obterContextoFirestoreOpcional();
+    const lockEstado = await lerLockoutCombinado(lockoutKey, firestoreCtx);
+
+    if (lockEstado.bloqueadoAte > Date.now()) {
+      const seg =
+        lockEstado.segundosRestantes ||
+        Math.max(1, Math.ceil((lockEstado.bloqueadoAte - Date.now()) / 1000));
+      return res.status(429).json({
+        configurado: true,
+        autenticado: false,
+        bloqueado: true,
+        tentativas: lockEstado.tentativas,
+        segundosRestantes: seg,
+        erro: `Acesso bloqueado por segurança. Tente novamente em ${Math.ceil(seg / 60)} min.`,
+      });
+    }
+
+    const cookies = parseCookies(req);
+    if (!verificarCookieMasterAssinado(cookies.em_master_sessao, hmacSecret)) {
+      const falha = await registrarFalhaLockout(lockoutKey, lockEstado, firestoreCtx);
+      return res.status(falha.bloqueado ? 429 : 401).json({
+        configurado: true,
+        autenticado: false,
+        tentativas: falha.tentativas,
+        bloqueado: falha.bloqueado,
+        ...(falha.segundosRestantes > 0 ? { segundosRestantes: falha.segundosRestantes } : {}),
+        erro: falha.bloqueado
+          ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
+          : 'Sessão master inválida.',
+      });
+    }
+
     const u = String(body.usuario || '').trim().toLowerCase();
     const s = String(body.senha || '').trim();
     if (!compararTempoConstante(u, masterUserEnv) || !compararTempoConstante(s, masterPassEnv)) {
-      return res.status(401).json({ configurado: true, autenticado: false, erro: 'Usuário ou senha Master inválidos.' });
+      const falha = await registrarFalhaLockout(lockoutKey, lockEstado, firestoreCtx);
+      return res.status(falha.bloqueado ? 429 : 401).json({
+        configurado: true,
+        autenticado: false,
+        tentativas: falha.tentativas,
+        bloqueado: falha.bloqueado,
+        ...(falha.segundosRestantes > 0 ? { segundosRestantes: falha.segundosRestantes } : {}),
+        erro: falha.bloqueado
+          ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
+          : `Usuário ou senha Master inválidos (${falha.tentativas}/${MAX_TENTATIVAS_LOCKOUT}).`,
+      });
     }
+
+    await limparLockoutCombinado(lockoutKey, firestoreCtx);
+
     const uidMaster = `master_${u}`;
     let customToken = null;
     let customTokenErro = '';
@@ -619,7 +816,8 @@ export default async function handler(req, res) {
     const detalhe = String(err?.message || err || 'formato incorreto');
     console.error('[api/auth] FIREBASE_SERVICE_ACCOUNT_JSON inválido:', detalhe);
     return res.status(500).json({
-      configurado: false,
+      configurado: true,
+      autenticado: false,
       erro: `FIREBASE_SERVICE_ACCOUNT_JSON inválido: ${detalhe}`,
     });
   }
@@ -799,21 +997,21 @@ export default async function handler(req, res) {
     try {
       const accessToken = await obterAccessTokenAdmin(serviceAccount);
       const projectId = serviceAccount.project_id;
-      const ip = getClientIp(req).replace(/[^a-zA-Z0-9._-]/g, '_');
-      const safeLojaLock = lojaId.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const lockoutPath = `controle_login/${safeLojaLock}__${ip}`;
-      const lockDoc = (await lerDocFirestoreAdmin(projectId, accessToken, lockoutPath)) || {
-        tentativas: 0,
-        bloqueadoAte: 0,
-      };
+      const firestoreCtx = { projectId, accessToken };
+      const ip = sanitizarChaveLockout(getClientIp(req));
+      const safeLojaLock = sanitizarChaveLockout(lojaId);
+      const lockoutKey = `${safeLojaLock}__${ip}`;
+      const lockEstado = await lerLockoutCombinado(lockoutKey, firestoreCtx);
 
-      const agora = Date.now();
-      if (lockDoc.bloqueadoAte && Number(lockDoc.bloqueadoAte) > agora) {
-        const seg = Math.ceil((Number(lockDoc.bloqueadoAte) - agora) / 1000);
+      if (lockEstado.bloqueadoAte > Date.now()) {
+        const seg =
+          lockEstado.segundosRestantes ||
+          Math.max(1, Math.ceil((lockEstado.bloqueadoAte - Date.now()) / 1000));
         return res.status(429).json({
           configurado: true,
           autenticado: false,
           bloqueado: true,
+          tentativas: lockEstado.tentativas,
           segundosRestantes: seg,
           erro: `Acesso bloqueado por segurança. Tente novamente em ${Math.ceil(seg / 60)} min.`,
         });
@@ -851,31 +1049,20 @@ export default async function handler(req, res) {
       );
 
       if (!senhaOk) {
-        const novasTentativas = Number(lockDoc.tentativas || 0) + 1;
-        const bloqueadoAte =
-          novasTentativas >= MAX_TENTATIVAS_LOCKOUT ? Date.now() + BLOQUEIO_MS : 0;
-        await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
-          tentativas: novasTentativas,
-          bloqueadoAte,
-          atualizadoEm: Date.now(),
-        });
-        return res.status(bloqueadoAte > 0 ? 429 : 401).json({
+        const falha = await registrarFalhaLockout(lockoutKey, lockEstado, firestoreCtx);
+        return res.status(falha.bloqueado ? 429 : 401).json({
           configurado: true,
           autenticado: false,
-          tentativas: novasTentativas,
-          bloqueado: bloqueadoAte > 0,
-          erro:
-            bloqueadoAte > 0
-              ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
-              : `Senha incorreta (${novasTentativas}/${MAX_TENTATIVAS_LOCKOUT}).`,
+          tentativas: falha.tentativas,
+          bloqueado: falha.bloqueado,
+          ...(falha.segundosRestantes > 0 ? { segundosRestantes: falha.segundosRestantes } : {}),
+          erro: falha.bloqueado
+            ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
+            : `Senha incorreta (${falha.tentativas}/${MAX_TENTATIVAS_LOCKOUT}).`,
         });
       }
 
-      await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
-        tentativas: 0,
-        bloqueadoAte: 0,
-        atualizadoEm: Date.now(),
-      });
+      await limparLockoutCombinado(lockoutKey, firestoreCtx);
 
       const lojaDocId = String(lojaDoc._docId || lojaId);
       if (precisaMigrarPbkdf2) {
@@ -1102,21 +1289,21 @@ export default async function handler(req, res) {
     try {
       const accessToken = await obterAccessTokenAdmin(serviceAccount);
       const projectId = serviceAccount.project_id;
-      const ip = getClientIp(req).replace(/[^a-zA-Z0-9._-]/g, '_');
-      const safeLojaLock = lojaId.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const lockoutPath = `controle_login/${safeLojaLock}__op__${ip}`;
-      const lockDoc = (await lerDocFirestoreAdmin(projectId, accessToken, lockoutPath)) || {
-        tentativas: 0,
-        bloqueadoAte: 0,
-      };
+      const firestoreCtx = { projectId, accessToken };
+      const ip = sanitizarChaveLockout(getClientIp(req));
+      const safeLojaLock = sanitizarChaveLockout(lojaId);
+      const lockoutKey = `${safeLojaLock}__op__${ip}`;
+      const lockEstado = await lerLockoutCombinado(lockoutKey, firestoreCtx);
 
-      const agora = Date.now();
-      if (lockDoc.bloqueadoAte && Number(lockDoc.bloqueadoAte) > agora) {
-        const seg = Math.ceil((Number(lockDoc.bloqueadoAte) - agora) / 1000);
+      if (lockEstado.bloqueadoAte > Date.now()) {
+        const seg =
+          lockEstado.segundosRestantes ||
+          Math.max(1, Math.ceil((lockEstado.bloqueadoAte - Date.now()) / 1000));
         return res.status(429).json({
           configurado: true,
           autenticado: false,
           bloqueado: true,
+          tentativas: lockEstado.tentativas,
           segundosRestantes: seg,
           erro: `Acesso bloqueado por segurança. Tente novamente em ${Math.ceil(seg / 60)} min.`,
         });
@@ -1172,31 +1359,20 @@ export default async function handler(req, res) {
         : { ok: false, precisaMigrarPbkdf2: false };
 
       if (!resSenha.ok) {
-        const novasTentativas = Number(lockDoc.tentativas || 0) + 1;
-        const bloqueadoAte =
-          novasTentativas >= MAX_TENTATIVAS_LOCKOUT ? Date.now() + BLOQUEIO_MS : 0;
-        await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
-          tentativas: novasTentativas,
-          bloqueadoAte,
-          atualizadoEm: Date.now(),
-        });
-        return res.status(bloqueadoAte > 0 ? 429 : 401).json({
+        const falha = await registrarFalhaLockout(lockoutKey, lockEstado, firestoreCtx);
+        return res.status(falha.bloqueado ? 429 : 401).json({
           configurado: true,
           autenticado: false,
-          tentativas: novasTentativas,
-          bloqueado: bloqueadoAte > 0,
-          erro:
-            bloqueadoAte > 0
-              ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
-              : `Usuário ou senha inválidos (${novasTentativas}/${MAX_TENTATIVAS_LOCKOUT}).`,
+          tentativas: falha.tentativas,
+          bloqueado: falha.bloqueado,
+          ...(falha.segundosRestantes > 0 ? { segundosRestantes: falha.segundosRestantes } : {}),
+          erro: falha.bloqueado
+            ? 'Limite de 5 tentativas excedido. Acesso bloqueado por 15 minutos.'
+            : `Usuário ou senha inválidos (${falha.tentativas}/${MAX_TENTATIVAS_LOCKOUT}).`,
         });
       }
 
-      await gravarDocFirestoreAdmin(projectId, accessToken, lockoutPath, {
-        tentativas: 0,
-        bloqueadoAte: 0,
-        atualizadoEm: Date.now(),
-      });
+      await limparLockoutCombinado(lockoutKey, firestoreCtx);
 
       const opDocId = String(opEncontrado._docId || opEncontrado.id);
       if (resSenha.precisaMigrarPbkdf2) {
