@@ -29,26 +29,28 @@ import {
   CheckCircle2,
   AlertTriangle,
   Settings,
-  PlusCircle,
   ExternalLink,
   Printer,
   KeyRound,
-  DollarSign,
-  ChevronRight,
-  ShieldCheck,
-  Eye,
-  Store,
-  RefreshCw,
+  Share2,
+  Copy,
   Flame,
   Check,
   Search,
-  Share2,
-  Copy,
-  Receipt,
-  ChefHat,
   ShoppingBag,
   UtensilsCrossed,
   FileCheck,
+  Bell,
+  BellOff,
+  Volume2,
+  User,
+  CreditCard,
+  LayoutGrid,
+  List,
+  Calendar,
+  Trash2,
+  Ban,
+  MessageSquareText,
 } from 'lucide-react';
 
 interface GestaoDeliveryModalProps {
@@ -68,6 +70,112 @@ interface GestaoDeliveryModalProps {
   lojaAtual: Supermercado | null;
 }
 
+function formatarFormaPagamento(forma?: string): string {
+  switch (forma) {
+    case 'pix':
+      return 'PIX';
+    case 'cartao_credito':
+      return 'Crédito';
+    case 'cartao_debito':
+      return 'Débito';
+    case 'dinheiro':
+      return 'Dinheiro';
+    default:
+      return (forma || 'Não inf.').toUpperCase();
+  }
+}
+
+function obterMetaCanal(order: PedidoDelivery) {
+  if (order.tipo_pedido === 'retirada') {
+    return {
+      label: 'RETIRADA',
+      Icon: ShoppingBag,
+      pillClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    };
+  }
+  if (order.tipo_pedido === 'mesa') {
+    return {
+      label: `MESA ${order.mesaNumero || ''}`.trim(),
+      Icon: UtensilsCrossed,
+      pillClass: 'bg-amber-50 text-amber-800 border-amber-200',
+    };
+  }
+  return {
+    label: 'DELIVERY',
+    Icon: Bike,
+    pillClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  };
+}
+
+function obterMetaStatus(status: StatusPedidoDelivery) {
+  switch (status) {
+    case 'pendente':
+      return {
+        label: 'Novo',
+        barClass: 'bg-red-500',
+        badgeClass: 'bg-red-50 text-red-700 border-red-200',
+        Icon: Bell,
+        pulse: true,
+      };
+    case 'em_separacao':
+      return {
+        label: 'Em Preparo',
+        barClass: 'bg-amber-400',
+        badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
+        Icon: Flame,
+        pulse: false,
+      };
+    case 'pronto':
+      return {
+        label: 'Pronto',
+        barClass: 'bg-teal-500',
+        badgeClass: 'bg-teal-50 text-teal-700 border-teal-200',
+        Icon: Check,
+        pulse: false,
+      };
+    case 'saiu_para_entrega':
+      return {
+        label: 'A Caminho',
+        barClass: 'bg-sky-500',
+        badgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
+        Icon: Bike,
+        pulse: false,
+      };
+    case 'entregue':
+      return {
+        label: 'Entregue',
+        barClass: 'bg-emerald-500',
+        badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        Icon: CheckCircle2,
+        pulse: false,
+      };
+    case 'cancelado':
+    default:
+      return {
+        label: 'Cancelado',
+        barClass: 'bg-slate-400',
+        badgeClass: 'bg-slate-100 text-slate-600 border-slate-200',
+        Icon: Ban,
+        pulse: false,
+      };
+  }
+}
+
+function formatarEnderecoResumo(order: PedidoDelivery): string {
+  const end = order.enderecoEntrega;
+  if (order.tipo_pedido === 'mesa' && !end?.logradouro) {
+    return `Consumo local • Mesa ${order.mesaNumero || '-'}`;
+  }
+  if (order.tipo_pedido === 'retirada' && !end?.logradouro) {
+    return 'Retirada no balcão da loja';
+  }
+  if (!end?.logradouro) return '';
+  const numero = end.numero ? `, ${end.numero}` : '';
+  const bairro = end.bairro ? ` — ${end.bairro}` : '';
+  const ref = end.referencia ? ` (Ref: ${end.referencia})` : '';
+  return `${end.logradouro}${numero}${bairro}${ref}`;
+}
+
 export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   visivel,
   onFechar,
@@ -81,10 +189,28 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   estoque,
   lojaAtual,
 }) => {
-  // Filtros de status estilo AtendeJá / Imagem de referência
-  // 'todos' | 'novo' | 'em_preparo' | 'pronto' | 'a_caminho' | 'entregue'
+  // Filtros e visualização
   const [pedidosFilterStatus, setPedidosFilterStatus] = useState<string>('todos');
   const [pedidosSearch, setPedidosSearch] = useState<string>('');
+  const [apenasHoje, setApenasHoje] = useState<boolean>(false);
+  const [modoVisualizacao, setModoVisualizacao] = useState<'cards' | 'lista'>(() => {
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem('delivery_modo_visualizacao') === 'lista') {
+        return 'lista';
+      }
+    } catch {}
+    return 'cards';
+  });
+
+  const alternarModoVisualizacao = (modo: 'cards' | 'lista') => {
+    setModoVisualizacao(modo);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('delivery_modo_visualizacao', modo);
+      }
+    } catch {}
+  };
+
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiouTokenEquipe, setCopiouTokenEquipe] = useState<string | null>(null);
   const [modalConfigAberta, setModalConfigAberta] = useState(false);
@@ -100,7 +226,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   // Notificação toast para NFC-e
   const [toastNfce, setToastNfce] = useState<string | null>(null);
 
-  // Modal do Link do Motoboy com token exclusivo (Estilo AtendeJá)
+  // Modal do Link do Motoboy com token exclusivo
   const [pedidoLinkMotoboy, setPedidoLinkMotoboy] = useState<PedidoDelivery | null>(null);
   const [copiouLinkMotoboy, setCopiouLinkMotoboy] = useState(false);
 
@@ -176,14 +302,23 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
   if (!visivel) return null;
 
-  // Contadores globais
-  const countNovos = pedidos.filter((p) => p.status === 'pendente').length;
-  const countPreparo = pedidos.filter((p) => p.status === 'em_separacao').length;
-  const countProntos = pedidos.filter((p) => p.status === 'pronto').length;
-  const countACaminho = pedidos.filter((p) => p.status === 'saiu_para_entrega').length;
-  const countEntregues = pedidos.filter((p) => p.status === 'entregue').length;
-  const countCancelados = pedidos.filter((p) => p.status === 'cancelado').length;
-  const countTotal = pedidos.length;
+  const statusLoja = verificarStatusFuncionamentoDelivery(configDelivery);
+  const countHoje = pedidos.filter((p) => p.data === hojeFormatado).length;
+  const pedidosEscopo = apenasHoje ? pedidos.filter((p) => p.data === hojeFormatado) : pedidos;
+
+  // Contadores do escopo atual
+  const countNovos = pedidosEscopo.filter((p) => p.status === 'pendente').length;
+  const countPreparo = pedidosEscopo.filter((p) => p.status === 'em_separacao').length;
+  const countProntos = pedidosEscopo.filter((p) => p.status === 'pronto').length;
+  const countACaminho = pedidosEscopo.filter((p) => p.status === 'saiu_para_entrega').length;
+  const pedidosEntregues = pedidosEscopo.filter((p) => p.status === 'entregue');
+  const countEntregues = pedidosEntregues.length;
+  const countCancelados = pedidosEscopo.filter((p) => p.status === 'cancelado').length;
+  const countTotal = pedidosEscopo.length;
+  const faturamentoEntregues = pedidosEntregues.reduce(
+    (acc, p) => acc + (Number(p.valorTotal) || 0),
+    0
+  );
 
   const handleConfirmarCancelamento = (avisarWhatsApp: boolean) => {
     if (!pedidoParaCancelar) return;
@@ -205,29 +340,44 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     setMotivoCancelamento('');
   };
 
-  // Filtragem dos pedidos de Delivery
-  const filteredOrders = pedidos.filter((p) => {
-    // Filtro por status
-    if (pedidosFilterStatus === 'novo' && p.status !== 'pendente') return false;
-    if (pedidosFilterStatus === 'em_preparo' && p.status !== 'em_separacao') return false;
-    if (pedidosFilterStatus === 'pronto' && p.status !== 'pronto') return false;
-    if (pedidosFilterStatus === 'a_caminho' && p.status !== 'saiu_para_entrega') return false;
-    if (pedidosFilterStatus === 'entregue' && p.status !== 'entregue') return false;
-    if (pedidosFilterStatus === 'cancelado' && p.status !== 'cancelado') return false;
+  // Filtragem dos pedidos
+  const filteredOrders = pedidosEscopo
+    .filter((p) => {
+      if (pedidosFilterStatus === 'novo' && p.status !== 'pendente') return false;
+      if (pedidosFilterStatus === 'em_preparo' && p.status !== 'em_separacao') return false;
+      if (pedidosFilterStatus === 'pronto' && p.status !== 'pronto') return false;
+      if (pedidosFilterStatus === 'a_caminho' && p.status !== 'saiu_para_entrega') return false;
+      if (pedidosFilterStatus === 'entregue' && p.status !== 'entregue') return false;
+      if (pedidosFilterStatus === 'cancelado' && p.status !== 'cancelado') return false;
 
-    // Filtro por busca
-    if (pedidosSearch.trim()) {
-      const b = pedidosSearch.toLowerCase().trim();
-      const nomeMatch = p.cliente?.nome?.toLowerCase().includes(b);
-      const foneMatch = p.cliente?.telefone?.replace(/\D/g, '').includes(b.replace(/\D/g, ''));
-      const ruaMatch = p.enderecoEntrega?.logradouro?.toLowerCase().includes(b);
-      const bairroMatch = p.enderecoEntrega?.bairro?.toLowerCase().includes(b);
-      const numMatch = p.numeroPedido?.toString().includes(b);
-      if (!nomeMatch && !foneMatch && !ruaMatch && !bairroMatch && !numMatch) return false;
-    }
+      if (pedidosSearch.trim()) {
+        const b = pedidosSearch.toLowerCase().trim();
+        const digitsBusca = b.replace(/\D/g, '');
+        const nomeMatch = p.cliente?.nome?.toLowerCase().includes(b);
+        const foneMatch =
+          digitsBusca.length > 0 &&
+          p.cliente?.telefone?.replace(/\D/g, '').includes(digitsBusca);
+        const ruaMatch = p.enderecoEntrega?.logradouro?.toLowerCase().includes(b);
+        const bairroMatch = p.enderecoEntrega?.bairro?.toLowerCase().includes(b);
+        const mesaMatch = p.mesaNumero?.toLowerCase().includes(b);
+        const numMatch = p.numeroPedido?.toString().includes(b);
+        if (!nomeMatch && !foneMatch && !ruaMatch && !bairroMatch && !mesaMatch && !numMatch) {
+          return false;
+        }
+      }
 
-    return true;
-  }).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      return true;
+    })
+    .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  const temFiltroAtivo =
+    pedidosFilterStatus !== 'todos' || pedidosSearch.trim().length > 0 || apenasHoje;
+
+  const limparFiltros = () => {
+    setPedidosFilterStatus('todos');
+    setPedidosSearch('');
+    setApenasHoje(false);
+  };
 
   // Copiar link do cardápio digital (?loja=slug)
   const handleCopiarLinkCardapio = () => {
@@ -242,7 +392,10 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
   // Obter ou gerar token único mto_... para o link exclusivo do motoboy
   const obterOuGerarTokenMotoboy = (pedido: PedidoDelivery): string => {
     if (pedido.motoboyToken) return pedido.motoboyToken;
-    const token = 'mto_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
+    const token =
+      'mto_' +
+      Math.random().toString(36).substring(2, 10) +
+      Math.random().toString(36).substring(2, 6);
     pedido.motoboyToken = token;
     salvarPedidoDeliveryFirestore(pedido).catch(() => {});
     if (typeof window !== 'undefined') {
@@ -253,7 +406,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     return token;
   };
 
-  // Gerador de URL exclusiva do Motoboy (?motoboy=1&pedido=209&token=...)
   const gerarUrlMotoboy = (pedido: PedidoDelivery): string => {
     const token = obterOuGerarTokenMotoboy(pedido);
     if (typeof window !== 'undefined') {
@@ -264,7 +416,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     return `${window.location.origin}/?motoboy=1&pedido=${pedido.numeroPedido}&token=${token}`;
   };
 
-  // Copiar link exclusivo do motoboy
   const handleCopiarLinkMotoboy = (pedido: PedidoDelivery) => {
     const url = gerarUrlMotoboy(pedido);
     navigator.clipboard.writeText(url);
@@ -272,18 +423,18 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     setTimeout(() => setCopiouLinkMotoboy(false), 2500);
   };
 
-  // Enviar link no WhatsApp do motoboy
   const handleEnviarWhatsAppMotoboyModal = (pedido: PedidoDelivery) => {
     const link = gerarUrlMotoboy(pedido);
     const end = pedido.enderecoEntrega;
-    const enderecoCompleto = `${end.logradouro}, ${end.numero}${end.complemento ? ' - ' + end.complemento : ''}, ${end.bairro}`;
-    const texto = `🛵 *ENTREGA DE PEDIDO #${pedido.numeroPedido}*\n\n` +
-      `👤 *Cliente:* ${pedido.cliente.nome}\n` +
-      `📱 *WhatsApp:* ${pedido.cliente.telefone}\n` +
+    const enderecoCompleto = `${end?.logradouro || ''}, ${end?.numero || 'S/N'}${end?.complemento ? ' - ' + end.complemento : ''}${end?.bairro ? `, ${end.bairro}` : ''}`;
+    const texto =
+      `🛵 *ENTREGA DE PEDIDO #${pedido.numeroPedido}*\n\n` +
+      `👤 *Cliente:* ${pedido.cliente?.nome || 'Cliente'}\n` +
+      `📱 *WhatsApp:* ${pedido.cliente?.telefone || '-'}\n` +
       `📍 *Endereço:* ${enderecoCompleto}\n` +
-      (end.referencia ? `🏷️ *Ref:* ${end.referencia}\n` : '') +
+      (end?.referencia ? `🏷️ *Ref:* ${end.referencia}\n` : '') +
       `💰 *Total a Cobrar:* ${formatCurrency(pedido.valorTotal)}\n` +
-      `💳 *Forma de Pgto:* ${pedido.formaPagamento.toUpperCase()}\n` +
+      `💳 *Forma de Pgto:* ${(pedido.formaPagamento || '').toUpperCase()}\n` +
       (pedido.trocoPara ? `💵 *Troco para:* ${formatCurrency(pedido.trocoPara)}\n` : '') +
       `\n📲 *ABRA O LINK DE ENTREGA COM GPS E DADOS COMPLETOS:*\n${link}`;
 
@@ -291,7 +442,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     window.open(url, '_blank');
   };
 
-  // Visualizar tela do motoboy em nova aba
   const handleVisualizarTelaMotoboy = (pedido: PedidoDelivery) => {
     const link = gerarUrlMotoboy(pedido);
     window.open(link, '_blank');
@@ -302,7 +452,52 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     setTimeout(() => setToastNfce(null), 3000);
   };
 
-  // Renderizador de Card Individual de Pedido de Delivery
+  const calcularItensSemSaldo = (order: PedidoDelivery) => {
+    return (order.itens || []).filter((it) => {
+      const codAlvo = String(it.codigo || '').trim();
+      const nomeAlvo = String(it.nome || '').trim().toLowerCase();
+      const lotesCorrespondentes = (estoque || []).filter(
+        (e) =>
+          (codAlvo && String(e.codigo || '').trim() === codAlvo) ||
+          (!codAlvo && nomeAlvo && String(e.nome || '').trim().toLowerCase() === nomeAlvo)
+      );
+      const temIlimitado = lotesCorrespondentes.some(
+        (e) => e.estoqueIlimitado || e.tipoCadastro === 'interno'
+      );
+      if (temIlimitado) return false;
+      const saldoTotal = lotesCorrespondentes.reduce(
+        (acc, e) => acc + Math.max(0, Number(e.quantidade) || 0),
+        0
+      );
+      return saldoTotal < (Number(it.quantidade) || 1);
+    });
+  };
+
+  const abrirConfirmarEntrega = (order: PedidoDelivery) => {
+    setPedidoParaValidarPin(order);
+    setPinDigitado('');
+    setErroPin('');
+  };
+
+  const abrirCancelarPedido = (order: PedidoDelivery) => {
+    setPedidoParaCancelar(order);
+    setMotivoCancelamento('');
+  };
+
+  const abrirContatoCliente = (order: PedidoDelivery) => {
+    setClienteContatoModal({
+      nome: order.cliente?.nome || 'Cliente',
+      telefone: order.cliente?.telefone || '',
+      numeroPedido: order.numeroPedido,
+    });
+  };
+
+  const formatarDataCurta = (data?: string) => {
+    const partes = (data || '').split('-');
+    return partes.length === 3 ? `${partes[2]}/${partes[1]}` : data || '';
+  };
+
+  // Renderizador de Card Individual limpo e respirável
   const renderCard = (order: PedidoDelivery) => {
     const isNovo = order.status === 'pendente';
     const isPreparo = order.status === 'em_separacao';
@@ -312,308 +507,313 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
     const isCancelado = order.status === 'cancelado';
 
     const partesData = (order.data || '').split('-');
-    const dataFormatada = partesData.length === 3 ? `${partesData[2]}/${partesData[1]}/${partesData[0]}` : order.data;
-    const isAnterior = order.data && order.data < hojeFormatado;
+    const dataFormatada =
+      partesData.length === 3 ? `${partesData[2]}/${partesData[1]}/${partesData[0]}` : order.data;
+    const isAnterior = Boolean(order.data && order.data < hojeFormatado);
 
-    // Borda do card:
-    // Delivery a caminho tem borda verde destacada. Novo tem borda vermelha 2px.
-    let cardBorder = 'border border-slate-200';
-    if (isNovo) cardBorder = 'border-2 border-red-500 shadow-sm ring-2 ring-red-500/10';
-    else if (isACaminho) cardBorder = 'border-2 border-[#10b981] shadow-sm';
-    else if (isPreparo) cardBorder = 'border-2 border-amber-400 shadow-sm';
-    else if (isPronto) cardBorder = 'border-2 border-emerald-500 shadow-sm';
+    const canal = obterMetaCanal(order);
+    const statusMeta = obterMetaStatus(order.status);
+    const CanalIcon = canal.Icon;
+    const StatusIcon = statusMeta.Icon;
+    const enderecoTexto = formatarEnderecoResumo(order);
+    const itensSemSaldo = isNovo ? calcularItensSemSaldo(order) : [];
+    const mostrarLinkMotoboy = !isNovo && !isEntregue && !isCancelado;
+    const temAcaoPrincipal = isNovo || isPreparo || isPronto || isACaminho;
 
     return (
       <div
         key={order.id}
-        className={`bg-white rounded-2xl p-3.5 sm:p-4 text-xs transition shadow-xs flex flex-col justify-between gap-3 relative ${cardBorder}`}
+        className={`bg-white rounded-2xl border shadow-xs hover:shadow-md transition flex flex-col overflow-hidden ${
+          isNovo ? 'border-red-300 ring-2 ring-red-500/15' : 'border-slate-200'
+        }`}
       >
-        {/* TOPO DO CARD: TAG DO CANAL + BADGE DE STATUS */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Tag DELIVERY */}
-          <div className="flex items-center gap-1.5">
-            <span className="bg-[#059669] text-white text-[11px] font-black px-2.5 py-0.5 rounded-lg flex items-center gap-1 shadow-xs uppercase">
-              <Bike className="w-3.5 h-3.5" />
-              <span>DELIVERY</span>
-            </span>
-            <span className="font-mono font-bold text-slate-800 text-xs">
-              #{order.numeroPedido}
-            </span>
-          </div>
+        {/* Faixa superior de status */}
+        <div className={`h-1 w-full shrink-0 ${statusMeta.barClass}`} />
 
-          {/* Botão Cancelar (No topo ao lado do status) + Badge de Status no Canto Direito */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {!isEntregue && !isCancelado && (
-              <button
-                type="button"
-                onClick={() => {
-                  setPedidoParaCancelar(order);
-                  setMotivoCancelamento('');
-                }}
-                className="px-2 py-0.5 rounded-md bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95"
-                title="Cancelar ou recusar este pedido de entrega"
+        {/* Corpo do card */}
+        <div className="p-4 flex-1 flex flex-col gap-3">
+          {/* Topo: Canal + #Pedido + Hoje/Anterior | Badge Status */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+              <span
+                className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wide ${canal.pillClass}`}
               >
-                <X className="w-3 h-3 stroke-[2.5] shrink-0" />
-                <span>Cancelar</span>
-              </button>
-            )}
-
-            {isNovo && (
-              <span className="bg-red-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs animate-pulse">
-                ● NOVO
+                <CanalIcon className="w-3 h-3 shrink-0" />
+                <span>{canal.label}</span>
               </span>
-            )}
-            {isPreparo && (
-              <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                <Flame className="w-3 h-3 text-white" />
-                <span>EM PREPARO</span>
+              <span className="font-mono font-black text-slate-900 text-xs">
+                #{order.numeroPedido}
               </span>
-            )}
-            {isPronto && (
-              <span className="bg-emerald-600 text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                <Check className="w-3 h-3 text-white stroke-[3]" />
-                <span>PRONTO</span>
-              </span>
-            )}
-            {isACaminho && (
-              <span className="bg-[#059669] text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                <Bike className="w-3 h-3 text-white" />
-                <span>A CAMINHO</span>
-              </span>
-            )}
-            {isEntregue && (
-              <span className="bg-[#334155] text-white text-[10px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                <Check className="w-3 h-3 text-white stroke-[3]" />
-                <span>ENTREGUE</span>
-              </span>
-            )}
-            {isCancelado && (
-              <span className="bg-slate-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase">
-                CANCELADO
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* INFORMAÇÕES DO CLIENTE / ORIGEM / DATA */}
-        <div className="space-y-1 text-xs text-slate-700">
-          <div className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
-            <span className="text-slate-600">👤</span>
-            <span className="truncate">{order.cliente.nome || 'Cliente'}</span>
-          </div>
-
-          {order.cliente.telefone && (
-            <div className="text-[11px] pt-0.5">
-              <button
-                type="button"
-                onClick={() =>
-                  setClienteContatoModal({
-                    nome: order.cliente.nome || 'Cliente',
-                    telefone: order.cliente.telefone,
-                    numeroPedido: order.numeroPedido,
-                  })
-                }
-                className="text-blue-600 hover:text-blue-700 font-mono font-bold flex items-center gap-1 cursor-pointer transition p-0.5 rounded hover:bg-blue-50"
-                title="Clique para ligar ou enviar WhatsApp para o cliente"
+              <span
+                className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide ${
+                  isAnterior
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                }`}
               >
-                <Phone className="w-3 h-3 text-slate-400 shrink-0" />
-                <span>{order.cliente.telefone}</span>
-              </button>
+                {isAnterior ? 'Anterior' : 'Hoje'}
+              </span>
+            </div>
+
+            <span
+              className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider shrink-0 ${statusMeta.badgeClass}`}
+            >
+              {statusMeta.pulse ? (
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+              ) : (
+                <StatusIcon className="w-3 h-3 shrink-0" />
+              )}
+              <span>{statusMeta.label}</span>
+            </span>
+          </div>
+
+          {/* Cliente + Endereço + Horário + Pagamento */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span className="font-bold text-sm text-slate-900 truncate">
+                  {order.cliente?.nome || 'Cliente'}
+                </span>
+              </div>
+
+              {order.cliente?.telefone && (
+                <button
+                  type="button"
+                  onClick={() => abrirContatoCliente(order)}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-[11px] font-mono font-bold transition cursor-pointer shrink-0"
+                  title="Ligar ou enviar WhatsApp para o cliente"
+                >
+                  <Phone className="w-3 h-3 shrink-0" />
+                  <span>{order.cliente.telefone}</span>
+                </button>
+              )}
+            </div>
+
+            {enderecoTexto && (
+              <div className="flex items-start gap-1.5 text-xs text-slate-600 leading-snug">
+                <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
+                <span className="line-clamp-2 break-words">{enderecoTexto}</span>
+              </div>
+            )}
+
+            <div className="flex items-center flex-wrap gap-1.5 pt-0.5 text-[11px] text-slate-500">
+              <span className="inline-flex items-center gap-1 font-mono text-slate-500">
+                <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                <span>
+                  {dataFormatada} às {order.hora}
+                </span>
+              </span>
+
+              <span className="text-slate-300">•</span>
+
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                <CreditCard className="w-3 h-3 text-slate-500 shrink-0" />
+                <span>{formatarFormaPagamento(order.formaPagamento)}</span>
+                {order.trocoPara ? (
+                  <span className="text-slate-500 font-normal">
+                    (Troco p/ {formatCurrency(order.trocoPara)})
+                  </span>
+                ) : null}
+              </span>
+
+              {Number(order.taxaEntrega) > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium border border-slate-200">
+                  Entrega {formatCurrency(order.taxaEntrega)}
+                </span>
+              )}
+            </div>
+
+            {order.observacao && (
+              <div className="flex items-start gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px]">
+                <MessageSquareText className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                <span className="line-clamp-2">{order.observacao}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Motivo de cancelamento */}
+          {isCancelado && order.motivoCancelamento && (
+            <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[11px] font-semibold flex items-start gap-1.5">
+              <Ban className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+              <span>Motivo: {order.motivoCancelamento}</span>
             </div>
           )}
 
-          <div className="text-slate-600 flex items-start gap-1 text-[11px] leading-snug">
-            <MapPin className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
-            <span className="truncate">
-              {order.enderecoEntrega.logradouro}, {order.enderecoEntrega.numero}
-              {order.enderecoEntrega.bairro ? ` (${order.enderecoEntrega.bairro})` : ''}
-              {order.enderecoEntrega.referencia ? ` - Ref: ${order.enderecoEntrega.referencia}` : ''}
-            </span>
-          </div>
-
-          {/* Data e Hora + Badge Anterior / Hoje */}
-          <div className="text-slate-400 text-[11px] font-mono flex items-center gap-1.5 pt-0.5">
-            <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-            <span>{dataFormatada} às {order.hora}</span>
-            {isAnterior ? (
-              <span className="bg-[#fef3c7] text-[#92400e] text-[9px] font-black px-1.5 py-0.5 rounded border border-[#fde68a] uppercase tracking-wide">
-                ANTERIOR
-              </span>
-            ) : (
-              <span className="bg-[#dcfce7] text-[#166534] text-[9px] font-black px-1.5 py-0.5 rounded border border-[#bbf7d0] uppercase tracking-wide">
-                HOJE
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* DIVISOR SUTIL */}
-        <div className="border-t border-slate-100 my-0.5" />
-
-        {isCancelado && order.motivoCancelamento && (
-          <div className="p-2 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[11px] font-semibold">
-            ✕ Motivo: {order.motivoCancelamento}
-          </div>
-        )}
-
-        {/* ALERTA DE FALTA DE ESTOQUE PARA PEDIDOS PENDENTES */}
-        {isNovo && (() => {
-          const itensSemSaldo = (order.itens || []).filter((it) => {
-            const codAlvo = String(it.codigo || '').trim();
-            const nomeAlvo = String(it.nome || '').trim().toLowerCase();
-            const lotesCorrespondentes = (estoque || []).filter(
-              (e) =>
-                (codAlvo && String(e.codigo || '').trim() === codAlvo) ||
-                (!codAlvo && nomeAlvo && String(e.nome || '').trim().toLowerCase() === nomeAlvo)
-            );
-            const temIlimitado = lotesCorrespondentes.some((e) => e.estoqueIlimitado || e.tipoCadastro === 'interno');
-            if (temIlimitado) return false;
-            const saldoTotal = lotesCorrespondentes.reduce((acc, e) => acc + Math.max(0, Number(e.quantidade) || 0), 0);
-            return saldoTotal < (Number(it.quantidade) || 1);
-          });
-
-          if (itensSemSaldo.length === 0) return null;
-
-          return (
-            <div className="p-2.5 rounded-xl bg-red-50 border border-red-300 text-red-800 text-[11px] font-bold space-y-0.5">
+          {/* Alerta de falta de estoque para pedidos pendentes */}
+          {itensSemSaldo.length > 0 && (
+            <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-[11px] font-bold space-y-0.5">
               <div className="flex items-center gap-1 text-red-700 font-black">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                 <span>Estoque insuficiente para aceitar:</span>
               </div>
               {itensSemSaldo.map((it, idx) => (
-                <div key={idx} className="text-[10px] text-red-700 pl-4">
+                <div key={idx} className="text-[10px] text-red-700 pl-4 font-semibold">
                   • {it.nome} (Pedido: {it.quantidade} un)
                 </div>
               ))}
             </div>
-          );
-        })()}
+          )}
 
-        {/* LISTA DE ITENS DO PEDIDO COM REMOÇÃO INDIVIDUAL */}
-        <div className="space-y-1 text-xs">
-          {order.itens.map((it, idx) => (
-            <div key={idx} className="flex justify-between items-center gap-2 group">
-              <span className="text-slate-800 font-medium truncate flex-1 min-w-0">
-                <strong className="text-slate-900 mr-1">{it.quantidade}x</strong>
-                <span>{it.nome}</span>
-                {it.gelado && (
-                  <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-100 text-cyan-800 border border-cyan-200 ml-1">
-                    Gelada ❄️
-                  </span>
-                )}
-              </span>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="font-mono font-bold text-slate-900">
-                  {formatCurrency(it.subtotal)}
+          {/* Caixa de itens */}
+          <div className="bg-slate-50 border border-slate-100 rounded-xl p-2.5 max-h-40 overflow-y-auto space-y-1.5 mt-auto">
+            {order.itens.map((it, idx) => (
+              <div key={idx} className="flex justify-between items-start gap-2 text-xs">
+                <span className="text-slate-700 flex-1 min-w-0 leading-snug">
+                  <strong className="text-slate-900 mr-1 font-bold">{it.quantidade}x</strong>
+                  <span>{it.nome}</span>
+                  {it.gelado && (
+                    <span className="ml-1 inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-cyan-100 text-cyan-800 border border-cyan-200">
+                      Gelada
+                    </span>
+                  )}
                 </span>
-                {isNovo && onRemoverItemPedido && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm(`Deseja retirar o produto "${it.nome}" do Pedido #${order.numeroPedido}?\n\nO valor total do pedido será recalculado automaticamente.`)) {
-                        onRemoverItemPedido(order.id, idx);
-                      }
-                    }}
-                    className="p-1 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
-                    title={`Retirar ${it.nome} do pedido`}
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                <div className="flex items-center gap-1 shrink-0">
+                  <span className="font-mono font-bold text-slate-900 tabular-nums">
+                    {formatCurrency(it.subtotal)}
+                  </span>
+                  {isNovo && onRemoverItemPedido && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (
+                          confirm(
+                            `Deseja retirar o produto "${it.nome}" do Pedido #${order.numeroPedido}?\n\nO valor total do pedido será recalculado automaticamente.`
+                          )
+                        ) {
+                          onRemoverItemPedido(order.id, idx);
+                        }
+                      }}
+                      className="p-0.5 rounded text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                      title={`Retirar ${it.nome} do pedido`}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* BARRA INFERIOR: TOTAL + BOTÕES DE AÇÃO */}
-        <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-1.5 mt-auto">
-          {/* Caixa de TOTAL com badge colorido */}
-          <div className="bg-[#d1fae5]/80 border border-[#a7f3d0] rounded-xl px-2.5 py-1.5 flex items-center gap-1 shrink-0">
-            <span className="text-xs sm:text-sm font-black text-[#065f46] font-mono">
-              {formatCurrency(order.valorTotal)}
-            </span>
+        {/* Rodapé em 2 faixas bem espaçadas */}
+        <div className="px-4 py-3 bg-slate-50/70 border-t border-slate-100 flex flex-col gap-2.5">
+          {/* Faixa 1: Valor Total + Utilitários */}
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block leading-none">
+                Total
+              </span>
+              <span className="text-base font-black text-slate-900 font-mono tabular-nums leading-tight">
+                {formatCurrency(order.valorTotal)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setComandaImpressao(order)}
+                className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center transition cursor-pointer active:scale-95"
+                title="Imprimir comanda térmica"
+              >
+                <Printer className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDispararNfce(order)}
+                className="h-8 px-2.5 rounded-lg border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-bold text-[11px] flex items-center gap-1 transition cursor-pointer active:scale-95"
+                title="Emitir ou verificar NFC-e"
+              >
+                <FileCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>NFC-e</span>
+              </button>
+
+              {!isEntregue && !isCancelado && (
+                <button
+                  type="button"
+                  onClick={() => abrirCancelarPedido(order)}
+                  className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-600 flex items-center justify-center transition cursor-pointer active:scale-95"
+                  title="Cancelar ou recusar este pedido"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* BOTÕES DE AÇÃO NA DIREITA */}
-          <div className="flex items-center gap-1.5 flex-wrap justify-end">
-            {/* Botão Imprimir Comanda */}
-            <button
-              type="button"
-              onClick={() => setComandaImpressao(order)}
-              className="w-8 h-8 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center shadow-2xs transition cursor-pointer active:scale-95 shrink-0"
-              title="Imprimir comanda térmica"
-            >
-              <Printer className="w-3.5 h-3.5" />
-            </button>
+          {/* Faixa 2: Ação Principal do Ciclo */}
+          {temAcaoPrincipal && (
+            <div className="w-full">
+              {isNovo && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    pararAlertaNovoPedidoDelivery();
+                    onAtualizarStatusPedido(order.id, 'em_separacao');
+                  }}
+                  className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer active:scale-[0.99]"
+                >
+                  <Check className="w-4 h-4 stroke-[2.5]" />
+                  <span>Confirmar Pedido</span>
+                </button>
+              )}
 
-            {/* Botão Link Motoboy com Token e GPS (Exibido apenas após o pedido ser aceito) */}
-            {order.status !== 'pendente' && order.status !== 'entregue' && order.status !== 'cancelado' && (
-              <button
-                type="button"
-                onClick={() => setPedidoLinkMotoboy(order)}
-                className="px-2.5 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Abrir link do motoboy para envio no WhatsApp"
-              >
-                <Share2 className="w-3 h-3" />
-                <span>Link</span>
-              </button>
-            )}
+              {(isPreparo || isPronto) && (
+                <div className="grid grid-cols-2 gap-2">
+                  {mostrarLinkMotoboy && (
+                    <button
+                      type="button"
+                      onClick={() => setPedidoLinkMotoboy(order)}
+                      className="py-2 px-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-[0.99]"
+                      title="Abrir link do motoboy para envio no WhatsApp"
+                    >
+                      <Share2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>Link Motoboy</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => onAtualizarStatusPedido(order.id, 'saiu_para_entrega')}
+                    className={`py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer active:scale-[0.99] ${
+                      !mostrarLinkMotoboy ? 'col-span-2' : ''
+                    }`}
+                    title="Despachar para o motoboy"
+                  >
+                    <Bike className="w-3.5 h-3.5 shrink-0" />
+                    <span>Despachar</span>
+                  </button>
+                </div>
+              )}
 
-            {/* Botões de Ação do Ciclo de Vida */}
-            {isNovo && (
-              <button
-                type="button"
-                onClick={() => {
-                  pararAlertaNovoPedidoDelivery();
-                  onAtualizarStatusPedido(order.id, 'em_separacao');
-                }}
-                className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Confirmar pedido e iniciar separação"
-              >
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
-                <span>Confirmar</span>
-              </button>
-            )}
-
-            {isPreparo && (
-              <button
-                type="button"
-                onClick={() => onAtualizarStatusPedido(order.id, 'saiu_para_entrega')}
-                className="px-3 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Despachar para o motoboy"
-              >
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
-                <span>Despachar</span>
-              </button>
-            )}
-
-            {isACaminho && (
-              <button
-                type="button"
-                onClick={() => {
-                  setPedidoParaValidarPin(order);
-                  setPinDigitado('');
-                  setErroPin('');
-                }}
-                className="px-2.5 py-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-                title="Validar PIN com o cliente e finalizar"
-              >
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
-                <span>Entregue</span>
-              </button>
-            )}
-
-            {/* Botão NFC-e ✓ idêntico à imagem de referência */}
-            <button
-              type="button"
-              onClick={() => handleDispararNfce(order)}
-              className="px-2 py-1.5 rounded-xl bg-[#a5f3fc] hover:bg-[#67e8f9] text-[#0e7490] border border-[#67e8f9] font-bold text-xs flex items-center gap-1 shadow-2xs transition cursor-pointer active:scale-95 shrink-0 whitespace-nowrap"
-              title="Emitir ou verificar NFC-e"
-            >
-              <FileCheck className="w-3.5 h-3.5 text-[#0e7490]" />
-              <span>NFC-e ✓</span>
-            </button>
-          </div>
+              {isACaminho && (
+                <div className="grid grid-cols-2 gap-2">
+                  {mostrarLinkMotoboy && (
+                    <button
+                      type="button"
+                      onClick={() => setPedidoLinkMotoboy(order)}
+                      className="py-2 px-2.5 rounded-xl bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer active:scale-[0.99]"
+                      title="Abrir link do motoboy para envio no WhatsApp"
+                    >
+                      <Share2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>Link Motoboy</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => abrirConfirmarEntrega(order)}
+                    className={`py-2 px-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition cursor-pointer active:scale-[0.99] ${
+                      !mostrarLinkMotoboy ? 'col-span-2' : ''
+                    }`}
+                    title="Validar PIN com o cliente e finalizar"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Confirmar Entrega</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -621,290 +821,730 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 flex flex-col bg-white p-0 overflow-hidden"
+      className="fixed inset-0 flex flex-col bg-slate-50 p-0 overflow-hidden"
       style={{ zIndex: 99999 }}
     >
-      <div className="bg-white border-0 rounded-none w-screen h-screen flex flex-col overflow-hidden text-slate-800">
-        
-        {/* CABEÇALHO DO PAINEL DE DELIVERY EM MODO CLARO */}
-        <div className="p-3 sm:p-5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-700 flex items-center justify-center shadow-md shadow-sky-500/20 text-white">
-              <Bike className="w-6 h-6" />
+      <div className="w-full h-full flex flex-col overflow-hidden text-slate-800">
+        {/* CABEÇALHO UNIFICADO */}
+        <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-sky-600 flex items-center justify-center shadow-xs text-white shrink-0">
+              <Bike className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
-                  Gestão de Pedidos & Delivery
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight truncate">
+                  Gestão de Pedidos &amp; Delivery
                 </h2>
-                {(() => {
-                  const status = verificarStatusFuncionamentoDelivery(configDelivery);
-                  return (
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1.5 ${
-                        status.aberta
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200'
-                      }`}
-                      title={status.motivo || `Delivery aberto das ${status.horarioFormatado}`}
-                    >
-                      <span className={`w-2 h-2 rounded-full ${status.aberta ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
-                      {status.aberta ? 'Loja Aberta' : 'Loja Fechada'}
-                    </span>
-                  );
-                })()}
+                <button
+                  type="button"
+                  onClick={() => setModalConfigAberta(true)}
+                  className={`inline-flex items-center gap-1.5 text-[11px] px-2.5 py-0.5 rounded-full font-bold border transition cursor-pointer ${
+                    statusLoja.aberta
+                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
+                      : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
+                  }`}
+                  title={
+                    (statusLoja.motivo || `Delivery aberto das ${statusLoja.horarioFormatado}`) +
+                    ' (clique para configurar)'
+                  }
+                >
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      statusLoja.aberta ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'
+                    }`}
+                  />
+                  <span>{statusLoja.aberta ? 'Loja Aberta' : 'Loja Fechada'}</span>
+                </button>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Painel integrado de pedidos com canais de Delivery, Retirada e Mesas
+              <p className="text-xs text-slate-500 mt-0.5 truncate">
+                Painel integrado de pedidos — Delivery, Retirada e Mesas
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Botão Copiar Link do Cardápio */}
+          <div className="flex items-center gap-2 flex-wrap">
             <button
+              type="button"
               onClick={handleCopiarLinkCardapio}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl font-bold text-xs shadow-2xs transition cursor-pointer border ${
+              className={`h-9 flex items-center gap-1.5 px-3 rounded-xl font-bold text-xs transition cursor-pointer border ${
                 copiedLink
                   ? 'bg-emerald-600 text-white border-emerald-600'
                   : 'bg-white hover:bg-slate-50 text-sky-700 border-sky-200'
               }`}
-              title="Copiar link para enviar aos clientes no WhatsApp"
+              title="Copiar link do cardápio digital"
             >
               {copiedLink ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-              <span className="hidden sm:inline">{copiedLink ? 'Link Copiado!' : 'Copiar Link Cardápio'}</span>
+              <span className="hidden sm:inline">{copiedLink ? 'Link Copiado!' : 'Copiar Link'}</span>
             </button>
 
-            {/* Botão Abrir Cardápio */}
             <button
+              type="button"
               onClick={onAbrirCardapioCliente}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-2xs transition cursor-pointer"
+              className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer"
               title="Abrir o Cardápio do Cliente para testar ou criar pedidos"
             >
               <ExternalLink className="w-4 h-4" />
               <span className="hidden sm:inline">Ver Cardápio</span>
             </button>
 
-            {/* Botões de Alerta / Silenciar Toque */}
             {alertaSinoTocando ? (
               <button
                 type="button"
                 onClick={() => pararAlertaNovoPedidoDelivery()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md animate-bounce transition cursor-pointer"
+                className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm animate-bounce transition cursor-pointer"
                 title="Silenciar toque do sino imediatamente"
               >
-                <span>🔕</span>
-                <span className="inline">Silenciar</span>
+                <BellOff className="w-4 h-4" />
+                <span>Silenciar</span>
               </button>
             ) : (
               <button
                 type="button"
                 onClick={() => tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition border border-amber-300 shadow-2xs cursor-pointer"
-                title="Testar som do Sino de Novo Pedido (Bell 1)"
+                className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition border border-amber-200 cursor-pointer"
+                title="Testar som do Sino de Novo Pedido"
               >
-                <span>🔔</span>
-                <span className="inline text-[11px] sm:text-xs">Ouvir Sino</span>
+                <Bell className="w-4 h-4 text-amber-600" />
+                <span className="hidden sm:inline">Ouvir Sino</span>
               </button>
             )}
 
             <button
+              type="button"
               onClick={() => tocarSomEntregaFinalizadaMotoboy()}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs transition border border-sky-300 shadow-2xs cursor-pointer"
+              className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold text-xs transition border border-sky-200 cursor-pointer"
               title="Testar som de Entrega Concluída pelo Motoboy"
             >
-              <span>🛵</span>
-              <span className="hidden sm:inline text-[11px] sm:text-xs">Toque Motoboy</span>
+              <Volume2 className="w-4 h-4 text-sky-600" />
+              <span className="hidden sm:inline">Toque Motoboy</span>
             </button>
 
-            {/* Botão de Configurações */}
             <button
+              type="button"
               onClick={() => setModalConfigAberta(true)}
-              className="p-2 rounded-xl bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition border border-slate-200 shadow-2xs cursor-pointer"
+              className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 font-bold text-xs transition border border-slate-200 cursor-pointer"
               title="Configurações de Taxa, Raio e Horários"
             >
               <Settings className="w-4 h-4" />
+              <span className="hidden xl:inline">Configurações</span>
             </button>
 
-            {/* Fechar */}
             <button
+              type="button"
               onClick={handleVoltarOuFechar}
-              className="p-2 rounded-xl bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition border border-slate-200 shadow-2xs cursor-pointer"
+              aria-label="Fechar"
+              className="h-9 w-9 flex items-center justify-center rounded-xl bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition border border-slate-200 cursor-pointer"
+              title="Fechar painel"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* BARRA DE FILTROS POR STATUS (EXATAMENTE IDÊNTICA À SEGUNDA FOTO DE REFERÊNCIA) */}
-        <div className="px-4 py-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
-            {/* TODOS (20) - Selecionado fica com fundo preto/dark conforme foto */}
+        {/* BARRA DE FILTROS, VISUALIZAÇÃO E BUSCA */}
+        <div className="px-4 sm:px-6 py-2.5 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2.5 text-xs shrink-0">
+          {/* Pílulas de status */}
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
               onClick={() => setPedidosFilterStatus('todos')}
-              className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                 pedidosFilterStatus === 'todos'
                   ? 'bg-slate-900 text-white border border-slate-900'
                   : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
               }`}
             >
-              TODOS ({countTotal})
+              Todos ({countTotal})
             </button>
 
-            {/* NOVOS (1) */}
             <button
               type="button"
               onClick={() => setPedidosFilterStatus('novo')}
-              className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                 pedidosFilterStatus === 'novo'
                   ? 'bg-red-600 text-white border border-red-600'
-                  : 'bg-white text-red-600 border border-slate-200 hover:bg-red-50/50'
+                  : 'bg-white text-red-600 border border-slate-200 hover:bg-red-50/70'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              NOVOS ({countNovos})
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  pedidosFilterStatus === 'novo' ? 'bg-white' : 'bg-red-500 animate-pulse'
+                }`}
+              />
+              Novos ({countNovos})
             </button>
 
-            {/* EM PREPARO (0) */}
             <button
               type="button"
               onClick={() => setPedidosFilterStatus('em_preparo')}
-              className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                 pedidosFilterStatus === 'em_preparo'
                   ? 'bg-amber-500 text-white border border-amber-500'
-                  : 'bg-white text-amber-600 border border-slate-200 hover:bg-amber-50/50'
+                  : 'bg-white text-amber-700 border border-slate-200 hover:bg-amber-50/70'
               }`}
             >
-              <Flame className="w-3.5 h-3.5 text-amber-500" />
-              EM PREPARO ({countPreparo})
+              <Flame
+                className={`w-3.5 h-3.5 ${
+                  pedidosFilterStatus === 'em_preparo' ? 'text-white' : 'text-amber-500'
+                }`}
+              />
+              Em Preparo ({countPreparo})
             </button>
 
-            {/* PRONTOS (0) */}
             <button
               type="button"
               onClick={() => setPedidosFilterStatus('pronto')}
-              className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                 pedidosFilterStatus === 'pronto'
-                  ? 'bg-emerald-600 text-white border border-emerald-600'
-                  : 'bg-white text-emerald-600 border border-slate-200 hover:bg-emerald-50/50'
+                  ? 'bg-teal-600 text-white border border-teal-600'
+                  : 'bg-white text-teal-700 border border-slate-200 hover:bg-teal-50/70'
               }`}
             >
-              <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
-              PRONTOS ({countProntos})
+              <Check
+                className={`w-3.5 h-3.5 stroke-[2.5] ${
+                  pedidosFilterStatus === 'pronto' ? 'text-white' : 'text-teal-600'
+                }`}
+              />
+              Prontos ({countProntos})
             </button>
 
-            {/* A CAMINHO (1) */}
             <button
               type="button"
               onClick={() => setPedidosFilterStatus('a_caminho')}
-              className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                 pedidosFilterStatus === 'a_caminho'
                   ? 'bg-sky-600 text-white border border-sky-600'
-                  : 'bg-white text-sky-600 border border-slate-200 hover:bg-sky-50/50'
+                  : 'bg-white text-sky-700 border border-slate-200 hover:bg-sky-50/70'
               }`}
             >
-              <Bike className="w-3.5 h-3.5 text-sky-600" />
-              A CAMINHO ({countACaminho})
+              <Bike
+                className={`w-3.5 h-3.5 ${
+                  pedidosFilterStatus === 'a_caminho' ? 'text-white' : 'text-sky-600'
+                }`}
+              />
+              A Caminho ({countACaminho})
             </button>
 
-            {/* ENTREGUES (1) */}
             <button
               type="button"
               onClick={() => setPedidosFilterStatus('entregue')}
-              className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+              className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                 pedidosFilterStatus === 'entregue'
-                  ? 'bg-slate-700 text-white border border-slate-700'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                  ? 'bg-emerald-600 text-white border border-emerald-600'
+                  : 'bg-white text-emerald-700 border border-slate-200 hover:bg-emerald-50/70'
               }`}
             >
-              ENTREGUES ({countEntregues})
+              Entregues ({countEntregues})
             </button>
 
-            {/* CANCELADOS */}
             {countCancelados > 0 && (
               <button
                 type="button"
                 onClick={() => setPedidosFilterStatus('cancelado')}
-                className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer shadow-2xs ${
+                className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 font-bold cursor-pointer ${
                   pedidosFilterStatus === 'cancelado'
-                    ? 'bg-rose-700 text-white border border-rose-700'
-                    : 'bg-white text-rose-600 border border-slate-200 hover:bg-rose-50/50'
+                    ? 'bg-slate-700 text-white border border-slate-700'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
                 }`}
               >
-                CANCELADOS ({countCancelados})
+                Cancelados ({countCancelados})
               </button>
             )}
           </div>
 
-          {/* Barra de Busca arredondada (Buscar cliente, mesa, fone...) */}
-          <div className="relative w-full sm:w-72 md:w-80">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-            <input
-              type="search"
-              name="busca_gestao_delivery_modal"
-              autoComplete="off"
-              value={pedidosSearch}
-              onChange={(e) => setPedidosSearch(e.target.value)}
-              placeholder="Buscar cliente, mesa, fone..."
-              className="w-full pl-9 pr-3.5 py-1.5 text-xs bg-white border border-slate-200 rounded-full text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 shadow-2xs"
-            />
-            {pedidosSearch && (
+          {/* Direita: Só Hoje + Cards/Lista + Busca */}
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+            <button
+              type="button"
+              onClick={() => setApenasHoje((prev) => !prev)}
+              className={`h-8 px-2.5 rounded-lg border font-bold text-xs flex items-center gap-1.5 transition cursor-pointer ${
+                apenasHoje
+                  ? 'bg-sky-600 text-white border-sky-600'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+              }`}
+              title="Alternar entre todos os pedidos ou somente os pedidos de hoje"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Só Hoje ({countHoje})</span>
+            </button>
+
+            <div className="inline-flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200">
               <button
                 type="button"
-                onClick={() => setPedidosSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                onClick={() => alternarModoVisualizacao('cards')}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition cursor-pointer ${
+                  modoVisualizacao === 'cards'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
               >
-                ✕
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span>Cards</span>
               </button>
-            )}
+              <button
+                type="button"
+                onClick={() => alternarModoVisualizacao('lista')}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition cursor-pointer ${
+                  modoVisualizacao === 'lista'
+                    ? 'bg-white text-slate-900 shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <List className="w-3.5 h-3.5" />
+                <span>Lista</span>
+              </button>
+            </div>
+
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+              <input
+                type="search"
+                name="busca_gestao_delivery_modal"
+                autoComplete="off"
+                value={pedidosSearch}
+                onChange={(e) => setPedidosSearch(e.target.value)}
+                placeholder="Buscar #pedido, cliente, fone, bairro..."
+                className="w-full h-8 pl-8 pr-8 text-xs bg-white border border-slate-200 rounded-lg text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-400"
+              />
+              {pedidosSearch && (
+                <button
+                  type="button"
+                  onClick={() => setPedidosSearch('')}
+                  aria-label="Limpar busca"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* ÁREA DE PEDIDOS DE DELIVERY */}
-        <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 bg-slate-50/70">
-          {toastNfce && (
-            <div className="mb-3 p-3 bg-cyan-50 border border-cyan-300 text-cyan-800 rounded-2xl text-xs font-bold flex items-center gap-2 animate-fadeIn shadow-xs">
-              <FileCheck className="w-4 h-4 text-cyan-700" />
-              <span>{toastNfce}</span>
-            </div>
-          )}
+        {/* ÁREA PRINCIPAL DE PEDIDOS */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
+          <div className="max-w-[1600px] mx-auto space-y-4">
+            {toastNfce && (
+              <div className="p-3 bg-cyan-50 border border-cyan-200 text-cyan-800 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs">
+                <FileCheck className="w-4 h-4 text-cyan-700 shrink-0" />
+                <span>{toastNfce}</span>
+              </div>
+            )}
 
-          {/* PAINEL PRINCIPAL DE DELIVERY (VERDE/MINT CONFORME FOTO) */}
-          <div className="bg-[#f0fdf4] border border-[#a7f3d0] rounded-3xl p-4 sm:p-5 flex flex-col space-y-4 min-w-0 min-h-full shadow-2xs">
-            {/* Header da Seção de Delivery */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#a7f3d0]/60">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#d1fae5] text-[#059669] flex items-center justify-center border border-[#a7f3d0] shadow-2xs shrink-0">
-                  <Bike className="w-5 h-5 text-[#059669]" />
+            {/* FAIXA DE 4 KPIS CLICÁVEIS */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* KPI 1: Novos p/ Confirmar */}
+              <button
+                type="button"
+                onClick={() =>
+                  setPedidosFilterStatus((prev) => (prev === 'novo' ? 'todos' : 'novo'))
+                }
+                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                  pedidosFilterStatus === 'novo'
+                    ? 'border-red-500 ring-2 ring-red-500/15'
+                    : countNovos > 0
+                    ? 'border-red-200 bg-red-50/40'
+                    : 'border-slate-200'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Novos p/ Confirmar
+                  </span>
+                  <Bell className={`w-4 h-4 ${countNovos > 0 ? 'text-red-500' : 'text-slate-400'}`} />
+                </div>
+                <div
+                  className={`text-2xl font-black mt-1 font-mono tabular-nums ${
+                    countNovos > 0 ? 'text-red-600' : 'text-slate-900'
+                  }`}
+                >
+                  {countNovos}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  {countNovos > 0 ? 'Aguardando aceite da loja' : 'Nenhum aguardando'}
+                </div>
+              </button>
+
+              {/* KPI 2: Em Preparo / Prontos */}
+              <button
+                type="button"
+                onClick={() =>
+                  setPedidosFilterStatus((prev) => {
+                    if (prev === 'em_preparo' && countProntos > 0) return 'pronto';
+                    if (prev === 'em_preparo' || prev === 'pronto') return 'todos';
+                    return countPreparo === 0 && countProntos > 0 ? 'pronto' : 'em_preparo';
+                  })
+                }
+                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                  pedidosFilterStatus === 'em_preparo' || pedidosFilterStatus === 'pronto'
+                    ? 'border-amber-500 ring-2 ring-amber-500/15'
+                    : 'border-slate-200'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Preparo &amp; Prontos
+                  </span>
+                  <Flame className="w-4 h-4 text-amber-500" />
+                </div>
+                <div className="text-2xl font-black mt-1 text-amber-600 font-mono tabular-nums">
+                  {countPreparo + countProntos}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  {countPreparo} preparo • {countProntos} pronto(s)
+                </div>
+              </button>
+
+              {/* KPI 3: A Caminho */}
+              <button
+                type="button"
+                onClick={() =>
+                  setPedidosFilterStatus((prev) => (prev === 'a_caminho' ? 'todos' : 'a_caminho'))
+                }
+                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                  pedidosFilterStatus === 'a_caminho'
+                    ? 'border-sky-500 ring-2 ring-sky-500/15'
+                    : 'border-slate-200'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    A Caminho
+                  </span>
+                  <Bike className="w-4 h-4 text-sky-600" />
+                </div>
+                <div className="text-2xl font-black mt-1 text-sky-600 font-mono tabular-nums">
+                  {countACaminho}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  {countACaminho > 0 ? 'Em rota com o motoboy' : 'Nenhuma entrega em rota'}
+                </div>
+              </button>
+
+              {/* KPI 4: Entregues (Faturamento) */}
+              <button
+                type="button"
+                onClick={() =>
+                  setPedidosFilterStatus((prev) => (prev === 'entregue' ? 'todos' : 'entregue'))
+                }
+                className={`text-left p-3.5 rounded-2xl border transition cursor-pointer bg-white shadow-2xs hover:shadow-sm ${
+                  pedidosFilterStatus === 'entregue'
+                    ? 'border-emerald-500 ring-2 ring-emerald-500/15'
+                    : 'border-slate-200'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Entregues ({apenasHoje ? 'Hoje' : 'Total'})
+                  </span>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                </div>
+                <div className="text-2xl font-black mt-1 text-emerald-700 font-mono tabular-nums">
+                  {formatCurrency(faturamentoEntregues)}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  {countEntregues} pedido(s) concluído(s)
+                </div>
+              </button>
+            </div>
+
+            {/* Subcabeçalho da listagem */}
+            <div className="flex items-center justify-between gap-2 flex-wrap px-0.5">
+              <div className="flex items-center gap-2 text-xs text-slate-600">
+                <span className="font-bold text-slate-800">
+                  Exibindo {filteredOrders.length}{' '}
+                  {filteredOrders.length === 1 ? 'pedido' : 'pedidos'}
+                </span>
+                {apenasHoje && (
+                  <span className="px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200 font-semibold text-[11px]">
+                    Somente hoje
+                  </span>
+                )}
+              </div>
+
+              {temFiltroAtivo && (
+                <button
+                  type="button"
+                  onClick={limparFiltros}
+                  className="text-xs font-bold text-sky-700 hover:text-sky-800 hover:underline cursor-pointer"
+                >
+                  Limpar filtros
+                </button>
+              )}
+            </div>
+
+            {/* ESTADO VAZIO OU LISTAGEM (CARDS / LISTA) */}
+            {filteredOrders.length === 0 ? (
+              <div className="py-16 px-6 text-center bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+                  <Bike className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-base font-black text-slate-900 tracking-tight">
-                      PEDIDOS DE DELIVERY
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-[#d1fae5] text-[#065f46] text-xs font-bold border border-[#a7f3d0]">
-                      {filteredOrders.length}
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#065f46] font-medium mt-0.5">
-                    Entregas motoboy com histórico, rota no Maps e despacho integrado
+                  <p className="font-bold text-sm text-slate-800">
+                    Nenhum pedido encontrado neste filtro.
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Novos pedidos enviados pelo cardápio online aparecem aqui automaticamente em
+                    tempo real.
                   </p>
                 </div>
+                {temFiltroAtivo && (
+                  <button
+                    type="button"
+                    onClick={limparFiltros}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Limpar filtros</span>
+                  </button>
+                )}
               </div>
-            </div>
+            ) : modoVisualizacao === 'lista' ? (
+              <>
+                {/* MODO LISTA ALINHADA (DESKTOP) */}
+                <div className="hidden lg:block bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+                  <div className="overflow-x-auto">
+                    <div className="min-w-[1000px]">
+                      <div className="grid grid-cols-[120px_minmax(185px,1.1fr)_minmax(185px,1.1fr)_116px_104px_272px] gap-3 px-4 py-2.5 bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 items-center">
+                        <span>Pedido</span>
+                        <span>Cliente &amp; Endereço</span>
+                        <span>Itens &amp; Pagamento</span>
+                        <span>Status</span>
+                        <span>Total</span>
+                        <span className="text-right">Ações</span>
+                      </div>
 
-            {/* Grid dos Cards de Delivery */}
-            {filteredOrders.length === 0 ? (
-              <div className="py-16 text-center bg-white/80 border border-dashed border-[#a7f3d0] rounded-2xl text-xs text-[#065f46] space-y-2">
-                <Bike className="w-10 h-10 mx-auto text-[#059669]/60" />
-                <p className="font-bold text-sm text-slate-800">Nenhum pedido de delivery encontrado neste filtro.</p>
-                <p className="text-xs text-slate-500">
-                  Novos pedidos feitos no cardápio do cliente tocarão alerta e aparecerão aqui em tempo real.
-                </p>
-              </div>
+                      <div className="divide-y divide-slate-100">
+                        {filteredOrders.map((order) => {
+                          const isNovo = order.status === 'pendente';
+                          const isPreparo = order.status === 'em_separacao';
+                          const isPronto = order.status === 'pronto';
+                          const isACaminho = order.status === 'saiu_para_entrega';
+                          const isEntregue = order.status === 'entregue';
+                          const isCancelado = order.status === 'cancelado';
+
+                          const canal = obterMetaCanal(order);
+                          const statusMeta = obterMetaStatus(order.status);
+                          const CanalIcon = canal.Icon;
+                          const StatusIcon = statusMeta.Icon;
+                          const enderecoTexto = formatarEnderecoResumo(order);
+                          const itensSemSaldo = isNovo ? calcularItensSemSaldo(order) : [];
+                          const primeiroItem = order.itens[0];
+                          const qtdExtra = Math.max(0, order.itens.length - 1);
+                          const resumoItensTooltip = order.itens
+                            .map((i) => `${i.quantidade}x ${i.nome}`)
+                            .join(' • ');
+                          const mostrarLinkMotoboy = !isNovo && !isEntregue && !isCancelado;
+
+                          return (
+                            <div
+                              key={order.id}
+                              className={`grid grid-cols-[120px_minmax(185px,1.1fr)_minmax(185px,1.1fr)_116px_104px_272px] gap-3 px-4 py-3 items-center transition hover:bg-slate-50/80 ${
+                                isNovo ? 'bg-red-50/25' : ''
+                              }`}
+                            >
+                              {/* Coluna 1: Pedido & Canal */}
+                              <div className="space-y-1 min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-mono font-black text-xs text-slate-900">
+                                    #{order.numeroPedido}
+                                  </span>
+                                  <span className="text-[10px] font-mono text-slate-400">
+                                    {order.hora}
+                                  </span>
+                                </div>
+                                <span
+                                  className={`inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wide ${canal.pillClass}`}
+                                >
+                                  <CanalIcon className="w-2.5 h-2.5 shrink-0" />
+                                  <span className="truncate">{canal.label}</span>
+                                </span>
+                                <div className="text-[10px] text-slate-400 font-mono">
+                                  {formatarDataCurta(order.data)}
+                                </div>
+                              </div>
+
+                              {/* Coluna 2: Cliente & Endereço */}
+                              <div className="min-w-0 space-y-0.5">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="font-bold text-xs text-slate-900 truncate">
+                                    {order.cliente?.nome || 'Cliente'}
+                                  </span>
+                                  {order.cliente?.telefone && (
+                                    <button
+                                      type="button"
+                                      onClick={() => abrirContatoCliente(order)}
+                                      className="text-[10px] font-mono font-bold text-sky-700 hover:underline shrink-0 cursor-pointer"
+                                      title="Ligar ou enviar WhatsApp"
+                                    >
+                                      {order.cliente.telefone}
+                                    </button>
+                                  )}
+                                </div>
+                                {enderecoTexto && (
+                                  <div
+                                    className="text-[11px] text-slate-500 truncate"
+                                    title={enderecoTexto}
+                                  >
+                                    {enderecoTexto}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Coluna 3: Itens & Pagamento */}
+                              <div className="min-w-0 space-y-1">
+                                <div
+                                  className="text-xs text-slate-800 truncate"
+                                  title={resumoItensTooltip}
+                                >
+                                  {primeiroItem ? (
+                                    <>
+                                      <strong className="text-slate-900">
+                                        {primeiroItem.quantidade}x
+                                      </strong>{' '}
+                                      {primeiroItem.nome}
+                                      {qtdExtra > 0 ? (
+                                        <span className="text-slate-400 font-semibold">
+                                          {' '}
+                                          (+{qtdExtra})
+                                        </span>
+                                      ) : null}
+                                    </>
+                                  ) : (
+                                    <span className="text-slate-400">Sem itens</span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                                    <CreditCard className="w-2.5 h-2.5 text-slate-500" />
+                                    <span>{formatarFormaPagamento(order.formaPagamento)}</span>
+                                  </span>
+                                  {itensSemSaldo.length > 0 && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">
+                                      <AlertTriangle className="w-2.5 h-2.5" />
+                                      <span>Sem estoque</span>
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Coluna 4: Status */}
+                              <div>
+                                <span
+                                  className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wide ${statusMeta.badgeClass}`}
+                                >
+                                  {statusMeta.pulse ? (
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
+                                  ) : (
+                                    <StatusIcon className="w-3 h-3 shrink-0" />
+                                  )}
+                                  <span>{statusMeta.label}</span>
+                                </span>
+                              </div>
+
+                              {/* Coluna 5: Total */}
+                              <div className="font-mono font-black text-xs text-slate-900 tabular-nums">
+                                {formatCurrency(order.valorTotal)}
+                              </div>
+
+                              {/* Coluna 6: Ações Alinhadas (272px fixos) */}
+                              <div className="w-[272px] flex items-center justify-end gap-1.5">
+                                {isNovo ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      pararAlertaNovoPedidoDelivery();
+                                      onAtualizarStatusPedido(order.id, 'em_separacao');
+                                    }}
+                                    className="w-[112px] h-8 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer shrink-0"
+                                  >
+                                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                                    <span>Confirmar</span>
+                                  </button>
+                                ) : isPreparo || isPronto ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      onAtualizarStatusPedido(order.id, 'saiu_para_entrega')
+                                    }
+                                    className="w-[112px] h-8 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer shrink-0"
+                                  >
+                                    <Bike className="w-3.5 h-3.5" />
+                                    <span>Despachar</span>
+                                  </button>
+                                ) : isACaminho ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => abrirConfirmarEntrega(order)}
+                                    className="w-[112px] h-8 px-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition cursor-pointer shrink-0"
+                                  >
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <span>Entregue</span>
+                                  </button>
+                                ) : (
+                                  <span className="w-[112px] h-8 shrink-0" aria-hidden="true" />
+                                )}
+
+                                {mostrarLinkMotoboy ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setPedidoLinkMotoboy(order)}
+                                    className="w-8 h-8 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center transition cursor-pointer shrink-0"
+                                    title="Link do motoboy"
+                                  >
+                                    <Share2 className="w-3.5 h-3.5" />
+                                  </button>
+                                ) : (
+                                  <span className="w-8 h-8 shrink-0" aria-hidden="true" />
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() => setComandaImpressao(order)}
+                                  className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 flex items-center justify-center transition cursor-pointer shrink-0"
+                                  title="Imprimir comanda térmica"
+                                >
+                                  <Printer className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDispararNfce(order)}
+                                  className="w-8 h-8 rounded-lg border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 flex items-center justify-center transition cursor-pointer shrink-0"
+                                  title="Emitir ou verificar NFC-e"
+                                >
+                                  <FileCheck className="w-3.5 h-3.5" />
+                                </button>
+
+                                {!isEntregue && !isCancelado ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => abrirCancelarPedido(order)}
+                                    className="w-8 h-8 rounded-lg border border-slate-200 bg-white hover:bg-red-50 hover:border-red-200 text-slate-400 hover:text-red-600 flex items-center justify-center transition cursor-pointer shrink-0"
+                                    title="Cancelar pedido"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                ) : (
+                                  <span className="w-8 h-8 shrink-0" aria-hidden="true" />
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fallback Mobile para modo Lista */}
+                <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredOrders.map((order) => renderCard(order))}
+                </div>
+              </>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              /* MODO CARDS (1 / 2 / 3 COLUNAS RESPIRÁVEIS) */
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredOrders.map((order) => renderCard(order))}
               </div>
             )}
@@ -916,6 +1556,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           <div
             className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
             style={{ zIndex: 10000001 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setPedidoParaCancelar(null);
+            }}
           >
             <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-slate-900">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -928,7 +1571,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                       Cancelar Pedido #{pedidoParaCancelar.numeroPedido}
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Cliente: {pedidoParaCancelar.cliente.nome} ({formatCurrency(pedidoParaCancelar.valorTotal)})
+                      Cliente: {pedidoParaCancelar.cliente?.nome || 'Cliente'} (
+                      {formatCurrency(pedidoParaCancelar.valorTotal)})
                     </p>
                   </div>
                 </div>
@@ -942,8 +1586,12 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
               </div>
 
               {pedidoParaCancelar.status !== 'pendente' && (
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
-                  ⚠️ Como este pedido já havia sido aceito, os produtos retornarão automaticamente ao estoque e a venda será estornada do caixa.
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    Como este pedido já havia sido aceito, os produtos retornarão automaticamente ao
+                    estoque e a venda será estornada do caixa.
+                  </span>
                 </div>
               )}
 
@@ -1021,6 +1669,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           <div
             className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
             style={{ zIndex: 10000000 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setComandaImpressao(null);
+            }}
           >
             <div
               id="comanda-impressao-termica"
@@ -1031,28 +1682,44 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   {lojaAtual?.nome || 'COMANDA DE ENTREGA'}
                 </h3>
                 <p className="text-[10px] text-slate-500">PEDIDO #{comandaImpressao.numeroPedido}</p>
-                <p className="text-[10px] text-slate-500">{comandaImpressao.data} - {comandaImpressao.hora}</p>
+                <p className="text-[10px] text-slate-500">
+                  {comandaImpressao.data} - {comandaImpressao.hora}
+                </p>
               </div>
 
               <div className="space-y-0.5">
-                <p><strong>Cliente:</strong> {comandaImpressao.cliente.nome}</p>
-                <p><strong>Telefone:</strong> {comandaImpressao.cliente.telefone}</p>
-                {comandaImpressao.tipo_pedido !== 'retirada' && comandaImpressao.tipo_pedido !== 'mesa' && (
-                  <>
-                    <p><strong>Endereço:</strong> {comandaImpressao.enderecoEntrega.logradouro}, {comandaImpressao.enderecoEntrega.numero}</p>
-                    <p><strong>Bairro:</strong> {comandaImpressao.enderecoEntrega.bairro}</p>
-                    {comandaImpressao.enderecoEntrega.referencia && (
-                      <p><strong>Ref:</strong> {comandaImpressao.enderecoEntrega.referencia}</p>
-                    )}
-                  </>
-                )}
+                <p>
+                  <strong>Cliente:</strong> {comandaImpressao.cliente?.nome || 'Cliente'}
+                </p>
+                <p>
+                  <strong>Telefone:</strong> {comandaImpressao.cliente?.telefone || '-'}
+                </p>
+                {comandaImpressao.tipo_pedido !== 'retirada' &&
+                  comandaImpressao.tipo_pedido !== 'mesa' && (
+                    <>
+                      <p>
+                        <strong>Endereço:</strong> {comandaImpressao.enderecoEntrega?.logradouro},{' '}
+                        {comandaImpressao.enderecoEntrega?.numero}
+                      </p>
+                      <p>
+                        <strong>Bairro:</strong> {comandaImpressao.enderecoEntrega?.bairro}
+                      </p>
+                      {comandaImpressao.enderecoEntrega?.referencia && (
+                        <p>
+                          <strong>Ref:</strong> {comandaImpressao.enderecoEntrega.referencia}
+                        </p>
+                      )}
+                    </>
+                  )}
               </div>
 
               <div className="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
                 <p className="font-bold">ITENS:</p>
                 {comandaImpressao.itens.map((it, i) => (
                   <div key={i} className="flex justify-between">
-                    <span>{it.quantidade}x {it.nome}</span>
+                    <span>
+                      {it.quantidade}x {it.nome}
+                    </span>
                     <span>{formatCurrency(it.subtotal)}</span>
                   </div>
                 ))}
@@ -1073,9 +1740,13 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   <span>TOTAL A COBRAR:</span>
                   <span>{formatCurrency(comandaImpressao.valorTotal)}</span>
                 </div>
-                <p><strong>Forma:</strong> {comandaImpressao.formaPagamento.toUpperCase()}</p>
+                <p>
+                  <strong>Forma:</strong> {(comandaImpressao.formaPagamento || '').toUpperCase()}
+                </p>
                 {comandaImpressao.trocoPara && (
-                  <p><strong>Levar troco para:</strong> {formatCurrency(comandaImpressao.trocoPara)}</p>
+                  <p>
+                    <strong>Levar troco para:</strong> {formatCurrency(comandaImpressao.trocoPara)}
+                  </p>
                 )}
                 {comandaImpressao.codigoEntregaPin && (
                   <p className="pt-2 text-center font-bold text-sm text-emerald-800">
@@ -1111,11 +1782,14 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
         )}
 
-        {/* MODAL DE VALIDAÇÃO DE PIN DE ENTREGA (MODO CLARO) */}
+        {/* MODAL DE VALIDAÇÃO DE PIN DE ENTREGA */}
         {pedidoParaValidarPin && (
           <div
             className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
             style={{ zIndex: 10000000 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setPedidoParaValidarPin(null);
+            }}
           >
             <div className="bg-white border border-slate-200 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl text-center text-slate-900">
               <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 mx-auto flex items-center justify-center border border-amber-200">
@@ -1126,7 +1800,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   Confirmar Entrega #{pedidoParaValidarPin.numeroPedido}
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Digite o código PIN (6 dígitos ou 4 em pedidos antigos) informado pelo cliente no momento da entrega:
+                  Digite o código PIN (6 dígitos ou 4 em pedidos antigos) informado pelo cliente no
+                  momento da entrega:
                 </p>
               </div>
 
@@ -1163,12 +1838,15 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     if (sucesso) {
                       setPedidoParaValidarPin(null);
                     } else {
-                      setErroPin((typeof res === 'object' && res?.erro) || 'PIN incorreto! Verifique com o cliente.');
+                      setErroPin(
+                        (typeof res === 'object' && res?.erro) ||
+                          'PIN incorreto! Verifique com o cliente.'
+                      );
                     }
                   }}
                   className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
                 >
-                  Validar & Concluir
+                  Validar &amp; Concluir
                 </button>
               </div>
             </div>
@@ -1180,6 +1858,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           <div
             className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
             style={{ zIndex: 10000002 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setClienteContatoModal(null);
+            }}
           >
             <div className="bg-white rounded-3xl max-w-sm w-full p-5 space-y-4 shadow-2xl border border-slate-200 animate-fadeIn">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
@@ -1218,7 +1899,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
                 >
                   <Phone className="w-5 h-5" />
-                  <span>📞 Ligar Agora</span>
+                  <span>Ligar Agora</span>
                 </a>
 
                 <button
@@ -1227,20 +1908,23 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     const fone = clienteContatoModal.telefone.replace(/\D/g, '');
                     const foneDdi = fone.startsWith('55') ? fone : `55${fone}`;
                     const msg = `Olá, ${clienteContatoModal.nome}! Somos da loja ${lojaAtual?.nome || ''}. Estamos com seu pedido #${clienteContatoModal.numeroPedido}.`;
-                    window.open(`https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`, '_blank');
+                    window.open(
+                      `https://api.whatsapp.com/send?phone=${foneDdi}&text=${encodeURIComponent(msg)}`,
+                      '_blank'
+                    );
                     setClienteContatoModal(null);
                   }}
                   className="py-3 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  <span>💬 WhatsApp</span>
+                  <span>WhatsApp</span>
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* MODAL DE CONFIGURAÇÕES DE DELIVERY EM TELA CHEIA (MODO CLARO) */}
+        {/* MODAL DE CONFIGURAÇÕES DE DELIVERY EM TELA CHEIA */}
         {modalConfigAberta && (
           <div
             className="fixed inset-0 w-screen h-screen bg-slate-100 flex flex-col overflow-hidden text-slate-800"
@@ -1257,7 +1941,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     Configurações de Delivery da Loja
                   </h3>
                   <p className="text-xs text-slate-500 font-medium">
-                    Gerencie horários, taxas, alertas sonoros, impressão térmica e links de acesso em tela cheia
+                    Gerencie horários, taxas, alertas sonoros, impressão térmica e links de acesso em
+                    tela cheia
                   </p>
                 </div>
               </div>
@@ -1313,8 +1998,15 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                             setFormConfig((prev) => {
                               if (!estaAberta) {
                                 const agora = new Date();
-                                const hhmm = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
-                                const foraDoHorario = prev.ativo !== false && prev.horarioFechamento && prev.horarioFechamento <= hhmm;
+                                const hhmm = agora.toLocaleTimeString('pt-BR', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: false,
+                                });
+                                const foraDoHorario =
+                                  prev.ativo !== false &&
+                                  prev.horarioFechamento &&
+                                  prev.horarioFechamento <= hhmm;
                                 return {
                                   ...prev,
                                   ativo: true,
@@ -1330,7 +2022,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                               ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
                               : 'bg-rose-600 hover:bg-rose-700 text-white'
                           }`}
-                          title={estaAberta ? 'Clique para fechar a loja manualmente' : 'Clique para abrir a loja agora'}
+                          title={
+                            estaAberta
+                              ? 'Clique para fechar a loja manualmente'
+                              : 'Clique para abrir a loja agora'
+                          }
                         >
                           <span
                             className={`w-2.5 h-2.5 rounded-full ${
@@ -1348,7 +2044,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <span className="font-black text-sm text-amber-950 flex items-center gap-2">
-                          <span className="text-lg">🔔</span>
+                          <Bell className="w-4 h-4 text-amber-600" />
                           <span>Toque de Sino de Novo Pedido:</span>
                         </span>
                         <span className="text-amber-800 text-xs block mt-0.5">
@@ -1361,16 +2057,18 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           onClick={() => pararAlertaNovoPedidoDelivery()}
                           className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0 animate-pulse"
                         >
-                          <span>🔕</span>
+                          <BellOff className="w-4 h-4" />
                           <span>Parar Toque</span>
                         </button>
                       ) : (
                         <button
                           type="button"
-                          onClick={() => tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)}
+                          onClick={() =>
+                            tocarAlertaNovoPedidoDelivery(formConfig.repeticoesAlerta ?? 3)
+                          }
                           className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
                         >
-                          <span>🔔</span>
+                          <Bell className="w-4 h-4" />
                           <span>Testar Toque</span>
                         </button>
                       )}
@@ -1400,15 +2098,15 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                       </select>
                     </div>
                     <p className="text-xs text-amber-900/80 leading-relaxed">
-                      💡 Assim que você clicar em "Confirmar/Aceitar" no pedido, o sino para de tocar imediatamente.
+                      Assim que você clicar em &quot;Confirmar Pedido&quot;, o sino para de tocar
+                      imediatamente.
                     </p>
                   </div>
 
-                  {/* Automações ao Receber Novo Pedido: Aceite Automático & Impressão Automática */}
+                  {/* Automações ao Receber Novo Pedido */}
                   <div className="p-4 sm:p-5 rounded-2xl bg-sky-50/90 border border-sky-200 shadow-xs space-y-3.5">
                     <div className="flex items-center justify-between pb-2 border-b border-sky-200/70">
                       <span className="font-black text-xs sm:text-sm text-sky-950 flex items-center gap-2 uppercase tracking-wide">
-                        <span>⚡</span>
                         <span>Automações de Novos Pedidos</span>
                       </span>
                       <span className="text-[11px] bg-sky-100 text-sky-800 font-bold px-2.5 py-0.5 rounded-full">
@@ -1424,7 +2122,8 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           <span>1. Aceitar Pedidos Automaticamente:</span>
                         </span>
                         <span className="text-slate-500 text-xs block mt-1 leading-relaxed">
-                          Move o pedido direto para "Em Separação" e já baixa os produtos do estoque
+                          Move o pedido direto para &quot;Em Separação&quot; e já baixa os produtos do
+                          estoque
                         </span>
                       </div>
                       <button
@@ -1441,11 +2140,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                             : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
                         }`}
                       >
-                        <span>{formConfig.aceitarAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                        <span>{formConfig.aceitarAutomatico ? 'LIGADA' : 'DESLIGADA'}</span>
                       </button>
                     </div>
 
-                    {/* Caixilha 2: Impressão Automática de Cupom / Comanda */}
+                    {/* Caixilha 2: Impressão Automática */}
                     <div className="p-3.5 rounded-xl bg-white border border-sky-200/80 space-y-3 shadow-2xs">
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex-1">
@@ -1471,7 +2170,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                               : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
                           }`}
                         >
-                          <span>{formConfig.imprimirAutomatico ? '✓ LIGADA' : 'DESLIGADA'}</span>
+                          <span>{formConfig.imprimirAutomatico ? 'LIGADA' : 'DESLIGADA'}</span>
                         </button>
                       </div>
 
@@ -1481,7 +2180,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
-                              onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))}
+                              onClick={() =>
+                                setFormConfig((prev) => ({ ...prev, larguraImpressao: '80mm' }))
+                              }
                               className={`px-3.5 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
                                 (formConfig.larguraImpressao || '80mm') === '80mm'
                                   ? 'bg-sky-900 text-white shadow-2xs'
@@ -1492,7 +2193,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                             </button>
                             <button
                               type="button"
-                              onClick={() => setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))}
+                              onClick={() =>
+                                setFormConfig((prev) => ({ ...prev, larguraImpressao: '58mm' }))
+                              }
                               className={`px-3.5 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
                                 formConfig.larguraImpressao === '58mm'
                                   ? 'bg-sky-900 text-white shadow-2xs'
@@ -1507,7 +2210,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Horário de Início e Término do Delivery (Bloqueio Automático) */}
+                  {/* Horário de Início e Término do Delivery */}
                   <div className="p-4 sm:p-5 rounded-2xl bg-sky-50/80 border border-sky-200 shadow-xs space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-xs sm:text-sm text-sky-950 flex items-center gap-2">
@@ -1527,7 +2230,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                         <input
                           type="time"
                           value={formConfig.horarioAbertura || '08:00'}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioAbertura: e.target.value }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({ ...prev, horarioAbertura: e.target.value }))
+                          }
                           className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-sky-500 shadow-2xs"
                         />
                       </div>
@@ -1539,14 +2244,20 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                         <input
                           type="time"
                           value={formConfig.horarioFechamento || '23:00'}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, horarioFechamento: e.target.value }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              horarioFechamento: e.target.value,
+                            }))
+                          }
                           className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm text-slate-900 font-bold focus:outline-none focus:border-sky-500 shadow-2xs"
                         />
                       </div>
                     </div>
 
                     <p className="text-xs text-sky-800/80 leading-relaxed">
-                      💡 Fora deste horário, o cliente não conseguirá enviar pedidos pelo cardápio online e verá o aviso de loja fechada.
+                      Fora deste horário, o cliente não conseguirá enviar pedidos pelo cardápio
+                      online e verá o aviso de loja fechada.
                     </p>
                   </div>
                 </div>
@@ -1556,7 +2267,7 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
                     <div className="border-b border-slate-100 pb-2.5">
                       <h4 className="font-black text-sm text-slate-900">
-                        Taxas de Entrega, Tempos & Pagamento
+                        Taxas de Entrega, Tempos &amp; Pagamento
                       </h4>
                       <p className="text-xs text-slate-500">
                         Defina valores de entrega, tempo médio estimado e dados de contato da loja
@@ -1566,22 +2277,36 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     {/* Taxa de Entrega e Raio */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Taxa de Entrega Fixa (R$):</label>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Taxa de Entrega Fixa (R$):
+                        </label>
                         <input
                           type="number"
                           step="0.50"
                           value={formConfig.taxaEntregaFixa}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, taxaEntregaFixa: Number(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              taxaEntregaFixa: Number(e.target.value),
+                            }))
+                          }
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Raio Máximo Atendido (km):</label>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Raio Máximo Atendido (km):
+                        </label>
                         <input
                           type="number"
                           value={formConfig.raioMaximoKm}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, raioMaximoKm: Number(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              raioMaximoKm: Number(e.target.value),
+                            }))
+                          }
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
@@ -1590,31 +2315,52 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     {/* Tempos Estimados e Pedido Mínimo */}
                     <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Tempo Mín (min):</label>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Tempo Mín (min):
+                        </label>
                         <input
                           type="number"
                           value={formConfig.tempoMinimoMinutos}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMinimoMinutos: Number(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              tempoMinimoMinutos: Number(e.target.value),
+                            }))
+                          }
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Tempo Máx (min):</label>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Tempo Máx (min):
+                        </label>
                         <input
                           type="number"
                           value={formConfig.tempoMaximoMinutos}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, tempoMaximoMinutos: Number(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              tempoMaximoMinutos: Number(e.target.value),
+                            }))
+                          }
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
 
                       <div>
-                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">Ped. Mínimo (R$):</label>
+                        <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                          Ped. Mínimo (R$):
+                        </label>
                         <input
                           type="number"
                           value={formConfig.valorMinimoPedido}
-                          onChange={(e) => setFormConfig((prev) => ({ ...prev, valorMinimoPedido: Number(e.target.value) }))}
+                          onChange={(e) =>
+                            setFormConfig((prev) => ({
+                              ...prev,
+                              valorMinimoPedido: Number(e.target.value),
+                            }))
+                          }
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-900 focus:outline-none focus:border-sky-500"
                         />
                       </div>
@@ -1622,11 +2368,15 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
                     {/* Chave PIX da Loja */}
                     <div>
-                      <label className="text-slate-700 block mb-1.5 font-bold text-xs">Chave PIX da Loja (para pagamentos online):</label>
+                      <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                        Chave PIX da Loja (para pagamentos online):
+                      </label>
                       <input
                         type="text"
                         value={formConfig.chavePix || ''}
-                        onChange={(e) => setFormConfig((prev) => ({ ...prev, chavePix: e.target.value }))}
+                        onChange={(e) =>
+                          setFormConfig((prev) => ({ ...prev, chavePix: e.target.value }))
+                        }
                         placeholder="CNPJ, E-mail, Celular ou Chave Aleatória"
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-sky-500"
                       />
@@ -1634,12 +2384,19 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
 
                     {/* Telefone / WhatsApp da Loja */}
                     <div>
-                      <label className="text-slate-700 block mb-1.5 font-bold text-xs">WhatsApp da Loja para Suporte:</label>
+                      <label className="text-slate-700 block mb-1.5 font-bold text-xs">
+                        WhatsApp da Loja para Suporte:
+                      </label>
                       <input
                         type="text"
                         inputMode="numeric"
                         value={formConfig.telefoneContatoLoja || ''}
-                        onChange={(e) => setFormConfig((prev) => ({ ...prev, telefoneContatoLoja: mascaraTelefone(e.target.value) }))}
+                        onChange={(e) =>
+                          setFormConfig((prev) => ({
+                            ...prev,
+                            telefoneContatoLoja: mascaraTelefone(e.target.value),
+                          }))
+                        }
                         placeholder="(00) 90000-0000"
                         maxLength={15}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:border-sky-500"
@@ -1648,81 +2405,83 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                   </div>
 
                   {/* LINKS EXCLUSIVOS DA LOJA E CARDÁPIO DIGITAL */}
-                  {lojaAtual && (() => {
-                    const linksLoja = obterLinksExclusivosLoja(lojaAtual);
-                    const itensLinks = [
-                      {
-                        id: 'cardapio',
-                        label: '🛵 Cardápio Digital (Clientes - Público)',
-                        url: linksLoja.cardapio,
-                        cor: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-                        btnCor: 'bg-emerald-600 hover:bg-emerald-700 text-white',
-                      },
-                      {
-                        id: 'admin',
-                        label: '🔑 Link Oficial da Loja (Admin & Funcionários)',
-                        url: linksLoja.admin,
-                        cor: 'bg-slate-50 border-slate-200 text-slate-800',
-                        btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
-                      },
-                    ];
+                  {lojaAtual &&
+                    (() => {
+                      const linksLoja = obterLinksExclusivosLoja(lojaAtual);
+                      const itensLinks = [
+                        {
+                          id: 'cardapio',
+                          label: 'Cardápio Digital (Clientes - Público)',
+                          url: linksLoja.cardapio,
+                          cor: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+                          btnCor: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+                        },
+                        {
+                          id: 'admin',
+                          label: 'Link Oficial da Loja (Admin & Funcionários)',
+                          url: linksLoja.admin,
+                          cor: 'bg-slate-50 border-slate-200 text-slate-800',
+                          btnCor: 'bg-slate-800 hover:bg-slate-900 text-white',
+                        },
+                      ];
 
-                    return (
-                      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3.5">
-                        <div className="flex items-center justify-between">
-                          <span className="font-black text-slate-900 text-sm flex items-center gap-2">
-                            <KeyRound className="w-4 h-4 text-sky-600" />
-                            <span>Links da Loja & Cardápio</span>
-                          </span>
-                          <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800">
-                            Token Protegido
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          O Admin e todos os funcionários cadastrados entram pelo mesmo Link Oficial da Loja:
-                        </p>
-                        <div className="space-y-3">
-                          {itensLinks.map((item) => (
-                            <div
-                              key={item.id}
-                              className={`p-3.5 rounded-xl border ${item.cor} flex flex-col gap-2`}
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="font-bold text-xs">{item.label}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(item.url);
-                                    setCopiouTokenEquipe(item.id);
-                                    setTimeout(() => setCopiouTokenEquipe(null), 2200);
-                                  }}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${item.btnCor}`}
-                                >
-                                  {copiouTokenEquipe === item.id ? (
-                                    <>
-                                      <Check className="w-3.5 h-3.5" />
-                                      <span>Copiado!</span>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Copy className="w-3.5 h-3.5" />
-                                      <span>Copiar Link</span>
-                                    </>
-                                  )}
-                                </button>
+                      return (
+                        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3.5">
+                          <div className="flex items-center justify-between">
+                            <span className="font-black text-slate-900 text-sm flex items-center gap-2">
+                              <KeyRound className="w-4 h-4 text-sky-600" />
+                              <span>Links da Loja &amp; Cardápio</span>
+                            </span>
+                            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800">
+                              Token Protegido
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            O Admin e todos os funcionários cadastrados entram pelo mesmo Link
+                            Oficial da Loja:
+                          </p>
+                          <div className="space-y-3">
+                            {itensLinks.map((item) => (
+                              <div
+                                key={item.id}
+                                className={`p-3.5 rounded-xl border ${item.cor} flex flex-col gap-2`}
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="font-bold text-xs">{item.label}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(item.url);
+                                      setCopiouTokenEquipe(item.id);
+                                      setTimeout(() => setCopiouTokenEquipe(null), 2200);
+                                    }}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shrink-0 ${item.btnCor}`}
+                                  >
+                                    {copiouTokenEquipe === item.id ? (
+                                      <>
+                                        <Check className="w-3.5 h-3.5" />
+                                        <span>Copiado!</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Copy className="w-3.5 h-3.5" />
+                                        <span>Copiar Link</span>
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                                <input
+                                  type="text"
+                                  readOnly
+                                  value={item.url}
+                                  className="w-full bg-white/95 border border-slate-200/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-700 select-all focus:outline-none"
+                                />
                               </div>
-                              <input
-                                type="text"
-                                readOnly
-                                value={item.url}
-                                className="w-full bg-white/95 border border-slate-200/80 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-700 select-all focus:outline-none"
-                              />
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })()}
+                      );
+                    })()}
                 </div>
               </div>
             </div>
@@ -1751,11 +2510,14 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
           </div>
         )}
 
-        {/* MODAL DE LINK DO MOTOBOY (EXATAMENTE COMO NA FOTO DE REFERÊNCIA) */}
+        {/* MODAL DE LINK DO MOTOBOY */}
         {pedidoLinkMotoboy && (
           <div
             className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
             style={{ zIndex: 10000000 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setPedidoLinkMotoboy(null);
+            }}
           >
             <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-200 animate-fadeIn">
               {/* Header do Modal */}
@@ -1782,10 +2544,9 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                 </button>
               </div>
 
-              {/* Box Roxo Informativo (Idêntico à Imagem) */}
+              {/* Box Roxo Informativo */}
               <div className="bg-[#faf5ff] border border-[#f3e8ff] rounded-2xl p-4 text-xs text-[#581c87] space-y-2">
                 <p className="font-extrabold flex items-center gap-1.5 text-[#6b21a8]">
-                  <span>📱</span>
                   <span>Esta página leve abre no celular do motoboy com:</span>
                 </p>
                 <ul className="space-y-1.5 pl-1 text-[11px] text-slate-700">
@@ -1806,7 +2567,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     <span>Botão &quot;Finalizar Entrega&quot; para atualizar no sistema</span>
                   </li>
                   <li className="flex items-start gap-1.5 text-emerald-700 font-semibold pt-0.5">
-                    <span>🛡️</span>
                     <span>Expira 5 minutos após confirmada a entrega (proteção LGPD)</span>
                   </li>
                 </ul>
@@ -1829,7 +2589,11 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
                     onClick={() => handleCopiarLinkMotoboy(pedidoLinkMotoboy)}
                     className="px-4 py-2 bg-[#1e293b] hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0 active:scale-95"
                   >
-                    {copiouLinkMotoboy ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    {copiouLinkMotoboy ? (
+                      <Check className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
                     <span>{copiouLinkMotoboy ? 'Copiado!' : 'Copiar'}</span>
                   </button>
                 </div>
@@ -1869,7 +2633,6 @@ export const GestaoDeliveryModal: React.FC<GestaoDeliveryModalProps> = ({
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
