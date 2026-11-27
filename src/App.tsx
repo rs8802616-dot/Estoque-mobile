@@ -129,6 +129,11 @@ import {
   limparLogsAuditoriaLogin,
   revogarLockoutLoja,
 } from './utils/security';
+import {
+  criarDetectorBipHardware,
+  isCodigoBarrasNumerico,
+  removerSufixoBipado,
+} from './utils/barcodeScanner';
 import { CarrinhoVendaModal } from './components/CarrinhoVendaModal';
 import { RelatorioVendasModal } from './components/RelatorioVendasModal';
 import { GraficosVendasModal } from './components/GraficosVendasModal';
@@ -4286,10 +4291,49 @@ export default function App() {
     const codLimpo = codigoLido.trim();
     if (!codLimpo) return;
 
-    // Se o modal de cadastro estiver aberto, preenche o código e busca imediatamente
+    // Se o modal de cadastro estiver aberto, preenche o código, limpa resíduos e busca imediatamente
     if (modalCadastroVisivel) {
+      setModalPesquisaCatalogoVisivel(false);
+      if (codigoEditando && codigoEditando.codigo === codLimpo) {
+        tocarBeepCaixa();
+        setMsgCad(
+          <span style={{ color: '#0369a1', fontWeight: 700 }}>
+            ⚡ Código {codLimpo} confirmado no produto em edição.
+          </span>
+        );
+        return;
+      }
+      if (!codigoEditando && tipoProdutoCadastro === 'interno' && isCodigoBarrasNumerico(codLimpo)) {
+        setTipoProdutoCadastro('padrao');
+        setCadEstoqueIlimitado(false);
+        if (cadQtd === '99999') setCadQtd('1');
+        if (cadVal === '2099-12-31') setCadVal('');
+        if (cadLote === 'PROD_INTERNA') setCadLote('');
+      }
+      if (!codigoEditando && cadCod.trim() && cadCod.trim() !== codLimpo) {
+        setCadNome('');
+        setCadMarca('');
+        setCadCategoria('');
+        setFotoTemp('');
+        setCadCusto('');
+        setCadPreco('');
+        setCadMargemLucro('');
+      }
       setCadCod(codLimpo);
-      buscarProdutoPeloCodigo(codLimpo);
+      tocarBeepCaixa();
+      setMsgCad(
+        <span style={{ color: '#0369a1', fontWeight: 700 }}>
+          ⚡ Código {codLimpo} capturado pelo leitor! Buscando produto...
+        </span>
+      );
+      window.setTimeout(() => {
+        const el = document.getElementById('cad-cod') as HTMLInputElement | null;
+        el?.focus();
+      }, 25);
+      buscarProdutoPeloCodigo(codLimpo, {
+        origemBip: true,
+        sobrescreverCampos: !codigoEditando,
+      });
       return;
     }
 
@@ -4367,102 +4411,131 @@ export default function App() {
   const processarBipHardwareRef = useRef(processarBipHardware);
   processarBipHardwareRef.current = processarBipHardware;
 
-  // Keyboard Wedge Listener for Barcode Scanners (USB/Bluetooth)
+  const modalCadastroVisivelRef = useRef<boolean>(modalCadastroVisivel);
+  modalCadastroVisivelRef.current = modalCadastroVisivel;
+
+  const telaLoginVisivelRef = useRef<boolean>(telaLoginVisivel);
+  telaLoginVisivelRef.current = telaLoginVisivel;
+
+  const restaurarCampoPoluidoPeloBip = (
+    targetId: string | null,
+    preValue: string | null,
+    codigoLido: string
+  ) => {
+    if (!targetId) return;
+    if (targetId === 'cad-nome') setCadNome((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-marca') setCadMarca((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-categoria') setCadCategoria((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-qtd') setCadQtd((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-lote') setCadLote((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-val') setCadVal((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-custo') setCadCusto((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-margem') setCadMargemLucro((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'cad-preco') setCadPreco((v) => removerSufixoBipado(v, codigoLido, preValue));
+    else if (targetId === 'busca') setBusca((v) => removerSufixoBipado(v, codigoLido, preValue));
+  };
+
+  const restaurarCampoPoluidoRef = useRef(restaurarCampoPoluidoPeloBip);
+  restaurarCampoPoluidoRef.current = restaurarCampoPoluidoPeloBip;
+
+  const processarAtalhoTecladoGlobal = (e: KeyboardEvent) => {
+    if (telaLoginVisivel) return;
+    if (e.key === 'F2') {
+      e.preventDefault();
+      setModalCarrinhoVisivel((prev) => !prev);
+      return;
+    }
+    if (e.key === 'F3') {
+      e.preventDefault();
+      const campoBusca = document.querySelector<HTMLInputElement>('input[type="search"], .input-busca');
+      if (campoBusca) {
+        campoBusca.focus();
+        campoBusca.select();
+      }
+      return;
+    }
+    if (e.key === 'F4') {
+      e.preventDefault();
+      if (!verificarPermissaoOuAvisar('caixa', 'gestao_caixa', 'Gestão do Caixa')) return;
+      setModalCaixaVisivel((prev) => !prev);
+      return;
+    }
+    if (e.key === 'F8') {
+      e.preventDefault();
+      if (!verificarPermissaoOuAvisar('delivery', 'gerenciar_delivery', 'Painel de Delivery')) return;
+      setModalGestaoDeliveryVisivel((prev) => !prev);
+      return;
+    }
+    if (e.key === 'F9') {
+      e.preventDefault();
+      abrirCentralRelatorios('faturamento');
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (modalVendaVisivel) { setModalVendaVisivel(false); return; }
+      if (modalCarrinhoVisivel) { setModalCarrinhoVisivel(false); return; }
+      if (modalCaixaVisivel) { setModalCaixaVisivel(false); return; }
+      if (modalCentralRelatoriosVisivel) { fecharAbaDefinitivo('relatorios'); return; }
+      if (modalGestaoDeliveryVisivel) { fecharAbaDefinitivo('delivery'); return; }
+    }
+  };
+
+  const atalhosTecladoRef = useRef(processarAtalhoTecladoGlobal);
+  atalhosTecladoRef.current = processarAtalhoTecladoGlobal;
+
+  // Foca automaticamente o campo de código de barras ao abrir o cadastro padrão
   useEffect(() => {
-    let buffer = '';
-    let lastKeyTime = Date.now();
+    if (!modalCadastroVisivel || tipoProdutoCadastro !== 'padrao' || codigoEditando) return;
+    const timer = window.setTimeout(() => {
+      const el = document.getElementById('cad-cod') as HTMLInputElement | null;
+      el?.focus();
+    }, 60);
+    return () => window.clearTimeout(timer);
+  }, [modalCadastroVisivel, tipoProdutoCadastro, codigoEditando]);
+
+  // Keyboard Wedge Listener for Barcode Scanners (USB/Bluetooth) em fase de captura
+  useEffect(() => {
+    const detector = criarDetectorBipHardware();
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Atalhos globais de teclado do PDV (apenas quando logado)
-      if (!telaLoginVisivel) {
-        if (e.key === 'F2') {
-          e.preventDefault();
-          setModalCarrinhoVisivel((prev) => !prev);
-          return;
-        }
-        if (e.key === 'F3') {
-          e.preventDefault();
-          const campoBusca = document.querySelector<HTMLInputElement>('input[type="search"], .input-busca');
-          if (campoBusca) {
-            campoBusca.focus();
-            campoBusca.select();
-          }
-          return;
-        }
-        if (e.key === 'F4') {
-          e.preventDefault();
-          if (!verificarPermissaoOuAvisar('caixa', 'gestao_caixa', 'Gestão do Caixa')) return;
-          setModalCaixaVisivel((prev) => !prev);
-          return;
-        }
-        if (e.key === 'F8') {
-          e.preventDefault();
-          if (!verificarPermissaoOuAvisar('delivery', 'gerenciar_delivery', 'Painel de Delivery')) return;
-          setModalGestaoDeliveryVisivel((prev) => !prev);
-          return;
-        }
-        if (e.key === 'F9') {
-          e.preventDefault();
-          abrirCentralRelatorios('faturamento');
-          return;
-        }
-        if (e.key === 'Escape') {
-          if (modalVendaVisivel) { setModalVendaVisivel(false); return; }
-          if (modalCarrinhoVisivel) { setModalCarrinhoVisivel(false); return; }
-          if (modalCaixaVisivel) { setModalCaixaVisivel(false); return; }
-          if (modalCentralRelatoriosVisivel) { fecharAbaDefinitivo('relatorios'); return; }
-          if (modalGestaoDeliveryVisivel) { fecharAbaDefinitivo('delivery'); return; }
-        }
-      }
+      atalhosTecladoRef.current(e);
+      if (e.defaultPrevented) return;
+      if (telaLoginVisivelRef.current) return;
 
-      const target = e.target as HTMLElement;
-      const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
-      
-      const now = Date.now();
-      const diff = now - lastKeyTime;
-      lastKeyTime = now;
+      const target = e.target as HTMLElement | null;
+      const isInput = Boolean(
+        target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      );
+      const targetId = isInput && target ? (target.id || null) : null;
+      const targetValue =
+        isInput && target && 'value' in target
+          ? String((target as HTMLInputElement).value ?? '')
+          : null;
 
-      if (e.key === 'Enter') {
-        // Fast burst typical of physical barcode gun (< 80ms interval between characters)
-        if (buffer.length >= 3 && diff < 85) {
-          const codigoLido = buffer.trim();
-          buffer = '';
-          if (codigoLido) {
-            if (!isInput || (target as HTMLInputElement).placeholder?.toLowerCase().includes('código') || (target as HTMLInputElement).placeholder?.toLowerCase().includes('barra')) {
-              e.preventDefault();
-            }
-            processarBipHardwareRef.current(codigoLido);
-          }
-        } else {
-          buffer = '';
-        }
-        return;
-      }
+      const resultado = detector.processarTecla({
+        key: e.key,
+        ctrlKey: e.ctrlKey,
+        altKey: e.altKey,
+        metaKey: e.metaKey,
+        now: Date.now(),
+        targetId,
+        targetValue,
+        aceitarTab: modalCadastroVisivelRef.current,
+      });
 
-      if (!e.key) return;
-      if (e.key.length === 1) {
-        if (diff > 120) {
-          buffer = e.key; // Reset on slow typing
-        } else {
-          buffer += e.key; // Rapid stream from barcode reader
+      if (resultado.disparou) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (resultado.targetId && resultado.targetId !== 'cad-cod') {
+          restaurarCampoPoluidoRef.current(resultado.targetId, resultado.preValue, resultado.codigo);
         }
+        processarBipHardwareRef.current(resultado.codigo);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-    estoque,
-    sessaoCaixaAtiva,
-    carrinho,
-    catalogoGlobal,
-    telaLoginVisivel,
-    modalVendaVisivel,
-    modalCarrinhoVisivel,
-    modalCaixaVisivel,
-    modalCentralRelatoriosVisivel,
-    modalGestaoDeliveryVisivel,
-  ]);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, []);
 
   const processarCodigoScaneado = (codigoLido: string) => {
     const codLimpo = codigoLido.trim();
@@ -5269,9 +5342,13 @@ export default function App() {
   // Product Catalog Look Up (Ordem estrita: Estoque Local -> Cache Memória -> Banco de Dados Firestore)
   const [buscandoProdutoCodigo, setBuscandoProdutoCodigo] = useState<boolean>(false);
   const codigosNaoEncontradosFirestoreRef = useRef<Set<string>>(new Set());
+  const buscaCodigoSeqRef = useRef<number>(0);
 
-  const buscarProdutoPeloCodigo = async (codigoInformado?: string) => {
-    if (buscandoProdutoCodigo) return;
+  const buscarProdutoPeloCodigo = async (
+    codigoInformado?: string,
+    opcoes?: { origemBip?: boolean; sobrescreverCampos?: boolean }
+  ) => {
+    if (buscandoProdutoCodigo && !opcoes?.origemBip) return;
     const codLimpo = String(codigoInformado !== undefined ? codigoInformado : cadCod).trim();
     if (!codLimpo) {
       alert('Por favor, informe ou escaneie o código de barras primeiro!');
@@ -5281,46 +5358,95 @@ export default function App() {
     // Se estiver editando um item existente e o código for o mesmo, preserva as edições do usuário
     if (codigoEditando && codigoEditando.codigo === codLimpo) return;
 
+    const seqAtual = ++buscaCodigoSeqRef.current;
     setBuscandoProdutoCodigo(true);
 
-    // 1. PRIMEIRO: Verifica se tem aquele produto salvo no estoque local da loja
-    const itemEst = estoque.find((e) => String(e.codigo || '').trim() === codLimpo);
-    if (itemEst && itemEst.nome) {
-      setCadNome(itemEst.nome);
-      if (itemEst.marca) setCadMarca(itemEst.marca);
-      if (itemEst.categoria) setCadCategoria(itemEst.categoria);
-      const fotoRef = obterFotoProduto(itemEst.codigo, itemEst.foto);
-      if (fotoRef) setFotoTemp(fotoRef);
-      if (itemEst.preco_venda && !cadPreco) setCadPreco(String(itemEst.preco_venda));
-      if (itemEst.preco_custo && !cadCusto) setCadCusto(String(itemEst.preco_custo));
-      setBuscandoProdutoCodigo(false);
-      return;
-    }
+    const podeSobrescreverPreco = Boolean(opcoes?.sobrescreverCampos) || !cadPreco;
+    const podeSobrescreverCusto = Boolean(opcoes?.sobrescreverCampos) || !cadCusto;
 
-    // 2. SEGUNDO: Verifica no cache local de produtos em memória
-    const itemCat = catalogoGlobal.find((c) => String(c.codigo || '').trim() === codLimpo);
-    if (itemCat && itemCat.nome) {
-      setCadNome(itemCat.nome || '');
-      if (itemCat.marca) setCadMarca(itemCat.marca);
-      if (itemCat.categoria) setCadCategoria(itemCat.categoria);
-      if (itemCat.imagem) setFotoTemp(itemCat.imagem);
-      if (itemCat.preco_venda && !cadPreco) setCadPreco(String(itemCat.preco_venda));
-      if (itemCat.preco_custo && !cadCusto) setCadCusto(String(itemCat.preco_custo));
-      setBuscandoProdutoCodigo(false);
-      return;
-    }
+    const aplicarProdutoEncontrado = (dados: {
+      nome: string;
+      marca?: string;
+      categoria?: string;
+      foto?: string;
+      precoVenda?: number;
+      precoCusto?: number;
+    }) => {
+      setCadNome(dados.nome);
+      if (dados.marca) setCadMarca(dados.marca);
+      if (dados.categoria) setCadCategoria(dados.categoria);
+      if (dados.foto) setFotoTemp(dados.foto);
 
-    // 3. TERCEIRO: Se NÃO tiver no estoque nem no cache, aí sim busca no banco de dados Firestore (apenas 1 documento)
+      const precoValido =
+        typeof dados.precoVenda === 'number' && dados.precoVenda > 0
+          ? String(dados.precoVenda)
+          : '';
+      const custoValido =
+        typeof dados.precoCusto === 'number' && dados.precoCusto > 0
+          ? String(dados.precoCusto)
+          : '';
+
+      if (precoValido && podeSobrescreverPreco) setCadPreco(precoValido);
+      if (custoValido && podeSobrescreverCusto) setCadCusto(custoValido);
+
+      if (opcoes?.origemBip) {
+        setMsgCad(
+          <span style={{ color: 'var(--sucesso)', fontWeight: 700 }}>
+            ✅ Produto encontrado ({dados.nome})! Confira preço/quantidade e salve.
+          </span>
+        );
+        const temPrecoFinal =
+          Boolean(precoValido) || (!opcoes?.sobrescreverCampos && Boolean(cadPreco));
+        window.setTimeout(() => {
+          const alvoId = temPrecoFinal ? 'cad-qtd' : 'cad-preco';
+          const el = document.getElementById(alvoId) as HTMLInputElement | null;
+          el?.focus();
+        }, 60);
+      }
+    };
+
     try {
+      // 1. PRIMEIRO: Verifica se tem aquele produto salvo no estoque local da loja
+      const itemEst = estoque.find((e) => String(e.codigo || '').trim() === codLimpo);
+      if (itemEst && itemEst.nome) {
+        aplicarProdutoEncontrado({
+          nome: itemEst.nome,
+          marca: itemEst.marca,
+          categoria: itemEst.categoria,
+          foto: obterFotoProduto(itemEst.codigo, itemEst.foto) || '',
+          precoVenda: itemEst.preco_venda,
+          precoCusto: itemEst.preco_custo,
+        });
+        return;
+      }
+
+      // 2. SEGUNDO: Verifica no cache local de produtos em memória
+      const itemCat = catalogoGlobal.find((c) => String(c.codigo || '').trim() === codLimpo);
+      if (itemCat && itemCat.nome) {
+        aplicarProdutoEncontrado({
+          nome: itemCat.nome || '',
+          marca: itemCat.marca,
+          categoria: itemCat.categoria,
+          foto: itemCat.imagem,
+          precoVenda: itemCat.preco_venda,
+          precoCusto: itemCat.preco_custo,
+        });
+        return;
+      }
+
+      // 3. TERCEIRO: Se NÃO tiver no estoque nem no cache, aí sim busca no banco de dados Firestore (apenas 1 documento)
       const jaFalhouNoFirestore = codigosNaoEncontradosFirestoreRef.current.has(codLimpo);
       const prodRemoto = jaFalhouNoFirestore ? null : await buscarProdutoCatalogoFirestore(codLimpo);
+      if (buscaCodigoSeqRef.current !== seqAtual) return;
       if (prodRemoto && prodRemoto.nome) {
-        setCadNome(prodRemoto.nome);
-        if (prodRemoto.marca) setCadMarca(prodRemoto.marca);
-        if (prodRemoto.categoria) setCadCategoria(prodRemoto.categoria);
-        if (prodRemoto.imagem) setFotoTemp(prodRemoto.imagem);
-        if (prodRemoto.preco_venda && !cadPreco) setCadPreco(String(prodRemoto.preco_venda));
-        if (prodRemoto.preco_custo && !cadCusto) setCadCusto(String(prodRemoto.preco_custo));
+        aplicarProdutoEncontrado({
+          nome: prodRemoto.nome,
+          marca: prodRemoto.marca,
+          categoria: prodRemoto.categoria,
+          foto: prodRemoto.imagem,
+          precoVenda: prodRemoto.preco_venda,
+          precoCusto: prodRemoto.preco_custo,
+        });
 
         // Guarda em memória para futuras pesquisas sem custo de leitura
         setCatalogoGlobal((prev) => {
@@ -5329,7 +5455,6 @@ export default function App() {
           safeLocalStorageSet('catalogoGlobalFirebase', JSON.stringify(novo));
           return novo;
         });
-        setBuscandoProdutoCodigo(false);
         return;
       }
 
@@ -5337,15 +5462,16 @@ export default function App() {
       const itemRemotoEstoque = jaFalhouNoFirestore
         ? null
         : await buscarItemEstoquePorCodigoFirestore(codLimpo, supermercadoAtual);
+      if (buscaCodigoSeqRef.current !== seqAtual) return;
       if (itemRemotoEstoque && itemRemotoEstoque.nome) {
-        setCadNome(itemRemotoEstoque.nome);
-        if (itemRemotoEstoque.marca) setCadMarca(itemRemotoEstoque.marca);
-        if (itemRemotoEstoque.categoria) setCadCategoria(itemRemotoEstoque.categoria);
-        const fotoRemota = obterFotoProduto(itemRemotoEstoque.codigo, itemRemotoEstoque.foto);
-        if (fotoRemota) setFotoTemp(fotoRemota);
-        if (itemRemotoEstoque.preco_venda && !cadPreco) setCadPreco(String(itemRemotoEstoque.preco_venda));
-        if (itemRemotoEstoque.preco_custo && !cadCusto) setCadCusto(String(itemRemotoEstoque.preco_custo));
-        setBuscandoProdutoCodigo(false);
+        aplicarProdutoEncontrado({
+          nome: itemRemotoEstoque.nome,
+          marca: itemRemotoEstoque.marca,
+          categoria: itemRemotoEstoque.categoria,
+          foto: obterFotoProduto(itemRemotoEstoque.codigo, itemRemotoEstoque.foto) || '',
+          precoVenda: itemRemotoEstoque.preco_venda,
+          precoCusto: itemRemotoEstoque.preco_custo,
+        });
         return;
       }
 
@@ -5357,11 +5483,14 @@ export default function App() {
       // consulta automaticamente as 4 chaves em cascata da API SI5 Global (100 consultas/dia por chave = 400 consultas/dia)
       try {
         const prodSI5 = await consultarSI5GlobalCascata(codLimpo);
+        if (buscaCodigoSeqRef.current !== seqAtual) return;
         if (prodSI5 && prodSI5.nomeProduto) {
-          setCadNome(prodSI5.nomeProduto);
-          if (prodSI5.marca) setCadMarca(prodSI5.marca);
-          if (prodSI5.categoria) setCadCategoria(prodSI5.categoria);
-          if (prodSI5.fotoUrl) setFotoTemp(prodSI5.fotoUrl);
+          aplicarProdutoEncontrado({
+            nome: prodSI5.nomeProduto,
+            marca: prodSI5.marca,
+            categoria: prodSI5.categoria,
+            foto: prodSI5.fotoUrl,
+          });
 
           // Salva no cache local do dispositivo para que futuras buscas custem ZERO requisições
           const itemNovoCat: ProdutoCatalogo = {
@@ -5382,20 +5511,36 @@ export default function App() {
 
           // Grava no banco master automaticamente em background para as próximas filiais
           salvarProdutoCatalogoFirestore(itemNovoCat).catch(() => {});
-
-          setBuscandoProdutoCodigo(false);
           return;
         }
       } catch (errApi) {
         console.warn('Aviso na consulta da API SI5 Global em cascata:', errApi);
       }
 
+      if (buscaCodigoSeqRef.current !== seqAtual) return;
+
       // Se não encontrou em nenhum lugar:
-      alert(`ℹ️ Código "${codLimpo}" não encontrado no estoque, banco de dados ou na API.\n\nPreencha as informações do produto manualmente para salvá-lo.`);
+      if (opcoes?.origemBip) {
+        setMsgCad(
+          <span style={{ color: '#b45309', fontWeight: 700 }}>
+            ℹ️ Código {codLimpo} lido! Produto novo — informe o nome e os dados para cadastrar.
+          </span>
+        );
+        window.setTimeout(() => {
+          const el = document.getElementById('cad-nome') as HTMLInputElement | null;
+          el?.focus();
+        }, 60);
+      } else {
+        alert(
+          `ℹ️ Código "${codLimpo}" não encontrado no estoque, banco de dados ou na API.\n\nPreencha as informações do produto manualmente para salvá-lo.`
+        );
+      }
     } catch (err) {
       console.warn('Erro ao consultar produto no banco de dados:', err);
     } finally {
-      setBuscandoProdutoCodigo(false);
+      if (buscaCodigoSeqRef.current === seqAtual) {
+        setBuscandoProdutoCodigo(false);
+      }
     }
   };
 
@@ -14610,7 +14755,23 @@ export default function App() {
                   /* FLUXO PADRÃO INDUSTRIAL COM CÓDIGO DE BARRAS (EAN) */
                   <>
                     <div className="grupo-input">
-                      <label className="rotulo-campo">Código de Barras (EAN / GTIN)</label>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                        <label className="rotulo-campo" style={{ marginBottom: 0 }}>Código de Barras (EAN / GTIN)</label>
+                        <span
+                          style={{
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            color: '#0369a1',
+                            background: '#e0f2fe',
+                            border: '1px solid #bae6fd',
+                            borderRadius: '999px',
+                            padding: '2px 8px',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          ⚡ Leitor USB/Bluetooth ativo (pode bipar direto)
+                        </span>
+                      </div>
                       <div className="modal-cadastro-ean-acoes">
                         <div className="linha-input" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                           <input
