@@ -1,15 +1,49 @@
+import { signOut } from 'firebase/auth';
 import { ConfigFiscalLoja, ItemEstoque, NfceRegistro, Supermercado, Venda } from '../types';
+import { renovarSessaoFirebaseServidor } from './authClient';
 import { auth } from './firebase';
 
-async function headersNfceComAuth(): Promise<Record<string, string>> {
+async function headersNfceComAuth(forcarRefresh = false): Promise<Record<string, string>> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
-    const token = await auth?.currentUser?.getIdToken?.();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    if (auth?.currentUser?.isAnonymous) {
+      await signOut(auth).catch(() => {});
+      await renovarSessaoFirebaseServidor();
+    } else if (!auth?.currentUser) {
+      await renovarSessaoFirebaseServidor();
+    }
+    if (auth?.currentUser && !auth.currentUser.isAnonymous) {
+      const token = await auth.currentUser.getIdToken(forcarRefresh);
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
     }
   } catch {}
   return headers;
+}
+
+async function postNfceApi(payload: Record<string, unknown>): Promise<RespostaNfceApi> {
+  const bodyStr = JSON.stringify(payload);
+  let resp = await fetch('/api/nfce', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: await headersNfceComAuth(false),
+    body: bodyStr,
+  });
+
+  if (resp.status === 401) {
+    const renovado = await renovarSessaoFirebaseServidor().catch(() => ({ autenticado: false }));
+    if (renovado.autenticado) {
+      resp = await fetch('/api/nfce', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: await headersNfceComAuth(true),
+        body: bodyStr,
+      });
+    }
+  }
+
+  return parseRespostaNfce(resp);
 }
 
 export interface ProntidaoFiscal {
@@ -84,18 +118,13 @@ export async function testarConexaoFocusNfe(
   configFiscal: Partial<ConfigFiscalLoja>,
   lojaId?: string
 ): Promise<RespostaNfceApi> {
-  const resp = await fetch('/api/nfce', {
-    method: 'POST',
-    headers: await headersNfceComAuth(),
-    body: JSON.stringify({
-      acao: 'testar_conexao',
-      lojaId: lojaId || '',
-      ambiente: configFiscal.ambiente || 'homologacao',
-      tokenFocusNfe: configFiscal.tokenFocusNfe || '',
-      cnpj,
-    }),
+  return postNfceApi({
+    acao: 'testar_conexao',
+    lojaId: lojaId || '',
+    ambiente: configFiscal.ambiente || 'homologacao',
+    tokenFocusNfe: configFiscal.tokenFocusNfe || '',
+    cnpj,
   });
-  return parseRespostaNfce(resp);
 }
 
 export async function emitirNfceVenda(
@@ -129,43 +158,37 @@ export async function emitirNfceVenda(
 
   const ref = venda.nfce?.ref || `pdv_${loja.id}_${venda.id}`;
 
-  const resp = await fetch('/api/nfce', {
-    method: 'POST',
-    headers: await headersNfceComAuth(),
-    body: JSON.stringify({
-      acao: 'emitir',
-      lojaId: loja.id,
-      ref,
-      ambiente: cfg.ambiente || 'homologacao',
-      tokenFocusNfe: cfg.tokenFocusNfe || '',
-      cpfNaNota: cpfNaNota ?? venda.cpfNaNota ?? '',
-      emitente: {
-        cnpj: loja.cnpj,
-        razaoSocial: cfg.razaoSocial || loja.nome,
-        nomeFantasia: cfg.nomeFantasia || loja.nome,
-        inscricaoEstadual: cfg.inscricaoEstadual || '',
-        regimeTributario: cfg.regimeTributario || '1',
-        cep: cfg.cep || '',
-        logradouro: cfg.logradouro || loja.endereco || '',
-        numero: cfg.numero || 'S/N',
-        bairro: cfg.bairro || '',
-        municipio: cfg.municipio || loja.cidade || '',
-        uf: cfg.uf || '',
-      },
-      padroes: {
-        ncmPadrao: cfg.ncmPadrao || '21069090',
-        cfopPadrao: cfg.cfopPadrao || '5102',
-        csosnPadrao: cfg.csosnPadrao || '102',
-        unidadePadrao: cfg.unidadePadrao || 'UN',
-      },
-      venda: {
-        ...venda,
-        itens: itensEnriquecidos,
-      },
-    }),
+  return postNfceApi({
+    acao: 'emitir',
+    lojaId: loja.id,
+    ref,
+    ambiente: cfg.ambiente || 'homologacao',
+    tokenFocusNfe: cfg.tokenFocusNfe || '',
+    cpfNaNota: cpfNaNota ?? venda.cpfNaNota ?? '',
+    emitente: {
+      cnpj: loja.cnpj,
+      razaoSocial: cfg.razaoSocial || loja.nome,
+      nomeFantasia: cfg.nomeFantasia || loja.nome,
+      inscricaoEstadual: cfg.inscricaoEstadual || '',
+      regimeTributario: cfg.regimeTributario || '1',
+      cep: cfg.cep || '',
+      logradouro: cfg.logradouro || loja.endereco || '',
+      numero: cfg.numero || 'S/N',
+      bairro: cfg.bairro || '',
+      municipio: cfg.municipio || loja.cidade || '',
+      uf: cfg.uf || '',
+    },
+    padroes: {
+      ncmPadrao: cfg.ncmPadrao || '21069090',
+      cfopPadrao: cfg.cfopPadrao || '5102',
+      csosnPadrao: cfg.csosnPadrao || '102',
+      unidadePadrao: cfg.unidadePadrao || 'UN',
+    },
+    venda: {
+      ...venda,
+      itens: itensEnriquecidos,
+    },
   });
-
-  return parseRespostaNfce(resp);
 }
 
 export async function consultarNfceVenda(
@@ -173,18 +196,13 @@ export async function consultarNfceVenda(
   loja: Supermercado
 ): Promise<RespostaNfceApi> {
   const cfg = loja.configFiscal;
-  const resp = await fetch('/api/nfce', {
-    method: 'POST',
-    headers: await headersNfceComAuth(),
-    body: JSON.stringify({
-      acao: 'consultar',
-      lojaId: loja.id,
-      ref,
-      ambiente: cfg?.ambiente || 'homologacao',
-      tokenFocusNfe: cfg?.tokenFocusNfe || '',
-    }),
+  return postNfceApi({
+    acao: 'consultar',
+    lojaId: loja.id,
+    ref,
+    ambiente: cfg?.ambiente || 'homologacao',
+    tokenFocusNfe: cfg?.tokenFocusNfe || '',
   });
-  return parseRespostaNfce(resp);
 }
 
 export async function cancelarNfceVenda(
@@ -193,17 +211,12 @@ export async function cancelarNfceVenda(
   loja: Supermercado
 ): Promise<RespostaNfceApi> {
   const cfg = loja.configFiscal;
-  const resp = await fetch('/api/nfce', {
-    method: 'POST',
-    headers: await headersNfceComAuth(),
-    body: JSON.stringify({
-      acao: 'cancelar',
-      lojaId: loja.id,
-      ref,
-      justificativa,
-      ambiente: cfg?.ambiente || 'homologacao',
-      tokenFocusNfe: cfg?.tokenFocusNfe || '',
-    }),
+  return postNfceApi({
+    acao: 'cancelar',
+    lojaId: loja.id,
+    ref,
+    justificativa,
+    ambiente: cfg?.ambiente || 'homologacao',
+    tokenFocusNfe: cfg?.tokenFocusNfe || '',
   });
-  return parseRespostaNfce(resp);
 }

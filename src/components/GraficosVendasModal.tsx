@@ -2873,14 +2873,18 @@ ${top3 || '- Nenhum produto vendido'}
                         <YAxis stroke="#334155" fontSize={11} fontWeight={700} tickLine={false} />
                         <Tooltip
                           formatter={(val: any) => [`${val} pedidos`, 'Volume de Pedidos']}
+                          cursor={{ fill: 'rgba(148, 163, 184, 0.18)' }}
                           contentStyle={{
-                            background: '#141414',
-                            color: '#FBBF24',
+                            background: '#ffffff',
+                            color: '#0f172a',
                             borderRadius: '8px',
                             border: '1px solid #cbd5e1',
+                            boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
                             fontSize: '0.8rem',
-                            fontWeight: 700,
+                            padding: '8px 12px',
                           }}
+                          labelStyle={{ color: '#0f172a', fontWeight: 800, marginBottom: '3px' }}
+                          itemStyle={{ color: '#0284c7', fontWeight: 700 }}
                         />
                         <Bar dataKey="pedidos" radius={[4, 4, 0, 0]}>
                           {dadosHorariosPico.faixas.map((entry, index) => {
@@ -3415,7 +3419,20 @@ ${top3 || '- Nenhum produto vendido'}
                             <Cell key={`cell-${index}`} fill={entry.cor} stroke="#ffffff" strokeWidth={2} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Total']} />
+                        <Tooltip
+                          formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Total']}
+                          contentStyle={{
+                            background: '#ffffff',
+                            color: '#0f172a',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
+                            fontSize: '0.8rem',
+                            padding: '8px 12px',
+                          }}
+                          labelStyle={{ color: '#0f172a', fontWeight: 800 }}
+                          itemStyle={{ color: '#0f172a', fontWeight: 700 }}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   )}
@@ -3438,7 +3455,20 @@ ${top3 || '- Nenhum produto vendido'}
                         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
                         <XAxis type="number" stroke="#6b7280" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                         <YAxis dataKey="nome" type="category" width={95} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} />
-                        <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Total']} />
+                        <Tooltip
+                          formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Total']}
+                          contentStyle={{
+                            background: '#ffffff',
+                            color: '#0f172a',
+                            borderRadius: '8px',
+                            border: '1px solid #cbd5e1',
+                            boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
+                            fontSize: '0.8rem',
+                            padding: '8px 12px',
+                          }}
+                          labelStyle={{ color: '#0f172a', fontWeight: 800 }}
+                          itemStyle={{ color: '#0f172a', fontWeight: 700 }}
+                        />
                         <Bar dataKey="valor" radius={[0, 4, 4, 0]} name="Valor (R$)">
                           {dadosFormasPagamento.lista.map((entry, index) => (
                             <Cell key={`bar-cell-${index}`} fill={entry.cor} />
@@ -3559,7 +3589,18 @@ ${top3 || '- Nenhum produto vendido'}
                     <Tooltip
                       formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Valor Estornado']}
                       labelFormatter={(lbl) => `Período: ${lbl}`}
-                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
+                      cursor={{ fill: 'rgba(148, 163, 184, 0.18)' }}
+                      contentStyle={{
+                        background: '#ffffff',
+                        color: '#0f172a',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
+                        fontSize: '0.8rem',
+                        padding: '8px 12px',
+                      }}
+                      labelStyle={{ color: '#0f172a', fontWeight: 800 }}
+                      itemStyle={{ color: '#0f172a', fontWeight: 700 }}
                     />
                     <Bar dataKey="estornado" fill="#dc2626" radius={[4, 4, 0, 0]} name="Valor Estornado (R$)" />
                   </BarChart>
@@ -3675,7 +3716,18 @@ ${top3 || '- Nenhum produto vendido'}
                     <YAxis stroke="#6b7280" fontSize={10} width={46} tickLine={false} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                     <Tooltip
                       formatter={(val: any) => [`R$ ${Number(val).toFixed(2).replace('.', ',')}`, 'Valor em Risco']}
-                      contentStyle={{ background: '#ffffff', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '0.8rem', padding: '6px 10px', color: '#111827' }}
+                      cursor={{ fill: 'rgba(148, 163, 184, 0.18)' }}
+                      contentStyle={{
+                        background: '#ffffff',
+                        color: '#0f172a',
+                        borderRadius: '8px',
+                        border: '1px solid #cbd5e1',
+                        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
+                        fontSize: '0.8rem',
+                        padding: '8px 12px',
+                      }}
+                      labelStyle={{ color: '#0f172a', fontWeight: 800 }}
+                      itemStyle={{ color: '#0f172a', fontWeight: 700 }}
                     />
                     <Bar dataKey="valorR$" radius={[4, 4, 0, 0]} name="Valor em R$ (Perda / Risco)">
                       {dadosPerdas.graficoRisco.map((entry, index) => (
@@ -3933,7 +3985,21 @@ ${top3 || '- Nenhum produto vendido'}
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
                       <XAxis type="number" stroke="#6b7280" fontSize={10} tickFormatter={formatarValorYAxis} tick={{ fontSize: 10, fill: '#6b7280' }} />
                       <YAxis dataKey="nome" type="category" width={85} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} tickFormatter={(n) => truncarTexto(n, 12)} />
-                      <Tooltip formatter={(val: any) => [`R$ ${Number(val).toFixed(2)}`, 'Valor em Loja']} />
+                      <Tooltip
+                        formatter={(val: any) => [`R$ ${Number(val).toFixed(2)}`, 'Valor em Loja']}
+                        cursor={{ fill: 'rgba(148, 163, 184, 0.18)' }}
+                        contentStyle={{
+                          background: '#ffffff',
+                          color: '#0f172a',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
+                          fontSize: '0.8rem',
+                          padding: '8px 12px',
+                        }}
+                        labelStyle={{ color: '#0f172a', fontWeight: 800 }}
+                        itemStyle={{ color: '#0f172a', fontWeight: 700 }}
+                      />
                       <Bar dataKey="valorVendaTotal" fill="#10B981" radius={[0, 4, 4, 0]} name="Valor Venda (R$)" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -3951,7 +4017,21 @@ ${top3 || '- Nenhum produto vendido'}
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
                       <XAxis type="number" stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} />
                       <YAxis dataKey="nome" type="category" width={85} stroke="#6b7280" fontSize={10} tick={{ fontSize: 10, fill: '#6b7280' }} tickFormatter={(n) => truncarTexto(n, 12)} />
-                      <Tooltip formatter={(val: any) => [`${val} un`, 'Quantidade']} />
+                      <Tooltip
+                        formatter={(val: any) => [`${val} un`, 'Quantidade']}
+                        cursor={{ fill: 'rgba(148, 163, 184, 0.18)' }}
+                        contentStyle={{
+                          background: '#ffffff',
+                          color: '#0f172a',
+                          borderRadius: '8px',
+                          border: '1px solid #cbd5e1',
+                          boxShadow: '0 8px 20px rgba(15, 23, 42, 0.12)',
+                          fontSize: '0.8rem',
+                          padding: '8px 12px',
+                        }}
+                        labelStyle={{ color: '#0f172a', fontWeight: 800 }}
+                        itemStyle={{ color: '#0f172a', fontWeight: 700 }}
+                      />
                       <Bar dataKey="quantidade" fill="#3B82F6" radius={[0, 4, 4, 0]} name="Unidades" />
                     </BarChart>
                   </ResponsiveContainer>

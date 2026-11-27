@@ -15,6 +15,45 @@ function compararTempoConstante(a, b) {
   return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
 }
 
+function parseCookies(req) {
+  const raw = String(req.headers?.cookie || '');
+  const out = {};
+  raw.split(';').forEach((part) => {
+    const idx = part.indexOf('=');
+    if (idx > 0) {
+      const k = part.slice(0, idx).trim();
+      const v = part.slice(idx + 1).trim();
+      try {
+        out[k] = decodeURIComponent(v);
+      } catch {
+        out[k] = v;
+      }
+    }
+  });
+  return out;
+}
+
+function verificarCookieAssinado(cookieVal, secretHmac) {
+  if (!cookieVal || typeof cookieVal !== 'string' || !cookieVal.includes('.')) return null;
+  const [payload, sig] = cookieVal.split('.');
+  if (!payload || !sig) return null;
+  const esperado = crypto.createHmac('sha256', secretHmac).update(payload).digest('base64url');
+  if (!compararTempoConstante(sig, esperado)) return null;
+  try {
+    const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    if (!parsed || Number(parsed?.exp || 0) <= Date.now()) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function verificarCookieUsuarioAuth(cookieVal, secretHmac) {
+  const parsed = verificarCookieAssinado(cookieVal, secretHmac);
+  if (!parsed || parsed.type !== 'usuario_auth' || !parsed.uid || !parsed.role) return null;
+  return parsed;
+}
+
 function base64Url(input) {
   return Buffer.from(input)
     .toString('base64')
@@ -48,11 +87,17 @@ async function obterCertificadosFirebase(forcarAtualizacao = false) {
 }
 
 async function verificarFirebaseIdToken(idToken, projectId) {
-  if (!idToken || typeof idToken !== 'string') return null;
+  if (!idToken || typeof idToken !== 'string') {
+    return { ok: false, motivo: 'token ausente' };
+  }
   const partes = idToken.split('.');
-  if (partes.length !== 3) return null;
+  if (partes.length !== 3) {
+    return { ok: false, motivo: 'token JWT malformado' };
+  }
   const [hB64, pB64, sB64] = partes;
-  if (!hB64 || !pB64 || !sB64) return null;
+  if (!hB64 || !pB64 || !sB64) {
+    return { ok: false, motivo: 'segmentos JWT vazios' };
+  }
 
   let header;
   let payload;
@@ -60,11 +105,11 @@ async function verificarFirebaseIdToken(idToken, projectId) {
     header = JSON.parse(Buffer.from(hB64, 'base64url').toString('utf8'));
     payload = JSON.parse(Buffer.from(pB64, 'base64url').toString('utf8'));
   } catch {
-    return null;
+    return { ok: false, motivo: 'payload JWT inválido' };
   }
 
   if (header?.alg !== 'RS256' || typeof header?.kid !== 'string' || !header.kid) {
-    return null;
+    return { ok: false, motivo: 'cabeçalho JWT incompatível' };
   }
 
   let certs = await obterCertificadosFirebase(false);
@@ -73,7 +118,9 @@ async function verificarFirebaseIdToken(idToken, projectId) {
     certs = await obterCertificadosFirebase(true);
     certPem = certs[header.kid];
   }
-  if (!certPem) return null;
+  if (!certPem) {
+    return { ok: false, motivo: 'certificado público Firebase não encontrado' };
+  }
 
   const verifier = crypto.createVerify('RSA-SHA256');
   verifier.update(`${hB64}.${pB64}`);
@@ -82,33 +129,51 @@ async function verificarFirebaseIdToken(idToken, projectId) {
   try {
     assinaturaOk = verifier.verify(certPem, Buffer.from(sB64, 'base64url'));
   } catch {
-    return null;
+    return { ok: false, motivo: 'erro ao verificar assinatura JWT' };
   }
-  if (!assinaturaOk) return null;
+  if (!assinaturaOk) {
+    return { ok: false, motivo: 'assinatura do token inválida' };
+  }
 
   const agoraSec = Math.floor(Date.now() / 1000);
-  if (payload?.aud !== projectId) return null;
-  if (payload?.iss !== `https://securetoken.googleapis.com/${projectId}`) return null;
-  if (typeof payload?.sub !== 'string' || !payload.sub || payload.sub.length > 128) return null;
-  if (Number(payload?.exp || 0) <= agoraSec) return null;
-  if (Number(payload?.iat || 0) > agoraSec + 300) return null;
+  if (payload?.aud !== projectId) {
+    return {
+      ok: false,
+      motivo: `projeto incompatível (${String(payload?.aud || 'ausente')} != ${projectId})`,
+    };
+  }
+  if (payload?.iss !== `https://securetoken.googleapis.com/${projectId}`) {
+    return { ok: false, motivo: 'emissor Firebase incompatível' };
+  }
+  if (typeof payload?.sub !== 'string' || !payload.sub || payload.sub.length > 128) {
+    return { ok: false, motivo: 'identificador de usuário ausente' };
+  }
+  if (Number(payload?.exp || 0) <= agoraSec) {
+    return { ok: false, motivo: 'token Firebase expirado' };
+  }
+  if (Number(payload?.iat || 0) > agoraSec + 300) {
+    return { ok: false, motivo: 'relógio de emissão inválido' };
+  }
 
   // Bloqueia sessões anônimas na API fiscal
   if (payload?.firebase?.sign_in_provider === 'anonymous') {
-    return null;
+    return { ok: false, motivo: 'sessão Firebase anônima não autorizada' };
   }
 
   const isMaster = payload?.is_master === true || payload?.role === 'master';
   const lojaId = typeof payload?.lojaId === 'string' && payload.lojaId.trim() ? payload.lojaId.trim() : null;
   if (!isMaster && !lojaId) {
-    return null;
+    return { ok: false, motivo: 'token sem vínculo de loja ou permissão master' };
   }
 
   return {
-    uid: payload.sub,
-    isMaster,
-    lojaId,
-    role: String(payload?.role || ''),
+    ok: true,
+    claims: {
+      uid: payload.sub,
+      isMaster,
+      lojaId,
+      role: String(payload?.role || ''),
+    },
   };
 }
 
@@ -302,20 +367,55 @@ export default async function handler(req, res) {
     let claims = null;
     if (exigirAuth) {
       const authHeaderReq = String(req.headers.authorization || '');
-      if (!authHeaderReq.startsWith('Bearer ')) {
-        return res.status(401).json({
-          sucesso: false,
-          erro: 'Sessão autenticada obrigatória para operações fiscais (NFC-e).',
-        });
+      let motivoFalhaToken = 'token ausente na requisição';
+
+      if (authHeaderReq.startsWith('Bearer ')) {
+        const idToken = authHeaderReq.slice(7).trim();
+        const verificacao = await verificarFirebaseIdToken(idToken, projectId);
+        if (verificacao.ok) {
+          claims = verificacao.claims;
+        } else {
+          motivoFalhaToken = verificacao.motivo || 'token inválido';
+        }
       }
-      const idToken = authHeaderReq.slice(7).trim();
-      claims = await verificarFirebaseIdToken(idToken, projectId);
+
+      // Fallback seguro: aceita cookie HttpOnly assinado da sessão autenticada (/api/auth)
+      if (!claims) {
+        const masterSecret = String(
+          process.env.MASTER_PORTAL_TOKEN || process.env.VITE_MASTER_PORTAL_TOKEN || ''
+        ).trim();
+        const hmacSecret = String(
+          process.env.SENHA_PEPPER || masterSecret || 'estoque_master_hmac_v1'
+        );
+        const cookies = parseCookies(req);
+        const dadosCookie = verificarCookieUsuarioAuth(cookies.em_usuario_auth, hmacSecret);
+        if (dadosCookie) {
+          const isMasterCookie =
+            dadosCookie.is_master === true || dadosCookie.role === 'master';
+          const lojaIdCookie =
+            typeof dadosCookie.lojaId === 'string' && dadosCookie.lojaId.trim()
+              ? dadosCookie.lojaId.trim()
+              : null;
+          if (isMasterCookie || lojaIdCookie) {
+            claims = {
+              uid: String(dadosCookie.uid),
+              isMaster: isMasterCookie,
+              lojaId: lojaIdCookie,
+              role: String(dadosCookie.role || ''),
+            };
+          } else {
+            motivoFalhaToken = 'sessão de servidor sem vínculo com loja';
+          }
+        }
+      }
+
       if (!claims) {
         return res.status(401).json({
           sucesso: false,
-          erro: 'Token de sessão inválido, expirado ou sessão anônima não autorizada.',
+          erro: `Sessão fiscal expirada ou não autenticada (${motivoFalhaToken}). Clique em "Sair da Conta / Trocar Usuário" para refazer o login e tente novamente.`,
         });
       }
+
       if (!claims.isMaster) {
         if (!lojaIdBody || lojaIdBody !== claims.lojaId) {
           return res.status(403).json({
