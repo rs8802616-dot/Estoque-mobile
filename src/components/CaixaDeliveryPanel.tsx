@@ -330,12 +330,12 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
       </div>
 
       {/* 2. Filtros de Status (Fixos no Topo do Painel) */}
-      <div className="flex items-center gap-1.5 text-xs font-bold overflow-x-auto pb-0.5 scrollbar-none shrink-0">
+      <div className="flex flex-wrap items-center gap-1.5 text-[11px] font-bold shrink-0">
         {/* Ativos */}
         <button
           type="button"
           onClick={() => setDeliveryFilter('ativos')}
-          className={`px-3 py-1.5 rounded-xl transition cursor-pointer shrink-0 ${
+          className={`px-2.5 py-1 rounded-lg transition cursor-pointer shrink-0 ${
             deliveryFilter === 'ativos'
               ? 'bg-[#047857] text-white shadow-xs'
               : 'bg-white border border-[#a7f3d0] text-[#047857] hover:bg-emerald-50/60'
@@ -348,21 +348,25 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         <button
           type="button"
           onClick={() => setDeliveryFilter('novo')}
-          className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 cursor-pointer shrink-0 ${
+          className={`px-2.5 py-1 rounded-lg transition flex items-center gap-1 cursor-pointer shrink-0 ${
             deliveryFilter === 'novo'
               ? 'bg-red-600 text-white shadow-xs'
               : 'bg-[#fef2f2] border border-[#fecaca] text-[#b91c1c] hover:bg-red-100/70'
           }`}
         >
-          <span className={`w-2 h-2 rounded-full bg-red-500 ${countNovosDelivery > 0 ? 'animate-pulse' : ''}`} />
-          Novos ({countNovosDelivery})
+          <span
+            className={`w-2 h-2 rounded-full ${
+              deliveryFilter === 'novo' ? 'bg-white' : 'bg-red-500'
+            } ${countNovosDelivery > 0 ? 'animate-pulse' : ''}`}
+          />
+          <span>Novos ({countNovosDelivery})</span>
         </button>
 
         {/* Preparo */}
         <button
           type="button"
           onClick={() => setDeliveryFilter('em_preparo')}
-          className={`px-3 py-1.5 rounded-xl transition cursor-pointer shrink-0 ${
+          className={`px-2.5 py-1 rounded-lg transition cursor-pointer shrink-0 ${
             deliveryFilter === 'em_preparo'
               ? 'bg-amber-500 text-white shadow-xs'
               : 'bg-[#fffbeb] border border-[#fde68a] text-[#b45309] hover:bg-amber-100/70'
@@ -375,13 +379,14 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
         <button
           type="button"
           onClick={() => setDeliveryFilter('a_caminho')}
-          className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
+          className={`px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 shrink-0 ${
             deliveryFilter === 'a_caminho'
               ? 'bg-[#0284c7] text-white shadow-xs'
               : 'bg-white border border-[#bae6fd] text-[#0369a1] hover:bg-sky-50/60'
           }`}
         >
-          <span>A Caminho 🛵</span>
+          <Bike className="w-3 h-3 shrink-0" />
+          <span>A Caminho</span>
           {countACaminhoDelivery > 0 && <span>({countACaminhoDelivery})</span>}
         </button>
 
@@ -390,7 +395,7 @@ export const CaixaDeliveryPanel: React.FC<CaixaDeliveryPanelProps> = ({
           <button
             type="button"
             onClick={() => setDeliveryFilter('cancelados')}
-            className={`px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shrink-0 ${
+            className={`px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1 shrink-0 ${
               deliveryFilter === 'cancelados'
                 ? 'bg-stone-700 text-white shadow-xs'
                 : 'bg-white border border-stone-300 text-stone-600 hover:bg-stone-100'

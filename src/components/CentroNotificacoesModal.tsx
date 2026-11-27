@@ -344,35 +344,39 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
         {/* ABAS SEGMENTADAS */}
         <div
           style={{
-            display: 'flex',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
             background: '#f8fafc',
             borderBottom: '1px solid #e2e8f0',
             padding: '6px 12px',
             gap: '6px',
+            flexShrink: 0,
           }}
         >
           <button
             type="button"
             onClick={() => setAbaAtiva('estoque_baixo')}
             style={{
-              flex: 1,
-              padding: '7px 10px',
+              width: '100%',
+              minWidth: 0,
+              whiteSpace: 'nowrap',
+              padding: '7px 8px',
               border: abaAtiva === 'estoque_baixo' ? '1px solid #cbd5e1' : '1px solid transparent',
               background: abaAtiva === 'estoque_baixo' ? '#ffffff' : 'transparent',
               color: abaAtiva === 'estoque_baixo' ? '#0369a1' : '#64748b',
               fontWeight: abaAtiva === 'estoque_baixo' ? 700 : 600,
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               borderRadius: '8px',
               cursor: 'pointer',
               boxShadow: abaAtiva === 'estoque_baixo' ? '0 1px 2px rgba(15,23,42,0.06)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px',
+              gap: '5px',
             }}
           >
-            <Package size={15} />
-            <span>Estoque Baixo</span>
+            <Package size={14} style={{ flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>Estoque Baixo</span>
             <span
               style={{
                 background: produtosEstoqueBaixo.length > 0 ? '#ef4444' : '#e2e8f0',
@@ -381,6 +385,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                 fontWeight: 700,
                 padding: '1px 6px',
                 borderRadius: '999px',
+                flexShrink: 0,
               }}
             >
               {produtosEstoqueBaixo.length}
@@ -391,24 +396,26 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
             type="button"
             onClick={() => setAbaAtiva('validade')}
             style={{
-              flex: 1,
-              padding: '7px 10px',
+              width: '100%',
+              minWidth: 0,
+              whiteSpace: 'nowrap',
+              padding: '7px 8px',
               border: abaAtiva === 'validade' ? '1px solid #cbd5e1' : '1px solid transparent',
               background: abaAtiva === 'validade' ? '#ffffff' : 'transparent',
               color: abaAtiva === 'validade' ? '#b45309' : '#64748b',
               fontWeight: abaAtiva === 'validade' ? 700 : 600,
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               borderRadius: '8px',
               cursor: 'pointer',
               boxShadow: abaAtiva === 'validade' ? '0 1px 2px rgba(15,23,42,0.06)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px',
+              gap: '5px',
             }}
           >
-            <AlertTriangle size={15} />
-            <span>Validade</span>
+            <AlertTriangle size={14} style={{ flexShrink: 0 }} />
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>Validade</span>
             <span
               style={{
                 background: proximoVencimento.length > 0 ? '#f59e0b' : '#e2e8f0',
@@ -417,6 +424,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                 fontWeight: 700,
                 padding: '1px 6px',
                 borderRadius: '999px',
+                flexShrink: 0,
               }}
             >
               {proximoVencimento.length}
@@ -427,22 +435,25 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
             type="button"
             onClick={() => setAbaAtiva('resumo')}
             style={{
-              padding: '7px 14px',
+              width: '100%',
+              minWidth: 0,
+              whiteSpace: 'nowrap',
+              padding: '7px 8px',
               border: abaAtiva === 'resumo' ? '1px solid #cbd5e1' : '1px solid transparent',
               background: abaAtiva === 'resumo' ? '#ffffff' : 'transparent',
               color: abaAtiva === 'resumo' ? '#0f172a' : '#64748b',
               fontWeight: abaAtiva === 'resumo' ? 700 : 600,
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               borderRadius: '8px',
               cursor: 'pointer',
               boxShadow: abaAtiva === 'resumo' ? '0 1px 2px rgba(15,23,42,0.06)' : 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '6px',
+              gap: '5px',
             }}
           >
-            <BarChart3 size={15} />
+            <BarChart3 size={14} style={{ flexShrink: 0 }} />
             <span>Resumo</span>
           </button>
         </div>
