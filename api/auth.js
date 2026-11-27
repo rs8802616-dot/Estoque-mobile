@@ -694,6 +694,27 @@ export default async function handler(req, res) {
     return res.status(ok ? 200 : 401).json({ validado: ok });
   }
 
+  if (acao === 'checar_sessao_usuario') {
+    const cookies = parseCookies(req);
+    const dados = verificarCookieUsuarioAuth(cookies.em_usuario_auth, hmacSecret);
+    if (!dados) {
+      return res.status(401).json({
+        configurado: true,
+        autenticado: false,
+        erro: 'Sessão não autenticada no servidor.',
+      });
+    }
+    return res.status(200).json({
+      configurado: true,
+      autenticado: true,
+      uid: String(dados.uid || ''),
+      role: String(dados.role || ''),
+      is_master: Boolean(dados.is_master),
+      lojaId: dados.lojaId ? String(dados.lojaId) : null,
+      operadorId: dados.operadorId ? String(dados.operadorId) : null,
+    });
+  }
+
   if (acao === 'autenticar_master') {
     const masterUserEnv = String(process.env.MASTER_ADMIN_USER || '').trim().toLowerCase();
     const masterPassEnv = String(process.env.MASTER_ADMIN_PASS || '').trim();
@@ -1213,13 +1234,9 @@ export default async function handler(req, res) {
         }
       );
 
-      const ip = getClientIp(req).replace(/[^a-zA-Z0-9._-]/g, '_');
-      const safeLojaLock = lojaId.replace(/[^a-zA-Z0-9._-]/g, '_');
-      await gravarDocFirestoreAdmin(projectId, accessToken, `controle_login/${safeLojaLock}__${ip}`, {
-        tentativas: 0,
-        bloqueadoAte: 0,
-        atualizadoEm: Date.now(),
-      });
+      const ip = sanitizarChaveLockout(getClientIp(req));
+      const safeLojaLock = sanitizarChaveLockout(lojaId);
+      await limparLockoutCombinado(`${safeLojaLock}__${ip}`, { projectId, accessToken });
 
       const sessaoId = crypto.randomUUID();
       const customToken = criarCustomTokenFirebase(serviceAccount, `${lojaId}_admin`, {

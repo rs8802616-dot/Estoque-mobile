@@ -276,3 +276,61 @@ test('FIREBASE_SERVICE_ACCOUNT_JSON invalido retorna 500 com configurado: true',
     }
   }
 });
+
+test('checar_sessao_usuario rejeita ausencia de cookie e cookie adulterado com 401', async () => {
+  const semCookie = await invocarAuth({ acao: 'checar_sessao_usuario' }, { ip: '203.0.113.18' });
+  assert.equal(semCookie.statusCode, 401);
+  assert.equal(semCookie.body.configurado, true);
+  assert.equal(semCookie.body.autenticado, false);
+
+  const adulterado = await invocarAuth(
+    { acao: 'checar_sessao_usuario' },
+    { ip: '203.0.113.19', cookie: 'em_usuario_auth=payload_falso.assinatura_invalida' }
+  );
+  assert.equal(adulterado.statusCode, 401);
+  assert.equal(adulterado.body.configurado, true);
+  assert.equal(adulterado.body.autenticado, false);
+});
+
+test('checar_sessao_usuario valida cookie apos login Master e logout_sessao expira em_usuario_auth', async () => {
+  const ip = '203.0.113.20';
+  const cookieMaster = await obterCookieMaster(ip);
+
+  const loginRes = await invocarAuth(
+    { acao: 'autenticar_master', usuario: TEST_MASTER_USER, senha: TEST_MASTER_PASS },
+    { ip, cookie: cookieMaster }
+  );
+  assert.equal(loginRes.statusCode, 200);
+  assert.equal(loginRes.body.autenticado, true);
+
+  const setCookie = loginRes.headers['Set-Cookie'];
+  const listaCookies = Array.isArray(setCookie) ? setCookie : setCookie ? [setCookie] : [];
+  const parUsuario = listaCookies.find((c) => c.startsWith('em_usuario_auth='));
+  assert.ok(parUsuario, 'Cookie em_usuario_auth deve ser emitido apos login valido');
+  const cookieUsuario = parUsuario.split(';')[0];
+
+  const sessaoRes = await invocarAuth(
+    { acao: 'checar_sessao_usuario' },
+    { ip, cookie: cookieUsuario }
+  );
+  assert.equal(sessaoRes.statusCode, 200);
+  assert.equal(sessaoRes.body.configurado, true);
+  assert.equal(sessaoRes.body.autenticado, true);
+  assert.equal(sessaoRes.body.role, 'master');
+  assert.equal(sessaoRes.body.is_master, true);
+  assert.equal(sessaoRes.body.lojaId, null);
+  assert.equal(sessaoRes.body.uid, `master_${TEST_MASTER_USER}`);
+
+  const logoutRes = await invocarAuth(
+    { acao: 'logout_sessao' },
+    { ip, cookie: cookieUsuario }
+  );
+  assert.equal(logoutRes.statusCode, 200);
+  const logoutCookies = Array.isArray(logoutRes.headers['Set-Cookie'])
+    ? logoutRes.headers['Set-Cookie']
+    : logoutRes.headers['Set-Cookie']
+      ? [logoutRes.headers['Set-Cookie']]
+      : [];
+  const expirado = logoutCookies.find((c) => c.startsWith('em_usuario_auth=;'));
+  assert.ok(expirado && expirado.includes('Max-Age=0'), 'logout_sessao deve expirar em_usuario_auth');
+});

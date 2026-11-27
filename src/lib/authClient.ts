@@ -388,12 +388,60 @@ export async function autenticarMasterServidor(
   }
 }
 
+export async function checarSessaoUsuarioServidor(): Promise<{
+  autenticado: boolean;
+  fallbackLocal?: boolean;
+  uid?: string;
+  role?: string;
+  is_master?: boolean;
+  lojaId?: string | null;
+  operadorId?: string | null;
+  erro?: string;
+}> {
+  if (typeof window === 'undefined') return { autenticado: false, fallbackLocal: false };
+  try {
+    const resp = await fetch('/api/auth', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acao: 'checar_sessao_usuario' }),
+    });
+    const data = (await resp.json().catch(() => ({}))) as Record<string, unknown>;
+    if (deveUsarFallbackLocalDev(resp, data)) {
+      return { autenticado: false, fallbackLocal: true };
+    }
+    if (!resp.ok || !data?.autenticado) {
+      return {
+        autenticado: false,
+        fallbackLocal: false,
+        erro: String(data?.erro || 'Sessão inválida ou expirada.'),
+      };
+    }
+    return {
+      autenticado: true,
+      fallbackLocal: false,
+      uid: String(data?.uid || ''),
+      role: String(data?.role || ''),
+      is_master: Boolean(data?.is_master),
+      lojaId: data?.lojaId ? String(data.lojaId) : null,
+      operadorId: data?.operadorId ? String(data.operadorId) : null,
+    };
+  } catch {
+    return {
+      autenticado: false,
+      fallbackLocal: false,
+      erro: 'Falha ao verificar sessão no servidor.',
+    };
+  }
+}
+
 export async function renovarSessaoFirebaseServidor(): Promise<{
   autenticado: boolean;
   fallbackLocal?: boolean;
+  sessaoExpirada?: boolean;
   erro?: string;
 }> {
-  if (typeof window === 'undefined') return { autenticado: false, fallbackLocal: true };
+  if (typeof window === 'undefined') return { autenticado: false, fallbackLocal: false };
   try {
     const resp = await fetch('/api/auth', {
       method: 'POST',
@@ -401,13 +449,32 @@ export async function renovarSessaoFirebaseServidor(): Promise<{
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ acao: 'renovar_custom_token' }),
     });
-    const data = await resp.json().catch(() => ({}));
-    if (resp.status === 503 || data?.configurado === false) {
+    const data = (await resp.json().catch(() => ({}))) as Record<string, unknown>;
+    if (deveUsarFallbackLocalDev(resp, data)) {
       const msg = String(
         data?.erro || 'FIREBASE_SERVICE_ACCOUNT_JSON não configurado no servidor.'
       );
       registrarErroFirebaseAuth(msg);
       return { autenticado: false, fallbackLocal: true, erro: msg };
+    }
+    if (resp.status === 503 || data?.configurado === false) {
+      const msg = String(
+        data?.erro || 'FIREBASE_SERVICE_ACCOUNT_JSON não configurado no servidor.'
+      );
+      registrarErroFirebaseAuth(msg);
+      return { autenticado: false, fallbackLocal: false, erro: msg };
+    }
+    if (resp.status === 401) {
+      const msg = String(
+        data?.customTokenErro || data?.erro || 'Sessão de servidor expirada. Faça login novamente.'
+      );
+      registrarErroFirebaseAuth(msg);
+      return {
+        autenticado: false,
+        fallbackLocal: false,
+        sessaoExpirada: true,
+        erro: msg,
+      };
     }
     if (!resp.ok || !data?.autenticado || !data?.customToken) {
       const msg = String(
@@ -420,7 +487,10 @@ export async function renovarSessaoFirebaseServidor(): Promise<{
         erro: msg,
       };
     }
-    const fb = await autenticarFirebaseComCustomToken(data.customToken, data?.firebaseProjectId);
+    const fb = await autenticarFirebaseComCustomToken(
+      String(data.customToken),
+      typeof data?.firebaseProjectId === 'string' ? data.firebaseProjectId : undefined
+    );
     if (!fb.ok) {
       return {
         autenticado: false,
@@ -430,7 +500,11 @@ export async function renovarSessaoFirebaseServidor(): Promise<{
     }
     return { autenticado: true, fallbackLocal: false };
   } catch {
-    return { autenticado: false, fallbackLocal: true };
+    return {
+      autenticado: false,
+      fallbackLocal: false,
+      erro: 'Falha de conexão ao renovar token Firebase.',
+    };
   }
 }
 

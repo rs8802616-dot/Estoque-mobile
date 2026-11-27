@@ -105,7 +105,10 @@ import { ConfiguracaoFiscalModal } from './components/ConfiguracaoFiscalModal';
 import { ComandasModal, ComandasPanel } from './components/ComandasModal';
 import { emitirNfceVenda, consultarNfceVenda } from './lib/focusNfeService';
 import {
+  autenticarMasterServidor,
+  checarSessaoUsuarioServidor,
   encerrarSessaoServidor,
+  isAmbienteLocalDev,
   validarSessaoMasterServidor,
   validarPainelLojaServidor,
   buscarPedidoMotoboyServidor,
@@ -570,7 +573,7 @@ export default function App() {
       })
       .catch(() => {
         if (ativo) {
-          setPainelFallbackLocal(true);
+          setPainelFallbackLocal(false);
           setPainelAutorizadoServidor(null);
         }
       })
@@ -664,7 +667,7 @@ export default function App() {
     if (idLojaUrlResolvida) {
       return idLojaUrlResolvida;
     }
-    return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoAtualId') : null) || 'loja_matriz_01';
+    return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoAtualId') : null) || '';
   });
   const [nomeSupermercadoAtivo, setNomeSupermercadoAtivo] = useState<string>(() => {
     if (idLojaUrlResolvida) {
@@ -677,7 +680,7 @@ export default function App() {
         }
       } catch {}
     }
-    return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoNome') : null) || 'Supermercado Matriz';
+    return (typeof window !== 'undefined' ? localStorage.getItem('supermercadoNome') : null) || '';
   });
 
   const [totalProdutosCadastrados, setTotalProdutosCadastrados] = useState<number>(() => {
@@ -939,29 +942,7 @@ export default function App() {
         }
       } catch (e) {}
     }
-    return [
-      garantirTokensLoja({
-        id: 'loja_matriz_01',
-        nome: 'Adega & Delivery Matriz Express',
-        cnpj: '12.345.678/0001-90',
-        senha: '123',
-        slug: 'loja-centro',
-        marca: 'Adega Express',
-        logo_url: 'https://images.unsplash.com/photo-1527281400683-1aae777175f8?w=200&q=80',
-        taxa_entrega: 6.90,
-        tempo_estimado_entrega: '30-45 min',
-        taxas_bairro: [
-          { id: 'b1', nome: 'Centro', taxa: 5.00 },
-          { id: 'b2', nome: 'Jardim América', taxa: 7.00 },
-          { id: 'b3', nome: 'Vila Nova', taxa: 6.00 },
-          { id: 'b4', nome: 'Bela Vista', taxa: 6.50 },
-          { id: 'b5', nome: 'Consolação', taxa: 6.50 },
-          { id: 'b6', nome: 'Pinheiros', taxa: 8.00 },
-          { id: 'b7', nome: 'Outro Bairro (Taxa Padrão)', taxa: 8.00 },
-        ],
-        status: 'ativo',
-      }),
-    ];
+    return [];
   });
   const [lojaEditandoId, setLojaEditandoId] = useState<string | null>(null);
   const [buscaLoja, setBuscaLoja] = useState<string>('');
@@ -1049,6 +1030,7 @@ export default function App() {
     const perfilSalvo = typeof window !== 'undefined' ? localStorage.getItem('perfilAtivoTipo') : null;
     return !isAutenticado || !perfilSalvo;
   });
+  const [sessaoServidorVerificada, setSessaoServidorVerificada] = useState<boolean>(false);
 
   const [perfilAtivo, setPerfilAtivo] = useState<'dona_app' | 'admin_loja' | 'caixa'>(() => {
     if (typeof window !== 'undefined') {
@@ -1585,9 +1567,145 @@ export default function App() {
     configDeliveryRef.current = configDelivery;
   }, [configDelivery]);
 
+  const invalidarSessaoLocalParaLogin = () => {
+    try {
+      const chaves = [
+        'usuario_autenticado',
+        'perfilAtivoTipo',
+        'operadorAtivoId',
+        'operadorNomeAtivo',
+        'sessao_ativa_token',
+        'lista_supermercados_app',
+        'credenciais_dono_app',
+        'senha_master_dono',
+        'usuario_master_dono',
+        'supermercadoAtualId',
+        'supermercadoNome',
+        'tela_ativa_sistema',
+      ];
+      chaves.forEach((k) => localStorage.removeItem(k));
+    } catch {}
+    try {
+      sessionStorage.removeItem('sessao_loja_ativa');
+    } catch {}
+    limparUltimoErroFirebaseAuth();
+    setListaSupermercados([]);
+    setEstoque([]);
+    setVendas([]);
+    setClientesDevedores([]);
+    setListaOperadores([]);
+    setPedidosDelivery([]);
+    setComandasLocais([]);
+    setLogsAuditoria([]);
+    setOperadorAtivoId(null);
+    setSessaoTokenAtivo('');
+    if (!painelAutorizadoServidor?.loja) {
+      setSupermercadoAtual('');
+      setNomeSupermercadoAtivo('');
+    }
+    setSessaoServidorVerificada(false);
+    setTelaLoginVisivel(true);
+  };
+
+  // Validação obrigatória do cookie HttpOnly em_usuario_auth no servidor antes de liberar o app
+  useEffect(() => {
+    if (isModoCliente || isMotoboyRoute || telaLoginVisivel || sessaoServidorVerificada) {
+      return;
+    }
+    if (checandoMasterServidor || checandoPainelServidor) {
+      return;
+    }
+    const rotaEquipePainelValida = Boolean(
+      painelAutorizadoServidor?.loja || (painelFallbackLocal && isAmbienteLocalDev())
+    );
+    if (!isPortalMasterRoute && !rotaEquipePainelValida) {
+      return;
+    }
+    if (painelFallbackLocal && isAmbienteLocalDev() && !isPortalMasterRoute) {
+      setSessaoServidorVerificada(true);
+      return;
+    }
+
+    let ativo = true;
+    checarSessaoUsuarioServidor()
+      .then((res) => {
+        if (!ativo) return;
+        if (
+          res.fallbackLocal &&
+          isAmbienteLocalDev() &&
+          !isPortalMasterRoute &&
+          perfilAtivo !== 'dona_app'
+        ) {
+          setSessaoServidorVerificada(true);
+          return;
+        }
+        if (!res.autenticado) {
+          invalidarSessaoLocalParaLogin();
+          return;
+        }
+        const resEhMaster = Boolean(res.is_master && res.role === 'master');
+        if (isPortalMasterRoute && !resEhMaster) {
+          invalidarSessaoLocalParaLogin();
+          return;
+        }
+        if (perfilAtivo === 'dona_app' && !isPortalMasterRoute && !resEhMaster) {
+          invalidarSessaoLocalParaLogin();
+          return;
+        }
+        const lojaIdRota = painelAutorizadoServidor?.loja?.id || null;
+        if (rotaEquipePainelValida && !resEhMaster) {
+          if (!res.lojaId || !lojaIdRota || res.lojaId !== lojaIdRota) {
+            invalidarSessaoLocalParaLogin();
+            return;
+          }
+        }
+        if (resEhMaster) {
+          setPerfilAtivo('dona_app');
+          safeLocalStorageSet('perfilAtivoTipo', 'dona_app');
+        } else if (res.role === 'admin_loja') {
+          setPerfilAtivo('admin_loja');
+          safeLocalStorageSet('perfilAtivoTipo', 'admin_loja');
+          setOperadorAtivoId(null);
+        } else {
+          setPerfilAtivo('caixa');
+          safeLocalStorageSet('perfilAtivoTipo', 'caixa');
+          if (res.operadorId) {
+            setOperadorAtivoId(res.operadorId);
+            safeLocalStorageSet('operadorAtivoId', res.operadorId);
+          }
+        }
+        if (!resEhMaster && res.lojaId && res.lojaId !== supermercadoAtual) {
+          setSupermercadoAtual(res.lojaId);
+          safeLocalStorageSet('supermercadoAtualId', res.lojaId);
+        }
+        setSessaoServidorVerificada(true);
+      })
+      .catch(() => {
+        if (ativo) {
+          invalidarSessaoLocalParaLogin();
+        }
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, [
+    isModoCliente,
+    isMotoboyRoute,
+    telaLoginVisivel,
+    sessaoServidorVerificada,
+    checandoMasterServidor,
+    checandoPainelServidor,
+    isPortalMasterRoute,
+    painelAutorizadoServidor,
+    painelFallbackLocal,
+    perfilAtivo,
+    supermercadoAtual,
+  ]);
+
   // Autorrecuperação do token Firebase Auth via cookie HttpOnly em_usuario_auth caso o usuário já esteja logado localmente
   useEffect(() => {
-    if (isModoCliente || telaLoginVisivel || firebaseAuthUid || painelFallbackLocal) return;
+    if (isModoCliente || telaLoginVisivel || !sessaoServidorVerificada || firebaseAuthUid || painelFallbackLocal) return;
     if (tentouRenovarAuthRef.current) return;
 
     const timer = window.setTimeout(async () => {
@@ -1600,6 +1718,10 @@ export default function App() {
         }
         const res = await renovarSessaoFirebaseServidor();
         if (!res.autenticado) {
+          if (res.sessaoExpirada) {
+            invalidarSessaoLocalParaLogin();
+            return;
+          }
           const ultimoErro = obterUltimoErroFirebaseAuth();
           if (!res.fallbackLocal || ultimoErro) {
             setErroSyncRelatorios(
@@ -1615,10 +1737,13 @@ export default function App() {
     }, 1200);
 
     return () => window.clearTimeout(timer);
-  }, [isModoCliente, telaLoginVisivel, firebaseAuthUid, painelFallbackLocal]);
+  }, [isModoCliente, telaLoginVisivel, sessaoServidorVerificada, firebaseAuthUid, painelFallbackLocal]);
 
   // Firebase Firestore Real-time Cloud Database Sync
   useEffect(() => {
+    if (!isModoCliente && (telaLoginVisivel || !sessaoServidorVerificada) && !painelFallbackLocal) {
+      return;
+    }
     // Usuário de uma única loja autenticado: assina apenas o documento supermercados/{lojaId} (compatível com firestore.rules.strict)
     if (!isModoCliente && !telaLoginVisivel && perfilAtivo !== 'dona_app' && supermercadoAtual && firebaseAuthUid) {
       const unsubUnica = subscribeSupermercadoUnico(supermercadoAtual, (lojaRaw) => {
@@ -1726,22 +1851,7 @@ export default function App() {
           } catch (e) {}
         }
         if (usarPublico && publicLojaSlugAtivo) return;
-        // Se realmente não há nenhuma loja salva, inicializa a loja padrão
-        const lojaPadrao: Supermercado = {
-          id: 'loja_matriz_01',
-          nome: 'Supermercado Matriz',
-          cnpj: '00.000.000/0001-00',
-          senha: 'admin',
-          senhaAdmin: 'admin',
-          status: 'ativo',
-          limiteCaixas: 5,
-        };
-        setListaSupermercados([lojaPadrao]);
-        setSupermercadoAtual(lojaPadrao.id);
-        setNomeSupermercadoAtivo(lojaPadrao.nome);
-        safeLocalStorageSet('lista_supermercados_app', JSON.stringify([lojaPadrao]));
-        safeLocalStorageSet('supermercadoAtualId', lojaPadrao.id);
-        safeLocalStorageSet('supermercadoNome', lojaPadrao.nome);
+        return;
       }
     };
 
@@ -1762,7 +1872,7 @@ export default function App() {
     return () => {
       unsubLojas();
     };
-  }, [isModoCliente, perfilAtivo, supermercadoAtual, telaLoginVisivel, firebaseAuthUid, painelFallbackLocal]);
+  }, [isModoCliente, perfilAtivo, supermercadoAtual, telaLoginVisivel, firebaseAuthUid, painelFallbackLocal, sessaoServidorVerificada]);
 
   const handleMigrarParaNovoBanco = async () => {
     setMigrandoBanco(true);
@@ -1860,6 +1970,9 @@ export default function App() {
 
   useEffect(() => {
     if (!supermercadoAtual) return;
+    if (!isModoCliente && (telaLoginVisivel || !sessaoServidorVerificada) && !painelFallbackLocal) {
+      return;
+    }
 
     // Recarrega o carrinho específico da loja ativa ao trocar de loja
     try {
@@ -2127,7 +2240,7 @@ export default function App() {
       unsubDevedores();
       unsubLogs();
     };
-  }, [supermercadoAtual, firebaseAuthUid, telaLoginVisivel, isModoCliente, painelFallbackLocal]);
+  }, [supermercadoAtual, firebaseAuthUid, telaLoginVisivel, isModoCliente, painelFallbackLocal, sessaoServidorVerificada]);
 
   // Identificador único desta aba para evitar que BroadcastChannel sobrescreva o próprio estado recém-salvo na mesma aba
   const tabIdRef = useRef<string>(`tab_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
@@ -2506,56 +2619,25 @@ export default function App() {
       }
     }
 
-    // 3. Verificar credenciais da Dona do App (SuperAdmin / Dono)
-    let credenciaisDono: { usuario: string; senha?: string; senhaHash?: string; senhaSalt?: string; nome?: string } = {
-      usuario: 'rodrigo.souza',
-      senha: (import.meta as any).env?.VITE_MASTER_PASSWORD || 'Mudar@123',
-      nome: 'Dono do Sistema',
-    };
-    try {
-      const salvoMaster = localStorage.getItem('credenciais_dono_app');
-      if (salvoMaster) {
-        const parsed = JSON.parse(salvoMaster);
-        if (parsed && typeof parsed === 'object') {
-          if (parsed.usuario) credenciaisDono.usuario = parsed.usuario;
-          if (parsed.senha !== undefined) credenciaisDono.senha = parsed.senha;
-          if (parsed.senhaHash) credenciaisDono.senhaHash = parsed.senhaHash;
-          if (parsed.senhaSalt) credenciaisDono.senhaSalt = parsed.senhaSalt;
-          if (parsed.nomeExibicao) credenciaisDono.nome = parsed.nomeExibicao;
-        }
-      } else {
-        const senhaLegada = localStorage.getItem('senha_master_dono');
-        const usuarioLegado = localStorage.getItem('usuario_master_dono');
-        if (senhaLegada) credenciaisDono.senha = senhaLegada;
-        if (usuarioLegado) credenciaisDono.usuario = usuarioLegado;
-      }
-    } catch {}
-
-    const donoUserLower = (credenciaisDono.usuario || 'rodrigo.souza').trim().toLowerCase();
-    const eLoginDono = loginLimpo === donoUserLower || loginLimpo === 'rodrigo.souza' || loginLimpo === 'dono' || loginLimpo === 'super_admin' || loginLimpo === 'admin';
-    if (eLoginDono) {
-      const senhaDonoValida =
-        (await verificarSenhaComHash(
-          senhaLimpa,
-          credenciaisDono.senhaHash,
-          credenciaisDono.senhaSalt,
-          credenciaisDono.senha
-        )) ||
-        Boolean(credenciaisDono.senha && senhaLimpa === credenciaisDono.senha);
-
-      if (senhaDonoValida) {
+    // 3. Se estiver logado como Dono (Master), valida credenciais exclusivamente no servidor (/api/auth)
+    if (perfilAtivo === 'dona_app') {
+      const resMaster = await autenticarMasterServidor(usuarioInput.trim(), senhaLimpa);
+      if (resMaster.autenticado) {
         const opDono: OperadorCaixa = {
           id: 'op_dono_' + Date.now(),
           lojaId: supermercadoAtual,
-          nome: credenciaisDono.nome || 'Dono do Sistema',
+          nome: 'Dono do Sistema',
           cargo: 'Administrador',
-          cpfOuUsuario: credenciaisDono.usuario,
+          cpfOuUsuario: usuarioInput.trim(),
           pinSenha: '',
           permissoes: PERMISSOES_ADMIN_PADRAO,
           ativo: true,
           dataCadastro: new Date().toLocaleDateString('pt-BR'),
         };
         return { valido: true, operador: opDono };
+      }
+      if (resMaster.bloqueado) {
+        return { valido: false, mensagem: resMaster.erro || 'Acesso bloqueado por segurança.' };
       }
     }
 
@@ -3858,6 +3940,12 @@ export default function App() {
     // Registra sessão ativa no Firestore - Isso invalida e desloga imediatamente qualquer outro aparelho que estava nesta mesma conta
     await registrarSessaoAtivaNoFirestore(sessao, novoToken);
 
+    try {
+      localStorage.removeItem('credenciais_dono_app');
+      localStorage.removeItem('senha_master_dono');
+      localStorage.removeItem('usuario_master_dono');
+    } catch {}
+    setSessaoServidorVerificada(true);
     setTelaLoginVisivel(false);
 
     // Verificar se o Termo de Uso já foi aceito na primeira vez que o login conectou neste dispositivo
@@ -3946,9 +4034,15 @@ export default function App() {
           prefixosSensiveis.some((pref) => k.startsWith(pref)) ||
           k === 'lista_supermercados_app' ||
           k === 'auditoria_tentativas_login_v1' ||
-          k === 'credenciais_dono_app'
+          k === 'credenciais_dono_app' ||
+          k === 'senha_master_dono' ||
+          k === 'usuario_master_dono'
       );
       chavesParaRemover.forEach((k) => localStorage.removeItem(k));
+      if (perfilAtivo === 'dona_app') {
+        localStorage.removeItem('supermercadoAtualId');
+        localStorage.removeItem('supermercadoNome');
+      }
     } catch {}
     try {
       sessionStorage.removeItem('sessao_loja_ativa');
@@ -3961,6 +4055,12 @@ export default function App() {
     tentouRenovarAuthRef.current = false;
     setErroSyncRelatorios(null);
 
+    setListaSupermercados([]);
+    setEstoque([]);
+    if (perfilAtivo === 'dona_app') {
+      setSupermercadoAtual('');
+      setNomeSupermercadoAtivo('');
+    }
     setVendas([]);
     setClientesDevedores([]);
     setLogsAuditoria([]);
@@ -3970,6 +4070,7 @@ export default function App() {
     setOperadorAtivoId(null);
     setSessaoTokenAtivo('');
     setMotivoCaixaObrigatorio(null);
+    setSessaoServidorVerificada(false);
     setTelaLoginVisivel(true);
   };
 
@@ -7219,7 +7320,7 @@ export default function App() {
     } catch {
       setComandasLocais([]);
     }
-    if (isModoCliente || (telaLoginVisivel && !firebaseAuthUid && !painelFallbackLocal)) {
+    if (isModoCliente || ((telaLoginVisivel || !sessaoServidorVerificada) && !painelFallbackLocal)) {
       return;
     }
     const unsub = subscribeComandasLocais(supermercadoAtual, (lista) => {
@@ -7228,7 +7329,7 @@ export default function App() {
     return () => {
       if (typeof unsub === 'function') unsub();
     };
-  }, [supermercadoAtual, isModoCliente, telaLoginVisivel, firebaseAuthUid, painelFallbackLocal]);
+  }, [supermercadoAtual, isModoCliente, telaLoginVisivel, firebaseAuthUid, painelFallbackLocal, sessaoServidorVerificada]);
 
   const persistirComandas = (novaLista: ComandaLocal[], comandaAlterada?: ComandaLocal) => {
     setComandasLocais(novaLista);
@@ -8812,6 +8913,29 @@ export default function App() {
       );
     }
     return <UnrecognizedLinkView />;
+  }
+
+  if (telaLoginVisivel) {
+    return (
+      <TelaLogin
+        visivel={true}
+        listaSupermercados={isPortalMasterRoute ? [] : listaSupermercados}
+        onLoginSucesso={handleLoginSucesso}
+        onAbrirCardapioCliente={() => setModalCardapioClienteVisivel(true)}
+        modoPortal={isPortalMasterRoute ? 'master' : 'loja'}
+        lojaAlvo={lojaAlvoUrlValidada}
+        painelAlvo={painelAutorizadoServidor?.papelPermitido || painelParamAtivo}
+        onRedefinirSenhaLojaRevogada={handleRedefinirSenhaLojaRevogada}
+      />
+    );
+  }
+
+  if (!sessaoServidorVerificada && !painelFallbackLocal) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6 text-sm font-semibold">
+        Validando sessão de segurança...
+      </div>
+    );
   }
 
   return (
@@ -16128,17 +16252,6 @@ export default function App() {
         );
       })()}
 
-      {/* TELA DE LOGIN & CONTROLE DE ACESSO */}
-      <TelaLogin
-        visivel={telaLoginVisivel}
-        listaSupermercados={listaSupermercados}
-        onLoginSucesso={handleLoginSucesso}
-        onAbrirCardapioCliente={() => setModalCardapioClienteVisivel(true)}
-        modoPortal={isPortalMasterRoute ? 'master' : 'loja'}
-        lojaAlvo={lojaAlvoUrlValidada}
-        painelAlvo={painelAutorizadoServidor?.papelPermitido || painelParamAtivo}
-        onRedefinirSenhaLojaRevogada={handleRedefinirSenhaLojaRevogada}
-      />
     </>
   );
 }
