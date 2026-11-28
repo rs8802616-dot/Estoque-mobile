@@ -134,6 +134,8 @@ import {
   isCodigoBarrasNumerico,
   removerSufixoBipado,
 } from './utils/barcodeScanner';
+import { calcularAlertasEstoque } from './utils/alertasEstoque';
+import { calcularDiasParaVencer } from './utils/relatoriosFinanceiros';
 import { CarrinhoVendaModal } from './components/CarrinhoVendaModal';
 import { RelatorioVendasModal } from './components/RelatorioVendasModal';
 import { GraficosVendasModal } from './components/GraficosVendasModal';
@@ -8820,39 +8822,25 @@ export default function App() {
   useVoltarHierarquico(relatorioCheioVisivel, fecharRelatorio);
   useVoltarHierarquico(modalCadastroVisivel, () => fecharAbaDefinitivo('cadastro'));
 
-  // Calculate Expiration Alerts
+  // Alertas unificados (exclui produtos internos/ilimitados e lotes sem saldo)
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
-  const vencidosOuHoje = estoque.filter((p) => {
-    const dataVal = new Date(p.validade + 'T00:00:00');
-    const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
-    return dias <= 0;
-  });
+  const alertasEstoqueResumo = useMemo(
+    () => calcularAlertasEstoque(estoque, limiarEstoqueMinimo, catalogoGlobal),
+    [estoque, limiarEstoqueMinimo, catalogoGlobal]
+  );
 
-  const proximoVencimento = estoque.filter((p) => {
-    const dataVal = new Date(p.validade + 'T00:00:00');
-    const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
-    return dias <= 10;
-  });
-
-  // Calculate Low Stock alerts based on user-defined threshold (aggregated by barcode)
-  const agrupadosEstoqueTotal: Record<string, number> = {};
-  estoque.forEach((p) => {
-    agrupadosEstoqueTotal[p.codigo] = (agrupadosEstoqueTotal[p.codigo] || 0) + p.quantidade;
-  });
-
-  const produtosEstoqueBaixoCount = Object.values(agrupadosEstoqueTotal).filter(
-    (qtd) => qtd <= limiarEstoqueMinimo
-  ).length;
-
-  const totalNotificacoes = proximoVencimento.length + produtosEstoqueBaixoCount;
+  const vencidosOuHoje = alertasEstoqueResumo.vencidosOuHoje.map((a) => a.item);
+  const produtosEstoqueBaixoCount = alertasEstoqueResumo.produtosEstoqueBaixo.length;
+  const totalNotificacoes = alertasEstoqueResumo.totalNotificacoes;
 
   // Filtered Inventory List for Main View
   const termoBusca = busca.trim().toLowerCase();
   const estoqueFiltrado = estoque.filter((p) => {
+    const codLimpo = String(p.codigo || '').trim();
     const nomeResolvido = obterNomeProduto(p.codigo, p.nome);
-    const catRel = catalogoGlobal.find((c) => c.codigo === p.codigo);
+    const catRel = codLimpo ? mapaCatalogoPorCodigo.get(codLimpo) : undefined;
     const matchBusca =
       !termoBusca ||
       p.codigo.toLowerCase().includes(termoBusca) ||
@@ -8891,7 +8879,7 @@ export default function App() {
     const codLimpo = String(p.codigo || p.codigo_barras || '').trim() || p.codigo;
     const nomeFinal = obterNomeProduto(codLimpo, p.nome);
     const fotoFinal = obterFotoProduto(codLimpo, p.foto);
-    const catRel = catalogoGlobal.find((c) => String(c.codigo || '').trim() === codLimpo);
+    const catRel = mapaCatalogoPorCodigo.get(codLimpo);
     const categoriaFinal = catRel?.categoria || p.categoria;
 
     if (!agrupados[codLimpo]) {
@@ -8925,7 +8913,7 @@ export default function App() {
 
   // Helper check if item is expired for Venda Modal styling
   const isProdAtualVencido = prodAtual
-    ? new Date(prodAtual.validade + 'T00:00:00').getTime() <= hoje.getTime()
+    ? (calcularDiasParaVencer(prodAtual.validade) ?? 1) <= 0
     : false;
 
   // ============================================================================
@@ -11365,10 +11353,11 @@ export default function App() {
       </main>
 
       {/* FULL REPORT SCREEN */}
+      {relatorioCheioVisivel && (
       <div
         className="tela-relatorio-cheia"
         id="telaRelatorioCheia"
-        style={{ display: relatorioCheioVisivel ? 'flex' : 'none' }}
+        style={{ display: 'flex' }}
       >
         <div className="cabecalho-relatorio">
           <h2 id="tituloRelatorioCheio">
@@ -11695,6 +11684,7 @@ export default function App() {
           </div>
         </div>
       </div>
+      )}
 
       {/* CAMERA BARCODE SCANNER & AI VISION SCREEN */}
       <div
@@ -14552,7 +14542,8 @@ export default function App() {
       )}
 
       {/* PRODUCT REGISTRATION MODAL */}
-      <div className="modal" id="modalCadastro" style={{ display: modalCadastroVisivel ? 'flex' : 'none', zIndex: 99999 }}>
+      {modalCadastroVisivel && (
+      <div className="modal" id="modalCadastro" style={{ display: 'flex', zIndex: 99999 }}>
         <div className="modal-conteudo modal-cadastro-conteudo">
           <div className="cab-modal modal-cadastro-cab" id="titulo-modal-cad">
             <span style={{ flex: 1, minWidth: 0 }}>
@@ -15135,6 +15126,7 @@ export default function App() {
           </div>
         </div>
       </div>
+      )}
 
       {/* STOCK REDUCTION MODAL */}
       <div className="modal" id="modalVenda" style={{ display: modalVendaVisivel ? 'flex' : 'none' }}>

@@ -31,12 +31,13 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleReset = () => {
-    this.setState({ hasError: false, error: null });
     window.location.reload();
   };
 
   public render() {
     if (this.state.hasError) {
+      const exibirDetalhesTecnicos = !(import.meta as any).env?.PROD;
+
       return (
         <div className="min-h-screen bg-[#f8fafc] text-stone-900 flex items-center justify-center p-4">
           <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-xl max-w-md w-full text-center space-y-4">
@@ -50,7 +51,7 @@ export class ErrorBoundary extends Component<Props, State> {
               Ocorreu um erro inesperado ao carregar a interface. Clique abaixo para recarregar com segurança.
             </p>
 
-            {this.state.error && (
+            {exibirDetalhesTecnicos && this.state.error && (
               <div className="p-3 bg-stone-50 rounded-xl text-left font-mono text-[11px] text-red-600 overflow-x-auto max-h-40 border border-red-200 space-y-2">
                 <div className="font-bold">{this.state.error.message}</div>
                 {this.state.error.stack && (

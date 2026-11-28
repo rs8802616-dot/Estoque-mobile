@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Bell,
   Package,
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { ItemEstoque, Supermercado, ProdutoCatalogo } from '../types';
 import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
+import { calcularAlertasEstoque } from '../utils/alertasEstoque';
 
 export interface ProdutoEstoqueBaixoAgrupado {
   codigo: string;
@@ -100,115 +101,39 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
     onFechar();
   };
 
+  const mapaCatalogoPorCodigo = useMemo(() => {
+    const mapa = new Map<string, ProdutoCatalogo>();
+    catalogoGlobal.forEach((c) => {
+      const cod = String(c?.codigo || '').trim();
+      if (cod && !mapa.has(cod)) mapa.set(cod, c);
+    });
+    return mapa;
+  }, [catalogoGlobal]);
+
   useVoltarHierarquico(visivel, handleVoltarOuFechar);
 
   if (!visivel) return null;
 
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-
-  // 1. ANÁLISE DE ESTOQUE BAIXO (Agrupamento por Código EAN)
-  const agrupadosPorCodigo: Record<string, {
-    codigo: string;
-    nome: string;
-    marca?: string;
-    categoria?: string;
-    foto?: string;
-    preco_custo?: number;
-    preco_venda: number;
-    qtdTotal: number;
-    lotes: { validade: string; qtd: number; lote: string }[];
-  }> = {};
-
-  estoque.forEach((item) => {
-    const catRel = catalogoGlobal.find((c) => c.codigo === item.codigo);
-    if (!agrupadosPorCodigo[item.codigo]) {
-      agrupadosPorCodigo[item.codigo] = {
-        codigo: item.codigo,
-        nome: item.nome || catRel?.nome || 'Produto sem nome',
-        marca: catRel?.marca || '',
-        categoria: catRel?.categoria || '',
-        foto: item.foto || catRel?.imagem || '',
-        preco_custo: item.preco_custo || 0,
-        preco_venda: item.preco_venda || 0,
-        qtdTotal: 0,
-        lotes: [],
-      };
-    }
-    agrupadosPorCodigo[item.codigo].qtdTotal += item.quantidade;
-    agrupadosPorCodigo[item.codigo].lotes.push({
-      validade: item.validade,
-      qtd: item.quantidade,
-      lote: item.lote,
-    });
-    if (item.foto && !agrupadosPorCodigo[item.codigo].foto) {
-      agrupadosPorCodigo[item.codigo].foto = item.foto;
-    }
-    if (item.preco_venda) {
-      agrupadosPorCodigo[item.codigo].preco_venda = item.preco_venda;
-    }
-    if (item.preco_custo) {
-      agrupadosPorCodigo[item.codigo].preco_custo = item.preco_custo;
-    }
-  });
-
-  const produtosEstoqueBaixo: ProdutoEstoqueBaixoAgrupado[] = Object.values(agrupadosPorCodigo)
-    .filter((prod) => prod.qtdTotal <= limiarEstoqueMinimo)
-    .map((prod) => {
-      let statusEstoque: 'zerado' | 'critico' | 'baixo' = 'baixo';
-      if (prod.qtdTotal <= 0) {
-        statusEstoque = 'zerado';
-      } else if (prod.qtdTotal <= Math.max(1, Math.floor(limiarEstoqueMinimo / 2))) {
-        statusEstoque = 'critico';
-      } else {
-        statusEstoque = 'baixo';
-      }
-
-      const qtdSugeridaRepor = Math.max(limiarEstoqueMinimo * 2 - prod.qtdTotal, limiarEstoqueMinimo);
-
-      return {
-        ...prod,
-        statusEstoque,
-        qtdSugeridaRepor,
-      };
-    });
-
-  produtosEstoqueBaixo.sort((a, b) => a.qtdTotal - b.qtdTotal);
+  // Engine unificada de estoque baixo e validades (exclui internos/ilimitados e sem saldo)
+  const {
+    produtosEstoqueBaixo,
+    countZerados,
+    countCriticos,
+    countBaixos,
+    vencidosOuHoje: vencidos,
+    vencendoEmAte10Dias,
+    alertasValidade10Dias: proximoVencimento,
+  } = calcularAlertasEstoque(estoque, limiarEstoqueMinimo, catalogoGlobal);
 
   const termoBusca = busca.trim().toLowerCase();
   const produtosBaixosFiltrados = produtosEstoqueBaixo.filter((p) => {
     const matchBusca = p.nome.toLowerCase().includes(termoBusca) || p.codigo.toLowerCase().includes(termoBusca);
     if (!matchBusca) return false;
 
-    if (filtroStatus === 'zerados') return p.qtdTotal === 0;
+    if (filtroStatus === 'zerados') return p.qtdTotal <= 0;
     if (filtroStatus === 'criticos') return p.statusEstoque === 'critico';
     if (filtroStatus === 'baixos') return p.statusEstoque === 'baixo';
     return true;
-  });
-
-  const countZerados = produtosEstoqueBaixo.filter((p) => p.qtdTotal === 0).length;
-  const countCriticos = produtosEstoqueBaixo.filter((p) => p.statusEstoque === 'critico').length;
-  const countBaixos = produtosEstoqueBaixo.filter((p) => p.statusEstoque === 'baixo').length;
-
-  // 2. ANÁLISE DE VALIDADE
-  const vencidos = estoque.filter((p) => {
-    if (p.estoqueIlimitado || p.tipoCadastro === 'interno') return false;
-    if ((Number(p.quantidade) || 0) <= 0) return false;
-    if (!p.validade) return false;
-    const dataVal = new Date(p.validade + 'T00:00:00');
-    if (isNaN(dataVal.getTime())) return false;
-    const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
-    return dias <= 0;
-  });
-
-  const proximoVencimento = estoque.filter((p) => {
-    if (p.estoqueIlimitado || p.tipoCadastro === 'interno') return false;
-    if ((Number(p.quantidade) || 0) <= 0) return false;
-    if (!p.validade) return false;
-    const dataVal = new Date(p.validade + 'T00:00:00');
-    if (isNaN(dataVal.getTime())) return false;
-    const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
-    return dias <= 10;
   });
 
   const gerarMensagemWhatsAppReposicao = () => {
@@ -224,7 +149,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
       msg += `✅ *Excelente!* Nenhum item com estoque abaixo de ${limiarEstoqueMinimo} unidades no momento.\n`;
     } else {
       produtosEstoqueBaixo.forEach((p, idx) => {
-        const statusTxt = p.qtdTotal === 0 ? '🔴 ESGOTADO (0 un)' : `⚠️ Restam apenas ${p.qtdTotal} un`;
+        const statusTxt = p.qtdTotal <= 0 ? '🔴 ESGOTADO (0 un)' : `⚠️ Restam apenas ${p.qtdTotal} un`;
         msg += `${idx + 1}. *${p.nome}*\n`;
         msg += `   • Cód: ${p.codigo}\n`;
         msg += `   • Estoque Atual: ${p.qtdTotal} un (${statusTxt})\n`;
@@ -241,11 +166,37 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
     return msg;
   };
 
-  const copiarListaReposicao = () => {
+  const copiarListaReposicao = async () => {
     const texto = gerarMensagemWhatsAppReposicao();
-    navigator.clipboard.writeText(texto);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2500);
+    let sucesso = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(texto);
+        sucesso = true;
+      }
+    } catch {
+      sucesso = false;
+    }
+
+    if (!sucesso && typeof document !== 'undefined') {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        sucesso = document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } catch {
+        sucesso = false;
+      }
+    }
+
+    if (sucesso) {
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2500);
+    }
   };
 
   const enviarWhatsAppReposicao = () => {
@@ -758,7 +709,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                   }}
                 >
                   {produtosBaixosFiltrados.map((prod, idx) => {
-                    const isZerado = prod.qtdTotal === 0;
+                    const isZerado = prod.qtdTotal <= 0;
                     const isCritico = prod.statusEstoque === 'critico';
 
                     const corSeveridade = isZerado ? '#dc2626' : isCritico ? '#ea580c' : '#d97706';
@@ -766,7 +717,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                     const textBadge = isZerado ? '#b91c1c' : isCritico ? '#c2410c' : '#a16207';
                     const borderBadge = isZerado ? '#fecaca' : isCritico ? '#fed7aa' : '#fde68a';
                     const textoBadge = isZerado
-                      ? 'Esgotado • 0 un'
+                      ? `Esgotado • ${prod.qtdTotal} un`
                       : isCritico
                       ? `Crítico • ${prod.qtdTotal} un`
                       : `Baixo • ${prod.qtdTotal} un`;
@@ -967,7 +918,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                   <Clock size={16} style={{ color: '#d97706', flexShrink: 0 }} />
                   <div style={{ fontSize: '0.78rem', color: '#334155' }}>
                     <b style={{ color: '#0f172a' }}>Monitor de Validades:</b> {vencidos.length} vencido(s)/hoje e{' '}
-                    {Math.max(0, proximoVencimento.length - vencidos.length)} a vencer nos próximos 10 dias
+                    {vencendoEmAte10Dias.length} a vencer nos próximos 10 dias
                   </div>
                 </div>
                 <button
@@ -1018,10 +969,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                     gap: '10px',
                   }}
                 >
-                  {proximoVencimento.map((p, idx) => {
-                    const dataVal = new Date(p.validade + 'T00:00:00');
-                    const dias = Math.round((dataVal.getTime() - hoje.getTime()) / 86400000);
-
+                  {proximoVencimento.map(({ item: p, diasParaVencer: dias }, idx) => {
                     const isUrgente = dias <= 0;
                     const corSeveridade = isUrgente ? '#dc2626' : '#d97706';
                     const bgBadge = isUrgente ? '#fef2f2' : '#fef3c7';
@@ -1037,7 +985,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                       textoStatus = `Vence em ${dias}d`;
                     }
 
-                    const fotoItem = p.foto || catalogoGlobal.find((c) => c.codigo === p.codigo)?.imagem;
+                    const fotoItem = p.foto || (p.codigo ? mapaCatalogoPorCodigo.get(p.codigo.trim())?.imagem : undefined);
 
                     return (
                       <div
@@ -1315,7 +1263,7 @@ export const CentroNotificacoesModal: React.FC<CentroNotificacoesModalProps> = (
                 >
                   <Clock size={20} style={{ color: '#d97706', margin: '0 auto 6px auto' }} />
                   <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#b45309', lineHeight: 1.1 }}>
-                    {proximoVencimento.length}
+                    {vencendoEmAte10Dias.length}
                   </div>
                   <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#78350f', marginTop: '4px' }}>
                     Vencendo em até 10 dias

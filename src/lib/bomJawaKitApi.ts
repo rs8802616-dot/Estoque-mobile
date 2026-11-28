@@ -64,21 +64,22 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
 
   // No navegador, consulta sempre o proxy seguro /api/si5 sem expor Bearer tokens
   if (typeof window !== 'undefined') {
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 7000);
     try {
-      const ctrl = new AbortController();
-      const timeoutId = setTimeout(() => ctrl.abort(), 7000);
       const res = await fetch(`/api/si5?ean=${encodeURIComponent(clean)}`, {
         method: 'GET',
         signal: ctrl.signal,
         headers: await headersSi5ComAuth(),
       });
-      clearTimeout(timeoutId);
       if (!res.ok) return null;
       const json = await res.json();
       if (json && json.nomeProduto) return json as SI5ProdutoRetorno;
       return null;
     } catch {
       return null;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -91,11 +92,10 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
     }
 
     const token = tokensServidor[i];
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 6000);
 
     try {
-      const ctrl = new AbortController();
-      const timeoutId = setTimeout(() => ctrl.abort(), 6000);
-
       const res = await fetch(`https://global.si5.com.br/api/produtos/${encodeURIComponent(clean)}`, {
         method: 'GET',
         signal: ctrl.signal,
@@ -104,7 +104,6 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
           Accept: 'application/json',
         },
       });
-      clearTimeout(timeoutId);
 
       // Cota de 100 consultas diárias atingida: marca esta chave como esgotada hoje e passa para a próxima
       if (res.status === 429) {
@@ -134,6 +133,8 @@ export async function consultarSI5GlobalCascata(codigo: string): Promise<SI5Prod
     } catch (e: any) {
       console.warn(`[SI5 Global] Falha na Chave #${i + 1}:`, e?.message || e);
       return null;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -163,15 +164,14 @@ export async function pesquisarSI5GlobalPorNome(
 
   // No navegador, consulta sempre o proxy seguro /api/si5 sem expor Bearer tokens
   if (typeof window !== 'undefined') {
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 9000);
     try {
-      const ctrl = new AbortController();
-      const timeoutId = setTimeout(() => ctrl.abort(), 9000);
       const res = await fetch(`/api/si5?q=${encodeURIComponent(cleanTermo)}&page=${page}`, {
         method: 'GET',
         signal: ctrl.signal,
         headers: await headersSi5ComAuth(),
       });
-      clearTimeout(timeoutId);
       if (!res.ok) return null;
       const json = await res.json();
       if (json && Array.isArray(json.produtos)) {
@@ -180,6 +180,8 @@ export async function pesquisarSI5GlobalPorNome(
       return null;
     } catch {
       return null;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -192,11 +194,10 @@ export async function pesquisarSI5GlobalPorNome(
     }
 
     const token = tokensServidor[i];
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 8500);
 
     try {
-      const ctrl = new AbortController();
-      const timeoutId = setTimeout(() => ctrl.abort(), 8500);
-
       const url = `https://global.si5.com.br/api/produtos?q=${encodeURIComponent(cleanTermo)}&page=${page}`;
       const res = await fetch(url, {
         method: 'GET',
@@ -206,7 +207,6 @@ export async function pesquisarSI5GlobalPorNome(
           Accept: 'application/json',
         },
       });
-      clearTimeout(timeoutId);
 
       if (res.status === 429) {
         console.warn(`[SI5 Global] Token #${i + 1} atingiu limite diário (429) ao pesquisar nome. Passando para o próximo token...`);
@@ -246,6 +246,8 @@ export async function pesquisarSI5GlobalPorNome(
     } catch (e: any) {
       console.warn(`[SI5 Global] Erro na busca por nome com token #${i + 1}:`, e?.message || e);
       return null;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -801,10 +803,14 @@ let cacheCategoriasMemoria: BomJawaKitCategoria[] | null = null;
 const CACHE_DB_NAME = 'EstoqueMobileApiCacheDB';
 const CACHE_STORE_CONSULTAS = 'consultas_api';
 const CACHE_STORE_META = 'meta_api';
+const CACHE_API_TTL_MS = 24 * 60 * 60 * 1000;
+let cacheApiDbPromise: Promise<IDBDatabase | null> | null = null;
 
 function abrirCacheApiDB(): Promise<IDBDatabase | null> {
   if (typeof window === 'undefined' || !window.indexedDB) return Promise.resolve(null);
-  return new Promise((resolve) => {
+  if (cacheApiDbPromise) return cacheApiDbPromise;
+
+  cacheApiDbPromise = new Promise((resolve) => {
     try {
       const req = window.indexedDB.open(CACHE_DB_NAME, 1);
       req.onupgradeneeded = () => {
@@ -816,12 +822,28 @@ function abrirCacheApiDB(): Promise<IDBDatabase | null> {
           db.createObjectStore(CACHE_STORE_META);
         }
       };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => resolve(null);
+      req.onsuccess = () => {
+        const db = req.result;
+        db.onclose = () => {
+          cacheApiDbPromise = null;
+        };
+        db.onversionchange = () => {
+          db.close();
+          cacheApiDbPromise = null;
+        };
+        resolve(db);
+      };
+      req.onerror = () => {
+        cacheApiDbPromise = null;
+        resolve(null);
+      };
     } catch {
+      cacheApiDbPromise = null;
       resolve(null);
     }
   });
+
+  return cacheApiDbPromise;
 }
 
 async function lerConsultaCachePersistente(chave: string): Promise<EntradaCacheConsulta | null> {
@@ -965,6 +987,27 @@ export async function obterProximoLoteParaFirestore(
 }
 
 /**
+ * Calcula offset e slice relativos ao lote remoto de `batchSize` itens (ex.: 200 por requisição).
+ */
+export function calcularSliceLoteRemoto(
+  page: number,
+  pageSize: number,
+  batchSize = 200
+): { batchIndex: number; batchOffset: number; inicioNoLote: number; fimNoLote: number } {
+  const safePage = Math.max(1, Math.floor(Number(page) || 1));
+  const safePageSize = Math.max(1, Math.floor(Number(pageSize) || 24));
+  const safeBatchSize = Math.max(1, Math.floor(Number(batchSize) || 200));
+
+  const offsetGlobal = (safePage - 1) * safePageSize;
+  const batchIndex = Math.floor(offsetGlobal / safeBatchSize);
+  const batchOffset = batchIndex * safeBatchSize;
+  const inicioNoLote = offsetGlobal - batchOffset;
+  const fimNoLote = inicioNoLote + safePageSize;
+
+  return { batchIndex, batchOffset, inicioNoLote, fimNoLote };
+}
+
+/**
  * Busca produtos priorizando o Catálogo Geral Offline (+13.300 produtos já baixados localmente)
  * com 0 requisições externas e garantindo que produtos já cadastrados saiam da lista.
  */
@@ -997,14 +1040,17 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       // 1. Se o usuário já tem o produto no banco dele, SAI DA LISTA
       if (codigosUsuario.has(p.ean)) return false;
 
-      // 2. Filtro por Categoria / Slug
+      // 2. Filtro real por existência de imagem quando solicitado
+      if (opcoes.comImagem === true && !String(p.fotoUrl || '').trim()) return false;
+
+      // 3. Filtro por Categoria / Slug
       if (catSelecionada) {
         const bateSlug = p.categoriaSlug === catSelecionada;
         const bateNomeCat = normalizarTextoComparacao(p.categoria).includes(normalizarTextoComparacao(catSelecionada));
         if (!bateSlug && !bateNomeCat) return false;
       }
 
-      // 3. Filtro por Termo de Busca (Nome, Marca ou EAN)
+      // 4. Filtro por Termo de Busca (Nome, Marca ou EAN)
       if (termoNorm) {
         const nomeNorm = normalizarTextoComparacao(p.nomeProduto);
         const marcaNorm = normalizarTextoComparacao(p.marca);
@@ -1030,7 +1076,7 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
       fotoUrl: p.fotoUrl,
       ncm: p.ncm || '',
       descricao: p.nomeProduto,
-      temImagem: true,
+      temImagem: Boolean(String(p.fotoUrl || '').trim()),
       fonte: 'Catálogo Offline Local (0 requisições gastas)',
     }));
 
@@ -1047,12 +1093,36 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
 
   // 2. Fallback remoto de contingência (somente se o catálogo offline ainda não foi baixado)
   const BATCH_SIZE_UNICA_REQUISICAO = 200;
-  const batchIndex = Math.floor(((page - 1) * pageSize) / BATCH_SIZE_UNICA_REQUISICAO);
-  const batchOffset = batchIndex * BATCH_SIZE_UNICA_REQUISICAO;
+  const { batchIndex, batchOffset, inicioNoLote, fimNoLote } = calcularSliceLoteRemoto(
+    page,
+    pageSize,
+    BATCH_SIZE_UNICA_REQUISICAO
+  );
   const catNormalizada = catSelecionada;
   const comImg = opcoes.comImagem;
   const isNumericBarcode = /^\d{6,14}$/.test(rawQuery);
-  const chaveCache = `bjk_${termoNorm || 'all'}_${catNormalizada || 'all'}_b${batchIndex}`;
+  const chaveCache = `bjk_${termoNorm || 'all'}_${catNormalizada || 'all'}_${
+    comImg === true ? 'img' : 'any'
+  }_b${batchIndex}`;
+
+  // Consulta o cache persistente ANTES de disparar chamada de rede
+  const cacheHit = await lerConsultaCachePersistente(chaveCache);
+  if (
+    cacheHit &&
+    Array.isArray(cacheHit.produtos) &&
+    cacheHit.produtos.length > 0 &&
+    Date.now() - (cacheHit.timestamp || 0) < CACHE_API_TTL_MS
+  ) {
+    return {
+      produtos: cacheHit.produtos.slice(inicioNoLote, fimNoLote),
+      total: Math.max(cacheHit.totalRemoto || 0, cacheHit.produtos.length),
+      page,
+      query: rawQuery,
+      veioDoCache: true,
+      totalEmCache: cacheHit.produtos.length,
+    };
+  }
+
   let totalBomJawa = 0;
   const eansAdicionados = new Set<string>();
   const listaCombinada: ProdutoNormalizadoBomJawaKit[] = [];
@@ -1072,7 +1142,6 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
           Accept: 'application/json',
         },
       });
-      clearTimeout(timeout);
       if (!r.ok) return { total: 0, itens: [] as BomJawaKitProdutoRaw[] };
       const json = await r.json();
       return {
@@ -1080,8 +1149,9 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
         itens: (Array.isArray(json?.itens) ? json.itens : []) as BomJawaKitProdutoRaw[],
       };
     } catch {
-      clearTimeout(timeout);
       return { total: 0, itens: [] as BomJawaKitProdutoRaw[] };
+    } finally {
+      clearTimeout(timeout);
     }
   };
 
@@ -1167,36 +1237,23 @@ export async function buscarProdutosBomJawaKit(opcoes: OpcoesBuscaBomJawaKit): P
     }
   }
 
-  // Mescla com o cache anterior (caso esteja carregando a partir do item 201+) e persiste no IndexedDB
-  const cacheAnterior = await lerConsultaCachePersistente(chaveCache);
-  let listaAcumulada = listaCombinada;
-  if (batchIndex > 0 && cacheAnterior && cacheAnterior.produtos.length > 0) {
-    const mapaAcumulado = new Map<string, ProdutoNormalizadoBomJawaKit>();
-    cacheAnterior.produtos.forEach((p) => mapaAcumulado.set(p.ean || p.nomeProduto, p));
-    listaCombinada.forEach((p) => mapaAcumulado.set(p.ean || p.nomeProduto, p));
-    listaAcumulada = Array.from(mapaAcumulado.values());
-  }
+  const totalFinal = Math.max(totalBomJawa, batchOffset + listaCombinada.length);
 
-  const totalFinal = Math.max(totalBomJawa, listaAcumulada.length);
-
-  if (listaAcumulada.length > 0) {
+  if (listaCombinada.length > 0) {
     await salvarConsultaCachePersistente(chaveCache, {
-      produtos: listaAcumulada,
+      produtos: listaCombinada,
       totalRemoto: totalFinal,
       timestamp: Date.now(),
     });
   }
 
-  const inicio = (page - 1) * pageSize;
-  const fim = inicio + pageSize;
-
   return {
-    produtos: listaAcumulada.slice(inicio, fim),
+    produtos: listaCombinada.slice(inicioNoLote, fimNoLote),
     total: totalFinal,
     page,
     query: rawQuery,
     veioDoCache: false,
-    totalEmCache: listaAcumulada.length,
+    totalEmCache: listaCombinada.length,
   };
 }
 

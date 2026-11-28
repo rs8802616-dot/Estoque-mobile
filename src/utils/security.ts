@@ -46,9 +46,10 @@ const CHAVE_AUDITORIA_LOGIN = 'auditoria_tentativas_login_v1';
  * Gera um Salt aleatório de 16 bytes em formato hexadecimal (32 caracteres hex).
  */
 export function gerarSaltHex(bytes = 16): string {
-  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+  const cryptoApi = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+  if (cryptoApi && cryptoApi.getRandomValues) {
     const array = new Uint8Array(bytes);
-    window.crypto.getRandomValues(array);
+    cryptoApi.getRandomValues(array);
     return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
   }
   let hex = '';
@@ -63,10 +64,11 @@ export function gerarSaltHex(bytes = 16): string {
  */
 export async function hashSenhaSha256(senha: string, salt: string): Promise<string> {
   const payload = `${salt}:${senha}`;
-  if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
+  const cryptoApi = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+  if (cryptoApi && cryptoApi.subtle) {
     const encoder = new TextEncoder();
     const data = encoder.encode(payload);
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await cryptoApi.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   }

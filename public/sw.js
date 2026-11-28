@@ -1,7 +1,7 @@
 // Service Worker para Estoque Mobile Multi-Supermercado
 // Permite funcionamento 100% offline mesmo ao recarregar a página (F5 ou abrir app sem conexão)
 
-const CACHE_NAME = 'estoque-mobile-pwa-v209';
+const CACHE_NAME = 'estoque-mobile-pwa-v210';
 
 const ASSETS_PARA_CACHE_INICIAL = [
   '/',
@@ -13,16 +13,14 @@ const ASSETS_PARA_CACHE_INICIAL = [
   '/som_novo_pedido.mp3',
 ];
 
-// Instalação do Service Worker: pré-armazena o shell da aplicação e ativa imediatamente
+// Instalação do Service Worker: pré-armazena o shell da aplicação item a item e ativa imediatamente
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      try {
-        await cache.addAll(ASSETS_PARA_CACHE_INICIAL);
-      } catch (err) {
-        console.warn('Aviso ao pré-carregar assets no cache offline:', err);
-      }
+      await Promise.allSettled(
+        ASSETS_PARA_CACHE_INICIAL.map((asset) => cache.add(asset))
+      );
     })
   );
 });
@@ -56,20 +54,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Ignorar requisições de outros domínios (fotos S3/CDN sem CORS, Firebase, etc.) para não bloquear <img> externas
+  // Ignorar requisições de outros domínios (fotos S3/CDN sem CORS, Firebase, Focus NFe, etc.)
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  // Ignorar chamadas de APIs locais, Firebase Auth/Firestore e Focus NFe (nunca cachear)
-  if (
-    url.pathname.startsWith('/api/') ||
-    url.hostname.includes('firestore.googleapis.com') ||
-    url.hostname.includes('firebase.googleapis.com') ||
-    url.hostname.includes('identitytoolkit.googleapis.com') ||
-    url.hostname.includes('securetoken.googleapis.com') ||
-    url.hostname.includes('focusnfe.com.br')
-  ) {
+  // Ignorar chamadas de APIs locais (/api/*) — nunca cachear
+  if (url.pathname.startsWith('/api/')) {
     return;
   }
 
@@ -130,7 +121,7 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => cachedResponse);
+        .catch(() => cachedResponse || new Response('', { status: 503, statusText: 'Offline' }));
 
       return cachedResponse || fetchPromise;
     })

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   AlertTriangle,
   Ban,
@@ -25,6 +25,14 @@ import {
 import { Venda, ItemEstoque, OperadorCaixa, ProdutoCatalogo } from '../types';
 import { exportarVendasCSV } from '../lib/exportUtils';
 import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
+import {
+  calcularMetricasVenda,
+  construirMapaCustoPorCodigo,
+  estaNoPeriodo,
+  MetricasVendaCalculadas,
+  obterCustoUnitarioItem,
+  parseDataVenda,
+} from '../utils/relatoriosFinanceiros';
 
 interface RelatorioVendasModalProps {
   visivel: boolean;
@@ -98,90 +106,33 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
     onFechar();
   };
 
+  const mapaCusto = useMemo(
+    () => construirMapaCustoPorCodigo(estoque, catalogoGlobal),
+    [estoque, catalogoGlobal]
+  );
+
+  const mapaCatalogoPorCodigo = useMemo(() => {
+    const mapa = new Map<string, ProdutoCatalogo>();
+    catalogoGlobal.forEach((c) => {
+      const cod = String(c?.codigo || '').trim();
+      if (cod && !mapa.has(cod)) mapa.set(cod, c);
+    });
+    return mapa;
+  }, [catalogoGlobal]);
+
   useVoltarHierarquico(visivel, handleVoltarOuFechar);
 
   if (!visivel) return null;
 
-  // Helper para obter nome canônico do catálogo Master
+  // Helper para obter nome canônico do catálogo Master (O(1))
   const obterNomeItem = (codigo?: string, nomeOriginal?: string): string => {
     if (!codigo) return nomeOriginal || 'Item sem nome';
-    const cLimpo = codigo.trim();
-    const cat = catalogoGlobal.find((c) => c.codigo && c.codigo.trim() === cLimpo);
+    const cat = mapaCatalogoPorCodigo.get(codigo.trim());
     if (cat && cat.nome && cat.nome.trim().length > 0) {
       return cat.nome.trim();
     }
     return nomeOriginal || 'Item sem nome';
   };
-
-  // Helper para obter o preço de custo real do item vendido (com fallback no estoque da loja)
-  const obterCustoItem = (item: {
-    codigo?: string;
-    preco_custo?: number;
-    lote?: string;
-    validade?: string;
-  }): number => {
-    if (
-      item.preco_custo !== undefined &&
-      item.preco_custo !== null &&
-      !isNaN(Number(item.preco_custo)) &&
-      Number(item.preco_custo) > 0
-    ) {
-      return Number(item.preco_custo);
-    }
-    if (estoque && estoque.length > 0 && item.codigo) {
-      const cLimpo = item.codigo.trim();
-      const noEstLote = estoque.find(
-        (e) =>
-          e.codigo?.trim() === cLimpo &&
-          e.lote === item.lote &&
-          e.validade === item.validade &&
-          (e.preco_custo || 0) > 0
-      );
-      if (noEstLote?.preco_custo) return Number(noEstLote.preco_custo);
-
-      const noEstGeral = estoque.find(
-        (e) => e.codigo?.trim() === cLimpo && (e.preco_custo || 0) > 0
-      );
-      if (noEstGeral?.preco_custo) return Number(noEstGeral.preco_custo);
-    }
-    return 0;
-  };
-
-  // Helper para calcular métricas financeiras completas de uma venda
-  const calcularMetricasVenda = (venda: Venda) => {
-    const valorTotal = Number(venda.valorTotal) || 0;
-    let custoTotal = 0;
-    let quantidadeItens = 0;
-
-    (venda.itens || []).forEach((it) => {
-      const qtd = Number(it.quantidade) || 1;
-      quantidadeItens += qtd;
-      const custoUnit = obterCustoItem(it);
-      custoTotal += custoUnit * qtd;
-    });
-
-    const lucroReal = valorTotal - custoTotal;
-    const margemPercentual = valorTotal > 0 ? (lucroReal / valorTotal) * 100 : 0;
-
-    return {
-      valorTotal,
-      custoTotal,
-      lucroReal,
-      margemPercentual,
-      quantidadeItens,
-    };
-  };
-
-  // Datas para filtro de período
-  const hojeDate = new Date();
-  const inicioHoje = new Date(
-    hojeDate.getFullYear(),
-    hojeDate.getMonth(),
-    hojeDate.getDate()
-  ).getTime();
-  const ha7Dias = inicioHoje - 7 * 24 * 60 * 60 * 1000;
-  const inicioMes = new Date(hojeDate.getFullYear(), hojeDate.getMonth(), 1).getTime();
-  const inicioAno = new Date(hojeDate.getFullYear(), 0, 1).getTime();
 
   // 1. Filtragem Base (sem forma de pagamento, para KPIs e botões rápidos sincronizados)
   const vendasBase = vendas.filter((v) => {
@@ -195,10 +146,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
       return false;
     }
 
-    if (periodoFiltro === 'hoje' && (v.timestamp || 0) < inicioHoje) return false;
-    if (periodoFiltro === '7dias' && (v.timestamp || 0) < ha7Dias) return false;
-    if (periodoFiltro === 'mes' && (v.timestamp || 0) < inicioMes) return false;
-    if (periodoFiltro === 'ano' && (v.timestamp || 0) < inicioAno) return false;
+    if (!estaNoPeriodo(parseDataVenda(v), periodoFiltro)) return false;
 
     if (busca.trim()) {
       const termo = busca.trim().toLowerCase();
@@ -229,24 +177,17 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
     return true;
   });
 
-  // 3. Cálculos e KPIs detalhados
+  // 3. Cálculos e KPIs detalhados usando motor unificado
   const vendasConcluidas = vendasFiltradas.filter((v) => v.status === 'concluida');
   const vendasEstornadas = vendasFiltradas.filter((v) => v.status === 'estornada');
 
-  const faturamentoBruto = vendasConcluidas.reduce((acc, v) => acc + (v.valorTotal || 0), 0);
-  const valorTotalEstornos = vendasEstornadas.reduce((acc, v) => acc + (v.valorTotal || 0), 0);
+  const metricasConcluidas = vendasConcluidas.map((v) => calcularMetricasVenda(v, mapaCusto));
+  const faturamentoBruto = metricasConcluidas.reduce((acc, m) => acc + m.valorTotal, 0);
+  const valorTotalEstornos = vendasEstornadas.reduce((acc, v) => acc + (Number(v.valorTotal) || 0), 0);
   const ticketMedio = vendasConcluidas.length > 0 ? faturamentoBruto / vendasConcluidas.length : 0;
 
-  const totalItensVendidos = vendasConcluidas.reduce((acc, v) => {
-    return acc + (v.itens || []).reduce((s, it) => s + (Number(it.quantidade) || 1), 0);
-  }, 0);
-
-  const custoTotalMercadorias = vendasConcluidas.reduce((acc, v) => {
-    return (
-      acc +
-      (v.itens || []).reduce((s, it) => s + obterCustoItem(it) * (Number(it.quantidade) || 1), 0)
-    );
-  }, 0);
+  const totalItensVendidos = metricasConcluidas.reduce((acc, m) => acc + m.qtdItens, 0);
+  const custoTotalMercadorias = metricasConcluidas.reduce((acc, m) => acc + m.custoTotal, 0);
 
   const faturamentoLucroReal = faturamentoBruto - custoTotalMercadorias;
   const margemLucroMedia =
@@ -370,7 +311,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
   const renderDetalhesItens = (
     venda: Venda,
     isEstornada: boolean,
-    metricasVenda: ReturnType<typeof calcularMetricasVenda>
+    metricasVenda: MetricasVendaCalculadas
   ) => (
     <div className="bg-slate-50 px-4 py-3 border-t border-slate-200/80 space-y-2.5">
       {isEstornada && venda.motivoEstorno && (
@@ -388,7 +329,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <span className="text-xs font-bold text-slate-600">
-          Itens da venda ({venda.itens?.length || 0} produtos • {metricasVenda.quantidadeItens} un)
+          Itens da venda ({venda.itens?.length || 0} produtos • {metricasVenda.qtdItens} un)
         </span>
         {!isEstornada && (
           <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 font-mono">
@@ -402,11 +343,11 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
         {(venda.itens || []).map((item, idx) => {
           const nomeResolvido = obterNomeItem(item.codigo, item.nome);
           const fotoItem =
-            item.foto || catalogoGlobal.find((c) => c.codigo?.trim() === item.codigo?.trim())?.imagem;
-          const qtdItem = Number(item.quantidade) || 1;
+            item.foto || (item.codigo ? mapaCatalogoPorCodigo.get(item.codigo.trim())?.imagem : undefined);
+          const qtdItem = Number(item.quantidade) || 0;
           const precoUnit = Number(item.preco_unitario) || 0;
-          const subtotalItem = Number(item.subtotal) || qtdItem * precoUnit;
-          const custoUnit = obterCustoItem(item);
+          const subtotalItem = Number(item.subtotal ?? qtdItem * precoUnit) || 0;
+          const { custo: custoUnit } = obterCustoUnitarioItem(item, mapaCusto);
           const custoTotalItem = custoUnit * qtdItem;
           const lucroItem = subtotalItem - custoTotalItem;
           const margemItem = subtotalItem > 0 ? (lucroItem / subtotalItem) * 100 : 0;
@@ -972,7 +913,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
                     {vendasPaginadas.map((venda) => {
                       const isEstornada = venda.status === 'estornada';
                       const isExpandida = vendaExpandidaId === venda.id;
-                      const metricasVenda = calcularMetricasVenda(venda);
+                      const metricasVenda = calcularMetricasVenda(venda, mapaCusto);
 
                       return (
                         <div key={venda.id} className={isEstornada ? 'bg-red-50/40' : ''}>
@@ -984,7 +925,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
                                   #{venda.id.slice(-6).toUpperCase()}
                                 </span>
                                 <span className="text-[10px] text-slate-400 font-semibold">
-                                  • {metricasVenda.quantidadeItens} un
+                                  • {metricasVenda.qtdItens} un
                                 </span>
                               </div>
                               <div className="flex items-center gap-1 text-[11px] text-slate-500 font-mono mt-0.5">
@@ -1084,7 +1025,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
                                 <span>
                                   {isExpandida
                                     ? 'Ocultar'
-                                    : `Itens (${metricasVenda.quantidadeItens})`}
+                                    : `Itens (${metricasVenda.qtdItens})`}
                                 </span>
                               </button>
 
@@ -1128,7 +1069,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
                 {vendasPaginadas.map((venda) => {
                   const isEstornada = venda.status === 'estornada';
                   const isExpandida = vendaExpandidaId === venda.id;
-                  const metricasVenda = calcularMetricasVenda(venda);
+                  const metricasVenda = calcularMetricasVenda(venda, mapaCusto);
 
                   return (
                     <div key={venda.id} className={isEstornada ? 'bg-red-50/40' : 'bg-white'}>
@@ -1190,7 +1131,7 @@ export const RelatorioVendasModal: React.FC<RelatorioVendasModalProps> = ({
                               <ChevronDown className="w-3.5 h-3.5" />
                             )}
                             <span>
-                              {isExpandida ? 'Ocultar' : `Itens (${metricasVenda.quantidadeItens})`}
+                              {isExpandida ? 'Ocultar' : `Itens (${metricasVenda.qtdItens})`}
                             </span>
                           </button>
 

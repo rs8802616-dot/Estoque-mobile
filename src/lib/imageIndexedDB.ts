@@ -91,13 +91,15 @@ export function subscreverCacheImagens(callback: () => void): () => void {
   };
 }
 
-function abrirDB(): Promise<IDBDatabase | null> {
-  return new Promise((resolve) => {
-    if (typeof window === 'undefined' || !window.indexedDB) {
-      resolve(null);
-      return;
-    }
+let dbPromise: Promise<IDBDatabase | null> | null = null;
 
+function abrirDB(): Promise<IDBDatabase | null> {
+  if (typeof window === 'undefined' || !window.indexedDB) {
+    return Promise.resolve(null);
+  }
+  if (dbPromise) return dbPromise;
+
+  dbPromise = new Promise((resolve) => {
     try {
       const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -109,18 +111,34 @@ function abrirDB(): Promise<IDBDatabase | null> {
       };
 
       request.onsuccess = (event: any) => {
-        resolve(event.target?.result || null);
+        const db = (event.target?.result as IDBDatabase) || null;
+        if (db) {
+          db.onclose = () => {
+            dbPromise = null;
+          };
+          db.onversionchange = () => {
+            db.close();
+            dbPromise = null;
+          };
+        } else {
+          dbPromise = null;
+        }
+        resolve(db);
       };
 
       request.onerror = (err) => {
         console.warn('Não foi possível inicializar IndexedDB para imagens:', err);
+        dbPromise = null;
         resolve(null);
       };
     } catch (e) {
       console.warn('Erro ao abrir IndexedDB:', e);
+      dbPromise = null;
       resolve(null);
     }
   });
+
+  return dbPromise;
 }
 
 /**
@@ -258,14 +276,39 @@ export async function obterTodasImagensIndexedDB(): Promise<Map<string, string>>
 
     return new Promise((resolve) => {
       request.onsuccess = (event: any) => {
-        const registros: { codigo: string; imagem: string }[] = event.target?.result || [];
+        const registros: { codigo: string; imagem: string; timestamp?: number }[] =
+          Array.isArray(event.target?.result) ? event.target.result : [];
+        const agora = Date.now();
+        let precisaPodar = false;
+
+        const ativos = registros
+          .filter((reg) => {
+            if (!reg?.codigo || !reg?.imagem) return false;
+            if (reg.timestamp && agora - reg.timestamp > TTL_IMAGEM_MS) {
+              precisaPodar = true;
+              return false;
+            }
+            return true;
+          })
+          .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        if (ativos.length > MAX_IMAGENS_CACHE) {
+          precisaPodar = true;
+        }
+
+        const dentroLimite = ativos.slice(0, MAX_IMAGENS_CACHE);
         let novosItens = false;
-        registros.forEach((reg) => {
-          if (reg.codigo && reg.imagem) {
-            cacheImagensMemoria.set(reg.codigo.trim(), reg.imagem);
+        dentroLimite.forEach((reg) => {
+          const cod = reg.codigo.trim();
+          if (cod && !cacheImagensMemoria.has(cod)) {
+            cacheImagensMemoria.set(cod, reg.imagem);
             novosItens = true;
           }
         });
+
+        if (precisaPodar) {
+          podarCacheAntigoIndexedDB(db).catch(() => {});
+        }
         if (novosItens) {
           notificarListeners();
         }

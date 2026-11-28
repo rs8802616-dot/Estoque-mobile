@@ -19,6 +19,14 @@ import {
 import { Venda, ItemEstoque, ProdutoCatalogo } from '../types';
 import { obterDataLocalISO } from '../lib/dateUtils';
 import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
+import {
+  calcularDiasParaVencer,
+  calcularMetricasVenda,
+  construirMapaCustoPorCodigo,
+  ehProdutoEstoqueIlimitado,
+  obterCustoUnitarioItem,
+  parseDataVenda,
+} from '../utils/relatoriosFinanceiros';
 
 interface GraficosVendasModalProps {
   visivel: boolean;
@@ -70,51 +78,22 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
   }, [visivel, abaAtiva, periodoGrafico, periodoFormaPgto]);
 
-  // Helper for safe Date parsing
-  const parseDataVenda = (v: Venda): Date => {
-    try {
-      if (v && v.timestamp && typeof v.timestamp === 'number') {
-        const d = new Date(v.timestamp);
-        if (!isNaN(d.getTime())) return d;
-      }
-      if (v && v.data && typeof v.data === 'string') {
-        let hours = 12;
-        let mins = 0;
-        if (v.hora && typeof v.hora === 'string' && v.hora.includes(':')) {
-          const hParts = v.hora.split(':');
-          hours = parseInt(hParts[0], 10) || 12;
-          mins = parseInt(hParts[1], 10) || 0;
-        }
-        if (v.data.includes('-')) {
-          const parts = v.data.split('-');
-          if (parts.length === 3) {
-            const year = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1;
-            const day = parseInt(parts[2], 10);
-            const d = new Date(year, month, day, hours, mins, 0);
-            if (!isNaN(d.getTime())) return d;
-          }
-        }
-        if (v.data.includes('/')) {
-          const parts = v.data.split('/');
-          if (parts.length === 3) {
-            const isAnoPrimeiro = parts[0].length === 4;
-            const day = parseInt(isAnoPrimeiro ? parts[2] : parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1;
-            const year = parseInt(isAnoPrimeiro ? parts[0] : parts[2], 10);
-            const d = new Date(year, month, day, hours, mins, 0);
-            if (!isNaN(d.getTime())) return d;
-          }
-        }
-        const dataStr = v.data.includes('T') ? v.data : `${v.data}T12:00:00`;
-        const d = new Date(dataStr);
-        if (!isNaN(d.getTime())) return d;
-      }
-    } catch (err) {
-      console.error('Erro ao converter data da venda:', err);
+  // Índices O(1) para custo e catálogo
+  const mapaCusto = useMemo(
+    () => construirMapaCustoPorCodigo(estoque, catalogoGlobal),
+    [estoque, catalogoGlobal]
+  );
+
+  const mapaCatalogoPorCodigo = useMemo(() => {
+    const mapa = new Map<string, ProdutoCatalogo>();
+    if (Array.isArray(catalogoGlobal)) {
+      catalogoGlobal.forEach((c) => {
+        const cod = String(c?.codigo || '').trim();
+        if (cod && !mapa.has(cod)) mapa.set(cod, c);
+      });
     }
-    return new Date();
-  };
+    return mapa;
+  }, [catalogoGlobal]);
 
   // 1. Safe arrays of sales
   const vendasValidas = useMemo(() => {
@@ -159,6 +138,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     const vendasFiltradas = vendasValidas.filter((v) => {
       if (periodoFormaPgto === 'todos') return true;
       const dt = parseDataVenda(v);
+      if (!dt) return false;
       const dtTime = dt.getTime();
 
       if (periodoFormaPgto === 'hoje') {
@@ -271,53 +251,6 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     };
   }, [vendasValidas, periodoFormaPgto]);
 
-  // Helper para obter custo do item vendido
-  const obterCustoItem = (it: any): number => {
-    if (!it) return 0;
-    if (typeof it.preco_custo === 'number' && it.preco_custo > 0) {
-      return it.preco_custo;
-    }
-    const cod = it.codigo || it.ean;
-    if (cod && Array.isArray(estoque)) {
-      const match = estoque.find((e) => e.codigo === cod && typeof e.preco_custo === 'number' && e.preco_custo > 0);
-      if (match && match.preco_custo) return match.preco_custo;
-    }
-    if (cod && Array.isArray(catalogoGlobal)) {
-      const matchCat = catalogoGlobal.find((c) => c.codigo === cod && typeof c.preco_custo === 'number' && c.preco_custo > 0);
-      if (matchCat && matchCat.preco_custo) return matchCat.preco_custo;
-    }
-    const pVenda = Number(it.preco_unitario) || Number(it.preco_venda) || 0;
-    return pVenda > 0 ? pVenda * 0.7 : 0;
-  };
-
-  // Cálculo de métricas financeiras detalhadas por venda (Receita, Custo e Lucro Real)
-  const calcularMetricasVenda = (v: Venda) => {
-    const valorVenda = Number(v?.valorTotal) || 0;
-    const itens = Array.isArray(v?.itens) ? v.itens : [];
-    let custoVenda = 0;
-    let qtdItens = 0;
-
-    itens.forEach((it) => {
-      const q = Number(it.quantidade) || 0;
-      qtdItens += q;
-      const c = obterCustoItem(it);
-      custoVenda += q * c;
-    });
-
-    if (custoVenda === 0 && valorVenda > 0) {
-      custoVenda = valorVenda * 0.7;
-    }
-
-    const lucroVenda = valorVenda - custoVenda;
-    return {
-      valorVenda,
-      custoVenda,
-      lucroVenda,
-      qtdItens,
-      margem: valorVenda > 0 ? (lucroVenda / valorVenda) * 100 : 0,
-    };
-  };
-
   // Totais Gerais de Vendas: Faturamento Bruto, Custo Retirado e Lucro Real Faturado
   const totaisFinanceirosVendas = useMemo(() => {
     let valorTotalVendido = 0;
@@ -325,9 +258,9 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     let totalItensVendidos = 0;
 
     vendasValidas.forEach((v) => {
-      const m = calcularMetricasVenda(v);
-      valorTotalVendido += m.valorVenda;
-      custoTotalVendido += m.custoVenda;
+      const m = calcularMetricasVenda(v, mapaCusto);
+      valorTotalVendido += m.valorTotal;
+      custoTotalVendido += m.custoTotal;
       totalItensVendidos += m.qtdItens;
     });
 
@@ -342,152 +275,20 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       totalItensVendidos,
       totalVendasQtd: vendasValidas.length,
     };
-  }, [vendasValidas, estoque, catalogoGlobal]);
-
-  // 2. Faturamento & Lucro Real Grouping by Period
-  const dadosGraficoFaturamento = useMemo(() => {
-    try {
-      const hoje = new Date();
-
-      if (periodoGrafico === 'dia') {
-        const porDia: Record<string, { isoKey: string; label: string; faturamento: number; custo: number; lucro: number; qtdVendas: number; qtdItens: number }> = {};
-
-        for (let i = 9; i >= 0; i--) {
-          const d = new Date();
-          d.setDate(hoje.getDate() - i);
-          const isoKey = obterDataLocalISO(d);
-          const parts = isoKey.split('-');
-          const label = `${parts[2]}/${parts[1]}`;
-          porDia[isoKey] = { isoKey, label, faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 };
-        }
-
-        vendasValidas.forEach((v) => {
-          const dt = parseDataVenda(v);
-          const isoKey = obterDataLocalISO(dt);
-          const m = calcularMetricasVenda(v);
-
-          if (porDia[isoKey]) {
-            porDia[isoKey].faturamento += m.valorVenda;
-            porDia[isoKey].custo += m.custoVenda;
-            porDia[isoKey].lucro += m.lucroVenda;
-            porDia[isoKey].qtdVendas += 1;
-            porDia[isoKey].qtdItens += m.qtdItens;
-          } else {
-            const parts = isoKey.split('-');
-            const label = `${parts[2]}/${parts[1]}`;
-            porDia[isoKey] = { isoKey, label, faturamento: m.valorVenda, custo: m.custoVenda, lucro: m.lucroVenda, qtdVendas: 1, qtdItens: m.qtdItens };
-          }
-        });
-
-        return Object.values(porDia).sort((a, b) => a.isoKey.localeCompare(b.isoKey));
-      }
-
-      if (periodoGrafico === 'semana') {
-        const porSemana: Record<string, { label: string; faturamento: number; custo: number; lucro: number; qtdVendas: number; qtdItens: number }> = {
-          Semana1: { label: 'Há 3 Semanas', faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 },
-          Semana2: { label: 'Há 2 Semanas', faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 },
-          Semana3: { label: 'Semana Passada', faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 },
-          Semana4: { label: 'Semana Atual', faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 },
-        };
-
-        const agora = hoje.getTime();
-        const umDiaMs = 24 * 60 * 60 * 1000;
-
-        vendasValidas.forEach((v) => {
-          const dt = parseDataVenda(v);
-          const diffDias = Math.floor((agora - dt.getTime()) / umDiaMs);
-          const m = calcularMetricasVenda(v);
-
-          let alvo = '';
-          if (diffDias >= 0 && diffDias <= 7) {
-            alvo = 'Semana4';
-          } else if (diffDias > 7 && diffDias <= 14) {
-            alvo = 'Semana3';
-          } else if (diffDias > 14 && diffDias <= 21) {
-            alvo = 'Semana2';
-          } else if (diffDias > 21 && diffDias <= 30) {
-            alvo = 'Semana1';
-          }
-
-          if (alvo && porSemana[alvo]) {
-            porSemana[alvo].faturamento += m.valorVenda;
-            porSemana[alvo].custo += m.custoVenda;
-            porSemana[alvo].lucro += m.lucroVenda;
-            porSemana[alvo].qtdVendas += 1;
-            porSemana[alvo].qtdItens += m.qtdItens;
-          }
-        });
-
-        return Object.values(porSemana);
-      }
-
-      if (periodoGrafico === 'mes') {
-        const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const porMes: Record<number, { index: number; label: string; faturamento: number; custo: number; lucro: number; qtdVendas: number; qtdItens: number }> = {};
-
-        for (let i = 0; i < 12; i++) {
-          porMes[i] = { index: i, label: nomesMeses[i], faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 };
-        }
-
-        const anoAtual = hoje.getFullYear();
-        vendasValidas.forEach((v) => {
-          const dt = parseDataVenda(v);
-          if (dt.getFullYear() !== anoAtual) return;
-          const mesIndex = dt.getMonth();
-          const m = calcularMetricasVenda(v);
-          if (porMes[mesIndex]) {
-            porMes[mesIndex].faturamento += m.valorVenda;
-            porMes[mesIndex].custo += m.custoVenda;
-            porMes[mesIndex].lucro += m.lucroVenda;
-            porMes[mesIndex].qtdVendas += 1;
-            porMes[mesIndex].qtdItens += m.qtdItens;
-          }
-        });
-
-        return Object.values(porMes).sort((a, b) => a.index - b.index);
-      }
-
-      // periodoGrafico === 'ano'
-      const porAno: Record<string, { label: string; faturamento: number; custo: number; lucro: number; qtdVendas: number; qtdItens: number }> = {};
-      const anoAtual = hoje.getFullYear();
-
-      for (let a = anoAtual - 2; a <= anoAtual; a++) {
-        porAno[String(a)] = { label: String(a), faturamento: 0, custo: 0, lucro: 0, qtdVendas: 0, qtdItens: 0 };
-      }
-
-      vendasValidas.forEach((v) => {
-        const dt = parseDataVenda(v);
-        const ano = String(dt.getFullYear());
-        const m = calcularMetricasVenda(v);
-        if (porAno[ano]) {
-          porAno[ano].faturamento += m.valorVenda;
-          porAno[ano].custo += m.custoVenda;
-          porAno[ano].lucro += m.lucroVenda;
-          porAno[ano].qtdVendas += 1;
-          porAno[ano].qtdItens += m.qtdItens;
-        } else {
-          porAno[ano] = { label: ano, faturamento: m.valorVenda, custo: m.custoVenda, lucro: m.lucroVenda, qtdVendas: 1, qtdItens: m.qtdItens };
-        }
-      });
-
-      return Object.values(porAno).sort((a, b) => a.label.localeCompare(b.label));
-    } catch (err) {
-      console.error('Erro ao processar faturamento e lucro:', err);
-      return [];
-    }
-  }, [vendasValidas, periodoGrafico, estoque, catalogoGlobal]);
+  }, [vendasValidas, mapaCusto]);
 
   // 3. Devoluções & Estornos Grouping
   const dadosGraficoDevolucoes = useMemo(() => {
     try {
       const hoje = new Date();
+      const utcHoje = Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+      const umDiaMs = 24 * 60 * 60 * 1000;
 
       if (periodoGrafico === 'dia') {
         const porDia: Record<string, { isoKey: string; label: string; estornado: number; qtdEstornos: number }> = {};
 
         for (let i = 9; i >= 0; i--) {
-          const d = new Date();
-          d.setDate(hoje.getDate() - i);
+          const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - i);
           const isoKey = obterDataLocalISO(d);
           const parts = isoKey.split('-');
           const label = `${parts[2]}/${parts[1]}`;
@@ -496,17 +297,12 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
         vendasEstornadas.forEach((v) => {
           const dt = parseDataVenda(v);
+          if (!dt) return;
           const isoKey = obterDataLocalISO(dt);
+          if (!porDia[isoKey]) return;
           const valor = Number(v.valorTotal) || 0;
-
-          if (porDia[isoKey]) {
-            porDia[isoKey].estornado += valor;
-            porDia[isoKey].qtdEstornos += 1;
-          } else {
-            const parts = isoKey.split('-');
-            const label = `${parts[2]}/${parts[1]}`;
-            porDia[isoKey] = { isoKey, label, estornado: valor, qtdEstornos: 1 };
-          }
+          porDia[isoKey].estornado += valor;
+          porDia[isoKey].qtdEstornos += 1;
         });
 
         return Object.values(porDia).sort((a, b) => a.isoKey.localeCompare(b.isoKey));
@@ -520,24 +316,23 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
           Semana4: { label: 'Semana Atual', estornado: 0, qtdEstornos: 0 },
         };
 
-        const agora = hoje.getTime();
-        const umDiaMs = 24 * 60 * 60 * 1000;
-
         vendasEstornadas.forEach((v) => {
           const dt = parseDataVenda(v);
-          const diffDias = Math.floor((agora - dt.getTime()) / umDiaMs);
+          if (!dt) return;
+          const utcDt = Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate());
+          const diffDias = Math.round((utcHoje - utcDt) / umDiaMs);
           const valor = Number(v.valorTotal) || 0;
 
-          if (diffDias >= 0 && diffDias <= 7) {
+          if (diffDias >= 0 && diffDias <= 6) {
             porSemana['Semana4'].estornado += valor;
             porSemana['Semana4'].qtdEstornos += 1;
-          } else if (diffDias > 7 && diffDias <= 14) {
+          } else if (diffDias >= 7 && diffDias <= 13) {
             porSemana['Semana3'].estornado += valor;
             porSemana['Semana3'].qtdEstornos += 1;
-          } else if (diffDias > 14 && diffDias <= 21) {
+          } else if (diffDias >= 14 && diffDias <= 20) {
             porSemana['Semana2'].estornado += valor;
             porSemana['Semana2'].qtdEstornos += 1;
-          } else if (diffDias > 21 && diffDias <= 30) {
+          } else if (diffDias >= 21 && diffDias <= 27) {
             porSemana['Semana1'].estornado += valor;
             porSemana['Semana1'].qtdEstornos += 1;
           }
@@ -549,6 +344,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       if (periodoGrafico === 'mes') {
         const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         const porMes: Record<number, { index: number; label: string; estornado: number; qtdEstornos: number }> = {};
+        const anoAtual = hoje.getFullYear();
 
         for (let i = 0; i < 12; i++) {
           porMes[i] = { index: i, label: nomesMeses[i], estornado: 0, qtdEstornos: 0 };
@@ -556,6 +352,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
         vendasEstornadas.forEach((v) => {
           const dt = parseDataVenda(v);
+          if (!dt || dt.getFullYear() !== anoAtual) return;
           const mesIndex = dt.getMonth();
           const valor = Number(v.valorTotal) || 0;
           if (porMes[mesIndex]) {
@@ -577,6 +374,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
       vendasEstornadas.forEach((v) => {
         const dt = parseDataVenda(v);
+        if (!dt) return;
         const ano = String(dt.getFullYear());
         const valor = Number(v.valorTotal) || 0;
         if (porAno[ano]) {
@@ -594,26 +392,11 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
   }, [vendasEstornadas, periodoGrafico]);
 
-  // Helper para identificar produtos de balcão / adega / estoque contínuo sob demanda
-  const ehProdutoEstoqueIlimitado = (item: any): boolean => {
-    if (!item) return false;
-    if (item.estoqueIlimitado === true) return true;
-    if (item.tipoCadastro === 'interno') return true;
-    const qtd = Number(item.quantidade) || 0;
-    if (qtd >= 99990) return true;
-    const cat = (item.categoria || '').toLowerCase();
-    if ((cat.includes('balcão') || cat.includes('balcao') || cat.includes('interno')) && qtd >= 9000) {
-      return true;
-    }
-    return false;
-  };
-
   // 4. Perdas & Vencidos Analysis
   const dadosPerdas = useMemo(() => {
     try {
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
-      const hojeIso = obterDataLocalISO(hoje);
 
       let totalVencidosQtd = 0;
       let totalVencidosValor = 0;
@@ -638,20 +421,16 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       if (Array.isArray(estoque)) {
         estoque.forEach((item) => {
           if (!item) return;
-          if (ehProdutoEstoqueIlimitado(item)) return; // Produtos com estoque sob demanda/balcão não entram em perdas fictícias
-
-          const valStr = item.validade;
-          if (!valStr) return;
-
-          const dtVal = new Date(valStr + 'T23:59:59');
-          if (isNaN(dtVal.getTime())) return;
-
-          const diffMs = dtVal.getTime() - hoje.getTime();
-          const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+          if (ehProdutoEstoqueIlimitado(item)) return;
 
           const qtd = Number(item.quantidade) || 0;
+          if (qtd <= 0) return;
+
+          const diffDias = calcularDiasParaVencer(item.validade, hoje);
+          if (diffDias === null) return;
+
           const pVenda = Number(item.preco_venda) || 0;
-          const pCusto = Number(item.preco_custo) || pVenda * 0.7;
+          const pCusto = obterCustoUnitarioItem(item, mapaCusto).custo;
           const valorPerda = qtd * pVenda;
 
           if (diffDias < 0) {
@@ -736,12 +515,12 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         graficoRisco: [],
       };
     }
-  }, [estoque]);
+  }, [estoque, mapaCusto]);
 
   // Helper compartilhado de agregação por item vendido
   const agregarItensVendidos = (
     listaVendas: Venda[],
-    catalogo: typeof catalogoGlobal
+    mapaCatalogo: Map<string, ProdutoCatalogo>
   ): Record<string, { codigo: string; nome: string; qtdVendida: number; totalFaturado: number; foto?: string }> => {
     const mapaItens: Record<
       string,
@@ -754,7 +533,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         if (!item) return;
         const cod = item.codigo || item.nome || 'SEM_CODIGO';
         if (!mapaItens[cod]) {
-          const catItem = catalogo.find((c) => c.codigo === (item.codigo || cod));
+          const catItem = mapaCatalogo.get(String(item.codigo || cod).trim());
           mapaItens[cod] = {
             codigo: item.codigo || cod,
             nome: item.nome || catItem?.nome || 'Produto sem nome',
@@ -764,7 +543,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
           };
         }
         const qtd = Number(item.quantidade) || 0;
-        const subtotal = Number(item.subtotal) || qtd * (Number(item.preco_unitario) || 0) || 0;
+        const subtotal = Number(item.subtotal ?? qtd * (Number(item.preco_unitario) || 0)) || 0;
         mapaItens[cod].qtdVendida += qtd;
         mapaItens[cod].totalFaturado += subtotal;
       });
@@ -776,12 +555,12 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   // 5. Resumo global de itens vendidos (correlaciona vendas reais com estoque e inteligência)
   const resumoItens = useMemo(() => {
     try {
-      return agregarItensVendidos(vendasValidas, catalogoGlobal);
+      return agregarItensVendidos(vendasValidas, mapaCatalogoPorCodigo);
     } catch (err) {
       console.error('Erro ao calcular resumo de itens vendidos:', err);
       return {};
     }
-  }, [vendasValidas, catalogoGlobal]);
+  }, [vendasValidas, mapaCatalogoPorCodigo]);
 
   // 5b. Ranking Top 10 Mais e Menos Vendidos filtrado por período e critério
   const rankingVendas = useMemo(() => {
@@ -796,6 +575,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       const vendasFiltradas = vendasValidas.filter((v) => {
         if (periodoRanking === 'todos') return true;
         const dt = parseDataVenda(v);
+        if (!dt) return false;
         const dtTime = dt.getTime();
         if (periodoRanking === 'hoje') {
           return dtTime >= inicioHoje && dtTime <= fimHoje;
@@ -809,7 +589,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         return dt.getFullYear() === anoAtual;
       });
 
-      const mapaItens = agregarItensVendidos(vendasFiltradas, catalogoGlobal);
+      const mapaItens = agregarItensVendidos(vendasFiltradas, mapaCatalogoPorCodigo);
       const lista = Object.values(mapaItens).filter(
         (item) => item.qtdVendida > 0 || item.totalFaturado > 0
       );
@@ -883,6 +663,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       let totalFaturadoBalcao = 0;
       let totalCustoBalcao = 0;
       let totalQtdVendidaBalcao = 0;
+      const codigosIlimitadosProcessados = new Set<string>();
 
       if (Array.isArray(estoque)) {
         estoque.forEach((item) => {
@@ -891,7 +672,11 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
           const isIlimitado = ehProdutoEstoqueIlimitado(item);
 
           if (isIlimitado) {
-            // PRODUTO DE BALCÃO / ADEGA COM ESTOQUE ILIMITADO / SOB DEMANDA
+            // PRODUTO DE BALCÃO / ADEGA COM ESTOQUE ILIMITADO / SOB DEMANDA (deduplicado por código)
+            if (codigosIlimitadosProcessados.has(cod)) {
+              return;
+            }
+            codigosIlimitadosProcessados.add(cod);
             totalItensBalcao += 1;
             const vendaInfo = resumoItens[cod];
             if (vendaInfo) {
@@ -899,7 +684,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
               const qtdV = vendaInfo.qtdVendida || 0;
               totalFaturadoBalcao += fat;
               totalQtdVendidaBalcao += qtdV;
-              const pCusto = Number(item.preco_custo) || (Number(item.preco_venda) || 0) * 0.7;
+              const pCusto = obterCustoUnitarioItem(item, mapaCusto).custo;
               totalCustoBalcao += qtdV * pCusto;
             }
             return; // NÃO infla o estoque físico com 100.000 unidades fictícias
@@ -908,7 +693,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
           // PRODUTO COM ESTOQUE FÍSICO CONTROLADO
           const qtd = Number(item.quantidade) || 0;
           const pVenda = Number(item.preco_venda) || 0;
-          const pCusto = Number(item.preco_custo) || pVenda * 0.7;
+          const pCusto = obterCustoUnitarioItem(item, mapaCusto).custo;
 
           const vVenda = qtd * pVenda;
           const vCusto = qtd * pCusto;
@@ -961,10 +746,12 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         topMaiorValor: [],
         totalItensBalcao: 0,
         totalFaturadoBalcao: 0,
+        totalCustoBalcao: 0,
+        totalLucroBalcao: 0,
         totalQtdVendidaBalcao: 0,
       };
     }
-  }, [estoque, resumoItens]);
+  }, [estoque, resumoItens, mapaCusto]);
 
   // 7. Inventory Intelligence
   const insightsEstoque = useMemo(() => {
@@ -1003,7 +790,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
           const cod = e.codigo || e.nome || 'SEM_CODIGO';
           if (!estoqueAgrupado[cod]) {
-            const catItem = catalogoGlobal.find((c) => c.codigo === cod);
+            const catItem = mapaCatalogoPorCodigo.get(String(cod).trim());
             estoqueAgrupado[cod] = {
               codigo: cod,
               nome: e.nome || catItem?.nome || 'Produto',
@@ -1038,9 +825,10 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
               2
             )} em mercadoria), mas teve apenas ${qtdVendida} venda(s). Evite novas compras deste item ou realize uma promoção!`,
           });
-        }
-
-        if (itemEst.qtdTotal <= 5 || (qtdVendida >= 2 && itemEst.qtdTotal <= 10)) {
+        } else if (
+          (itemEst.qtdTotal <= 5 && (qtdVendida >= 1 || itemEst.qtdTotal <= 0)) ||
+          (qtdVendida >= 2 && itemEst.qtdTotal <= 10)
+        ) {
           recomendacaoInvestirMais.push({
             codigo: itemEst.codigo,
             nome: itemEst.nome,
@@ -1065,7 +853,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       console.error('Erro ao processar inteligência de estoque:', err);
       return { naoInvestir: [], investirMais: [], totalCapitalParado: 0 };
     }
-  }, [estoque, resumoItens, catalogoGlobal]);
+  }, [estoque, resumoItens, mapaCatalogoPorCodigo]);
 
   // Helper for formatting Y-Axis values compactly (e.g., R$10k, R$7.5k, R$500)
   const formatarValorYAxis = (v: any) => {
@@ -1117,7 +905,9 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     }
     let minMs = Infinity;
     vendasValidas.forEach((v) => {
-      const ms = parseDataVenda(v).getTime();
+      const dt = parseDataVenda(v);
+      if (!dt) return;
+      const ms = dt.getTime();
       if (!isNaN(ms) && ms < minMs) minMs = ms;
     });
     if (!isFinite(minMs)) return new Date(2020, 0, 1, 0, 0, 0, 0);
@@ -1128,11 +918,32 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   const [dataInicioCustom, setDataInicioCustom] = useState<string>(seteDiasAtrasIsoStr);
   const [dataFimCustom, setDataFimCustom] = useState<string>(hojeIsoStr);
 
+  // Mantém o range exibido sincronizado com a data atual quando o modal abre sem filtro customizado
+  useEffect(() => {
+    if (!visivel || periodoFiltro === 'custom') return;
+    if (periodoFiltro === 'hoje') {
+      setDataInicioCustom(hojeIsoStr);
+      setDataFimCustom(hojeIsoStr);
+    } else if (periodoFiltro === '7dias') {
+      setDataInicioCustom(seteDiasAtrasIsoStr);
+      setDataFimCustom(hojeIsoStr);
+    } else if (periodoFiltro === '30dias') {
+      setDataInicioCustom(trintaDiasAtrasIsoStr);
+      setDataFimCustom(hojeIsoStr);
+    } else if (periodoFiltro === 'ano') {
+      setDataInicioCustom(inicioAnoIsoStr);
+      setDataFimCustom(hojeIsoStr);
+    } else if (periodoFiltro === 'tudo') {
+      setDataInicioCustom(obterDataLocalISO(dataMaisAntigaObj));
+      setDataFimCustom(hojeIsoStr);
+    }
+  }, [visivel, periodoFiltro, hojeIsoStr, seteDiasAtrasIsoStr, trintaDiasAtrasIsoStr, inicioAnoIsoStr, dataMaisAntigaObj]);
+
   // Intervalo do período ativo
   const { dataInicioObj, dataFimObj, periodoLabel } = useMemo(() => {
     const agora = new Date();
-    let inicio = new Date();
-    let fim = new Date();
+    let inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - 6, 0, 0, 0, 0);
+    let fim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
     let label = 'últimos 7 dias';
 
     if (periodoFiltro === 'hoje') {
@@ -1163,9 +974,13 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       const pIni = (dataInicioCustom || '').split('-');
       const pFim = (dataFimCustom || '').split('-');
       if (pIni.length === 3 && pFim.length === 3) {
-        inicio = new Date(parseInt(pIni[0]), parseInt(pIni[1]) - 1, parseInt(pIni[2]), 0, 0, 0, 0);
-        fim = new Date(parseInt(pFim[0]), parseInt(pFim[1]) - 1, parseInt(pFim[2]), 23, 59, 59, 999);
-        label = `${pIni[2]}/${pIni[1]} até ${pFim[2]}/${pFim[1]}`;
+        const iniCand = new Date(parseInt(pIni[0], 10), parseInt(pIni[1], 10) - 1, parseInt(pIni[2], 10), 0, 0, 0, 0);
+        const fimCand = new Date(parseInt(pFim[0], 10), parseInt(pFim[1], 10) - 1, parseInt(pFim[2], 10), 23, 59, 59, 999);
+        if (!isNaN(iniCand.getTime()) && !isNaN(fimCand.getTime()) && iniCand.getTime() <= fimCand.getTime()) {
+          inicio = iniCand;
+          fim = fimCand;
+          label = `${pIni[2]}/${pIni[1]} até ${pFim[2]}/${pFim[1]}`;
+        }
       }
     }
 
@@ -1177,7 +992,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     const tIni = dataInicioObj.getTime();
     const tFim = dataFimObj.getTime();
     const duracaoMs = tFim - tIni;
-    const tIniAnt = tIni - duracaoMs;
+    const tIniAnt = tIni - duracaoMs - 1;
     const tFimAnt = tIni - 1;
 
     let fatAtual = 0;
@@ -1186,6 +1001,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
     vendasValidas.forEach((v) => {
       const dt = parseDataVenda(v);
+      if (!dt) return;
       const ms = dt.getTime();
       const val = Number(v.valorTotal) || 0;
       if (ms >= tIni && ms <= tFim) {
@@ -1217,11 +1033,15 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
   // Função para inferir / resolver categoria de forma robusta
   const obterCategoriaItem = (codigo: string, nome: string): string => {
     const normNome = (nome || '').toLowerCase();
+    const codLimpo = String(codigo || '').trim();
+    const catDireta = codLimpo ? mapaCatalogoPorCodigo.get(codLimpo) : undefined;
     const est = estoque.find((e) => e.codigo === codigo || (e.nome && e.nome.toLowerCase() === normNome));
     if (est && est.categoria && est.categoria.trim() && est.categoria !== 'Geral') {
       return est.categoria.trim();
     }
-    const cat = catalogoGlobal.find((c) => c.codigo === codigo || (c.nome && c.nome.toLowerCase() === normNome));
+    const cat =
+      catDireta ||
+      catalogoGlobal.find((c) => (c.nome && c.nome.toLowerCase() === normNome));
     if (cat && cat.categoria && cat.categoria.trim() && cat.categoria !== 'Geral') {
       return cat.categoria.trim();
     }
@@ -1429,7 +1249,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         let ped = 0;
         vendasPainel.forEach((v) => {
           const dt = parseDataVenda(v);
-          if (obterDataLocalISO(dt) === isoDia) {
+          if (dt && obterDataLocalISO(dt) === isoDia) {
             fat += Number(v.valorTotal) || 0;
             ped += 1;
           }
@@ -1442,7 +1262,9 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     if (periodoFiltro === 'hoje') {
       let horaMin = 8;
       vendasPainel.forEach((v) => {
-        const h = parseDataVenda(v).getHours();
+        const dt = parseDataVenda(v);
+        if (!dt) return;
+        const h = dt.getHours();
         if (h < horaMin) horaMin = h;
       });
       const horas: string[] = [];
@@ -1455,7 +1277,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         let ped = 0;
         vendasPainel.forEach((v) => {
           const dt = parseDataVenda(v);
-          if (dt.getHours() === hNum) {
+          if (dt && dt.getHours() === hNum) {
             fat += Number(v.valorTotal) || 0;
             ped += 1;
           }
@@ -1466,12 +1288,13 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
     if (periodoFiltro === 'ano') {
       const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const anoRef = dataInicioObj.getFullYear();
       return meses.map((mes, idx) => {
         let fat = 0;
         let ped = 0;
         vendasPainel.forEach((v) => {
           const dt = parseDataVenda(v);
-          if (dt.getMonth() === idx) {
+          if (dt && dt.getFullYear() === anoRef && dt.getMonth() === idx) {
             fat += Number(v.valorTotal) || 0;
             ped += 1;
           }
@@ -1488,6 +1311,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         const mapaMeses = new Map<string, { label: string; faturamento: number; pedidos: number; sortKey: string }>();
         vendasPainel.forEach((v) => {
           const dt = parseDataVenda(v);
+          if (!dt) return;
           const mes = String(dt.getMonth() + 1).padStart(2, '0');
           const ano = String(dt.getFullYear());
           const sortKey = `${ano}-${mes}`;
@@ -1504,6 +1328,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       const mapaDiasTudo = new Map<string, { label: string; faturamento: number; pedidos: number; sortKey: string }>();
       vendasPainel.forEach((v) => {
         const dt = parseDataVenda(v);
+        if (!dt) return;
         const iso = obterDataLocalISO(dt);
         const parts = iso.split('-');
         const label = `${parts[2]}/${parts[1]}`;
@@ -1517,15 +1342,46 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         .map(({ label, faturamento, pedidos }) => ({ label, faturamento, pedidos }));
     }
 
-    // 30 dias ou custom
-    const mapaDias: Record<string, { label: string; faturamento: number; pedidos: number }> = {};
-    const tIni = dataInicioObj.getTime();
-    const tFim = dataFimObj.getTime();
+    // 30 dias ou custom (sem truncar em 31 dias; agrupa por mês se intervalo > 60 dias)
     const diaMs = 24 * 60 * 60 * 1000;
-    const numDias = Math.min(31, Math.max(1, Math.round((tFim - tIni) / diaMs)));
+    const utcIni = Date.UTC(
+      dataInicioObj.getFullYear(),
+      dataInicioObj.getMonth(),
+      dataInicioObj.getDate()
+    );
+    const utcFim = Date.UTC(
+      dataFimObj.getFullYear(),
+      dataFimObj.getMonth(),
+      dataFimObj.getDate()
+    );
+    const numDias = Math.max(1, Math.round((utcFim - utcIni) / diaMs) + 1);
 
+    if (numDias > 60) {
+      const mapaMeses = new Map<string, { label: string; faturamento: number; pedidos: number; sortKey: string }>();
+      vendasPainel.forEach((v) => {
+        const dt = parseDataVenda(v);
+        if (!dt) return;
+        const mes = String(dt.getMonth() + 1).padStart(2, '0');
+        const ano = String(dt.getFullYear());
+        const sortKey = `${ano}-${mes}`;
+        const label = `${mes}/${ano}`;
+        const atual = mapaMeses.get(sortKey) || { label, faturamento: 0, pedidos: 0, sortKey };
+        atual.faturamento += Number(v.valorTotal) || 0;
+        atual.pedidos += 1;
+        mapaMeses.set(sortKey, atual);
+      });
+      return Array.from(mapaMeses.values())
+        .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+        .map(({ label, faturamento, pedidos }) => ({ label, faturamento, pedidos }));
+    }
+
+    const mapaDias: Record<string, { label: string; faturamento: number; pedidos: number }> = {};
     for (let i = 0; i < numDias; i++) {
-      const d = new Date(tIni + i * diaMs);
+      const d = new Date(
+        dataInicioObj.getFullYear(),
+        dataInicioObj.getMonth(),
+        dataInicioObj.getDate() + i
+      );
       const iso = obterDataLocalISO(d);
       const parts = iso.split('-');
       const label = `${parts[2]}/${parts[1]}`;
@@ -1534,6 +1390,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
 
     vendasPainel.forEach((v) => {
       const dt = parseDataVenda(v);
+      if (!dt) return;
       const iso = obterDataLocalISO(dt);
       if (mapaDias[iso]) {
         mapaDias[iso].faturamento += Number(v.valorTotal) || 0;
@@ -1570,23 +1427,26 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     return lista;
   }, [vendasPainel, estoque, catalogoGlobal]);
 
-  // Horários de Pico Cozinha & Salão
+  // Horários de Pico (24h completas em 8 faixas)
   const dadosHorariosPico = useMemo(() => {
     const faixas = [
-      { label: '18h-19h', inicioH: 18, fimH: 19 },
-      { label: '19h-20h', inicioH: 19, fimH: 20 },
-      { label: '20h-21h', inicioH: 20, fimH: 21 },
-      { label: '21h-22h', inicioH: 21, fimH: 22 },
-      { label: '22h-23h', inicioH: 22, fimH: 23 },
-      { label: '23h+', inicioH: 23, fimH: 24 },
+      { label: '00h-06h', inicioH: 0, fimH: 6 },
+      { label: '06h-09h', inicioH: 6, fimH: 9 },
+      { label: '09h-12h', inicioH: 9, fimH: 12 },
+      { label: '12h-15h', inicioH: 12, fimH: 15 },
+      { label: '15h-18h', inicioH: 15, fimH: 18 },
+      { label: '18h-20h', inicioH: 18, fimH: 20 },
+      { label: '20h-22h', inicioH: 20, fimH: 22 },
+      { label: '22h-24h', inicioH: 22, fimH: 24 },
     ];
 
     const contagem = faixas.map((f) => {
       let pedidos = 0;
       vendasPainel.forEach((v) => {
         const dt = parseDataVenda(v);
+        if (!dt) return;
         const h = dt.getHours();
-        if (f.fimH === 24 ? h >= 23 : h >= f.inicioH && h < f.fimH) {
+        if (h >= f.inicioH && h < f.fimH) {
           pedidos += 1;
         }
       });
@@ -1594,7 +1454,10 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
     });
 
     const max = Math.max(...contagem.map((c) => c.pedidos), 0);
-    const faixaPico = contagem.find((c) => c.pedidos === max && max > 0)?.faixa || '20h - 21h30';
+    const faixaPico =
+      max > 0
+        ? contagem.find((c) => c.pedidos === max)?.faixa || 'Sem pedidos'
+        : 'Sem pedidos';
 
     return { faixas: contagem, maxPedidos: max, faixaPico };
   }, [vendasPainel]);
@@ -1607,6 +1470,7 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       cartao_credito: { label: 'Cartão de Crédito', valor: 0, qtd: 0, cor: '#2563EB', icone: '💳' }, // Azul Financeiro
       cartao_debito: { label: 'Cartão de Débito', valor: 0, qtd: 0, cor: '#D97706', icone: '💳' },   // Âmbar / Laranja Ouro
       dinheiro: { label: 'Dinheiro Físico', valor: 0, qtd: 0, cor: '#6B7280', icone: '💵' },       // Cinza Neutro de Cédula
+      fiado: { label: 'Fiado (A Prazo)', valor: 0, qtd: 0, cor: '#DC2626', icone: '📝' },          // Vermelho Alerta
       outros: { label: 'Outros Meios', valor: 0, qtd: 0, cor: '#4B5563', icone: '🔖' },
     };
 
@@ -1625,6 +1489,9 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
       } else if (fNorm.includes('dinheiro')) {
         formas.dinheiro.valor += total;
         formas.dinheiro.qtd += 1;
+      } else if (fNorm.includes('fiado')) {
+        formas.fiado.valor += total;
+        formas.fiado.qtd += 1;
       } else {
         formas.outros.valor += total;
         formas.outros.qtd += 1;
@@ -1638,11 +1505,14 @@ export const GraficosVendasModal: React.FC<GraficosVendasModalProps> = ({
         ...f,
         porcentagem: totalGeral > 0 ? Math.round((f.valor / totalGeral) * 100) : 0,
       }))
-      .filter((f) => f.valor > 0 || totalGeral === 0);
+      .filter((f) => f.valor > 0 || f.qtd > 0);
 
     lista.sort((a, b) => b.valor - a.valor);
 
-    const lider = lista[0] || { label: 'PIX', porcentagem: 0 };
+    const lider =
+      totalGeral > 0 && lista[0]
+        ? lista[0]
+        : { label: 'Sem vendas', porcentagem: 0 };
 
     return { lista, totalGeral, lider };
   }, [vendasPainel]);
@@ -2835,7 +2705,7 @@ ${top3 || '- Nenhum produto vendido'}
                   </div>
                   <span
                     style={{
-                      background: '#DC2626',
+                      background: dadosHorariosPico.maxPedidos > 0 ? '#DC2626' : '#64748B',
                       color: '#FFFFFF',
                       border: '1px solid #cbd5e1',
                       padding: '4px 10px',
@@ -2846,7 +2716,9 @@ ${top3 || '- Nenhum produto vendido'}
                       boxShadow: '0 1px 2px rgba(15, 23, 42, 0.05)',
                     }}
                   >
-                    🔥 Pico {dadosHorariosPico.faixaPico}
+                    {dadosHorariosPico.maxPedidos > 0
+                      ? `🔥 Pico ${dadosHorariosPico.faixaPico}`
+                      : '⏱️ Sem pedidos no período'}
                   </span>
                 </div>
 
@@ -2964,6 +2836,10 @@ ${top3 || '- Nenhum produto vendido'}
                         ? '#EFF6FF'
                         : forma.cor === '#D97706'
                         ? '#FFFBEB'
+                        : forma.cor === '#DC2626'
+                        ? '#FEF2F2'
+                        : forma.cor === '#6B7280'
+                        ? '#F3F4F6'
                         : '#E0F2FE';
                     const borderPastel =
                       forma.cor === '#10B981'
@@ -2972,6 +2848,10 @@ ${top3 || '- Nenhum produto vendido'}
                         ? '#BFDBFE'
                         : forma.cor === '#D97706'
                         ? '#FDE68A'
+                        : forma.cor === '#DC2626'
+                        ? '#FECACA'
+                        : forma.cor === '#6B7280'
+                        ? '#D1D5DB'
                         : '#BAE6FD';
                     return (
                       <div

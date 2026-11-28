@@ -13,13 +13,19 @@ function obterSentryDsn(): string {
   return SENTRY_FALLBACK_DSN;
 }
 
+function isAmbienteProducao(): boolean {
+  return Boolean((import.meta as any).env?.PROD);
+}
+
 /**
- * Inicializa o monitoramento global de erros (Sentry + captura global de exceções).
+ * Inicializa o monitoramento global de erros (Sentry com GlobalHandlers integrados) apenas em produção.
  * Envia os erros com arquivo, linha exata (via Source Maps) e contexto da loja/usuário.
  */
 export function inicializarMonitoramentoErros(): void {
   if (typeof window === 'undefined' || sentryInicializado) return;
   sentryInicializado = true;
+
+  if (!isAmbienteProducao()) return;
 
   const dsn = obterSentryDsn();
   if (dsn) {
@@ -71,27 +77,10 @@ export function inicializarMonitoramentoErros(): void {
       },
     });
   }
-
-  window.addEventListener('error', (event) => {
-    if (event?.error) {
-      capturarErroProducao(event.error, {
-        origem: 'window.error',
-        arquivo: event.filename,
-        linha: event.lineno,
-        coluna: event.colno,
-      });
-    }
-  });
-
-  window.addEventListener('unhandledrejection', (event) => {
-    const motivo = event?.reason instanceof Error
-      ? event.reason
-      : new Error(typeof event?.reason === 'string' ? event.reason : 'Promise rejeitada sem tratamento');
-    capturarErroProducao(motivo, { origem: 'unhandledrejection' });
-  });
 }
 
 export function capturarErroProducao(erro: unknown, contexto?: Record<string, unknown>): void {
+  if (!isAmbienteProducao()) return;
   const errObj = erro instanceof Error ? erro : new Error(String(erro || 'Erro desconhecido'));
   const dsn = obterSentryDsn();
 

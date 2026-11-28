@@ -25,6 +25,15 @@ import { exportarVendasCSV, exportarEstoqueCSV } from '../lib/exportUtils';
 import { obterDataLocalISO } from '../lib/dateUtils';
 import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 import {
+  calcularDiasParaVencer,
+  calcularMetricasVenda,
+  construirMapaCustoPorCodigo,
+  ehProdutoEstoqueIlimitado,
+  estaNoPeriodo,
+  obterCustoUnitarioItem,
+  parseDataVenda,
+} from '../utils/relatoriosFinanceiros';
+import {
   X,
   TrendingUp,
   Receipt,
@@ -106,63 +115,30 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
   // Venda expandida para visualização de itens
   const [vendaExpandidaId, setVendaExpandidaId] = useState<string | null>(null);
 
-  // Paginação no histórico de vendas
+  // Paginação no histórico de vendas e tabela de estoque
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 20;
+  const [paginaEstoque, setPaginaEstoque] = useState(1);
+  const itensPorPaginaEstoque = 50;
 
-  // Helper para obter custo de um item
-  const obterCustoItem = (item: { codigo?: string; preco_custo?: number; lote?: string; validade?: string }): number => {
-    if (item.preco_custo !== undefined && item.preco_custo !== null && !isNaN(Number(item.preco_custo)) && Number(item.preco_custo) > 0) {
-      return Number(item.preco_custo);
-    }
-    if (estoque && estoque.length > 0 && item.codigo) {
-      const cLimpo = item.codigo.trim();
-      const noEst = estoque.find((e) => e.codigo?.trim() === cLimpo && (e.preco_custo || 0) > 0);
-      if (noEst?.preco_custo) return Number(noEst.preco_custo);
-    }
-    return 0;
-  };
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [periodoFiltro, origemFiltro, statusVendaFiltro, buscaVendas, formaPgtoFiltro, operadorFiltro]);
 
-  // Helper para calcular métricas financeiras completas de uma venda
-  const calcularMetricasVenda = (venda: Venda) => {
-    const valorTotal = Number(venda.valorTotal) || 0;
-    let custoTotal = 0;
-    let quantidadeItens = 0;
+  useEffect(() => {
+    setPaginaEstoque(1);
+  }, [buscaEstoque, filtroEstoqueValidade]);
 
-    (venda.itens || []).forEach((it) => {
-      const qtd = Number(it.quantidade) || 1;
-      quantidadeItens += qtd;
-      const custoUnit = obterCustoItem(it);
-      custoTotal += custoUnit * qtd;
-    });
+  const mapaCusto = useMemo(
+    () => construirMapaCustoPorCodigo(estoque, catalogoGlobal),
+    [estoque, catalogoGlobal]
+  );
 
-    const lucroReal = valorTotal - custoTotal;
-    const margemPercentual = valorTotal > 0 ? (lucroReal / valorTotal) * 100 : 0;
-
-    return {
-      valorTotal,
-      custoTotal,
-      lucroReal,
-      margemPercentual,
-      quantidadeItens,
-    };
-  };
-
-  // Filtragem de vendas por período
-  const agora = new Date();
-  const hojeStr = obterDataLocalISO(agora);
-  const data7DiasAtras = obterDataLocalISO(new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000));
-  const data30DiasAtras = obterDataLocalISO(new Date(agora.getTime() - 30 * 24 * 60 * 60 * 1000));
-  const mesAtualStr = hojeStr.slice(0, 7); // YYYY-MM
-
-  const vendasFiltradasPorPeriodo = vendas.filter((v) => {
-    if (!v.data) return true;
-    if (periodoFiltro === 'hoje') return v.data === hojeStr;
-    if (periodoFiltro === '7dias') return v.data >= data7DiasAtras;
-    if (periodoFiltro === '30dias') return v.data >= data30DiasAtras;
-    if (periodoFiltro === 'mes') return v.data.startsWith(mesAtualStr);
-    return true;
-  });
+  // Filtragem de vendas por período usando parser de data consistente
+  const vendasFiltradasPorPeriodo = useMemo(
+    () => vendas.filter((v) => estaNoPeriodo(parseDataVenda(v), periodoFiltro)),
+    [vendas, periodoFiltro]
+  );
 
   // Métricas Consolidadas (Cards do Topo)
   const metricasGerais = useMemo(() => {
@@ -178,10 +154,10 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
     let qtdBalcao = 0;
 
     concluidas.forEach((v) => {
-      const m = calcularMetricasVenda(v);
+      const m = calcularMetricasVenda(v, mapaCusto);
       faturamentoBruto += m.valorTotal;
       custoTotal += m.custoTotal;
-      itensTotal += m.quantidadeItens;
+      itensTotal += m.qtdItens;
 
       if (v.origem === 'delivery') {
         faturamentoDelivery += m.valorTotal;
@@ -209,7 +185,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       qtdBalcao,
       ticketMedio,
     };
-  }, [vendasFiltradasPorPeriodo, estoque]);
+  }, [vendasFiltradasPorPeriodo, mapaCusto]);
 
   // Dados para Gráfico de Faturamento & Lucro por Dia
   const dadosGraficoEvolucao = useMemo(() => {
@@ -218,8 +194,10 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
     vendasFiltradasPorPeriodo
       .filter((v) => v.status !== 'estornada' && (v.status as string) !== 'cancelada')
       .forEach((v) => {
-        const dia = v.data || hojeStr;
-        const m = calcularMetricasVenda(v);
+        const dt = parseDataVenda(v);
+        if (!dt) return;
+        const dia = obterDataLocalISO(dt);
+        const m = calcularMetricasVenda(v, mapaCusto);
         const atual = mapaDias.get(dia) || { data: dia, faturamento: 0, lucro: 0, custo: 0 };
         atual.faturamento += m.valorTotal;
         atual.lucro += m.lucroReal;
@@ -234,7 +212,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
         ...d,
         dataFormatada: d.data.split('-').slice(1).reverse().join('/'),
       }));
-  }, [vendasFiltradasPorPeriodo, estoque]);
+  }, [vendasFiltradasPorPeriodo, mapaCusto]);
 
   // Dados para Gráfico de Formas de Pagamento
   const dadosGraficoPagamentos = useMemo(() => {
@@ -278,14 +256,15 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       }
 
       return true;
-    }).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    }).sort((a, b) => (parseDataVenda(b)?.getTime() || b.timestamp || 0) - (parseDataVenda(a)?.getTime() || a.timestamp || 0));
   }, [vendasFiltradasPorPeriodo, statusVendaFiltro, origemFiltro, formaPgtoFiltro, operadorFiltro, buscaVendas]);
 
-  // Itens paginados
+  // Itens paginados com clamp seguro
   const totalPaginas = Math.ceil(vendasHistoricoFiltradas.length / itensPorPagina) || 1;
+  const paginaSegura = Math.min(Math.max(1, paginaAtual), totalPaginas);
   const vendasPaginadas = vendasHistoricoFiltradas.slice(
-    (paginaAtual - 1) * itensPorPagina,
-    paginaAtual * itensPorPagina
+    (paginaSegura - 1) * itensPorPagina,
+    paginaSegura * itensPorPagina
   );
 
   // Métricas do Estoque
@@ -305,7 +284,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       const qtd = Number(item.quantidade) || 0;
       const custo = Number(item.preco_custo) || 0;
       const venda = Number(item.preco_venda) || 0;
-      const ehIlimitado = Boolean(item.estoqueIlimitado) || qtd >= 99000;
+      const ehIlimitado = ehProdutoEstoqueIlimitado(item);
 
       totalItensUnicos++;
       if (!ehIlimitado) {
@@ -318,13 +297,14 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
         estoqueBaixo++;
       }
 
-      if (item.validade) {
-        const dataVal = new Date(item.validade + 'T23:59:59');
-        const diffDias = Math.ceil((dataVal.getTime() - agora.getTime()) / (1000 * 3600 * 24));
-        if (diffDias < 0) vencidos++;
-        else if (diffDias <= 7) vencendo7++;
-        else if (diffDias <= 15) vencendo15++;
-        else if (diffDias <= 30) vencendo30++;
+      if (!ehIlimitado && qtd > 0 && item.validade) {
+        const diffDias = calcularDiasParaVencer(item.validade);
+        if (diffDias !== null) {
+          if (diffDias < 0) vencidos++;
+          else if (diffDias <= 7) vencendo7++;
+          else if (diffDias <= 15) vencendo15++;
+          else if (diffDias <= 30) vencendo30++;
+        }
       }
     });
 
@@ -357,14 +337,17 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
       if (filtroEstoqueValidade === 'todos') return true;
 
+      const ehIlimitado = ehProdutoEstoqueIlimitado(item);
+      if (ehIlimitado) return false;
+
       const qtd = Number(item.quantidade) || 0;
       if (filtroEstoqueValidade === 'baixo') {
-        return qtd <= 3 && !item.estoqueIlimitado;
+        return qtd <= 3;
       }
 
-      if (!item.validade) return false;
-      const dataVal = new Date(item.validade + 'T23:59:59');
-      const diffDias = Math.ceil((dataVal.getTime() - agora.getTime()) / (1000 * 3600 * 24));
+      if (qtd <= 0 || !item.validade) return false;
+      const diffDias = calcularDiasParaVencer(item.validade);
+      if (diffDias === null) return false;
 
       if (filtroEstoqueValidade === 'vencidos') return diffDias < 0;
       if (filtroEstoqueValidade === 'vencendo7') return diffDias >= 0 && diffDias <= 7;
@@ -375,12 +358,27 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
     });
   }, [estoque, buscaEstoque, filtroEstoqueValidade]);
 
-  // Métricas Exclusivas de Delivery (Estilo Zé Delivery)
+  const totalPaginasEstoque = Math.ceil(estoqueFiltrado.length / itensPorPaginaEstoque) || 1;
+  const paginaEstoqueSegura = Math.min(Math.max(1, paginaEstoque), totalPaginasEstoque);
+  const estoquePaginado = estoqueFiltrado.slice(
+    (paginaEstoqueSegura - 1) * itensPorPaginaEstoque,
+    paginaEstoqueSegura * itensPorPaginaEstoque
+  );
+
+  // Métricas Exclusivas de Delivery (Estilo Zé Delivery) filtradas pelo período ativo
   const metricasDelivery = useMemo(() => {
-    const pedidos = pedidosDelivery || [];
+    const pedidos = (pedidosDelivery || []).filter((p) =>
+      estaNoPeriodo(parseDataVenda(p), periodoFiltro)
+    );
     const entregues = pedidos.filter((p) => p.status === 'entregue');
     const cancelados = pedidos.filter((p) => p.status === 'cancelado');
-    const pendentes = pedidos.filter((p) => p.status === 'pendente' || p.status === 'em_separacao' || p.status === 'saiu_para_entrega');
+    const pendentes = pedidos.filter(
+      (p) =>
+        p.status === 'pendente' ||
+        p.status === 'em_separacao' ||
+        p.status === 'pronto' ||
+        p.status === 'saiu_para_entrega'
+    );
 
     let faturamento = 0;
     let taxasTotal = 0;
@@ -396,7 +394,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
       (p.itens || []).forEach((it) => {
         const atual = mapaProdutos.get(it.codigo) || { nome: it.nome, qtd: 0, valor: 0 };
-        atual.qtd += Number(it.quantidade) || 1;
+        atual.qtd += Number(it.quantidade) || 0;
         atual.valor += Number(it.subtotal) || 0;
         mapaProdutos.set(it.codigo, atual);
       });
@@ -423,7 +421,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
       topBairros,
       topProdutos,
     };
-  }, [pedidosDelivery]);
+  }, [pedidosDelivery, periodoFiltro]);
 
   const handleVoltarOuFechar = () => {
     if (vendaEstornar) {
@@ -777,7 +775,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
 
                   {/* Exportar CSV */}
                   <button
-                    onClick={() => exportarVendasCSV(vendasHistoricoFiltradas, nomeLoja)}
+                    onClick={() => exportarVendasCSV(vendasHistoricoFiltradas, nomeLoja, estoque)}
                     className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl shadow transition"
                   >
                     <Download className="w-4 h-4" />
@@ -851,7 +849,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               <div className="space-y-3">
                 {vendasPaginadas.length > 0 ? (
                   vendasPaginadas.map((venda) => {
-                    const m = calcularMetricasVenda(venda);
+                    const m = calcularMetricasVenda(venda, mapaCusto);
                     const isExpandida = vendaExpandidaId === venda.id;
                     const isDelivery = venda.origem === 'delivery';
 
@@ -911,17 +909,28 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                               </div>
                             </div>
 
-                            <div className="bg-[#ECFDF5] border border-emerald-300 px-3 py-1 rounded-xl shadow-xs">
-                              <div className="text-[10px] text-emerald-700 font-bold uppercase">
-                                Só Lucro Real:
+                            {m.estornada ? (
+                              <div className="bg-rose-100 border border-rose-200 px-3 py-1 rounded-xl shadow-xs">
+                                <div className="text-[10px] text-rose-700 font-bold uppercase">
+                                  Venda Estornada
+                                </div>
+                                <div className="text-sm font-extrabold font-mono text-rose-700">
+                                  Lucro R$ 0,00
+                                </div>
                               </div>
-                              <div className="text-sm font-extrabold font-mono text-[#059669]">
-                                R$ {m.lucroReal.toFixed(2)}{' '}
-                                <span className="text-[10px] font-medium text-emerald-600">
-                                  ({m.margemPercentual.toFixed(0)}%)
-                                </span>
+                            ) : (
+                              <div className="bg-[#ECFDF5] border border-emerald-300 px-3 py-1 rounded-xl shadow-xs">
+                                <div className="text-[10px] text-emerald-700 font-bold uppercase">
+                                  Só Lucro Real:
+                                </div>
+                                <div className="text-sm font-extrabold font-mono text-[#059669]">
+                                  R$ {m.lucroReal.toFixed(2)}{' '}
+                                  <span className="text-[10px] font-medium text-emerald-600">
+                                    ({m.margemPercentual.toFixed(0)}%)
+                                  </span>
+                                </div>
                               </div>
-                            </div>
+                            )}
 
                             {/* Ações */}
                             <div className="flex items-center gap-1">
@@ -967,9 +976,9 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                             </h4>
                             <div className="space-y-1.5">
                               {(venda.itens || []).map((it, idx) => {
-                                const custoUnit = obterCustoItem(it);
-                                const qtd = Number(it.quantidade) || 1;
-                                const subtotal = Number(it.subtotal) || 0;
+                                const { custo: custoUnit } = obterCustoUnitarioItem(it, mapaCusto);
+                                const qtd = Number(it.quantidade) || 0;
+                                const subtotal = Number(it.subtotal ?? qtd * (Number(it.preco_unitario) || 0)) || 0;
                                 const custoTotalItem = custoUnit * qtd;
                                 const lucroItem = subtotal - custoTotalItem;
                                 const margemItem = subtotal > 0 ? (lucroItem / subtotal) * 100 : 0;
@@ -998,12 +1007,18 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                                         </div>
                                       </div>
 
-                                      <div className="text-emerald-700 font-bold">
-                                        +R$ {lucroItem.toFixed(2)}
-                                        <div className="text-[10px] text-emerald-600 font-medium">
-                                          ({margemItem.toFixed(0)}%)
+                                      {m.estornada ? (
+                                        <div className="text-rose-600 font-semibold text-[11px]">
+                                          Estornada
                                         </div>
-                                      </div>
+                                      ) : (
+                                        <div className="text-emerald-700 font-bold">
+                                          +R$ {lucroItem.toFixed(2)}
+                                          <div className="text-[10px] text-emerald-600 font-medium">
+                                            ({margemItem.toFixed(0)}%)
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 );
@@ -1025,17 +1040,17 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
               {totalPaginas > 1 && (
                 <div className="flex items-center justify-center gap-2 pt-2">
                   <button
-                    disabled={paginaAtual === 1}
+                    disabled={paginaSegura === 1}
                     onClick={() => setPaginaAtual((p) => Math.max(1, p - 1))}
                     className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs disabled:opacity-40 shadow-xs"
                   >
                     Anterior
                   </button>
                   <span className="text-xs text-slate-400">
-                    Página {paginaAtual} de {totalPaginas}
+                    Página {paginaSegura} de {totalPaginas}
                   </span>
                   <button
-                    disabled={paginaAtual === totalPaginas}
+                    disabled={paginaSegura === totalPaginas}
                     onClick={() => setPaginaAtual((p) => Math.min(totalPaginas, p + 1))}
                     className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs disabled:opacity-40 shadow-xs"
                   >
@@ -1162,27 +1177,31 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {estoqueFiltrado.length > 0 ? (
-                      estoqueFiltrado.slice(0, 50).map((it, idx) => {
+                    {estoquePaginado.length > 0 ? (
+                      estoquePaginado.map((it, idx) => {
                         const custo = Number(it.preco_custo) || 0;
                         const venda = Number(it.preco_venda) || 0;
                         const lucro = venda - custo;
+                        const ehIlimitado = ehProdutoEstoqueIlimitado(it);
 
                         let badgeValidade = null;
-                        if (it.validade) {
-                          const dataVal = new Date(it.validade + 'T23:59:59');
-                          const diffDias = Math.ceil((dataVal.getTime() - agora.getTime()) / (1000 * 3600 * 24));
-                          if (diffDias < 0) {
-                            badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-600">Vencido ({it.validade})</span>;
-                          } else if (diffDias <= 7) {
-                            badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700">7 dias ({it.validade})</span>;
-                          } else {
-                            badgeValidade = <span className="text-slate-600 font-medium">{it.validade}</span>;
+                        if (!ehIlimitado && it.validade) {
+                          const diffDias = calcularDiasParaVencer(it.validade);
+                          if (diffDias !== null) {
+                            if (diffDias < 0) {
+                              badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-600">Vencido ({it.validade})</span>;
+                            } else if (diffDias === 0) {
+                              badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-700 font-semibold">Vence hoje ({it.validade})</span>;
+                            } else if (diffDias <= 7) {
+                              badgeValidade = <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700">{diffDias}d ({it.validade})</span>;
+                            } else {
+                              badgeValidade = <span className="text-slate-600 font-medium">{it.validade}</span>;
+                            }
                           }
                         }
 
                         return (
-                          <tr key={idx} className="hover:bg-slate-50 transition">
+                          <tr key={`${it.codigo}_${it.lote || idx}`} className="hover:bg-slate-50 transition">
                             <td className="p-3 font-semibold text-slate-900 flex items-center gap-2">
                               {it.foto ? (
                                 <img src={it.foto} alt="" className="w-7 h-7 object-cover rounded-lg border border-slate-200" />
@@ -1199,7 +1218,7 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                             </td>
                             <td className="p-3">{badgeValidade || '-'}</td>
                             <td className="p-3 text-right font-bold text-slate-900">
-                              {it.estoqueIlimitado ? '∞ Ilimitado' : it.quantidade}
+                              {ehIlimitado ? '∞ Ilimitado' : it.quantidade}
                             </td>
                             <td className="p-3 text-right text-rose-600">R$ {custo.toFixed(2)}</td>
                             <td className="p-3 text-right text-blue-600">R$ {venda.toFixed(2)}</td>
@@ -1219,6 +1238,39 @@ export const CentralRelatoriosModal: React.FC<CentralRelatoriosModalProps> = ({
                   </tbody>
                 </table>
               </div>
+
+              {estoqueFiltrado.length > 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-slate-500">
+                  <span>
+                    Exibindo {(paginaEstoqueSegura - 1) * itensPorPaginaEstoque + 1}–
+                    {Math.min(paginaEstoqueSegura * itensPorPaginaEstoque, estoqueFiltrado.length)} de{' '}
+                    {estoqueFiltrado.length} itens
+                  </span>
+                  {totalPaginasEstoque > 1 && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={paginaEstoqueSegura === 1}
+                        onClick={() => setPaginaEstoque((p) => Math.max(1, p - 1))}
+                        className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs disabled:opacity-40 shadow-xs"
+                      >
+                        Anterior
+                      </button>
+                      <span>
+                        Página {paginaEstoqueSegura} de {totalPaginasEstoque}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={paginaEstoqueSegura === totalPaginasEstoque}
+                        onClick={() => setPaginaEstoque((p) => Math.min(totalPaginasEstoque, p + 1))}
+                        className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-xs disabled:opacity-40 shadow-xs"
+                      >
+                        Próxima
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
           )}

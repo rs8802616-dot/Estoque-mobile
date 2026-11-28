@@ -8,8 +8,8 @@ class ScreenWakeLockManager {
   private isEnabled: boolean = true;
   private isActive: boolean = false;
   private listeners: Set<StatusCallback> = new Set();
-  private fallbackVideo: HTMLVideoElement | null = null;
   private userInteractionBound: boolean = false;
+  private interactionHandler: (() => void) | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -17,8 +17,37 @@ class ScreenWakeLockManager {
     }
   }
 
+  private removerListenersInteracao() {
+    if (!this.userInteractionBound || !this.interactionHandler || typeof window === 'undefined') {
+      return;
+    }
+    window.removeEventListener('touchstart', this.interactionHandler);
+    window.removeEventListener('click', this.interactionHandler);
+    window.removeEventListener('keydown', this.interactionHandler);
+    this.userInteractionBound = false;
+  }
+
+  private registrarListenersInteracao() {
+    if (this.userInteractionBound || typeof window === 'undefined') return;
+    if (!this.interactionHandler) {
+      this.interactionHandler = async () => {
+        if (this.isEnabled && !this.isActive) {
+          const ok = await this.requestWakeLock();
+          if (ok) {
+            this.removerListenersInteracao();
+          }
+        } else if (this.isActive) {
+          this.removerListenersInteracao();
+        }
+      };
+    }
+    window.addEventListener('touchstart', this.interactionHandler, { passive: true });
+    window.addEventListener('click', this.interactionHandler, { passive: true });
+    window.addEventListener('keydown', this.interactionHandler, { passive: true });
+    this.userInteractionBound = true;
+  }
+
   private init() {
-    // Re-request lock on visibility change (e.g. user returns to app/tab)
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && this.isEnabled) {
         this.requestWakeLock();
@@ -31,116 +60,57 @@ class ScreenWakeLockManager {
       }
     });
 
-    // Acquire lock on first user interaction (required by mobile browser security policy)
-    const handleFirstInteraction = () => {
-      if (this.isEnabled && !this.isActive) {
-        this.requestWakeLock();
-      }
-    };
-
-    if (!this.userInteractionBound) {
-      window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
-      window.addEventListener('click', handleFirstInteraction, { passive: true });
-      window.addEventListener('keydown', handleFirstInteraction, { passive: true });
-      this.userInteractionBound = true;
-    }
-
-    // Initial attempt
+    this.registrarListenersInteracao();
     this.requestWakeLock();
   }
 
   public async requestWakeLock(): Promise<boolean> {
     if (!this.isEnabled) return false;
 
-    // 1. Try Native Screen Wake Lock API
     if (typeof navigator !== 'undefined' && 'wakeLock' in navigator) {
       try {
         if (this.wakeLock && !this.wakeLock.released) {
           this.notifyStatus(true);
+          this.removerListenersInteracao();
           return true;
         }
 
         const nav = navigator as any;
         this.wakeLock = await nav.wakeLock.request('screen');
-        this.isActive = true;
         this.notifyStatus(true);
+        this.removerListenersInteracao();
 
         this.wakeLock.addEventListener('release', () => {
-          this.isActive = false;
           this.wakeLock = null;
           this.notifyStatus(false);
-          // If still enabled and tab is active, try to reacquire
-          if (this.isEnabled && document.visibilityState === 'visible') {
-            setTimeout(() => this.requestWakeLock(), 1000);
+          if (this.isEnabled) {
+            this.registrarListenersInteracao();
+            if (document.visibilityState === 'visible') {
+              setTimeout(() => this.requestWakeLock(), 1000);
+            }
           }
         });
 
         return true;
       } catch (err) {
-        console.warn('Wake Lock nativo indisponível ou aguardando interação do usuário:', err);
+        console.warn('Wake Lock nativo aguardando interação ou indisponível:', err);
+        this.registrarListenersInteracao();
       }
     }
 
-    // 2. Fallback: Lightweight invisible looping video for older iOS / Android WebViews
-    try {
-      this.startFallbackKeepAwake();
-      this.isActive = true;
-      this.notifyStatus(true);
-      return true;
-    } catch (e) {
-      console.warn('Fallback keep-awake indisponível:', e);
-      this.isActive = false;
-      this.notifyStatus(false);
-      return false;
-    }
-  }
-
-  private startFallbackKeepAwake() {
-    if (this.fallbackVideo) return;
-    try {
-      // Create minimal 1-second muted loop video to prevent sleep on legacy mobile browsers
-      const video = document.createElement('video');
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-      video.setAttribute('muted', '');
-      video.muted = true;
-      video.loop = true;
-      video.style.position = 'fixed';
-      video.style.top = '-9999px';
-      video.style.left = '-9999px';
-      video.style.width = '1px';
-      video.style.height = '1px';
-      video.style.opacity = '0.001';
-      video.style.pointerEvents = 'none';
-
-      // Tiny 1x1 encoded WebM/MP4 data URI
-      video.src =
-        'data:video/mp4;base64,AAAAHGZ0eXBtcDQyAAAAAG1wNDJpc29tYXZjMQAAADpmcmVlAAAF921kYXQAAAAAAAABAAAAAAA=';
-
-      document.body.appendChild(video);
-      video.play().catch(() => {});
-      this.fallbackVideo = video;
-    } catch (err) {
-      console.warn('Erro ao criar fallback video:', err);
-    }
+    this.notifyStatus(false);
+    return false;
   }
 
   public releaseWakeLock() {
     this.isEnabled = false;
+    this.removerListenersInteracao();
     if (this.wakeLock) {
       try {
         this.wakeLock.release();
       } catch (e) {}
       this.wakeLock = null;
     }
-    if (this.fallbackVideo) {
-      try {
-        this.fallbackVideo.pause();
-        this.fallbackVideo.remove();
-      } catch (e) {}
-      this.fallbackVideo = null;
-    }
-    this.isActive = false;
     this.notifyStatus(false);
   }
 

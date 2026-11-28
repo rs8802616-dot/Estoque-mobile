@@ -14,6 +14,19 @@ export default defineConfig(() => {
     build: {
       chunkSizeWarningLimit: 3000,
       sourcemap: 'hidden' as const,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return;
+            if (id.includes('firebase')) return 'vendor-firebase';
+            if (id.includes('recharts') || id.includes('d3-')) return 'vendor-charts';
+            if (id.includes('pdfjs-dist')) return 'vendor-pdf';
+            if (id.includes('@zxing/library')) return 'vendor-scanner';
+            if (id.includes('lucide-react')) return 'vendor-icons';
+            if (id.includes('@sentry')) return 'vendor-sentry';
+          },
+        },
+      },
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.

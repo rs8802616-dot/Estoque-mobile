@@ -23,14 +23,20 @@ test('criarHashComSalt e verificarSenhaComHash validam senha correta e rejeitam 
   assert.equal(vazio, false);
 });
 
-test('validarPoliticaSenha exige mínimo 6 caracteres e confirmação igual', () => {
-  const curta = validarPoliticaSenha('12345', '12345');
+test('validarPoliticaSenha exige mínimo 8 caracteres, bloqueia senhas comuns e valida confirmação igual', () => {
+  const curta = validarPoliticaSenha('1234567', '1234567');
   assert.equal(curta.valida, false);
 
-  const diferente = validarPoliticaSenha('abcdef', 'abcdeg');
+  const bloqueada = validarPoliticaSenha('12345678', '12345678');
+  assert.equal(bloqueada.valida, false);
+
+  const senhaComum = validarPoliticaSenha('senha123', 'senha123');
+  assert.equal(senhaComum.valida, false);
+
+  const diferente = validarPoliticaSenha('LojaForte@2026', 'LojaForte@2027');
   assert.equal(diferente.valida, false);
 
-  const valida = validarPoliticaSenha('abc123', 'abc123');
+  const valida = validarPoliticaSenha('LojaForte@2026', 'LojaForte@2026');
   assert.equal(valida.valida, true);
 });
 

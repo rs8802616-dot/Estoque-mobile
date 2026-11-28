@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ItemEstoque, Supermercado } from '../types';
-import { obterDataLocalISO } from '../lib/dateUtils';
 import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
+import { filtrarAlertasValidadePorDias } from '../utils/alertasEstoque';
 
 interface AlertasWhatsAppModalProps {
   visivel: boolean;
@@ -24,18 +24,9 @@ export const AlertasWhatsAppModal: React.FC<AlertasWhatsAppModalProps> = ({
   if (!visivel) return null;
 
   const hoje = new Date();
-  const hojeIso = obterDataLocalISO(hoje);
 
-  // Filtra produtos vencendo nos próximos X dias ou já vencidos
-  const produtosAvisar = estoque.filter((item) => {
-    if (!item.validade) return false;
-    const diffTime = new Date(item.validade).getTime() - new Date(hojeIso).getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
-    return diffDays <= diasFiltro;
-  });
-
-  // Ordena por validade mais próxima
-  produtosAvisar.sort((a, b) => (a.validade || '').localeCompare(b.validade || ''));
+  // Filtra itens físicos com saldo positivo vencidos ou a vencer nos próximos X dias
+  const produtosAvisar = filtrarAlertasValidadePorDias(estoque, diasFiltro, hoje);
 
   // Formata mensagem para WhatsApp
   const nomeLoja = loja?.nome || 'SUPERMERCADO';
@@ -50,10 +41,13 @@ export const AlertasWhatsAppModal: React.FC<AlertasWhatsAppModalProps> = ({
   if (produtosAvisar.length === 0) {
     mensagemWhatsApp += `✅ *Excelente!* Nenhum produto encontrado próximo do vencimento nos próximos ${diasFiltro} dias.\n`;
   } else {
-    produtosAvisar.forEach((p, idx) => {
-      const diffTime = new Date(p.validade).getTime() - new Date(hojeIso).getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
-      const statusVal = diffDays < 0 ? '❌ JÁ VENCIDO' : `⚠️ Vence em ${diffDays} dias`;
+    produtosAvisar.forEach(({ item: p, diasParaVencer: diffDays }, idx) => {
+      const statusVal =
+        diffDays < 0
+          ? '❌ JÁ VENCIDO'
+          : diffDays === 0
+          ? '🔴 VENCE HOJE'
+          : `⚠️ Vence em ${diffDays} dia(s)`;
 
       mensagemWhatsApp += `${idx + 1}. *${p.nome}*\n`;
       mensagemWhatsApp += `   • Cód: ${p.codigo} | Qtd: ${p.quantidade} un\n`;
@@ -67,10 +61,36 @@ export const AlertasWhatsAppModal: React.FC<AlertasWhatsAppModalProps> = ({
 
   const linkWhatsApp = `https://wa.me/?text=${encodeURIComponent(mensagemWhatsApp)}`;
 
-  const handleCopiarTexto = () => {
-    navigator.clipboard.writeText(mensagemWhatsApp);
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), 2500);
+  const handleCopiarTexto = async () => {
+    let sucesso = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(mensagemWhatsApp);
+        sucesso = true;
+      }
+    } catch {
+      sucesso = false;
+    }
+
+    if (!sucesso && typeof document !== 'undefined') {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = mensagemWhatsApp;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        sucesso = document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } catch {
+        sucesso = false;
+      }
+    }
+
+    if (sucesso) {
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2500);
+    }
   };
 
   return (

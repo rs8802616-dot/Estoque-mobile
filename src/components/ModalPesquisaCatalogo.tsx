@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { pesquisarSI5GlobalPorNome, SI5ProdutoRetorno } from '../lib/bomJawaKitApi';
+import { useVoltarHierarquico } from '../hooks/useVoltarHierarquico';
 
 export interface ProdutoPesquisaItem {
   codigo: string;
@@ -37,6 +38,7 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
   onSelecionarProduto,
 }) => {
   const [termo, setTermo] = useState(termoInicial);
+  const [ultimoTermoBuscado, setUltimoTermoBuscado] = useState('');
   const [produtosAPI, setProdutosAPI] = useState<SI5ProdutoRetorno[]>([]);
   const [carregando, setCarregando] = useState(false);
   const [paginaAtual, setPaginaAtual] = useState(1);
@@ -45,8 +47,9 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
   const [jaPesquisou, setJaPesquisou] = useState(false);
   const [erroMensagem, setErroMensagem] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const requestIdRef = useRef(0);
 
-  // Executa busca direta e exclusivamente na API Oficial https://global.si5.com.br
+  // Executa busca direta na API Oficial SI5 Global com guarda contra respostas fora de ordem
   const executarBuscaAPI = async (termoParaBuscar: string, pagina: number = 1, anexar: boolean = false) => {
     const limpo = (termoParaBuscar || '').trim();
     if (limpo.length < 3) {
@@ -54,15 +57,29 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
       return;
     }
 
+    const reqId = ++requestIdRef.current;
+    setUltimoTermoBuscado(limpo);
     setCarregando(true);
     setErroMensagem(null);
     setJaPesquisou(true);
 
     try {
       const res = await pesquisarSI5GlobalPorNome(limpo, pagina);
+      if (reqId !== requestIdRef.current) return;
+
       if (res && Array.isArray(res.produtos)) {
         if (anexar) {
-          setProdutosAPI((prev) => [...prev, ...res.produtos]);
+          setProdutosAPI((prev) => {
+            const mapa = new Map<string, SI5ProdutoRetorno>();
+            prev.forEach((p) => mapa.set((p.ean || p.nomeProduto || '').trim(), p));
+            res.produtos.forEach((p) => {
+              const chave = (p.ean || p.nomeProduto || '').trim();
+              if (chave && !mapa.has(chave)) {
+                mapa.set(chave, p);
+              }
+            });
+            return Array.from(mapa.values());
+          });
         } else {
           setProdutosAPI(res.produtos);
         }
@@ -74,21 +91,27 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         setErroMensagem('Nenhum resultado retornado pela API ou limite de consultas temporariamente atingido.');
       }
     } catch (err: any) {
+      if (reqId !== requestIdRef.current) return;
       console.warn('[ModalPesquisaCatalogo] Erro ao consultar SI5 Global:', err);
       setErroMensagem('Falha ao comunicar com a API Oficial SI5 Global. Verifique sua conexão.');
     } finally {
-      setCarregando(false);
+      if (reqId === requestIdRef.current) {
+        setCarregando(false);
+      }
     }
   };
 
-  // Quando o modal abre, foca no input e executa se já tiver termo
+  // Quando o modal abre, foca no input e executa se já tiver termo; ao fechar, invalida requisições em voo
   useEffect(() => {
     if (visivel) {
+      requestIdRef.current += 1;
       const t = (termoInicial || '').trim();
       setTermo(t);
+      setUltimoTermoBuscado('');
       setProdutosAPI([]);
       setJaPesquisou(false);
       setErroMensagem(null);
+      setCarregando(false);
       setPaginaAtual(1);
       setTotalPaginas(1);
       setTotalItens(0);
@@ -97,10 +120,11 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
         inputRef.current?.focus();
       }, 120);
 
-      // Se já veio com nome do produto do formulário (com pelo menos 3 caracteres), busca direto na API
       if (t.length >= 3) {
         executarBuscaAPI(t, 1, false);
       }
+    } else {
+      requestIdRef.current += 1;
     }
   }, [visivel, termoInicial]);
 
@@ -110,8 +134,9 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
   };
 
   const handleCarregarMais = () => {
+    const termoPagina = ultimoTermoBuscado || termo;
     if (paginaAtual < totalPaginas && !carregando) {
-      executarBuscaAPI(termo, paginaAtual + 1, true);
+      executarBuscaAPI(termoPagina, paginaAtual + 1, true);
     }
   };
 
@@ -119,6 +144,8 @@ export const ModalPesquisaCatalogo: React.FC<ModalPesquisaCatalogoProps> = ({
     setTermo(sugestao);
     executarBuscaAPI(sugestao, 1, false);
   };
+
+  useVoltarHierarquico(visivel, onFechar);
 
   if (!visivel) return null;
 

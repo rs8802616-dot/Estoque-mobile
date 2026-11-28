@@ -4,9 +4,11 @@
  * avança para o dia seguinte a partir das 21:00.
  */
 export function obterDataLocalISO(data: Date = new Date()): string {
-  const ano = data.getFullYear();
-  const mes = String(data.getMonth() + 1).padStart(2, '0');
-  const dia = String(data.getDate()).padStart(2, '0');
+  const dataValida =
+    data instanceof Date && !Number.isNaN(data.getTime()) ? data : new Date();
+  const ano = dataValida.getFullYear();
+  const mes = String(dataValida.getMonth() + 1).padStart(2, '0');
+  const dia = String(dataValida.getDate()).padStart(2, '0');
   return `${ano}-${mes}-${dia}`;
 }
 

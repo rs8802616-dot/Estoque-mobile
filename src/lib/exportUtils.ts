@@ -1,8 +1,26 @@
 import { Venda, ItemEstoque } from '../types';
 import { obterDataLocalISO } from './dateUtils';
+import {
+  calcularDiasParaVencer,
+  calcularMetricasVenda,
+  construirMapaCustoPorCodigo,
+  ehProdutoEstoqueIlimitado,
+  obterCustoUnitarioItem,
+} from '../utils/relatoriosFinanceiros';
 
-const csvCell = (val: unknown) =>
-  `"${String(val ?? '').replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
+/**
+ * Sanitiza célula CSV contra quebra de colunas/aspas e CSV Formula Injection (=, +, -, @, \t, \r).
+ */
+export function sanitizarCelulaCSV(val: unknown): string {
+  const bruto = String(val ?? '').replace(/\r?\n/g, ' ');
+  const trimEsquerda = bruto.replace(/^[ ]+/, '');
+  const ehNumeroNegativoSimples = /^-\d+(?:[.,]\d+)?$/.test(trimEsquerda);
+  const perigoso =
+    /^[=+@\t\r]/.test(trimEsquerda) ||
+    (trimEsquerda.startsWith('-') && !ehNumeroNegativoSimples);
+  const seguro = perigoso ? `'${bruto}` : bruto;
+  return `"${seguro.replace(/"/g, '""')}"`;
+}
 
 // Helper to trigger file download
 function baixarArquivo(conteudo: string, nomeArquivo: string, mimeType: string) {
@@ -14,11 +32,13 @@ function baixarArquivo(conteudo: string, nomeArquivo: string, mimeType: string) 
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// Export Vendas to CSV
-export function exportarVendasCSV(vendas: Venda[], nomeLoja: string, estoque?: ItemEstoque[]) {
+/**
+ * Gera conteúdo CSV de vendas com proteção de fórmulas e estornos zerados nas colunas financeiras.
+ */
+export function gerarLinhasVendasCSV(vendas: Venda[], estoque?: ItemEstoque[]): string {
   const cabecalho = [
     'ID Venda',
     'Data',
@@ -35,63 +55,66 @@ export function exportarVendasCSV(vendas: Venda[], nomeLoja: string, estoque?: I
     'Motivo Estorno',
   ].join(';');
 
-  const obterCusto = (item: any): number => {
-    if (item.preco_custo !== undefined && item.preco_custo !== null && !isNaN(Number(item.preco_custo)) && Number(item.preco_custo) > 0) {
-      return Number(item.preco_custo);
-    }
-    if (estoque && estoque.length > 0 && item.codigo) {
-      const achou = estoque.find((e) => e.codigo === item.codigo && (e.preco_custo || 0) > 0);
-      if (achou?.preco_custo) return Number(achou.preco_custo);
-    }
-    return 0;
-  };
+  const mapaCusto = construirMapaCustoPorCodigo(estoque);
 
-  const linhas = vendas.map((v) => {
-    let custoVenda = 0;
-    let qtdItens = 0;
+  const linhas = (vendas || []).map((v) => {
+    const metrics = calcularMetricasVenda(v, mapaCusto);
 
-    const descItens = (v.itens || [])
+    const descItensLista = (Array.isArray(v?.itens) ? v.itens : [])
       .map((i) => {
-        const q = i.quantidade || 1;
-        qtdItens += q;
-        const cUnit = obterCusto(i);
+        const q = Number(i?.quantidade) || 0;
+        const pUnit = Number(i?.preco_unitario) || 0;
+        const { custo: cUnit } = obterCustoUnitarioItem(i, mapaCusto);
         const cTot = cUnit * q;
-        custoVenda += cTot;
-        const sub = i.subtotal || q * (i.preco_unitario || 0);
+        const sub = Number(i?.subtotal ?? q * pUnit) || 0;
         const luc = sub - cTot;
-        return `${q}x ${i.nome} (Venda: R$ ${i.preco_unitario.toFixed(2)} | Custo: R$ ${cUnit.toFixed(2)} | Lucro: R$ ${luc.toFixed(2)})`;
+        const nomeSeguro = String(i?.nome || 'Produto').replace(/;/g, ' ');
+        return `${q}x ${nomeSeguro} (Venda: R$ ${pUnit.toFixed(2)} | Custo: R$ ${cUnit.toFixed(2)} | Lucro: R$ ${luc.toFixed(2)})`;
       })
       .join(' | ')
       .replace(/;/g, ' ');
 
-    const valorVenda = v.valorTotal || 0;
-    const lucroVenda = valorVenda - custoVenda;
-    const margem = valorVenda > 0 ? (lucroVenda / valorVenda) * 100 : 0;
+    const descFinal = metrics.estornada
+      ? `[ESTORNADA - Valor original R$ ${metrics.valorTotal.toFixed(2)}] ${descItensLista}`.trim()
+      : descItensLista;
+
+    const valorCol = metrics.estornada ? 0 : metrics.valorTotal;
+    const custoCol = metrics.estornada ? 0 : metrics.custoTotal;
+    const lucroCol = metrics.estornada ? 0 : metrics.lucroReal;
+    const margemCol = metrics.estornada ? 0 : metrics.margemPercentual;
 
     return [
-      csvCell(v.id),
-      csvCell(v.data),
-      csvCell(v.hora),
-      csvCell(v.operadorNome),
-      csvCell(v.formaPagamento.toUpperCase()),
-      csvCell(v.status.toUpperCase()),
-      qtdItens,
-      valorVenda.toFixed(2).replace('.', ','),
-      custoVenda.toFixed(2).replace('.', ','),
-      lucroVenda.toFixed(2).replace('.', ','),
-      margem.toFixed(1).replace('.', ',') + '%',
-      csvCell(descItens),
-      csvCell(v.motivoEstorno || ''),
+      sanitizarCelulaCSV(v?.id || ''),
+      sanitizarCelulaCSV(v?.data || ''),
+      sanitizarCelulaCSV(v?.hora || ''),
+      sanitizarCelulaCSV(v?.operadorNome || ''),
+      sanitizarCelulaCSV(String(v?.formaPagamento || 'outros').toUpperCase()),
+      sanitizarCelulaCSV(String(v?.status || 'concluida').toUpperCase()),
+      metrics.qtdItens,
+      valorCol.toFixed(2).replace('.', ','),
+      custoCol.toFixed(2).replace('.', ','),
+      lucroCol.toFixed(2).replace('.', ','),
+      margemCol.toFixed(1).replace('.', ',') + '%',
+      sanitizarCelulaCSV(descFinal),
+      sanitizarCelulaCSV(v?.motivoEstorno || ''),
     ].join(';');
   });
 
-  const conteudo = [cabecalho, ...linhas].join('\n');
-  const dataHoje = obterDataLocalISO();
-  baixarArquivo(conteudo, `Vendas_${nomeLoja.replace(/\s+/g, '_')}_${dataHoje}.csv`, 'text/csv;charset=utf-8;');
+  return [cabecalho, ...linhas].join('\n');
 }
 
-// Export Estoque to CSV
-export function exportarEstoqueCSV(estoque: ItemEstoque[], nomeLoja: string) {
+// Export Vendas to CSV
+export function exportarVendasCSV(vendas: Venda[], nomeLoja: string, estoque?: ItemEstoque[]) {
+  const conteudo = gerarLinhasVendasCSV(vendas, estoque);
+  const dataHoje = obterDataLocalISO();
+  const nomeSeguro = String(nomeLoja || 'Loja').replace(/\s+/g, '_');
+  baixarArquivo(conteudo, `Vendas_${nomeSeguro}_${dataHoje}.csv`, 'text/csv;charset=utf-8;');
+}
+
+/**
+ * Gera conteúdo CSV de estoque compatível com YYYY-MM-DD, DD/MM/YYYY e itens ilimitados.
+ */
+export function gerarLinhasEstoqueCSV(estoque: ItemEstoque[]): string {
   const cabecalho = [
     'Código/EAN',
     'Nome do Produto',
@@ -104,43 +127,52 @@ export function exportarEstoqueCSV(estoque: ItemEstoque[], nomeLoja: string) {
     'Status Validade',
   ].join(';');
 
-  const hoje = obterDataLocalISO();
+  const linhas = (estoque || []).map((item) => {
+    const isIlimitado = ehProdutoEstoqueIlimitado(item);
+    let statusValidade = isIlimitado ? 'ILIMITADO' : 'OK';
 
-  const linhas = estoque.map((item) => {
-    let statusValidade = 'OK';
-    if (item.validade) {
-      if (item.validade < hoje) {
-        statusValidade = 'VENCIDO';
-      } else {
-        const diffDays = Math.ceil(
-          (new Date(item.validade).getTime() - new Date(hoje).getTime()) / (1000 * 3600 * 24)
-        );
-        if (diffDays <= 30) {
+    if (!isIlimitado && item?.validade) {
+      const diffDays = calcularDiasParaVencer(item.validade);
+      if (diffDays !== null) {
+        if (diffDays < 0) {
+          statusValidade = 'VENCIDO';
+        } else if (diffDays === 0) {
+          statusValidade = 'VENCE HOJE';
+        } else if (diffDays <= 30) {
           statusValidade = `VENCE EM ${diffDays} DIAS`;
         }
       }
     }
 
-    const isIlimitado = item.estoqueIlimitado || item.tipoCadastro === 'interno' || Number(item.quantidade) >= 99990;
-    const qtdExibir = isIlimitado ? '"ILIMITADO"' : item.quantidade;
+    const qtdNum = Number(item?.quantidade) || 0;
+    const pCusto = Number(item?.preco_custo) || 0;
+    const pVenda = Number(item?.preco_venda) || 0;
+
+    const qtdExibir = isIlimitado ? sanitizarCelulaCSV('ILIMITADO') : qtdNum;
     const valorTotalEstoque = isIlimitado
-      ? '"SOB DEMANDA"'
-      : ((Number(item.quantidade) || 0) * (Number(item.preco_venda) || 0)).toFixed(2).replace('.', ',');
+      ? sanitizarCelulaCSV('SOB DEMANDA')
+      : (qtdNum * pVenda).toFixed(2).replace('.', ',');
 
     return [
-      csvCell(item.codigo),
-      csvCell(item.nome),
+      sanitizarCelulaCSV(item?.codigo || ''),
+      sanitizarCelulaCSV(item?.nome || ''),
       qtdExibir,
-      (item.preco_custo || 0).toFixed(2).replace('.', ','),
-      item.preco_venda.toFixed(2).replace('.', ','),
+      pCusto.toFixed(2).replace('.', ','),
+      pVenda.toFixed(2).replace('.', ','),
       valorTotalEstoque,
-      csvCell(item.lote || ''),
-      csvCell(item.validade || ''),
-      csvCell(statusValidade),
+      sanitizarCelulaCSV(item?.lote || ''),
+      sanitizarCelulaCSV(item?.validade || ''),
+      sanitizarCelulaCSV(statusValidade),
     ].join(';');
   });
 
-  const conteudo = [cabecalho, ...linhas].join('\n');
+  return [cabecalho, ...linhas].join('\n');
+}
+
+// Export Estoque to CSV
+export function exportarEstoqueCSV(estoque: ItemEstoque[], nomeLoja: string) {
+  const conteudo = gerarLinhasEstoqueCSV(estoque);
   const dataHoje = obterDataLocalISO();
-  baixarArquivo(conteudo, `Estoque_${nomeLoja.replace(/\s+/g, '_')}_${dataHoje}.csv`, 'text/csv;charset=utf-8;');
+  const nomeSeguro = String(nomeLoja || 'Loja').replace(/\s+/g, '_');
+  baixarArquivo(conteudo, `Estoque_${nomeSeguro}_${dataHoje}.csv`, 'text/csv;charset=utf-8;');
 }

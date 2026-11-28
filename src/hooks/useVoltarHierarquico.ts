@@ -8,6 +8,15 @@ interface EntradaVoltar {
 const pilhaVoltar: EntradaVoltar[] = [];
 let proximoId = 1;
 let listenersInstalados = false;
+let rearmarTimerId: number | null = null;
+let limpandoSentinela = false;
+
+function cancelarRearmePendente() {
+  if (rearmarTimerId !== null && typeof window !== 'undefined') {
+    window.clearTimeout(rearmarTimerId);
+    rearmarTimerId = null;
+  }
+}
 
 function garantirSentinelaHistorico() {
   if (typeof window === 'undefined' || !window.history) return;
@@ -29,6 +38,23 @@ function garantirSentinelaHistorico() {
   }
 }
 
+function removerSentinelaHistoricoSeVazia() {
+  if (typeof window === 'undefined' || !window.history) return;
+  if (pilhaVoltar.length > 0) return;
+  cancelarRearmePendente();
+  try {
+    if (window.history.state?.__emBackSentinel) {
+      limpandoSentinela = true;
+      window.history.back();
+      window.setTimeout(() => {
+        limpandoSentinela = false;
+      }, 150);
+    }
+  } catch {
+    limpandoSentinela = false;
+  }
+}
+
 function instalarListenersGlobais() {
   if (listenersInstalados || typeof window === 'undefined') return;
   listenersInstalados = true;
@@ -47,12 +73,20 @@ function instalarListenersGlobais() {
   );
 
   window.addEventListener('popstate', () => {
+    if (limpandoSentinela) {
+      limpandoSentinela = false;
+      return;
+    }
     if (pilhaVoltar.length === 0) return;
     const topo = pilhaVoltar[pilhaVoltar.length - 1];
     if (!topo) return;
     topo.handler();
-    window.setTimeout(() => {
-      garantirSentinelaHistorico();
+    cancelarRearmePendente();
+    rearmarTimerId = window.setTimeout(() => {
+      rearmarTimerId = null;
+      if (pilhaVoltar.length > 0) {
+        garantirSentinelaHistorico();
+      }
     }, 0);
   });
 }
@@ -69,6 +103,7 @@ export function useVoltarHierarquico(ativo: boolean, onVoltar: () => void): void
     if (!ativo) return;
     instalarListenersGlobais();
 
+    cancelarRearmePendente();
     const id = proximoId++;
     const entrada: EntradaVoltar = {
       id,
@@ -82,6 +117,9 @@ export function useVoltarHierarquico(ativo: boolean, onVoltar: () => void): void
       const idx = pilhaVoltar.findIndex((item) => item.id === id);
       if (idx !== -1) {
         pilhaVoltar.splice(idx, 1);
+      }
+      if (pilhaVoltar.length === 0) {
+        removerSentinelaHistoricoSeVazia();
       }
     };
   }, [ativo]);
